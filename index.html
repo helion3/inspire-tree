@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="./src/tree.css" />
+        <style>
+            .inspire-tree {
+                border: 1px solid #eee;
+                min-height: 400px;
+                width: 400px;
+            }
+
+            body > div {
+                float: left;
+            }
+
+            .toolbar button {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="source-tree"></div>
+        <div class="toolbar">
+            <button class="move-one">&gt;</button>
+            <button class="revert-one">&lt;</button>
+        </div>
+        <div class="dest-tree"></div>
+    </body>
+    <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="./src/tree.js"></script>
+    <script>
+        var source = inspireTree({
+            target: '.source-tree',
+            data: $.getJSON('sample-data.json')
+        });
+
+        var dest = inspireTree({
+            target: '.dest-tree',
+            data: []
+        });
+
+        $('.move-one').on('click', function() {
+            var selected = source.getSelected();
+
+            source.hideNodes(source.flatten(selected));
+            dest.addNodes(selected);
+        });
+
+        $('.revert-one').on('click', function() {
+            var selected = dest.getSelected();
+
+            dest.removeNodes(selected);
+            source.addNodes(selected);
+        });
+    </script>
+</html>

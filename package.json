@@ -1,0 +1,19 @@
+{
+  "name": "inspire-tree",
+  "version": "0.0.1",
+  "description": "Inspired JavaScript Tree UI Element",
+  "repository": "https://github.com/helion3/lodash-addons",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.3.0",
+    "gulp": "^3.9.0",
+    "gulp-eslint": "^1.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.4.1",
+    "mocha": "^2.3.3"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "main": "dist/inspire-tree.js"
+}
