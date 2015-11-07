@@ -1,29 +1,25 @@
 'use strict';
 
 // Libs
-var data = require('./lib/data');
+var InspireData = require('./lib/data');
 var InspireDOM = require('./lib/dom');
 var InspireEvents = require('./lib/events');
 
 // Polyfills
-require('./lib/now');
 require('es6-promise').polyfill();
 
 // CSS
 require('./tree.scss');
 
 module.exports = function InspireTree(opts) {
-    var events = new InspireEvents();
-    var dom = new InspireDOM(events);
+    var api = new (function InspireApi() {});
+    var data = api.data = new InspireData();
+    var events = api.events = new InspireEvents();
+    var dom = api.dom = new InspireDOM(api);
 
     // Query the DOM and connect to our target element
     dom.linkTarget(opts.selector).catch(function(err) {
         events.emit('error', err);
-    });
-
-    // Listen for DOM interaction
-    events.on('node.toggled', function(event) {
-        console.log('node toggled', event);
     });
 
     // Load initial user data
@@ -39,9 +35,5 @@ module.exports = function InspireTree(opts) {
         });
     }());
 
-    // Define an API we'll return to the user
-    return new (function InspireApi() {
-        this.data = data;
-        this.events = events;
-    });
+    return api;
 };

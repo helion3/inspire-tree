@@ -7,7 +7,7 @@ var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var transform = require('lodash.transform');
 
-module.exports = function InspireDOM(events) {
+module.exports = function InspireDOM(api) {
     var $target;
 
     /**
@@ -60,7 +60,11 @@ module.exports = function InspireDOM(events) {
      */
     function createTitleAnchor(text) {
         return h('a', { onclick: function(event) {
-            events.emit('node.clicked', event);
+            var uid = event.target.parentNode.getAttribute('data-uid');
+            var node = api.data.getNodeById(uid);
+
+            // Emit
+            api.events.emit('node.click', event, node);
         } }, [text]);
     }
 

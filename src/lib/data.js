@@ -1,11 +1,13 @@
 'use strict';
 
+var cuid = require('cuid');
+var each = require('lodash.foreach');
 var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
 var map = require('lodash.map');
 
-module.exports = (new function(window) {
+module.exports = function InspireData() {
     /**
      * Parses a raw collection of objects into a model used
      * within a tree. Adds state and other internal properties.
@@ -28,7 +30,7 @@ module.exports = (new function(window) {
      * @return {string} Unique ID.
      */
     function generateId() {
-        return window.performance.now().toString();
+        return cuid();
     };
 
     /**
@@ -56,6 +58,34 @@ module.exports = (new function(window) {
     };
 
     var data = this;
+    var model = [];
+
+    /**
+     * Get a node by it's unique id.
+     *
+     * @param {string} id Unique ID.
+     * @param {array} nodes Base collection to search in.
+     * @return {object} Found node.
+     */
+    data.getNodeById = function(id, nodes) {
+        var node;
+
+        each((nodes || model), function(item) {
+            if (item.id === id) {
+                node = item;
+            }
+
+            if (!node && isArray(item.children) && !isEmpty(item.children)) {
+                node = data.getNodeById(id, item.children);
+            }
+
+            if (node) {
+                return false;
+            }
+        });
+
+        return node;
+    };
 
     /**
      * Loads data. Accepts an array or a promise.
@@ -69,14 +99,16 @@ module.exports = (new function(window) {
     data.load = function(loader) {
         return new Promise(function(resolve, reject) {
             if (isArray(loader)) {
-                resolve(collectionToModel(loader));
+                model = collectionToModel(loader);
+                resolve(model);
             }
 
             else if (typeof loader === 'object') {
                 // Promise
                 if (isFunction(loader.then)) {
                     loader.then(function(results) {
-                        resolve(collectionToModel(results));
+                        model = collectionToModel(results);
+                        resolve(model);
                     });
                 }
 
@@ -92,4 +124,4 @@ module.exports = (new function(window) {
     };
 
     return data;
-}(window));
+};
