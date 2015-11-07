@@ -10,13 +10,16 @@
     "es6-promise": "^3.0.2",
     "extract-text-webpack-plugin": "^0.9.1",
     "file-loader": "^0.8.4",
+    "lodash.foreach": "^3.0.3",
     "lodash.isarray": "^3.0.4",
     "lodash.isempty": "^3.0.4",
     "lodash.isfunction": "^3.0.6",
     "lodash.map": "^3.1.4",
+    "lodash.transform": "^3.0.4",
     "node-sass": "^3.4.1",
     "sass-loader": "^3.1.1",
     "style-loader": "^0.13.0",
+    "virtual-dom": "^2.1.1",
     "webpack": "^1.12.3"
   },
   "scripts": {

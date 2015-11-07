@@ -33,7 +33,7 @@
     <script>
         require(['dist/inspire-tree'], function(InspireTree) {
             var sourceTree = new InspireTree({
-                element: '.source-tree',
+                selector: '.source-tree',
                 data: $.getJSON('sample-data.json')
             });
 
@@ -48,16 +48,8 @@
             });
 
             var destTree = new InspireTree({
-                element: '.dest-tree',
+                selector: '.dest-tree',
                 data: []
-            });
-
-            destTree.events.on('loaded', function(nodes) {
-                console.log('dest loaded:', nodes);
-            });
-
-            destTree.events.on('error', function(err) {
-                console.log('dest error:', err);
             });
         });
     </script>
