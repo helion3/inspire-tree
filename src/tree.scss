@@ -45,9 +45,13 @@
         list-style: none;
         margin: 0;
         padding: 0;
+
+        ol {
+            margin-left: 20px;
+        }
     }
 
-    .collapsed, .hidden {
+    .collapsed > ol {
         display: none;
     }
 

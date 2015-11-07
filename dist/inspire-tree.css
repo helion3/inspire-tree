@@ -36,7 +36,9 @@
     list-style: none;
     margin: 0;
     padding: 0; }
-  .inspire-tree .collapsed, .inspire-tree .hidden {
+    .inspire-tree ol ol {
+      margin-left: 20px; }
+  .inspire-tree .collapsed > ol {
     display: none; }
   .inspire-tree .selected > div {
     background: #a4eaf5;

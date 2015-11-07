@@ -11,7 +11,7 @@
                 width: 400px;
             }
 
-            body > div {
+            body > div > div {
                 float: left;
             }
 
@@ -21,12 +21,16 @@
         </style>
     </head>
     <body>
-        <div class="source-tree"></div>
-        <div class="toolbar">
-            <button class="move-one">&gt;</button>
-            <button class="revert-one">&lt;</button>
+        <div>
+            <div class="source-tree"></div>
+            <div class="toolbar">
+                <button class="move-one">&gt;</button>
+                <button class="revert-one">&lt;</button>
+            </div>
+            <div class="dest-tree"></div>
         </div>
-        <div class="dest-tree"></div>
+        <button class="log-selected">Log Selected</button>
+        <button class="clear-selected">Clear Selected</button>
     </body>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
@@ -46,6 +50,14 @@
             var destTree = new InspireTree({
                 selector: '.dest-tree',
                 data: []
+            });
+
+            $('.log-selected').on('click', function() {
+                console.log(sourceTree.data.getSelected());
+            });
+
+            $('.clear-selected').on('click', function() {
+                sourceTree.data.deselectAll();
             });
         });
     </script>

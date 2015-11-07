@@ -1,5 +1,6 @@
 'use strict';
 
+var cloneDeep = require('lodash.cloneDeep');
 var cuid = require('cuid');
 var each = require('lodash.foreach');
 var isArray = require('lodash.isarray');
@@ -45,7 +46,7 @@ module.exports = function InspireData(api) {
         if (!object.itree) {
             object.itree = {
                 state: {
-                    expanded: false,
+                    collapsed: true,
                     selected: false
                 }
             };
@@ -56,6 +57,25 @@ module.exports = function InspireData(api) {
         }
 
         return object;
+    };
+
+    /**
+     * Iterate nodes recursively.
+     *
+     * @param {array} array Node array.
+     * @param {function} iteratee Iteratee function.
+     * @return {array} Resulting node array.
+     */
+    function recurse(array, iteratee) {
+        each(array, function(item, key) {
+            array[key] = iteratee(item);
+
+            if (isArray(item.children) && !isEmpty(item.children)) {
+                item.children = recurse(item.children, iteratee);
+            }
+        });
+
+        return array;
     };
 
     var rerender = function() {
@@ -73,18 +93,22 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     data.collapseNode = function(node) {
-        node.itree.state.expanded = false;
+        node.itree.state.collapsed = true;
 
         api.events.emit('node.collapsed', node);
 
         rerender();
     };
 
+    data.deselectAll = function() {
+        recurse(model, data.deselectNode);
+    };
+
     /**
      * Deselect a node.
      *
      * @param {object} node Node object.
-     * @return {void}
+     * @return {pbject} Node object.
      */
     data.deselectNode = function(node) {
         node.itree.state.selected = false;
@@ -92,6 +116,8 @@ module.exports = function InspireData(api) {
         api.events.emit('node.deselected', node);
 
         rerender();
+
+        return node;
     };
 
     /**
@@ -101,11 +127,49 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     data.expandNode = function(node) {
-        node.itree.state.expanded = true;
+        node.itree.state.collapsed = false;
 
         api.events.emit('node.expanded', node);
 
         rerender();
+    };
+
+    data.getSelected = function(nodes, flat) {
+        var selected = [];
+
+        if (flat) {
+            recurse((nodes || model), function(node) {
+                if (node.itree.state.selected) {
+                    selected.push(node);
+                }
+
+                return node;
+            });
+        }
+        else {
+            each((nodes || model), function(node) {
+                var nodeClone;
+
+                if (node.itree.state.selected) {
+                    nodeClone = cloneDeep(node);
+                }
+
+                // Are any children selected?
+                if (!nodeClone && isArray(node.children) && node.children.length) {
+                    var children = data.getSelected(node.children);
+                    if (children.length) {
+                        nodeClone = cloneDeep(node);
+                        nodeClone.children = children;
+                    }
+                }
+
+                if (nodeClone) {
+                    selected.push(nodeClone);
+                }
+            });
+        }
+
+        return selected;
     };
 
     /**

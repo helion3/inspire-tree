@@ -20,7 +20,7 @@ module.exports = function InspireDOM(api) {
      * @return {object} List Item node.
      */
     function createListItemNode(node) {
-        var contents = [createTitleContainer(node.title)];
+        var contents = [createTitleContainer(node)];
 
         if (isArray(node.children) && !isEmpty(node.children)) {
             contents.push(createOrderedList(node.children));
@@ -90,14 +90,19 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates a container element for the title/toggle/icons.
      *
-     * @param {string} title Node title.
+     * @param {string} node Node object.
      * @return {object} Container node.
      */
-    function createTitleContainer(title) {
-        return h('div', [
-            createToggleAnchor(),
-            createTitleAnchor(title)
-        ]);
+    function createTitleContainer(node) {
+        var contents = [];
+
+        if (!isEmpty(node.children)) {
+            contents.push(createToggleAnchor());
+        }
+
+        contents.push(createTitleAnchor(node.title));
+
+        return h('div', contents);
     };
 
     /**
