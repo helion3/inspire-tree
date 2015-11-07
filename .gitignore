@@ -14,3 +14,4 @@ node_modules/
 .tmp
 build
 coverage
+bower_components

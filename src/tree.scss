@@ -1,0 +1,77 @@
+/* ~~~~~~~@ Icons @~~~~~~~ */
+
+@font-face {
+    font-family: 'itree';
+    src: url('../fonts/itree.eot?bhulrm');
+    src: url('../fonts/itree.eot?bhulrm#iefix') format('embedded-opentype'),
+         url('../fonts/itree.ttf?bhulrm') format('truetype'),
+         url('../fonts/itree.woff?bhulrm') format('woff'),
+         url('../fonts/itree.svg?bhulrm#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon {
+    font-family: 'itree';
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    line-height: 1;
+    speak: none;
+    text-transform: none;
+}
+
+.icon-caret:before {
+    content: '\e800';
+}
+.icon-file-empty:before {
+    content: '\e801';
+}
+.icon-folder:before {
+    content: '\e802';
+}
+.icon-folder-open:before {
+    content: '\e803';
+}
+
+/* ~~~~~~~@ Tree Theme @~~~~~~~ */
+
+.inspire-tree {
+    font: 400 12px Helvetica Nueue, Verdana, sans-serif;
+
+    ul {
+        list-style: none;
+        padding-left: 20px;
+    }
+
+    > ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    .collapsed, .hidden {
+        display: none;
+    }
+
+    .selected > div {
+        background: #a4eaf5;
+        overflow: hidden;
+    }
+
+    a {
+        display: block;
+        height: 25px;
+        line-height: 25px;
+    }
+
+    .toggle, .toggle:before {
+        float: left;
+        font-size: 16px;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        width: 25px;
+    }
+}

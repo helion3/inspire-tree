@@ -10,7 +10,10 @@
   "dependencies": {
   },
   "main": "dist/inspire-tree.min.js",
-  "ignore": ["test"],
+  "ignore": [
+      "test",
+      ".*"
+  ],
   "devDependencies": [],
   "private": false
 }

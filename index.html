@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>InspireTree</title>
-        <link rel="stylesheet" href="./src/tree.css" />
+        <link rel="stylesheet" href="dist/inspire-tree.css" />
         <style>
             .inspire-tree {
                 border: 1px solid #eee;
@@ -28,31 +28,36 @@
         </div>
         <div class="dest-tree"></div>
     </body>
-    <script src="./bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="./src/tree.js"></script>
+    <!-- <script src="./bower_components/jquery/dist/jquery.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
     <script>
-        var source = inspireTree({
-            target: '.source-tree',
-            data: $.getJSON('sample-data.json')
+        require(['dist/inspire-tree'], function(inspireTree) {
+            console.log(inspireTree);
         });
-
-        var dest = inspireTree({
-            target: '.dest-tree',
-            data: []
-        });
-
-        $('.move-one').on('click', function() {
-            var selected = source.getSelected();
-
-            source.hideNodes(source.flatten(selected));
-            dest.addNodes(selected);
-        });
-
-        $('.revert-one').on('click', function() {
-            var selected = dest.getSelected();
-
-            dest.removeNodes(selected);
-            source.addNodes(selected);
-        });
+    </script>
+    <script>
+        // var source = inspireTree({
+        //     target: '.source-tree',
+        //     data: $.getJSON('sample-data.json')
+        // });
+        //
+        // var dest = inspireTree({
+        //     target: '.dest-tree',
+        //     data: []
+        // });
+        //
+        // $('.move-one').on('click', function() {
+        //     var selected = source.getSelected();
+        //
+        //     source.hideNodes(source.flatten(selected));
+        //     dest.addNodes(selected);
+        // });
+        //
+        // $('.revert-one').on('click', function() {
+        //     var selected = dest.getSelected();
+        //
+        //     dest.removeNodes(selected);
+        //     source.addNodes(selected);
+        // });
     </script>
 </html>

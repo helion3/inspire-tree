@@ -1,0 +1,56 @@
+/* ~~~~~~~@ Icons @~~~~~~~ */
+@font-face {
+  font-family: 'itree';
+  src: url(9222ed23122609845ac23c754dab8632.eot);
+  src: url(9222ed23122609845ac23c754dab8632.eot#iefix) format("embedded-opentype"), url(e8095a050ad43d829be83784eaa64fe7.ttf) format("truetype"), url(23a48e27235f35809d1e0d04290c8196.woff) format("woff"), url(553543d301d8c22b1d81db156cc071e1.svg#icomoon) format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+.icon {
+  font-family: 'itree';
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1;
+  speak: none;
+  text-transform: none; }
+
+.icon-caret:before {
+  content: '\E800'; }
+
+.icon-file-empty:before {
+  content: '\E801'; }
+
+.icon-folder:before {
+  content: '\E802'; }
+
+.icon-folder-open:before {
+  content: '\E803'; }
+
+/* ~~~~~~~@ Tree Theme @~~~~~~~ */
+.inspire-tree {
+  font: 400 12px Helvetica Nueue, Verdana, sans-serif; }
+  .inspire-tree ul {
+    list-style: none;
+    padding-left: 20px; }
+  .inspire-tree > ul {
+    margin: 0;
+    padding: 0; }
+  .inspire-tree .collapsed, .inspire-tree .hidden {
+    display: none; }
+  .inspire-tree .selected > div {
+    background: #a4eaf5;
+    overflow: hidden; }
+  .inspire-tree a {
+    display: block;
+    height: 25px;
+    line-height: 25px; }
+  .inspire-tree .toggle, .inspire-tree .toggle:before {
+    float: left;
+    font-size: 16px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    width: 25px; }

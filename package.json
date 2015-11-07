@@ -2,18 +2,23 @@
   "name": "inspire-tree",
   "version": "0.0.1",
   "description": "Inspired JavaScript Tree UI Element",
-  "repository": "https://github.com/helion3/lodash-addons",
+  "repository": "https://github.com/helion3/inspire-tree",
   "dependencies": {},
   "devDependencies": {
-    "chai": "^3.3.0",
-    "gulp": "^3.9.0",
-    "gulp-eslint": "^1.0.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.4.1",
-    "mocha": "^2.3.3"
+    "autoprefixer-loader": "^3.1.0",
+    "css-loader": "^0.22.0",
+    "extract-text-webpack-plugin": "^0.9.1",
+    "file-loader": "^0.8.4",
+    "node-sass": "^3.4.1",
+    "sass-loader": "^3.1.1",
+    "style-loader": "^0.13.0",
+    "webpack": "^1.12.3"
   },
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test",
+    "watch": "webpack --progress --colors --watch",
+    "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
+    "lint": "eslint src *.js"
   },
   "main": "dist/inspire-tree.js"
 }
