@@ -58,7 +58,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// Libs
 	var data = __webpack_require__(10);
-	var InsireEvents = __webpack_require__(39);
+	var InspireEvents = __webpack_require__(39);
 
 	// Polyfills
 	__webpack_require__(1);
@@ -68,7 +68,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	__webpack_require__(2);
 
 	module.exports = function InspireTree(opts) {
-	    var events = new InsireEvents();
+	    var events = new InspireEvents();
 
 	    // Load initial user data
 	    (function() {
@@ -236,7 +236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license

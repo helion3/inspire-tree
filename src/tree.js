@@ -2,7 +2,7 @@
 
 // Libs
 var data = require('./lib/data');
-var InsireEvents = require('./lib/events');
+var InspireEvents = require('./lib/events');
 
 // Polyfills
 require('./lib/now');
@@ -12,7 +12,7 @@ require('es6-promise').polyfill();
 require('./tree.scss');
 
 module.exports = function InspireTree(opts) {
-    var events = new InsireEvents();
+    var events = new InspireEvents();
 
     // Load initial user data
     (function() {
