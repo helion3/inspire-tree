@@ -13,12 +13,17 @@ require('es6-promise').polyfill();
 require('./tree.scss');
 
 module.exports = function InspireTree(opts) {
-    var dom = new InspireDOM();
     var events = new InspireEvents();
+    var dom = new InspireDOM(events);
 
     // Query the DOM and connect to our target element
     dom.linkTarget(opts.selector).catch(function(err) {
         events.emit('error', err);
+    });
+
+    // Listen for DOM interaction
+    events.on('node.toggled', function(event) {
+        console.log('node toggled', event);
     });
 
     // Load initial user data

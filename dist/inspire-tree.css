@@ -32,10 +32,8 @@
 /* ~~~~~~~@ Tree Theme @~~~~~~~ */
 .inspire-tree {
   font: 400 12px Helvetica Nueue, Verdana, sans-serif; }
-  .inspire-tree ul {
+  .inspire-tree ol {
     list-style: none;
-    padding-left: 20px; }
-  .inspire-tree > ul {
     margin: 0;
     padding: 0; }
   .inspire-tree .collapsed, .inspire-tree .hidden {

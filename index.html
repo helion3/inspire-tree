@@ -47,6 +47,10 @@
                 console.log('source error:', err);
             });
 
+            sourceTree.events.on('node.clicked', function(event) {
+                console.log('node clicked:', event);
+            });
+
             var destTree = new InspireTree({
                 selector: '.dest-tree',
                 data: []

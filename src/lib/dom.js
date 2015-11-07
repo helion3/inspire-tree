@@ -3,9 +3,11 @@
 // Libs
 var createElement = require('virtual-dom/create-element');
 var h = require('virtual-dom/h');
+var isArray = require('lodash.isarray');
+var isEmpty = require('lodash.isempty');
 var transform = require('lodash.transform');
 
-module.exports = function InspireDOM() {
+module.exports = function InspireDOM(events) {
     var $target;
 
     /**
@@ -14,8 +16,17 @@ module.exports = function InspireDOM() {
      * @param {object} node Data node.
      * @return {object} List Item node.
      */
-    var createListItemNode = function(node) {
-        return h('li', [String(node.title)]);
+    function createListItemNode(node) {
+        var contents = [
+            createToggleAnchor(),
+            createTitleAnchor(node.title)
+        ];
+
+        if (isArray(node.children) && !isEmpty(node.children)) {
+            contents.push(createOrderedList(node.children));
+        }
+
+        return h('li', { attributes: { 'data-uid': node.id } }, contents);
     };
 
     /**
@@ -24,7 +35,7 @@ module.exports = function InspireDOM() {
      * @param {array} nodes Data nodes.
      * @return {array} Array of List Item nodes.
      */
-    var createListItemNodes = function(nodes) {
+    function createListItemNodes(nodes) {
         return transform(nodes, function(elements, node) {
             elements.push(createListItemNode(node));
         });
@@ -37,9 +48,32 @@ module.exports = function InspireDOM() {
      * @param {array} nodes Data nodes.
      * @return {object} Oredered List node.
      */
-    var createOrderedList = function(nodes) {
+    function createOrderedList(nodes) {
         return h('ol', createListItemNodes(nodes));
     };
+
+    /**
+     * Creates an anchor around the node title.
+     *
+     * @param {string} text Title
+     * @return {object} Anchor node.
+     */
+    function createTitleAnchor(text) {
+        return h('a', { onclick: function(event) {
+            events.emit('node.clicked', event);
+        } }, [text]);
+    }
+
+    /**
+     * Creates an anchor used for expanding and collapsing a node.
+     *
+     * @return {object} Anchor node.
+     */
+    function createToggleAnchor() {
+        return h('a.toggle.icon.icon-caret', { onclick: function(event) {
+            events.emit('node.toggled', event);
+        } });
+    }
 
     var dom = this;
 
@@ -55,6 +89,7 @@ module.exports = function InspireDOM() {
             if (match) {
                 resolve(match);
                 $target = match;
+                $target.className += ' inspire-tree';
             }
             else {
                 reject(new Error('Invalid selector - no match found.'));
@@ -66,7 +101,7 @@ module.exports = function InspireDOM() {
     var rootNode;
 
     dom.renderNodes = function(nodes) {
-        var ol = createOrderedList(nodes);
+        var ol = createOrderedList(nodes, true);
 
         if (!rootNode) {
             rootNode = createElement(ol);
