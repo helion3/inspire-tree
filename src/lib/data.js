@@ -2,6 +2,7 @@
 
 var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
+var isFunction = require('lodash.isfunction');
 var map = require('lodash.map');
 
 module.exports = (new function(window) {
@@ -68,20 +69,22 @@ module.exports = (new function(window) {
     data.load = function(loader) {
         return new Promise(function(resolve, reject) {
             if (isArray(loader)) {
-                resolve(loader);
+                resolve(collectionToModel(loader));
             }
 
             else if (typeof loader === 'object') {
                 // Promise
-                if (typeof loader.then === 'function') {
-                    loader.then(resolve);
+                if (isFunction(loader.then)) {
+                    loader.then(function(results) {
+                        resolve(collectionToModel(results));
+                    });
                 }
 
                 // jQuery promises use "error".
-                if (typeof loader.error === 'function') {
+                if (isFunction(loader.error)) {
                     loader.error(reject);
                 }
-                else if (typeof loader.catch === 'function') {
+                else if (isFunction(loader.catch)) {
                     loader.catch(reject);
                 }
             }

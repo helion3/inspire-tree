@@ -36,26 +36,29 @@
                 element: '.source-tree',
                 data: $.getJSON('sample-data.json')
             });
+
+            console.log('api', sourceTree);
+
+            sourceTree.events.on('loaded', function(nodes) {
+                console.log('source loaded:', nodes);
+            });
+
+            sourceTree.events.on('error', function(err) {
+                console.log('source error:', err);
+            });
+
+            var destTree = new InspireTree({
+                element: '.dest-tree',
+                data: []
+            });
+
+            destTree.events.on('loaded', function(nodes) {
+                console.log('dest loaded:', nodes);
+            });
+
+            destTree.events.on('error', function(err) {
+                console.log('dest error:', err);
+            });
         });
-    </script>
-    <script>
-        // var dest = inspireTree({
-        //     target: '.dest-tree',
-        //     data: []
-        // });
-        //
-        // $('.move-one').on('click', function() {
-        //     var selected = source.getSelected();
-        //
-        //     source.hideNodes(source.flatten(selected));
-        //     dest.addNodes(selected);
-        // });
-        //
-        // $('.revert-one').on('click', function() {
-        //     var selected = dest.getSelected();
-        //
-        //     dest.removeNodes(selected);
-        //     source.addNodes(selected);
-        // });
     </script>
 </html>
