@@ -7,7 +7,7 @@ var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
 var map = require('lodash.map');
 
-module.exports = function InspireData() {
+module.exports = function InspireData(api) {
     /**
      * Parses a raw collection of objects into a model used
      * within a tree. Adds state and other internal properties.
@@ -57,8 +57,27 @@ module.exports = function InspireData() {
         return object;
     };
 
+    var rerender = function() {
+        // @todo move this. should be abstracted and allow batch changes
+        api.dom.renderNodes(model);
+    };
+
     var data = this;
     var model = [];
+
+    /**
+     * Selected a node. If already selected, no change made.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    data.deselectNode = function(node) {
+        node.itree.state.selected = false;
+
+        api.events.emit('node.deselected', node);
+
+        rerender();
+    };
 
     /**
      * Get a node by it's unique id.
@@ -121,6 +140,20 @@ module.exports = function InspireData() {
                 }
             }
         });
+    };
+
+    /**
+     * Selected a node. If already selected, no change made.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    data.selectNode = function(node) {
+        node.itree.state.selected = true;
+
+        api.events.emit('node.selected', node);
+
+        rerender();
     };
 
     return data;

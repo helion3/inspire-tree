@@ -2,9 +2,11 @@
 
 // Libs
 var createElement = require('virtual-dom/create-element');
+var diff = require('virtual-dom/diff');
 var h = require('virtual-dom/h');
 var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
+var patch = require('virtual-dom/patch');
 var transform = require('lodash.transform');
 
 module.exports = function InspireDOM(api) {
@@ -17,16 +19,15 @@ module.exports = function InspireDOM(api) {
      * @return {object} List Item node.
      */
     function createListItemNode(node) {
-        var contents = [
-            createToggleAnchor(),
-            createTitleAnchor(node.title)
-        ];
+        var contents = [createTitleContainer(node.title)];
 
         if (isArray(node.children) && !isEmpty(node.children)) {
             contents.push(createOrderedList(node.children));
         }
 
-        return h('li', { attributes: { 'data-uid': node.id } }, contents);
+        var className = (node.itree.state.selected ? '.selected' : '');
+
+        return h('li' + className, { attributes: { 'data-uid': node.id } }, contents);
     };
 
     /**
@@ -60,13 +61,34 @@ module.exports = function InspireDOM(api) {
      */
     function createTitleAnchor(text) {
         return h('a', { onclick: function(event) {
-            var uid = event.target.parentNode.getAttribute('data-uid');
+            var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
             var node = api.data.getNodeById(uid);
+
+            // Toggle selected state
+            if (node.itree.state.selected) {
+                api.data.deselectNode(node);
+            }
+            else {
+                api.data.selectNode(node);
+            }
 
             // Emit
             api.events.emit('node.click', event, node);
         } }, [text]);
     }
+
+    /**
+     * Creates a container element for the title/toggle/icons.
+     *
+     * @param {string} title Node title.
+     * @return {object} Container node.
+     */
+    function createTitleContainer(title) {
+        return h('div', [
+            createToggleAnchor(),
+            createTitleAnchor(title)
+        ]);
+    };
 
     /**
      * Creates an anchor used for expanding and collapsing a node.
@@ -75,7 +97,11 @@ module.exports = function InspireDOM(api) {
      */
     function createToggleAnchor() {
         return h('a.toggle.icon.icon-caret', { onclick: function(event) {
-            events.emit('node.toggled', event);
+            var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
+            var node = api.data.getNodeById(uid);
+
+            // Node
+            api.events.emit('node.toggled', event, node);
         } });
     }
 
@@ -103,15 +129,21 @@ module.exports = function InspireDOM(api) {
 
     // Cache our root node, so we can patch re-render in the future.
     var rootNode;
+    var ol;
 
     dom.renderNodes = function(nodes) {
-        var ol = createOrderedList(nodes, true);
+        var newOl = createOrderedList(nodes, true);
 
         if (!rootNode) {
-            rootNode = createElement(ol);
+            rootNode = createElement(newOl);
+            $target.appendChild(rootNode);
+        }
+        else {
+            var patches = diff(ol, newOl);
+            rootNode = patch(rootNode, patches);
         }
 
-        $target.appendChild(rootNode);
+        ol = newOl;
     };
 
     return dom;

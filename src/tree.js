@@ -13,7 +13,7 @@ require('./tree.scss');
 
 module.exports = function InspireTree(opts) {
     var api = new (function InspireApi() {});
-    var data = api.data = new InspireData();
+    var data = api.data = new InspireData(api);
     var events = api.events = new InspireEvents();
     var dom = api.dom = new InspireDOM(api);
 

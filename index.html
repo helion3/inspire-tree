@@ -39,14 +39,6 @@
 
             console.log('api', sourceTree);
 
-            sourceTree.events.on('loaded', function(nodes) {
-                console.log('source loaded:', nodes);
-            });
-
-            sourceTree.events.on('error', function(err) {
-                console.log('source error:', err);
-            });
-
             sourceTree.events.on('node.click', function(event, node) {
                 console.log('node clicked:', node);
             });
