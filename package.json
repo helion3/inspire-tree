@@ -7,8 +7,12 @@
   "devDependencies": {
     "autoprefixer-loader": "^3.1.0",
     "css-loader": "^0.22.0",
+    "es6-promise": "^3.0.2",
     "extract-text-webpack-plugin": "^0.9.1",
     "file-loader": "^0.8.4",
+    "lodash.isarray": "^3.0.4",
+    "lodash.isempty": "^3.0.4",
+    "lodash.map": "^3.1.4",
     "node-sass": "^3.4.1",
     "sass-loader": "^3.1.1",
     "style-loader": "^0.13.0",

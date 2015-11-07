@@ -28,19 +28,17 @@
         </div>
         <div class="dest-tree"></div>
     </body>
-    <!-- <script src="./bower_components/jquery/dist/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
     <script>
-        require(['dist/inspire-tree'], function(inspireTree) {
-            console.log(inspireTree);
+        require(['dist/inspire-tree'], function(InspireTree) {
+            var sourceTree = new InspireTree({
+                element: '.source-tree',
+                data: $.getJSON('sample-data.json')
+            });
         });
     </script>
     <script>
-        // var source = inspireTree({
-        //     target: '.source-tree',
-        //     data: $.getJSON('sample-data.json')
-        // });
-        //
         // var dest = inspireTree({
         //     target: '.dest-tree',
         //     data: []

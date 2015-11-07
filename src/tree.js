@@ -1,12 +1,24 @@
 'use strict';
 
 // Libs
-require('./lib/now');
+var data = require('./lib/data');
 
-// CSS
+require('./lib/now');
+require('es6-promise').polyfill();
 require('./tree.scss');
 
-module.exports = function InspireTree() {
+module.exports = function InspireTree(opts) {
+    console.log(opts);
 
+    // Load initial user data
+    (function() {
+        var promise = data.load(opts.data);
+        promise.then(function(nodes) {
+            console.log('loaded', nodes);
+        });
 
+        promise.catch(function() {
+            // @todo handle error
+        });
+    }());
 };
