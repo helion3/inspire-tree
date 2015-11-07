@@ -16,6 +16,7 @@
     "lodash.isempty": "^3.0.4",
     "lodash.isfunction": "^3.0.6",
     "lodash.map": "^3.1.4",
+    "lodash.pairs": "^3.0.1",
     "lodash.transform": "^3.0.4",
     "node-sass": "^3.4.1",
     "sass-loader": "^3.1.1",

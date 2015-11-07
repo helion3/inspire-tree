@@ -6,6 +6,7 @@ var diff = require('virtual-dom/diff');
 var h = require('virtual-dom/h');
 var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
+var pairs = require('lodash.pairs');
 var patch = require('virtual-dom/patch');
 var transform = require('lodash.transform');
 
@@ -25,9 +26,18 @@ module.exports = function InspireDOM(api) {
             contents.push(createOrderedList(node.children));
         }
 
-        var className = (node.itree.state.selected ? '.selected' : '');
+        // Add classes for any enabled states
+        var classNames = transform(pairs(node.itree.state), function(keys, value) {
+            if (value[1]) {
+                keys.push(value[0]);
+            }
+        }).join('.');
 
-        return h('li' + className, { attributes: { 'data-uid': node.id } }, contents);
+        if (classNames.length) {
+            classNames = '.' + classNames;
+        }
+
+        return h('li' + classNames, { attributes: { 'data-uid': node.id } }, contents);
     };
 
     /**
@@ -99,6 +109,14 @@ module.exports = function InspireDOM(api) {
         return h('a.toggle.icon.icon-caret', { onclick: function(event) {
             var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
             var node = api.data.getNodeById(uid);
+
+            // Toggle selected state
+            if (node.itree.state.expanded) {
+                api.data.collapseNode(node);
+            }
+            else {
+                api.data.expandNode(node);
+            }
 
             // Node
             api.events.emit('node.toggled', event, node);

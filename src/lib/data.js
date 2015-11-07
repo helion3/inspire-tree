@@ -45,6 +45,7 @@ module.exports = function InspireData(api) {
         if (!object.itree) {
             object.itree = {
                 state: {
+                    expanded: false,
                     selected: false
                 }
             };
@@ -66,7 +67,21 @@ module.exports = function InspireData(api) {
     var model = [];
 
     /**
-     * Selected a node. If already selected, no change made.
+     * Expand immediate children for this node, if any.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    data.collapseNode = function(node) {
+        node.itree.state.expanded = false;
+
+        api.events.emit('node.collapsed', node);
+
+        rerender();
+    };
+
+    /**
+     * Deselect a node.
      *
      * @param {object} node Node object.
      * @return {void}
@@ -75,6 +90,20 @@ module.exports = function InspireData(api) {
         node.itree.state.selected = false;
 
         api.events.emit('node.deselected', node);
+
+        rerender();
+    };
+
+    /**
+     * Expand immediate children for this node, if any.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    data.expandNode = function(node) {
+        node.itree.state.expanded = true;
+
+        api.events.emit('node.expanded', node);
 
         rerender();
     };
@@ -143,7 +172,7 @@ module.exports = function InspireData(api) {
     };
 
     /**
-     * Selected a node. If already selected, no change made.
+     * Select a node. If already selected, no change made.
      *
      * @param {object} node Node object.
      * @return {void}

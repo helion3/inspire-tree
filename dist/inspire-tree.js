@@ -146,6 +146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!object.itree) {
 	            object.itree = {
 	                state: {
+	                    expanded: false,
 	                    selected: false
 	                }
 	            };
@@ -167,7 +168,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var model = [];
 
 	    /**
-	     * Selected a node. If already selected, no change made.
+	     * Expand immediate children for this node, if any.
+	     *
+	     * @param {object} node Node object.
+	     * @return {void}
+	     */
+	    data.collapseNode = function(node) {
+	        node.itree.state.expanded = false;
+
+	        api.events.emit('node.collapsed', node);
+
+	        rerender();
+	    };
+
+	    /**
+	     * Deselect a node.
 	     *
 	     * @param {object} node Node object.
 	     * @return {void}
@@ -176,6 +191,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        node.itree.state.selected = false;
 
 	        api.events.emit('node.deselected', node);
+
+	        rerender();
+	    };
+
+	    /**
+	     * Expand immediate children for this node, if any.
+	     *
+	     * @param {object} node Node object.
+	     * @return {void}
+	     */
+	    data.expandNode = function(node) {
+	        node.itree.state.expanded = true;
+
+	        api.events.emit('node.expanded', node);
 
 	        rerender();
 	    };
@@ -244,7 +273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Selected a node. If already selected, no change made.
+	     * Select a node. If already selected, no change made.
 	     *
 	     * @param {object} node Node object.
 	     * @return {void}
@@ -2760,6 +2789,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var h = __webpack_require__(32);
 	var isArray = __webpack_require__(3);
 	var isEmpty = __webpack_require__(4);
+	var pairs = __webpack_require__(16);
 	var patch = __webpack_require__(68);
 	var transform = __webpack_require__(44);
 
@@ -2779,9 +2809,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            contents.push(createOrderedList(node.children));
 	        }
 
-	        var className = (node.itree.state.selected ? '.selected' : '');
+	        // Add classes for any enabled states
+	        var classNames = transform(pairs(node.itree.state), function(keys, value) {
+	            if (value[1]) {
+	                keys.push(value[0]);
+	            }
+	        }).join('.');
 
-	        return h('li' + className, { attributes: { 'data-uid': node.id } }, contents);
+	        if (classNames.length) {
+	            classNames = '.' + classNames;
+	        }
+
+	        return h('li' + classNames, { attributes: { 'data-uid': node.id } }, contents);
 	    };
 
 	    /**
@@ -2853,6 +2892,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return h('a.toggle.icon.icon-caret', { onclick: function(event) {
 	            var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
 	            var node = api.data.getNodeById(uid);
+
+	            // Toggle selected state
+	            if (node.itree.state.expanded) {
+	                api.data.collapseNode(node);
+	            }
+	            else {
+	                api.data.expandNode(node);
+	            }
 
 	            // Node
 	            api.events.emit('node.toggled', event, node);
@@ -4419,7 +4466,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
