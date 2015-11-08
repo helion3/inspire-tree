@@ -56,7 +56,8 @@
                 var selected = sourceTree.data.getSelected();
                 sourceTree.data.hideNodes(selected);
 
-                destTree.data.addNodes(sourceTree.data.getSelected(null, true));
+                var selectedHierarchy = sourceTree.data.getSelected(null, true);
+                destTree.data.addNodes(selectedHierarchy);
             });
 
             $('.log-selected').on('click', function() {

@@ -116,11 +116,11 @@ module.exports = function InspireDOM(api) {
             var node = api.data.getNodeById(uid);
 
             // Toggle selected state
-            if (node.itree.state.expanded) {
-                api.data.collapseNode(node);
+            if (node.itree.state.collapsed) {
+                api.data.expandNode(node);
             }
             else {
-                api.data.expandNode(node);
+                api.data.collapseNode(node);
             }
 
             // Node

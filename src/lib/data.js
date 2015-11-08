@@ -71,7 +71,7 @@ module.exports = function InspireData(api) {
      */
     function recurse(array, iteratee) {
         each(array, function(item, key) {
-            array[key] = iteratee(item);
+            array[key] = iteratee(item, key);
 
             if (isArray(item.children) && !isEmpty(item.children)) {
                 item.children = recurse(item.children, iteratee);
@@ -96,7 +96,6 @@ module.exports = function InspireData(api) {
      * @return {object} Node object.
      */
     data.addNode = function(node) {
-        node.itree = null;
         node = objectToModel(node);
         model.push(node);
 
@@ -237,7 +236,7 @@ module.exports = function InspireData(api) {
 
                 // Are any children selected?
                 if (!nodeClone && isArray(node.children) && node.children.length) {
-                    var children = data.getSelected(node.children);
+                    var children = data.getSelected(node.children, hierarchy);
                     if (children.length) {
                         nodeClone = cloneDeep(node);
                         nodeClone.children = children;
@@ -245,6 +244,10 @@ module.exports = function InspireData(api) {
                 }
 
                 if (nodeClone) {
+                    recurse(nodeClone, function(elem, key) {
+                        return (key === 'itree' ? null : elem);
+                    });
+
                     selected.push(nodeClone);
                 }
             });

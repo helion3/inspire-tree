@@ -172,7 +172,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function recurse(array, iteratee) {
 	        each(array, function(item, key) {
-	            array[key] = iteratee(item);
+	            array[key] = iteratee(item, key);
 
 	            if (isArray(item.children) && !isEmpty(item.children)) {
 	                item.children = recurse(item.children, iteratee);
@@ -197,7 +197,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {object} Node object.
 	     */
 	    data.addNode = function(node) {
-	        node.itree = null;
 	        node = objectToModel(node);
 	        model.push(node);
 
@@ -338,7 +337,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                // Are any children selected?
 	                if (!nodeClone && isArray(node.children) && node.children.length) {
-	                    var children = data.getSelected(node.children);
+	                    var children = data.getSelected(node.children, hierarchy);
 	                    if (children.length) {
 	                        nodeClone = cloneDeep(node);
 	                        nodeClone.children = children;
@@ -346,6 +345,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                if (nodeClone) {
+	                    recurse(nodeClone, function(elem, key) {
+	                        return (key === 'itree' ? null : elem);
+	                    });
+
 	                    selected.push(nodeClone);
 	                }
 	            });
@@ -3745,11 +3748,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var node = api.data.getNodeById(uid);
 
 	            // Toggle selected state
-	            if (node.itree.state.expanded) {
-	                api.data.collapseNode(node);
+	            if (node.itree.state.collapsed) {
+	                api.data.expandNode(node);
 	            }
 	            else {
-	                api.data.expandNode(node);
+	                api.data.collapseNode(node);
 	            }
 
 	            // Node
@@ -6086,7 +6089,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
