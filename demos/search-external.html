@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../dist/inspire-tree.css" />
+        <style>
+            body {
+                background: #eee;
+            }
+
+            input {
+                font-size: 14px;
+                margin-bottom: 15px;
+                padding: 5px;
+                width: 290px
+            }
+
+            .inspire-tree {
+                background: #fff;
+                border: 1px solid #bbb;
+                border-radius: 2px;
+                min-height: 400px;
+                width: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <input type="text" placeholder="Search">
+        <div class="tree"></div>
+    </body>
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+            paths: {
+                jquery: '../bower_components/jquery/dist/jquery.min',
+                inspireTree: '../dist/inspire-tree',
+                lodash: '../bower_components/lodash/lodash.min'
+            }
+        });
+
+        require([
+            'jquery',
+            'lodash',
+            'inspireTree'
+        ], function($, _, InspireTree) {
+            var sourceTree = new InspireTree({
+                target: '.tree',
+                data: $.getJSON('../sample-data/full.json'),
+                search: function(query, resolve, reject) {
+                    var promise = $.getJSON('../sample-data/full.json');
+                    promise.then(function(results) {
+                        var matches = _.filter(results, function(result) {
+                            return query.test(result.title);
+                        });
+
+                        resolve(matches);
+                    });
+                }
+            });
+
+            $('input').on('keyup', _.debounce(function(event) {
+                if (this.value.length) {
+                    sourceTree.data.search(new RegExp(this.value, 'i'));
+                } else {
+                    sourceTree.data.clearSearch();
+                }
+            }, 500));
+        });
+    </script>
+</html>

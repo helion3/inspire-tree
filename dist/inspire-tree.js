@@ -1019,11 +1019,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Search nodes, showing only those that match and the necessary hierarchy.
 	     *
 	     * @param {*} query Search string, RegExp, or function.
-	     * @return {array} Array of matching node objects.
+	     * @return {void}
 	     */
 	    data.search = function(query) {
+	        var custom = get(api, 'config.search');
+	        if (isFunction(custom)) {
+	            return custom(
+	                query,
+	                function resolver(nodes) {
+	                    console.log('resolved', nodes);
+	                },
+	                function rejecter(err) {
+	                    api.events.emit('data.loaderror', err);
+	                }
+	            );
+	        }
+
 	        var predicate;
-	        var matches = [];
 
 	        // Don't search if query empty
 	        if (isString(query) && isEmpty(query)) {
@@ -1050,8 +1062,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            node.itree.state.hidden = !match;
 
 	            if (match) {
-	                matches.push(node);
-
 	                showParents(node);
 	                expandParents(node);
 	            }
@@ -1060,8 +1070,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        rerender();
-
-	        return matches;
 	    };
 
 	    /**
