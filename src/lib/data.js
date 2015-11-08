@@ -580,6 +580,24 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Copies nodes to a new tree instance.
+     *
+     * @param {array} nodes Array of node objects.
+     * @param {object} destTree Destination Inspire Tree.
+     * @return {void}
+     */
+    data.sendNodesTo = function(nodes, destTree) {
+        if (destTree.constructor.name !== 'InspireApi') {
+            throw new Error('Destination must be an Inspire Tree instance.');
+        }
+
+        data.hideNodes(nodes);
+
+        var exported = data.exportNodes(nodes);
+        destTree.data.addNodes(exported);
+    };
+
+    /**
      * Hide a node.
      *
      * @param {object} node Node object.

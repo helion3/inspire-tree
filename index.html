@@ -124,11 +124,12 @@
 
             $('.move-all').on('click', function() {
                 var nodes = sourceTree.data.getNodes();
-                sourceTree.data.hideNodes(nodes);
+                sourceTree.data.sendNodesTo(nodes, destTree);
+            });
 
-                var exported = sourceTree.data.exportNodes(nodes);
-                console.log(exported);
-                destTree.data.addNodes(exported);
+            $('.revert-all').on('click', function() {
+                var nodes = destTree.data.getNodes();
+                destTree.data.sendNodesTo(nodes, sourceTree);
             });
 
             $('.log-selected').on('click', function() {
