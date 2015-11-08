@@ -7,6 +7,8 @@ var each = require('lodash.foreach');
 var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
+var isRegExp = require('lodash.isregexp');
+var isString = require('lodash.isstring');
 var map = require('lodash.map');
 var transform = require('lodash.transform');
 
@@ -26,6 +28,23 @@ module.exports = function InspireData(api) {
 
         return collection;
     };
+
+    /**
+     * Ensure all parent nodes are expanded.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    function expandParents(node) {
+        if (node.parent) {
+            node = node.parent;
+
+            node.itree.state.collapsed = false;
+            api.events.emit('node.expanded', node);
+
+            expandParents(node);
+        }
+    }
 
     /**
      * Generates a unique ID. Useful for generating keys
@@ -120,6 +139,23 @@ module.exports = function InspireData(api) {
         return array;
     };
 
+    /**
+     * Ensure all parent nodes are visible.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    function showParents(node) {
+        if (node.parent) {
+            node = node.parent;
+
+            node.itree.state.hidden = false;
+            api.events.emit('node.shown', node);
+
+            showParents(node);
+        }
+    }
+
     var batching = false;
     var rerender = function() {
         // Never rerender when until batch complete
@@ -176,6 +212,15 @@ module.exports = function InspireData(api) {
      */
     data.batch = function() {
         batching = true;
+    };
+
+    /**
+     * Shows all nodes and collapses parents.
+     *
+     * @return {void}
+     */
+    data.clearSearch = function() {
+        // @todo
     };
 
     /**
@@ -431,6 +476,55 @@ module.exports = function InspireData(api) {
                 }
             }
         });
+    };
+
+    /**
+     * Search nodes, showing only those that match and the necessary hierarchy.
+     *
+     * @param {*} query Search string, RegExp, or function.
+     * @return {array} Array of matching node objects.
+     */
+    data.search = function(query) {
+        var predicate;
+        var matches = [];
+
+        // Don't search if query empty
+        if (isString(query) && isEmpty(query)) {
+            return data.clearSearch();
+        }
+
+        if (isString(query)) {
+            predicate = function(node) {
+                return node.title === query;
+            };
+        }
+        else if (isRegExp(query)) {
+            predicate = function(node) {
+                return query.test(node.title);
+            };
+        }
+
+        if (!isFunction(predicate)) {
+            throw new TypeError('Search predicate must be a string, RegExp, or function.');
+        }
+
+        recurse(model, function(node) {
+            var match = predicate(node);
+            node.itree.state.hidden = !match;
+
+            if (match) {
+                matches.push(node);
+
+                showParents(node);
+                expandParents(node);
+            }
+
+            return node;
+        });
+
+        rerender();
+
+        return matches;
     };
 
     /**

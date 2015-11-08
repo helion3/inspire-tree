@@ -465,6 +465,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var isArray = __webpack_require__(4);
 	var isEmpty = __webpack_require__(20);
 	var isFunction = __webpack_require__(21);
+	var isRegExp = __webpack_require__(80);
+	var isString = __webpack_require__(22);
 	var map = __webpack_require__(23);
 	var transform = __webpack_require__(29);
 
@@ -484,6 +486,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return collection;
 	    };
+
+	    /**
+	     * Ensure all parent nodes are expanded.
+	     *
+	     * @param {object} node Node object.
+	     * @return {void}
+	     */
+	    function expandParents(node) {
+	        if (node.parent) {
+	            node = node.parent;
+
+	            node.itree.state.collapsed = false;
+	            api.events.emit('node.expanded', node);
+
+	            expandParents(node);
+	        }
+	    }
 
 	    /**
 	     * Generates a unique ID. Useful for generating keys
@@ -578,6 +597,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return array;
 	    };
 
+	    /**
+	     * Ensure all parent nodes are visible.
+	     *
+	     * @param {object} node Node object.
+	     * @return {void}
+	     */
+	    function showParents(node) {
+	        if (node.parent) {
+	            node = node.parent;
+
+	            node.itree.state.hidden = false;
+	            api.events.emit('node.shown', node);
+
+	            showParents(node);
+	        }
+	    }
+
 	    var batching = false;
 	    var rerender = function() {
 	        // Never rerender when until batch complete
@@ -634,6 +670,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    data.batch = function() {
 	        batching = true;
+	    };
+
+	    /**
+	     * Shows all nodes and collapses parents.
+	     *
+	     * @return {void}
+	     */
+	    data.clearSearch = function() {
+	        // @todo
 	    };
 
 	    /**
@@ -889,6 +934,55 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	        });
+	    };
+
+	    /**
+	     * Search nodes, showing only those that match and the necessary hierarchy.
+	     *
+	     * @param {*} query Search string, RegExp, or function.
+	     * @return {array} Array of matching node objects.
+	     */
+	    data.search = function(query) {
+	        var predicate;
+	        var matches = [];
+
+	        // Don't search if query empty
+	        if (isString(query) && isEmpty(query)) {
+	            return data.clearSearch();
+	        }
+
+	        if (isString(query)) {
+	            predicate = function(node) {
+	                return node.title === query;
+	            };
+	        }
+	        else if (isRegExp(query)) {
+	            predicate = function(node) {
+	                return query.test(node.title);
+	            };
+	        }
+
+	        if (!isFunction(predicate)) {
+	            throw new TypeError('Search predicate must be a string, RegExp, or function.');
+	        }
+
+	        recurse(model, function(node) {
+	            var match = predicate(node);
+	            node.itree.state.hidden = !match;
+
+	            if (match) {
+	                matches.push(node);
+
+	                showParents(node);
+	                expandParents(node);
+	            }
+
+	            return node;
+	        });
+
+	        rerender();
+
+	        return matches;
 	    };
 
 	    /**
@@ -4092,12 +4186,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function createListItemNode(node) {
 	        var contents = [createTitleContainer(node)];
 
-	        var shouldHide = false;
 	        if (!isEmpty(node.children)) {
 	            contents.push(createOrderedList(node.children));
-
-	            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
-	            shouldHide = (node.children.length === hiddenCount);
 	        }
 
 	        // Add classes for any enabled states
@@ -4106,11 +4196,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                keys.push(value[0]);
 	            }
 	        }).join('.');
-
-	        // If we need to force hidden
-	        if (classNames.indexOf('hidden') === -1 && shouldHide) {
-	            classNames += '.hidden';
-	        }
 
 	        if (classNames.length) {
 	            classNames = '.' + classNames;
@@ -4146,12 +4231,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Creates an anchor around the node title.
 	     *
 	     * @param {object} node Node object.
+	     * @param {boolean} hasVisibleChildren If this node has visible children.
 	     * @return {object} Anchor node.
 	     */
-	    function createTitleAnchor(node) {
+	    function createTitleAnchor(node, hasVisibleChildren) {
 	        var classNames = ['title', 'icon'];
 
-	        classNames.push(node.iconClass || (isEmpty(node.children) ? 'icon-file-empty' : 'icon-folder'));
+	        classNames.push(node.iconClass || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
 
 	        return h('a.' + classNames.join('.'), { onclick: function(event) {
 	            var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
@@ -4179,11 +4265,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function createTitleContainer(node) {
 	        var contents = [];
 
-	        if (!isEmpty(node.children)) {
+	        var l = node.children ? node.children.length : 0;
+	        var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
+	        var hasVisibleChildren = (l > 0 && hiddenCount < l);
+
+	        if (hasVisibleChildren) {
 	            contents.push(createToggleAnchor(node));
 	        }
 
-	        contents.push(createTitleAnchor(node));
+	        contents.push(createTitleAnchor(node, hasVisibleChildren));
 
 	        return h('div', contents);
 	    };
@@ -6249,7 +6339,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	// Libs
-	var EventEmitter = __webpack_require__(80);
+	var EventEmitter = __webpack_require__(71);
 
 	function InspireEvents() {};
 	InspireEvents.prototype = Object.create(EventEmitter.prototype);
@@ -6258,21 +6348,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 71 */,
-/* 72 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-
-/***/ },
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -6848,6 +6924,94 @@ return /******/ (function(modules) { // webpackBootstrap
 	    window.EventEmitter2 = EventEmitter;
 	  }
 	}();
+
+
+/***/ },
+/* 72 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */
+/***/ function(module, exports) {
+
+	/**
+	 * lodash 3.0.3 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+
+	/** `Object#toString` result references. */
+	var regexpTag = '[object RegExp]';
+
+	/** Used for native method references. */
+	var objectProto = Object.prototype;
+
+	/**
+	 * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var objToString = objectProto.toString;
+
+	/**
+	 * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
+	 * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+	 * @example
+	 *
+	 * _.isObject({});
+	 * // => true
+	 *
+	 * _.isObject([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isObject(1);
+	 * // => false
+	 */
+	function isObject(value) {
+	  // Avoid a V8 JIT bug in Chrome 19-20.
+	  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+	  var type = typeof value;
+	  return !!value && (type == 'object' || type == 'function');
+	}
+
+	/**
+	 * Checks if `value` is classified as a `RegExp` object.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+	 * @example
+	 *
+	 * _.isRegExp(/abc/);
+	 * // => true
+	 *
+	 * _.isRegExp('/abc/');
+	 * // => false
+	 */
+	function isRegExp(value) {
+	  return isObject(value) && objToString.call(value) == regexpTag;
+	}
+
+	module.exports = isRegExp;
 
 
 /***/ }

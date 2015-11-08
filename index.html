@@ -9,6 +9,12 @@
                 background: #eee;
             }
 
+            input {
+                font-size: 14px;
+                padding: 5px;
+                width: 290px
+            }
+
             .inspire-tree {
                 background: #fff;
                 border: 1px solid #bbb;
@@ -38,6 +44,9 @@
     </head>
     <body>
         <div>
+            <input type="text" placeholder="Search">
+        </div>
+        <div>
             <div class="source-tree"></div>
             <div class="toolbar">
                 <button class="move-one">&gt;</button>
@@ -50,14 +59,34 @@
         <ul class="log">
         </ul>
     </body>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
+    <script src="./bower_components/requirejs/require.js"></script>
+    <!-- <script src="./bower_components/lodash/lodash.min.js"></script> -->
     <script>
-        require(['dist/inspire-tree'], function(InspireTree) {
+        require.config({
+            paths: {
+                jquery: './bower_components/jquery/dist/jquery.min',
+                inspireTree: './dist/inspire-tree',
+                lodash: './bower_components/lodash/lodash.min'
+            }
+        });
+
+        require([
+            'jquery',
+            'lodash',
+            'inspireTree'
+        ], function($, _, InspireTree) {
             var sourceTree = new InspireTree({
                 target: '.source-tree',
                 data: $.getJSON('sample-data.json')
             });
+
+            $('input').on('keyup', _.debounce(function(event) {
+                if (this.value.length) {
+                    sourceTree.data.search(new RegExp(this.value, 'i'));
+                } else {
+                    sourceTree.data.clearSearch();
+                }
+            }, 500));
 
             console.log('api', sourceTree);
 

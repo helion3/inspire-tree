@@ -24,12 +24,8 @@ module.exports = function InspireDOM(api) {
     function createListItemNode(node) {
         var contents = [createTitleContainer(node)];
 
-        var shouldHide = false;
         if (!isEmpty(node.children)) {
             contents.push(createOrderedList(node.children));
-
-            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
-            shouldHide = (node.children.length === hiddenCount);
         }
 
         // Add classes for any enabled states
@@ -38,11 +34,6 @@ module.exports = function InspireDOM(api) {
                 keys.push(value[0]);
             }
         }).join('.');
-
-        // If we need to force hidden
-        if (classNames.indexOf('hidden') === -1 && shouldHide) {
-            classNames += '.hidden';
-        }
 
         if (classNames.length) {
             classNames = '.' + classNames;
@@ -78,12 +69,13 @@ module.exports = function InspireDOM(api) {
      * Creates an anchor around the node title.
      *
      * @param {object} node Node object.
+     * @param {boolean} hasVisibleChildren If this node has visible children.
      * @return {object} Anchor node.
      */
-    function createTitleAnchor(node) {
+    function createTitleAnchor(node, hasVisibleChildren) {
         var classNames = ['title', 'icon'];
 
-        classNames.push(node.iconClass || (isEmpty(node.children) ? 'icon-file-empty' : 'icon-folder'));
+        classNames.push(node.iconClass || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
 
         return h('a.' + classNames.join('.'), { onclick: function(event) {
             var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
@@ -111,11 +103,15 @@ module.exports = function InspireDOM(api) {
     function createTitleContainer(node) {
         var contents = [];
 
-        if (!isEmpty(node.children)) {
+        var l = node.children ? node.children.length : 0;
+        var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
+        var hasVisibleChildren = (l > 0 && hiddenCount < l);
+
+        if (hasVisibleChildren) {
             contents.push(createToggleAnchor(node));
         }
 
-        contents.push(createTitleAnchor(node));
+        contents.push(createTitleAnchor(node, hasVisibleChildren));
 
         return h('div', contents);
     };
