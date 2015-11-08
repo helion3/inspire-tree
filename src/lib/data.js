@@ -4,6 +4,7 @@
 var cloneDeep = require('lodash.cloneDeep');
 var cuid = require('cuid');
 var each = require('lodash.foreach');
+var get = require('lodash.get');
 var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
@@ -296,12 +297,20 @@ module.exports = function InspireData(api) {
      * @return {object} Node object.
      */
     data.expandNode = function(node) {
-        if (node.itree.state.collapsed && !isEmpty(node.children)) {
+        var isDynamic = get(api, 'config.dynamic');
+        var allow = (!isEmpty(node.children) || isDynamic);
+
+        if (allow && node.itree.state.collapsed) {
             node.itree.state.collapsed = false;
 
             api.events.emit('node.expanded', node);
 
-            rerender();
+            if (isDynamic) {
+                data.loadChildren(node);
+            }
+            else {
+                rerender();
+            }
         }
 
         return node;
@@ -473,41 +482,76 @@ module.exports = function InspireData(api) {
      * data.load($.getJSON('nodes.json'));
      */
     data.load = function(loader) {
-        return new Promise(function(resolve, reject) {
-            var doResolve = function() {
-                api.events.emit('data.loaded', model);
-                resolve(model);
-                api.dom.renderNodes(model);
-            };
+        var resolve = function(nodes) {
+            model = collectionToModel(nodes);
+            api.events.emit('data.loaded', model);
+            api.dom.renderNodes(model);
+        };
 
-            var doReject = function(err) {
-                api.events.emit('data.loaderror', err);
-                reject(err);
-            };
+        var reject = function(err) {
+            api.events.emit('data.loaderror', err);
+            throw err;
+        };
 
-            if (isArray(loader)) {
-                model = collectionToModel(loader);
-                doResolve();
+        // Data given already as an array
+        if (isArray(loader)) {
+            resolve(loader);
+        }
+
+        // Data loader requires a caller/callback
+        else if (isFunction(loader)) {
+            loader(null, resolve, reject);
+        }
+
+        // Data loader is likely a promise
+        else if (isObject(loader)) {
+            // Promise
+            if (isFunction(loader.then)) {
+                loader.then(resolve);
             }
 
-            else if (typeof loader === 'object') {
-                // Promise
-                if (isFunction(loader.then)) {
-                    loader.then(function(results) {
-                        model = collectionToModel(results);
-                        doResolve();
-                    });
-                }
-
-                // jQuery promises use "error".
-                if (isFunction(loader.error)) {
-                    loader.error(doReject);
-                }
-                else if (isFunction(loader.catch)) {
-                    loader.catch(doReject);
-                }
+            // jQuery promises use "error".
+            if (isFunction(loader.error)) {
+                loader.error(reject);
             }
-        });
+            else if (isFunction(loader.catch)) {
+                loader.catch(reject);
+            }
+        }
+
+        else {
+            throw new Error('Invalid data loader.');
+        }
+    };
+
+    /**
+     * Initiate a dynamic load of children for a given node.
+     *
+     * This requires `opts.data` to be a function which accepts
+     * three arguments: node, resolve, reject.
+     *
+     * Use the `node` to filter results.
+     *
+     * On load success, pass the result array to `resolve`.
+     * On error, pass the Error to `reject`.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    data.loadChildren = function(node) {
+        var isDynamic = get(api, 'config.dynamic');
+        if (isDynamic) {
+            api.config.data(
+                node,
+                function resolver(results) {
+                    node.children = collectionToModel(results);
+                    rerender();
+                },
+                function rejecter(err) {
+                    api.events.emit('data.loaderror', err);
+                }
+            );
+        }
     };
 
     /**

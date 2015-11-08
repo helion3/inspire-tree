@@ -16,6 +16,7 @@ module.exports = function InspireTree(opts) {
 
     var api = new (function InspireApi() {});
     api.events = new InspireEvents();
+    api.config = opts;
 
     var data = api.data = new InspireData(api);
     var dom = api.dom = new InspireDOM(api);

@@ -4,6 +4,7 @@
 var createElement = require('virtual-dom/create-element');
 var diff = require('virtual-dom/diff');
 var filter = require('lodash.filter');
+var get = require('lodash.get');
 var h = require('virtual-dom/h');
 var isEmpty = require('lodash.isempty');
 var isObject = require('lodash.isobject');
@@ -121,9 +122,12 @@ module.exports = function InspireDOM(api) {
     function createTitleContainer(node) {
         var contents = [];
 
-        var l = node.children ? node.children.length : 0;
-        var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
-        var hasVisibleChildren = (l > 0 && hiddenCount < l);
+        var hasVisibleChildren = true;
+        if (!get(api, 'config.dynamic')) {
+            var l = node.children ? node.children.length : 0;
+            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
+            hasVisibleChildren = (l > 0 && hiddenCount < l);
+        }
 
         if (hasVisibleChildren) {
             contents.push(createToggleAnchor(node));

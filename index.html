@@ -2,64 +2,67 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>InspireTree</title>
+        <title>InspireTree - Inspired Javascript Tree UI Component</title>
         <link rel="stylesheet" href="dist/inspire-tree.css" />
         <style>
             body {
                 background: #eee;
+                font-family: sans-serif;
             }
 
-            input {
-                font-size: 14px;
-                padding: 5px;
-                width: 290px
+            article {
+                margin: 0 auto;
+                width: 960px;
+            }
+
+            section {
+                overflow: hidden;
+            }
+
+            .wrap, .log {
+                float: left;
+                width: 48%;
+            }
+
+            .log {
+                float: right;
+                max-height: 500px;
+                overflow: auto;
+            }
+
+            .log ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
             }
 
             .inspire-tree {
                 background: #fff;
                 border: 1px solid #bbb;
                 border-radius: 2px;
+                margin-bottom: 20px;
                 min-height: 400px;
-                width: 300px;
-            }
-
-            body > div {
-                margin-bottom: 15px;
-                overflow: hidden;
-            }
-
-            body > div > div {
-                float: left;
-            }
-
-            .toolbar {
-                width: 50px;
-            }
-
-            .toolbar button {
-                display: block;
-                margin: 0 auto;
             }
         </style>
     </head>
     <body>
-        <div>
-            <input type="text" placeholder="Search">
-        </div>
-        <div>
-            <div class="source-tree"></div>
-            <div class="toolbar">
-                <button class="move-one">&gt;</button>
-                <button class="revert-one">&lt;</button>
-                <button class="move-all">&gt;&gt;</button>
-                <button class="revert-all">&lt;&lt;</button>
-            </div>
-            <div class="dest-tree"></div>
-        </div>
-        <button class="log-selected">Log Selected</button>
-        <button class="clear-selected">Clear Selected</button>
-        <ul class="log">
-        </ul>
+        <article>
+            <header>
+                <h1>Inspire Tree</h1>
+                <p>Inspire Tree is a highly efficient javascript-based UI tree component, built for the modern web.</p>
+                <p>Other demos: <a href="demos/dynamic-children.html">Dynamic Children</a>, <a href="demos/bucket.html">Bucket</a>.
+            </header>
+            <section>
+                <div class="wrap">
+                    <div class="tree"></div>
+                    <button class="log-selected">Log Selected</button>
+                    <button class="clear-selected">Clear Selected</button>
+                </div>
+                <div class="log">
+                    <ul></ul>
+                </div>
+            </section>
+        </article>
     </body>
     <script src="./bower_components/requirejs/require.js"></script>
     <script>
@@ -76,68 +79,25 @@
             'lodash',
             'inspireTree'
         ], function($, _, InspireTree) {
-            var sourceTree = new InspireTree({
-                target: '.source-tree',
-                data: $.getJSON('sample-data.json')
+            var tree = new InspireTree({
+                target: '.tree',
+                data: $.getJSON('sample-data/full.json')
             });
 
-            $('input').on('keyup', _.debounce(function(event) {
-                if (this.value.length) {
-                    sourceTree.data.search(new RegExp(this.value, 'i'));
-                } else {
-                    sourceTree.data.clearSearch();
-                }
-            }, 500));
+            console.log('api', tree);
 
-            console.log('api', sourceTree);
-
-            $log = $('.log');
-            sourceTree.events.onAny(function() {
-                $log.append('<li>captured <span>' + this.event + '</span></li>')
+            $log = $('.log > ul');
+            tree.events.onAny(function() {
+                $log.prepend('<li>captured <span>' + this.event + '</span></li>')
                 console.log(this.event, arguments);
             });
 
-            var destTree = new InspireTree({
-                target: '.dest-tree',
-                data: []
-            });
-
-            $('.move-one').on('click', function() {
-                var selected = sourceTree.data.getSelected();
-                sourceTree.data.hideNodes(selected);
-
-                var selectedHierarchy = sourceTree.data.getSelected(null, true);
-                destTree.data.addNodes(selectedHierarchy);
-            });
-
-            sourceTree.events.on('node.dblclick', function(event, node) {
-                destTree.data.addNode(node);
-            });
-
-            $('.revert-one').on('click', function() {
-                var selected = destTree.data.getSelected();
-                destTree.data.hideNodes(selected);
-
-                var selectedHierarchy = destTree.data.getSelected(null, true);
-                sourceTree.data.addNodes(selectedHierarchy);
-            });
-
-            $('.move-all').on('click', function() {
-                var nodes = sourceTree.data.getNodes();
-                sourceTree.data.sendNodesTo(nodes, destTree);
-            });
-
-            $('.revert-all').on('click', function() {
-                var nodes = destTree.data.getNodes();
-                destTree.data.sendNodesTo(nodes, sourceTree);
-            });
-
             $('.log-selected').on('click', function() {
-                console.log(sourceTree.data.getSelected());
+                console.log(tree.data.getSelected());
             });
 
             $('.clear-selected').on('click', function() {
-                sourceTree.data.deselectAll();
+                tree.data.deselectAll();
             });
         });
     </script>

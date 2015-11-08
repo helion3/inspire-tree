@@ -72,6 +72,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var api = new (function InspireApi() {});
 	    api.events = new InspireEvents();
+	    api.config = opts;
 
 	    var data = api.data = new InspireData(api);
 	    var dom = api.dom = new InspireDOM(api);
@@ -462,6 +463,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var cloneDeep = __webpack_require__(6);
 	var cuid = __webpack_require__(17);
 	var each = __webpack_require__(18);
+	var get = __webpack_require__(1);
 	var isArray = __webpack_require__(4);
 	var isEmpty = __webpack_require__(20);
 	var isFunction = __webpack_require__(21);
@@ -754,12 +756,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {object} Node object.
 	     */
 	    data.expandNode = function(node) {
-	        if (node.itree.state.collapsed && !isEmpty(node.children)) {
+	        var isDynamic = get(api, 'config.dynamic');
+	        var allow = (!isEmpty(node.children) || isDynamic);
+
+	        if (allow && node.itree.state.collapsed) {
 	            node.itree.state.collapsed = false;
 
 	            api.events.emit('node.expanded', node);
 
-	            rerender();
+	            if (isDynamic) {
+	                data.loadChildren(node);
+	            }
+	            else {
+	                rerender();
+	            }
 	        }
 
 	        return node;
@@ -931,41 +941,76 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * data.load($.getJSON('nodes.json'));
 	     */
 	    data.load = function(loader) {
-	        return new Promise(function(resolve, reject) {
-	            var doResolve = function() {
-	                api.events.emit('data.loaded', model);
-	                resolve(model);
-	                api.dom.renderNodes(model);
-	            };
+	        var resolve = function(nodes) {
+	            model = collectionToModel(nodes);
+	            api.events.emit('data.loaded', model);
+	            api.dom.renderNodes(model);
+	        };
 
-	            var doReject = function(err) {
-	                api.events.emit('data.loaderror', err);
-	                reject(err);
-	            };
+	        var reject = function(err) {
+	            api.events.emit('data.loaderror', err);
+	            throw err;
+	        };
 
-	            if (isArray(loader)) {
-	                model = collectionToModel(loader);
-	                doResolve();
+	        // Data given already as an array
+	        if (isArray(loader)) {
+	            resolve(loader);
+	        }
+
+	        // Data loader requires a caller/callback
+	        else if (isFunction(loader)) {
+	            loader(null, resolve, reject);
+	        }
+
+	        // Data loader is likely a promise
+	        else if (isObject(loader)) {
+	            // Promise
+	            if (isFunction(loader.then)) {
+	                loader.then(resolve);
 	            }
 
-	            else if (typeof loader === 'object') {
-	                // Promise
-	                if (isFunction(loader.then)) {
-	                    loader.then(function(results) {
-	                        model = collectionToModel(results);
-	                        doResolve();
-	                    });
-	                }
-
-	                // jQuery promises use "error".
-	                if (isFunction(loader.error)) {
-	                    loader.error(doReject);
-	                }
-	                else if (isFunction(loader.catch)) {
-	                    loader.catch(doReject);
-	                }
+	            // jQuery promises use "error".
+	            if (isFunction(loader.error)) {
+	                loader.error(reject);
 	            }
-	        });
+	            else if (isFunction(loader.catch)) {
+	                loader.catch(reject);
+	            }
+	        }
+
+	        else {
+	            throw new Error('Invalid data loader.');
+	        }
+	    };
+
+	    /**
+	     * Initiate a dynamic load of children for a given node.
+	     *
+	     * This requires `opts.data` to be a function which accepts
+	     * three arguments: node, resolve, reject.
+	     *
+	     * Use the `node` to filter results.
+	     *
+	     * On load success, pass the result array to `resolve`.
+	     * On error, pass the Error to `reject`.
+	     *
+	     * @param {object} node Node object.
+	     * @return {void}
+	     */
+	    data.loadChildren = function(node) {
+	        var isDynamic = get(api, 'config.dynamic');
+	        if (isDynamic) {
+	            api.config.data(
+	                node,
+	                function resolver(results) {
+	                    node.children = collectionToModel(results);
+	                    rerender();
+	                },
+	                function rejecter(err) {
+	                    api.events.emit('data.loaderror', err);
+	                }
+	            );
+	        }
 	    };
 
 	    /**
@@ -4216,6 +4261,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var createElement = __webpack_require__(32);
 	var diff = __webpack_require__(45);
 	var filter = __webpack_require__(50);
+	var get = __webpack_require__(1);
 	var h = __webpack_require__(53);
 	var isEmpty = __webpack_require__(20);
 	var isObject = __webpack_require__(64);
@@ -4333,9 +4379,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function createTitleContainer(node) {
 	        var contents = [];
 
-	        var l = node.children ? node.children.length : 0;
-	        var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
-	        var hasVisibleChildren = (l > 0 && hiddenCount < l);
+	        var hasVisibleChildren = true;
+	        if (!get(api, 'config.dynamic')) {
+	            var l = node.children ? node.children.length : 0;
+	            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
+	            hasVisibleChildren = (l > 0 && hiddenCount < l);
+	        }
 
 	        if (hasVisibleChildren) {
 	            contents.push(createToggleAnchor(node));

@@ -1,7 +1,7 @@
 {
   "name": "inspire-tree",
   "version": "0.0.1",
-  "description": "Inspired JavaScript Tree UI Element",
+  "description": "Inspired JavaScript Tree UI Component",
   "repository": "https://github.com/helion3/inspire-tree",
   "dependencies": {},
   "devDependencies": {
