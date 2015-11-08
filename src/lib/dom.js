@@ -112,7 +112,7 @@ module.exports = function InspireDOM(api) {
         var contents = [];
 
         if (!isEmpty(node.children)) {
-            contents.push(createToggleAnchor());
+            contents.push(createToggleAnchor(node));
         }
 
         contents.push(createTitleAnchor(node));
@@ -123,10 +123,13 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates an anchor used for expanding and collapsing a node.
      *
+     * @param {object} node Node object.
      * @return {object} Anchor node.
      */
-    function createToggleAnchor() {
-        return h('a.toggle.icon.icon-caret', { onclick: function(event) {
+    function createToggleAnchor(node) {
+        var caret = (node.itree.state.collapsed ? '.icon-caret' : '.icon-caret-down');
+
+        return h('a.toggle.icon' + caret, { onclick: function(event) {
             var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
             var node = api.data.getNodeById(uid);
 

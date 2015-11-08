@@ -26,6 +26,10 @@
 .icon-caret:before {
     content: '\e800';
 }
+.icon-caret-down:before {
+    @extend .icon-caret:before;
+    transform: rotate(90deg);
+}
 .icon-file-empty:before {
     content: '\e801';
 }

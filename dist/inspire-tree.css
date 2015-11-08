@@ -17,8 +17,13 @@
   speak: none;
   text-transform: none; }
 
-.icon-caret:before {
+.icon-caret:before, .icon-caret-down:before {
   content: '\E800'; }
+
+.icon-caret-down:before {
+  -webkit-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+          transform: rotate(90deg); }
 
 .icon-file-empty:before {
   content: '\E801'; }
