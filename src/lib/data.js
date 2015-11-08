@@ -548,7 +548,9 @@ module.exports = function InspireData(api) {
                     rerender();
                 },
                 function rejecter(err) {
+                    node.children = [];
                     api.events.emit('data.loaderror', err);
+                    rerender();
                 }
             );
         }

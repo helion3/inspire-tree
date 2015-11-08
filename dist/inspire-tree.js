@@ -1007,7 +1007,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    rerender();
 	                },
 	                function rejecter(err) {
+	                    node.children = [];
 	                    api.events.emit('data.loaderror', err);
+	                    rerender();
 	                }
 	            );
 	        }
@@ -4263,6 +4265,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var filter = __webpack_require__(50);
 	var get = __webpack_require__(1);
 	var h = __webpack_require__(53);
+	var isArray = __webpack_require__(4);
 	var isEmpty = __webpack_require__(20);
 	var isObject = __webpack_require__(64);
 	var isString = __webpack_require__(22);
@@ -4272,6 +4275,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function InspireDOM(api) {
 	    var $target;
+
+	    /**
+	     * Creates a list item node when a dynamic node returns no children.
+	     *
+	     * Cannot be clicked or expanded.
+	     *
+	     * @return {object} List Item node.
+	     */
+	    function createEmptyListItemNode() {
+	        return h('ol', [
+	            h('li', [
+	                h('span.title.icon.icon-file-empty.empty', ['No Results'])
+	            ])
+	        ]);
+	    };
 
 	    /**
 	     * Creates a list item node for a specific data node.
@@ -4287,6 +4305,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (!isEmpty(node.children)) {
 	            contents.push(createOrderedList(node.children));
+	        }
+	        else if (get(api, 'config.dynamic') && isArray(node.children)) {
+	            contents.push(createEmptyListItemNode());
 	        }
 
 	        // Add classes for any enabled states

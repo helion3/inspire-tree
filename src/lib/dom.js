@@ -6,6 +6,7 @@ var diff = require('virtual-dom/diff');
 var filter = require('lodash.filter');
 var get = require('lodash.get');
 var h = require('virtual-dom/h');
+var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
@@ -15,6 +16,21 @@ var transform = require('lodash.transform');
 
 module.exports = function InspireDOM(api) {
     var $target;
+
+    /**
+     * Creates a list item node when a dynamic node returns no children.
+     *
+     * Cannot be clicked or expanded.
+     *
+     * @return {object} List Item node.
+     */
+    function createEmptyListItemNode() {
+        return h('ol', [
+            h('li', [
+                h('span.title.icon.icon-file-empty.empty', ['No Results'])
+            ])
+        ]);
+    };
 
     /**
      * Creates a list item node for a specific data node.
@@ -30,6 +46,9 @@ module.exports = function InspireDOM(api) {
 
         if (!isEmpty(node.children)) {
             contents.push(createOrderedList(node.children));
+        }
+        else if (get(api, 'config.dynamic') && isArray(node.children)) {
+            contents.push(createEmptyListItemNode());
         }
 
         // Add classes for any enabled states
