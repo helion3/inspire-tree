@@ -122,9 +122,6 @@ module.exports = function InspireDOM(api) {
             else {
                 api.data.collapseNode(node);
             }
-
-            // Node
-            api.events.emit('node.toggled', event, node);
         } });
     }
 
