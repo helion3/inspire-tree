@@ -51,6 +51,8 @@
             <div class="toolbar">
                 <button class="move-one">&gt;</button>
                 <button class="revert-one">&lt;</button>
+                <button class="move-all">&gt;&gt;</button>
+                <button class="revert-all">&lt;&lt;</button>
             </div>
             <div class="dest-tree"></div>
         </div>
@@ -108,12 +110,25 @@
                 destTree.data.addNodes(selectedHierarchy);
             });
 
+            sourceTree.events.on('node.dblclick', function(event, node) {
+                destTree.data.addNode(node);
+            });
+
             $('.revert-one').on('click', function() {
                 var selected = destTree.data.getSelected();
                 destTree.data.hideNodes(selected);
 
                 var selectedHierarchy = destTree.data.getSelected(null, true);
                 sourceTree.data.addNodes(selectedHierarchy);
+            });
+
+            $('.move-all').on('click', function() {
+                var nodes = sourceTree.data.getNodes();
+                sourceTree.data.hideNodes(nodes);
+
+                var exported = sourceTree.data.exportNodes(nodes);
+                console.log(exported);
+                destTree.data.addNodes(exported);
             });
 
             $('.log-selected').on('click', function() {

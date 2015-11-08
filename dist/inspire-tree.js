@@ -465,6 +465,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var isArray = __webpack_require__(4);
 	var isEmpty = __webpack_require__(20);
 	var isFunction = __webpack_require__(21);
+	var isObject = __webpack_require__(64);
 	var isRegExp = __webpack_require__(80);
 	var isString = __webpack_require__(22);
 	var map = __webpack_require__(23);
@@ -581,20 +582,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Iterate nodes recursively.
 	     *
-	     * @param {array} array Node array.
+	     * @param {array|object} collection Array of nodes or node object.
 	     * @param {function} iteratee Iteratee function.
 	     * @return {array} Resulting node array.
 	     */
-	    function recurse(array, iteratee) {
-	        each(array, function(item, key) {
-	            array[key] = iteratee(item, key);
+	    function recurse(collection, iteratee) {
+	        // Recurse each element in this array
+	        if (isArray(collection)) {
+	            each(collection, function(element, i) {
+	                collection[i] = recurse(element, iteratee);
+	            });
+	        }
 
-	            if (isArray(item.children) && !isEmpty(item.children)) {
-	                item.children = recurse(item.children, iteratee);
+	        else if (isObject(collection)) {
+	            collection = iteratee(collection);
+
+	            // Recurse children
+	            if (isArray(collection.children) && !isEmpty(collection.children)) {
+	                collection.children = recurse(collection.children, iteratee);
 	            }
-	        });
+	        }
 
-	        return array;
+	        return collection;
 	    };
 
 	    /**
@@ -757,6 +766,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Clones an array of node objects and removes any
+	     * itree instance information/state.
+	     *
+	     * @param {array} nodes Array of node objects.
+	     * @return {array} Cloned/modified node objects.
+	     */
+	    data.exportNodes = function(nodes) {
+	        var nodeClones = cloneDeep(nodes);
+
+	        recurse(nodeClones, function(node) {
+	            node.itree = null;
+	            return node;
+	        });
+
+	        return nodeClones;
+	    };
+
+	    /**
 	     * Flattens a hierarchy, returning only node(s) with the
 	     * expected state, for operations which must exclude parents.
 	     *
@@ -780,6 +807,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return flat;
+	    };
+
+	    /**
+	     * Get all nodes in a tree.
+	     *
+	     * @return {array} Array of node objects.
+	     */
+	    data.getNodes = function() {
+	        return model;
 	    };
 
 	    /**
@@ -817,15 +853,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                if (nodeClone) {
-	                    nodeClone.itree = null;
-
-	                    recurse(nodeClone.children, function(elem, key) {
-	                        return (key === 'itree' ? null : elem);
-	                    });
-
 	                    selected.push(nodeClone);
 	                }
 	            });
+
+	            selected = data.exportNodes(selected);
 	        }
 
 	        return selected;
