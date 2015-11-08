@@ -230,7 +230,7 @@ module.exports = function InspireData(api) {
      * @return {object} Node object.
      */
     data.collapseNode = function(node) {
-        if (!node.itree.state.collapsed) {
+        if (!node.itree.state.collapsed && !isEmpty(node.children)) {
             node.itree.state.collapsed = true;
 
             api.events.emit('node.collapsed', node);
@@ -287,7 +287,7 @@ module.exports = function InspireData(api) {
      * @return {object} Node object.
      */
     data.expandNode = function(node) {
-        if (node.itree.state.collapsed) {
+        if (node.itree.state.collapsed && !isEmpty(node.children)) {
             node.itree.state.collapsed = false;
 
             api.events.emit('node.expanded', node);

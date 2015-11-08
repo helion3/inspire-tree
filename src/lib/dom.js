@@ -77,21 +77,39 @@ module.exports = function InspireDOM(api) {
 
         classNames.push(node.iconClass || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
 
-        return h('a.' + classNames.join('.'), { onclick: function(event) {
-            var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
-            var node = api.data.getNodeById(uid);
+        return h('a.' + classNames.join('.'), {
+            onclick: function(event) {
+                var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
+                var node = api.data.getNodeById(uid);
 
-            // Toggle selected state
-            if (node.itree.state.selected) {
-                api.data.deselectNode(node);
-            }
-            else {
-                api.data.selectNode(node);
-            }
+                // Toggle selected state
+                if (node.itree.state.selected) {
+                    api.data.deselectNode(node);
+                }
+                else {
+                    api.data.selectNode(node);
+                }
 
-            // Emit
-            api.events.emit('node.click', event, node);
-        } }, [node.title]);
+                // Emit
+                api.events.emit('node.click', event, node);
+            },
+
+            ondblclick: function(event) {
+                var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
+                var node = api.data.getNodeById(uid);
+
+                // Toggle selected state
+                if (node.itree.state.collapsed) {
+                    api.data.expandNode(node);
+                }
+                else {
+                    api.data.collapseNode(node);
+                }
+
+                // Emit
+                api.events.emit('node.dblclick', event, node);
+            }
+        }, [node.title]);
     }
 
     /**
