@@ -11,8 +11,15 @@
   },
   "main": "dist/inspire-tree.min.js",
   "ignore": [
+      "demos"
+      "fonts",
+      "hooks",
+      "sample-data",
+      "src",
       "test",
-      ".*"
+      ".*",
+      "karma*",
+      "webpack*"
   ],
   "devDependencies": [],
   "private": false

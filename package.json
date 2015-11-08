@@ -47,5 +47,11 @@
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
     "lint": "eslint src *.js"
   },
-  "main": "dist/inspire-tree.js"
+  "main": "dist/inspire-tree.js",
+  "files": [
+      "dist",
+      "*.json",
+      "LICENSE",
+      "README.md"
+  ]
 }
