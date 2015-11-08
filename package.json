@@ -25,6 +25,8 @@
     "lodash.isarray": "^3.0.4",
     "lodash.isempty": "^3.0.4",
     "lodash.isfunction": "^3.0.6",
+    "lodash.isobject": "^3.0.2",
+    "lodash.isstring": "^3.0.1",
     "lodash.map": "^3.1.4",
     "lodash.pairs": "^3.0.1",
     "lodash.transform": "^3.0.4",

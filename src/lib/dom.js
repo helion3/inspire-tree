@@ -6,6 +6,8 @@ var diff = require('virtual-dom/diff');
 var filter = require('lodash.filter');
 var h = require('virtual-dom/h');
 var isEmpty = require('lodash.isempty');
+var isObject = require('lodash.isobject');
+var isString = require('lodash.isstring');
 var pairs = require('lodash.pairs');
 var patch = require('virtual-dom/patch');
 var transform = require('lodash.transform');
@@ -141,23 +143,30 @@ module.exports = function InspireDOM(api) {
     var dom = this;
 
     /**
-     * Queries the DOM to link with our target element.
+     * Attaches to the DOM element for rendering.
      *
-     * @param {string} selector Query selector.
-     * @return {object} Promise
+     * @param {HTMLElement} target Element, selector, or jQuery-like object.
+     * @return {void}
      */
-    dom.linkTarget = function(selector) {
-        return new Promise(function(resolve, reject) {
-            var match = document.querySelector(selector);
+    dom.attach = function(target) {
+        if (target instanceof HTMLElement) {
+            $target = target;
+        }
+        else if (isObject(target) && isObject(target[0])) {
+            $target = target[0];
+        }
+        else if (isString(target)) {
+            var match = document.querySelector(target);
             if (match) {
-                resolve(match);
                 $target = match;
-                $target.className += ' inspire-tree';
             }
-            else {
-                reject(new Error('Invalid selector - no match found.'));
-            }
-        });
+        }
+
+        if (!$target) {
+            throw new Error('No valid element to attach to.');
+        }
+
+        $target.className += ' inspire-tree';
     };
 
     // Cache our root node, so we can patch re-render in the future.

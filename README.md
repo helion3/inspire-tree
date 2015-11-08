@@ -18,7 +18,7 @@ At a minimum you must provide a selector for a target DOM element and data.
 
 ```js
 var tree = new InspireTree({
-    selector: '.source-tree',
+    target: '.tree',
     data: $.getJSON('sample-data.json')
 });
 ```

@@ -6,26 +6,22 @@ var InspireData = require('./lib/data');
 var InspireDOM = require('./lib/dom');
 var InspireEvents = require('./lib/events');
 
-// Polyfills
-require('es6-promise').polyfill();
-
 // CSS
 require('./tree.scss');
 
 module.exports = function InspireTree(opts) {
-    if (!get(opts, 'selector')) {
-        throw new TypeError('Selector is required.');
+    if (!get(opts, 'target')) {
+        throw new TypeError('Property "target" is required, either an element or a selector.');
     }
 
     var api = new (function InspireApi() {});
+    api.events = new InspireEvents();
+
     var data = api.data = new InspireData(api);
-    var events = api.events = new InspireEvents();
     var dom = api.dom = new InspireDOM(api);
 
-    // Query the DOM and connect to our target element
-    dom.linkTarget(opts.selector).catch(function(err) {
-        events.emit('error', err);
-    });
+    // Connect to our target DOM element
+    dom.attach(opts.target);
 
     // Load initial user data
     data.load(opts.data);

@@ -48,7 +48,7 @@
     <script>
         require(['dist/inspire-tree'], function(InspireTree) {
             var sourceTree = new InspireTree({
-                selector: '.source-tree',
+                target: '.source-tree',
                 data: $.getJSON('sample-data.json')
             });
 
@@ -59,7 +59,7 @@
             });
 
             var destTree = new InspireTree({
-                selector: '.dest-tree',
+                target: '.dest-tree',
                 data: []
             });
 
