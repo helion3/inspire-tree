@@ -15,3 +15,4 @@ node_modules/
 build
 coverage
 bower_components
+npm-debug.log

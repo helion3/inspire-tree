@@ -3,8 +3,8 @@
 // Libs
 var createElement = require('virtual-dom/create-element');
 var diff = require('virtual-dom/diff');
+var filter = require('lodash.filter');
 var h = require('virtual-dom/h');
-var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var pairs = require('lodash.pairs');
 var patch = require('virtual-dom/patch');
@@ -22,8 +22,12 @@ module.exports = function InspireDOM(api) {
     function createListItemNode(node) {
         var contents = [createTitleContainer(node)];
 
-        if (isArray(node.children) && !isEmpty(node.children)) {
+        var shouldHide = false;
+        if (!isEmpty(node.children)) {
             contents.push(createOrderedList(node.children));
+
+            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
+            shouldHide = (node.children.length === hiddenCount);
         }
 
         // Add classes for any enabled states
@@ -32,6 +36,11 @@ module.exports = function InspireDOM(api) {
                 keys.push(value[0]);
             }
         }).join('.');
+
+        // If we need to force hidden
+        if (classNames.indexOf('hidden') === -1 && shouldHide) {
+            classNames += '.hidden';
+        }
 
         if (classNames.length) {
             classNames = '.' + classNames;

@@ -314,7 +314,9 @@ module.exports = function InspireData(api) {
                 }
 
                 if (nodeClone) {
-                    recurse(nodeClone, function(elem, key) {
+                    nodeClone.itree = null;
+
+                    recurse(nodeClone.children, function(elem, key) {
                         return (key === 'itree' ? null : elem);
                     });
 

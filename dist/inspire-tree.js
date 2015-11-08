@@ -60,13 +60,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var get = __webpack_require__(1);
 	var InspireData = __webpack_require__(5);
 	var InspireDOM = __webpack_require__(31);
-	var InspireEvents = __webpack_require__(66);
+	var InspireEvents = __webpack_require__(69);
 
 	// Polyfills
-	__webpack_require__(68).polyfill();
+	__webpack_require__(71).polyfill();
 
 	// CSS
-	__webpack_require__(73);
+	__webpack_require__(76);
 
 	module.exports = function InspireTree(opts) {
 	    if (!get(opts, 'selector')) {
@@ -786,7 +786,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                if (nodeClone) {
-	                    recurse(nodeClone, function(elem, key) {
+	                    nodeClone.itree = null;
+
+	                    recurse(nodeClone.children, function(elem, key) {
 	                        return (key === 'itree' ? null : elem);
 	                    });
 
@@ -4072,11 +4074,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Libs
 	var createElement = __webpack_require__(32);
 	var diff = __webpack_require__(45);
-	var h = __webpack_require__(50);
-	var isArray = __webpack_require__(4);
+	var filter = __webpack_require__(50);
+	var h = __webpack_require__(53);
 	var isEmpty = __webpack_require__(20);
 	var pairs = __webpack_require__(28);
-	var patch = __webpack_require__(61);
+	var patch = __webpack_require__(64);
 	var transform = __webpack_require__(29);
 
 	module.exports = function InspireDOM(api) {
@@ -4091,8 +4093,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function createListItemNode(node) {
 	        var contents = [createTitleContainer(node)];
 
-	        if (isArray(node.children) && !isEmpty(node.children)) {
+	        var shouldHide = false;
+	        if (!isEmpty(node.children)) {
 	            contents.push(createOrderedList(node.children));
+
+	            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
+	            shouldHide = (node.children.length === hiddenCount);
 	        }
 
 	        // Add classes for any enabled states
@@ -4101,6 +4107,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                keys.push(value[0]);
 	            }
 	        }).join('.');
+
+	        // If we need to force hidden
+	        if (classNames.indexOf('hidden') === -1 && shouldHide) {
+	            classNames += '.hidden';
+	        }
 
 	        if (classNames.length) {
 	            classNames = '.' + classNames;
@@ -5112,30 +5123,181 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var h = __webpack_require__(51)
+	/**
+	 * lodash 3.1.1 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+	var arrayFilter = __webpack_require__(51),
+	    baseCallback = __webpack_require__(25),
+	    baseFilter = __webpack_require__(52),
+	    isArray = __webpack_require__(4);
+
+	/**
+	 * Iterates over elements of `collection`, returning an array of all elements
+	 * `predicate` returns truthy for. The predicate is bound to `thisArg` and
+	 * invoked with three arguments: (value, index|key, collection).
+	 *
+	 * If a property name is provided for `predicate` the created `_.property`
+	 * style callback returns the property value of the given element.
+	 *
+	 * If a value is also provided for `thisArg` the created `_.matchesProperty`
+	 * style callback returns `true` for elements that have a matching property
+	 * value, else `false`.
+	 *
+	 * If an object is provided for `predicate` the created `_.matches` style
+	 * callback returns `true` for elements that have the properties of the given
+	 * object, else `false`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @alias select
+	 * @category Collection
+	 * @param {Array|Object|string} collection The collection to iterate over.
+	 * @param {Function|Object|string} [predicate=_.identity] The function invoked
+	 *  per iteration.
+	 * @param {*} [thisArg] The `this` binding of `predicate`.
+	 * @returns {Array} Returns the new filtered array.
+	 * @example
+	 *
+	 * _.filter([4, 5, 6], function(n) {
+	 *   return n % 2 == 0;
+	 * });
+	 * // => [4, 6]
+	 *
+	 * var users = [
+	 *   { 'user': 'barney', 'age': 36, 'active': true },
+	 *   { 'user': 'fred',   'age': 40, 'active': false }
+	 * ];
+	 *
+	 * // using the `_.matches` callback shorthand
+	 * _.pluck(_.filter(users, { 'age': 36, 'active': true }), 'user');
+	 * // => ['barney']
+	 *
+	 * // using the `_.matchesProperty` callback shorthand
+	 * _.pluck(_.filter(users, 'active', false), 'user');
+	 * // => ['fred']
+	 *
+	 * // using the `_.property` callback shorthand
+	 * _.pluck(_.filter(users, 'active'), 'user');
+	 * // => ['barney']
+	 */
+	function filter(collection, predicate, thisArg) {
+	  var func = isArray(collection) ? arrayFilter : baseFilter;
+	  predicate = baseCallback(predicate, thisArg, 3);
+	  return func(collection, predicate);
+	}
+
+	module.exports = filter;
+
+
+/***/ },
+/* 51 */
+/***/ function(module, exports) {
+
+	/**
+	 * lodash 3.0.0 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.7.0 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+
+	/**
+	 * A specialized version of `_.filter` for arrays without support for callback
+	 * shorthands or `this` binding.
+	 *
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} predicate The function invoked per iteration.
+	 * @returns {Array} Returns the new filtered array.
+	 */
+	function arrayFilter(array, predicate) {
+	  var index = -1,
+	      length = array.length,
+	      resIndex = -1,
+	      result = [];
+
+	  while (++index < length) {
+	    var value = array[index];
+	    if (predicate(value, index, array)) {
+	      result[++resIndex] = value;
+	    }
+	  }
+	  return result;
+	}
+
+	module.exports = arrayFilter;
+
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * lodash 3.0.0 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.7.0 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+	var baseEach = __webpack_require__(19);
+
+	/**
+	 * The base implementation of `_.filter` without support for callback
+	 * shorthands or `this` binding.
+	 *
+	 * @private
+	 * @param {Array|Object|string} collection The collection to iterate over.
+	 * @param {Function} predicate The function invoked per iteration.
+	 * @returns {Array} Returns the new filtered array.
+	 */
+	function baseFilter(collection, predicate) {
+	  var result = [];
+	  baseEach(collection, function(value, index, collection) {
+	    if (predicate(value, index, collection)) {
+	      result.push(value);
+	    }
+	  });
+	  return result;
+	}
+
+	module.exports = baseFilter;
+
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var h = __webpack_require__(54)
 
 	module.exports = h
 
 
 /***/ },
-/* 51 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var isArray = __webpack_require__(47);
 
-	var VNode = __webpack_require__(52);
-	var VText = __webpack_require__(53);
+	var VNode = __webpack_require__(55);
+	var VText = __webpack_require__(56);
 	var isVNode = __webpack_require__(39);
 	var isVText = __webpack_require__(41);
 	var isWidget = __webpack_require__(42);
 	var isHook = __webpack_require__(38);
 	var isVThunk = __webpack_require__(44);
 
-	var parseTag = __webpack_require__(54);
-	var softSetHook = __webpack_require__(56);
-	var evHook = __webpack_require__(57);
+	var parseTag = __webpack_require__(57);
+	var softSetHook = __webpack_require__(59);
+	var evHook = __webpack_require__(60);
 
 	module.exports = h;
 
@@ -5261,7 +5423,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 52 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var version = __webpack_require__(40)
@@ -5339,7 +5501,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 53 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var version = __webpack_require__(40)
@@ -5355,12 +5517,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 54 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var split = __webpack_require__(55);
+	var split = __webpack_require__(58);
 
 	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
 	var notClassId = /^\.|#/;
@@ -5415,7 +5577,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 55 */
+/* 58 */
 /***/ function(module, exports) {
 
 	/*!
@@ -5527,7 +5689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 56 */
+/* 59 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5550,12 +5712,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 57 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EvStore = __webpack_require__(58);
+	var EvStore = __webpack_require__(61);
 
 	module.exports = EvHook;
 
@@ -5583,12 +5745,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 58 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var OneVersionConstraint = __webpack_require__(59);
+	var OneVersionConstraint = __webpack_require__(62);
 
 	var MY_VERSION = '7';
 	OneVersionConstraint('ev-store', MY_VERSION);
@@ -5609,12 +5771,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 59 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Individual = __webpack_require__(60);
+	var Individual = __webpack_require__(63);
 
 	module.exports = OneVersion;
 
@@ -5637,7 +5799,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 60 */
+/* 63 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -5663,24 +5825,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 61 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var patch = __webpack_require__(62)
+	var patch = __webpack_require__(65)
 
 	module.exports = patch
 
 
 /***/ },
-/* 62 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var document = __webpack_require__(34)
 	var isArray = __webpack_require__(47)
 
 	var render = __webpack_require__(33)
-	var domIndex = __webpack_require__(63)
-	var patchOp = __webpack_require__(64)
+	var domIndex = __webpack_require__(66)
+	var patchOp = __webpack_require__(67)
 	module.exports = patch
 
 	function patch(rootNode, patches, renderOptions) {
@@ -5758,7 +5920,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 63 */
+/* 66 */
 /***/ function(module, exports) {
 
 	// Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
@@ -5849,7 +6011,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 64 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var applyProperties = __webpack_require__(36)
@@ -5857,7 +6019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var isWidget = __webpack_require__(42)
 	var VPatch = __webpack_require__(48)
 
-	var updateWidget = __webpack_require__(65)
+	var updateWidget = __webpack_require__(68)
 
 	module.exports = applyPatch
 
@@ -6006,7 +6168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 65 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isWidget = __webpack_require__(42)
@@ -6027,13 +6189,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 66 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	// Libs
-	var EventEmitter = __webpack_require__(67).EventEmitter;
+	var EventEmitter = __webpack_require__(70).EventEmitter;
 
 	function InspireEvents() {};
 	InspireEvents.prototype = Object.create(EventEmitter.prototype);
@@ -6042,7 +6204,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 67 */
+/* 70 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -6346,7 +6508,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 68 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
@@ -6480,7 +6642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function lib$es6$promise$asap$$attemptVertx() {
 	      try {
 	        var r = require;
-	        var vertx = __webpack_require__(71);
+	        var vertx = __webpack_require__(74);
 	        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
 	        return lib$es6$promise$asap$$useVertxTimer();
 	      } catch(e) {
@@ -7305,7 +7467,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /* global define:true module:true window: true */
-	    if ("function" === 'function' && __webpack_require__(72)['amd']) {
+	    if ("function" === 'function' && __webpack_require__(75)['amd']) {
 	      !(__WEBPACK_AMD_DEFINE_RESULT__ = function() { return lib$es6$promise$umd$$ES6Promise; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	    } else if (typeof module !== 'undefined' && module['exports']) {
 	      module['exports'] = lib$es6$promise$umd$$ES6Promise;
@@ -7317,10 +7479,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	}).call(this);
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(69), (function() { return this; }()), __webpack_require__(70)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(72), (function() { return this; }()), __webpack_require__(73)(module)))
 
 /***/ },
-/* 69 */
+/* 72 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -7417,7 +7579,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 70 */
+/* 73 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -7433,20 +7595,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 71 */
+/* 74 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 72 */
+/* 75 */
 /***/ function(module, exports) {
 
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
 
 
 /***/ },
-/* 73 */
+/* 76 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
