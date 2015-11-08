@@ -17,6 +17,11 @@
                 width: 300px;
             }
 
+            body > div {
+                margin-bottom: 15px;
+                overflow: hidden;
+            }
+
             body > div > div {
                 float: left;
             }
@@ -42,6 +47,8 @@
         </div>
         <button class="log-selected">Log Selected</button>
         <button class="clear-selected">Clear Selected</button>
+        <ul class="log">
+        </ul>
     </body>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js"></script>
@@ -54,8 +61,10 @@
 
             console.log('api', sourceTree);
 
-            sourceTree.events.on('node.click', function(event, node) {
-                console.log('node clicked:', node);
+            $log = $('.log');
+            sourceTree.events.onAny(function() {
+                $log.append('<li>captured <span>' + this.event + '</span></li>')
+                console.log(this.event, arguments);
             });
 
             var destTree = new InspireTree({
