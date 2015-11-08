@@ -37,6 +37,8 @@
 /* ~~~~~~~@ Tree Theme @~~~~~~~ */
 .inspire-tree {
   font: 400 12px Helvetica Nueue, Verdana, sans-serif; }
+  .inspire-tree > ol {
+    position: relative; }
   .inspire-tree ol {
     list-style: none;
     margin: 0;
@@ -45,21 +47,23 @@
       margin-left: 20px; }
   .inspire-tree .collapsed > ol, .inspire-tree .hidden {
     display: none; }
-  .inspire-tree .selected > div {
-    background: #a4eaf5;
-    overflow: hidden; }
+  .inspire-tree .selected > .wholerow {
+    background: #a4eaf5; }
   .inspire-tree a {
     display: block;
     height: 25px;
     line-height: 25px; }
   .inspire-tree li > div {
-    position: relative; }
+    position: relative;
+    z-index: 2; }
   .inspire-tree .title {
     padding-left: 30px; }
     .inspire-tree .title:before {
       color: #ccc;
       left: -6px;
       position: relative; }
+  .inspire-tree .selected > div > .title:before {
+    color: #2dadc5; }
   .inspire-tree .toggle, .inspire-tree .toggle:before {
     font-size: 16px;
     height: 25px;
@@ -68,3 +72,9 @@
     position: absolute;
     text-align: center;
     width: 25px; }
+  .inspire-tree .wholerow {
+    height: 25px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 1; }

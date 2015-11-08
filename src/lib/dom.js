@@ -23,7 +23,10 @@ module.exports = function InspireDOM(api) {
      * @return {object} List Item node.
      */
     function createListItemNode(node) {
-        var contents = [createTitleContainer(node)];
+        var contents = [
+            h('div.wholerow'),
+            createTitleContainer(node)
+        ];
 
         if (!isEmpty(node.children)) {
             contents.push(createOrderedList(node.children));
