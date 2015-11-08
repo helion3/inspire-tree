@@ -1045,7 +1045,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {void}
 	     */
 	    data.sendNodesTo = function(nodes, destTree) {
-	        if (destTree.constructor.name !== 'InspireApi') {
+	        if (!isFunction(destTree.data.addNodes)) {
 	            throw new Error('Destination must be an Inspire Tree instance.');
 	        }
 
