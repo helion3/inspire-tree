@@ -1,6 +1,7 @@
 'use strict';
 
 // Libs
+var get = require('lodash.get');
 var InspireData = require('./lib/data');
 var InspireDOM = require('./lib/dom');
 var InspireEvents = require('./lib/events');
@@ -12,6 +13,10 @@ require('es6-promise').polyfill();
 require('./tree.scss');
 
 module.exports = function InspireTree(opts) {
+    if (!get(opts, 'selected')) {
+        throw new TypeError('Selector is required.');
+    }
+
     var api = new (function InspireApi() {});
     var data = api.data = new InspireData(api);
     var events = api.events = new InspireEvents();

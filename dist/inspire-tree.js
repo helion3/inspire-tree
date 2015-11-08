@@ -3,10 +3,10 @@
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
-	else {
-		var a = factory();
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
+	else if(typeof exports === 'object')
+		exports["InspireTree"] = factory();
+	else
+		root["InspireTree"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -58,7 +58,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// Libs
 	var InspireData = __webpack_require__(1);
-	var InspireDOM = __webpack_require__(26);
+	var InspireDOM = __webpack_require__(28);
 	var InspireEvents = __webpack_require__(63);
 
 	// Polyfills
@@ -109,7 +109,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var isEmpty = __webpack_require__(17);
 	var isFunction = __webpack_require__(18);
 	var map = __webpack_require__(20);
-	var transform = __webpack_require__(61);
+	var transform = __webpack_require__(26);
 
 	module.exports = function InspireData(api) {
 	    /**
@@ -3630,17 +3630,195 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * lodash 3.0.4 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+	var arrayEach = __webpack_require__(5),
+	    baseCallback = __webpack_require__(22),
+	    baseCreate = __webpack_require__(27),
+	    baseFor = __webpack_require__(12),
+	    isArray = __webpack_require__(11),
+	    isFunction = __webpack_require__(18),
+	    isTypedArray = __webpack_require__(24),
+	    keys = __webpack_require__(8);
+
+	/**
+	 * The base implementation of `_.forOwn` without support for callback
+	 * shorthands and `this` binding.
+	 *
+	 * @private
+	 * @param {Object} object The object to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @returns {Object} Returns `object`.
+	 */
+	function baseForOwn(object, iteratee) {
+	  return baseFor(object, iteratee, keys);
+	}
+
+	/**
+	 * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
+	 * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+	 * @example
+	 *
+	 * _.isObject({});
+	 * // => true
+	 *
+	 * _.isObject([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isObject(1);
+	 * // => false
+	 */
+	function isObject(value) {
+	  // Avoid a V8 JIT bug in Chrome 19-20.
+	  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+	  var type = typeof value;
+	  return !!value && (type == 'object' || type == 'function');
+	}
+
+	/**
+	 * An alternative to `_.reduce`; this method transforms `object` to a new
+	 * `accumulator` object which is the result of running each of its own enumerable
+	 * properties through `iteratee`, with each invocation potentially mutating
+	 * the `accumulator` object. The `iteratee` is bound to `thisArg` and invoked
+	 * with four arguments: (accumulator, value, key, object). Iteratee functions
+	 * may exit iteration early by explicitly returning `false`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Object
+	 * @param {Array|Object} object The object to iterate over.
+	 * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+	 * @param {*} [accumulator] The custom accumulator value.
+	 * @param {*} [thisArg] The `this` binding of `iteratee`.
+	 * @returns {*} Returns the accumulated value.
+	 * @example
+	 *
+	 * _.transform([2, 3, 4], function(result, n) {
+	 *   result.push(n *= n);
+	 *   return n % 2 == 0;
+	 * });
+	 * // => [4, 9]
+	 *
+	 * _.transform({ 'a': 1, 'b': 2 }, function(result, n, key) {
+	 *   result[key] = n * 3;
+	 * });
+	 * // => { 'a': 3, 'b': 6 }
+	 */
+	function transform(object, iteratee, accumulator, thisArg) {
+	  var isArr = isArray(object) || isTypedArray(object);
+	  iteratee = baseCallback(iteratee, thisArg, 4);
+
+	  if (accumulator == null) {
+	    if (isArr || isObject(object)) {
+	      var Ctor = object.constructor;
+	      if (isArr) {
+	        accumulator = isArray(object) ? new Ctor : [];
+	      } else {
+	        accumulator = baseCreate(isFunction(Ctor) ? Ctor.prototype : undefined);
+	      }
+	    } else {
+	      accumulator = {};
+	    }
+	  }
+	  (isArr ? arrayEach : baseForOwn)(object, function(value, index, object) {
+	    return iteratee(accumulator, value, index, object);
+	  });
+	  return accumulator;
+	}
+
+	module.exports = transform;
+
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	/**
+	 * lodash 3.0.3 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+
+	/**
+	 * The base implementation of `_.create` without support for assigning
+	 * properties to the created object.
+	 *
+	 * @private
+	 * @param {Object} prototype The object to inherit from.
+	 * @returns {Object} Returns the new object.
+	 */
+	var baseCreate = (function() {
+	  function object() {}
+	  return function(prototype) {
+	    if (isObject(prototype)) {
+	      object.prototype = prototype;
+	      var result = new object;
+	      object.prototype = undefined;
+	    }
+	    return result || {};
+	  };
+	}());
+
+	/**
+	 * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
+	 * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+	 * @example
+	 *
+	 * _.isObject({});
+	 * // => true
+	 *
+	 * _.isObject([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isObject(1);
+	 * // => false
+	 */
+	function isObject(value) {
+	  // Avoid a V8 JIT bug in Chrome 19-20.
+	  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+	  var type = typeof value;
+	  return !!value && (type == 'object' || type == 'function');
+	}
+
+	module.exports = baseCreate;
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	// Libs
-	var createElement = __webpack_require__(27);
-	var diff = __webpack_require__(40);
-	var h = __webpack_require__(45);
+	var createElement = __webpack_require__(29);
+	var diff = __webpack_require__(42);
+	var h = __webpack_require__(47);
 	var isArray = __webpack_require__(11);
 	var isEmpty = __webpack_require__(17);
 	var pairs = __webpack_require__(25);
-	var patch = __webpack_require__(56);
-	var transform = __webpack_require__(61);
+	var patch = __webpack_require__(58);
+	var transform = __webpack_require__(26);
 
 	module.exports = function InspireDOM(api) {
 	    var $target;
@@ -3803,26 +3981,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createElement = __webpack_require__(28)
+	var createElement = __webpack_require__(30)
 
 	module.exports = createElement
 
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var document = __webpack_require__(29)
+	var document = __webpack_require__(31)
 
-	var applyProperties = __webpack_require__(31)
+	var applyProperties = __webpack_require__(33)
 
-	var isVNode = __webpack_require__(34)
-	var isVText = __webpack_require__(36)
-	var isWidget = __webpack_require__(37)
-	var handleThunk = __webpack_require__(38)
+	var isVNode = __webpack_require__(36)
+	var isVText = __webpack_require__(38)
+	var isWidget = __webpack_require__(39)
+	var handleThunk = __webpack_require__(40)
 
 	module.exports = createElement
 
@@ -3864,12 +4042,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var topLevel = typeof global !== 'undefined' ? global :
 	    typeof window !== 'undefined' ? window : {}
-	var minDoc = __webpack_require__(30);
+	var minDoc = __webpack_require__(32);
 
 	if (typeof document !== 'undefined') {
 	    module.exports = document;
@@ -3886,17 +4064,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(32)
-	var isHook = __webpack_require__(33)
+	var isObject = __webpack_require__(34)
+	var isHook = __webpack_require__(35)
 
 	module.exports = applyProperties
 
@@ -3995,7 +4173,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4006,7 +4184,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 35 */
 /***/ function(module, exports) {
 
 	module.exports = isHook
@@ -4019,10 +4197,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(35)
+	var version = __webpack_require__(37)
 
 	module.exports = isVirtualNode
 
@@ -4032,17 +4210,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 37 */
 /***/ function(module, exports) {
 
 	module.exports = "2"
 
 
 /***/ },
-/* 36 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(35)
+	var version = __webpack_require__(37)
 
 	module.exports = isVirtualText
 
@@ -4052,7 +4230,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports) {
 
 	module.exports = isWidget
@@ -4063,13 +4241,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isVNode = __webpack_require__(34)
-	var isVText = __webpack_require__(36)
-	var isWidget = __webpack_require__(37)
-	var isThunk = __webpack_require__(39)
+	var isVNode = __webpack_require__(36)
+	var isVText = __webpack_require__(38)
+	var isWidget = __webpack_require__(39)
+	var isThunk = __webpack_require__(41)
 
 	module.exports = handleThunk
 
@@ -4109,7 +4287,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports) {
 
 	module.exports = isThunk
@@ -4120,28 +4298,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var diff = __webpack_require__(41)
+	var diff = __webpack_require__(43)
 
 	module.exports = diff
 
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(42)
+	var isArray = __webpack_require__(44)
 
-	var VPatch = __webpack_require__(43)
-	var isVNode = __webpack_require__(34)
-	var isVText = __webpack_require__(36)
-	var isWidget = __webpack_require__(37)
-	var isThunk = __webpack_require__(39)
-	var handleThunk = __webpack_require__(38)
+	var VPatch = __webpack_require__(45)
+	var isVNode = __webpack_require__(36)
+	var isVText = __webpack_require__(38)
+	var isWidget = __webpack_require__(39)
+	var isThunk = __webpack_require__(41)
+	var handleThunk = __webpack_require__(40)
 
-	var diffProps = __webpack_require__(44)
+	var diffProps = __webpack_require__(46)
 
 	module.exports = diff
 
@@ -4562,7 +4740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports) {
 
 	var nativeIsArray = Array.isArray
@@ -4576,10 +4754,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(35)
+	var version = __webpack_require__(37)
 
 	VirtualPatch.NONE = 0
 	VirtualPatch.VTEXT = 1
@@ -4604,11 +4782,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(32)
-	var isHook = __webpack_require__(33)
+	var isObject = __webpack_require__(34)
+	var isHook = __webpack_require__(35)
 
 	module.exports = diffProps
 
@@ -4668,33 +4846,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var h = __webpack_require__(46)
+	var h = __webpack_require__(48)
 
 	module.exports = h
 
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isArray = __webpack_require__(42);
+	var isArray = __webpack_require__(44);
 
-	var VNode = __webpack_require__(47);
-	var VText = __webpack_require__(48);
-	var isVNode = __webpack_require__(34);
-	var isVText = __webpack_require__(36);
-	var isWidget = __webpack_require__(37);
-	var isHook = __webpack_require__(33);
-	var isVThunk = __webpack_require__(39);
+	var VNode = __webpack_require__(49);
+	var VText = __webpack_require__(50);
+	var isVNode = __webpack_require__(36);
+	var isVText = __webpack_require__(38);
+	var isWidget = __webpack_require__(39);
+	var isHook = __webpack_require__(35);
+	var isVThunk = __webpack_require__(41);
 
-	var parseTag = __webpack_require__(49);
-	var softSetHook = __webpack_require__(51);
-	var evHook = __webpack_require__(52);
+	var parseTag = __webpack_require__(51);
+	var softSetHook = __webpack_require__(53);
+	var evHook = __webpack_require__(54);
 
 	module.exports = h;
 
@@ -4820,14 +4998,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(35)
-	var isVNode = __webpack_require__(34)
-	var isWidget = __webpack_require__(37)
-	var isThunk = __webpack_require__(39)
-	var isVHook = __webpack_require__(33)
+	var version = __webpack_require__(37)
+	var isVNode = __webpack_require__(36)
+	var isWidget = __webpack_require__(39)
+	var isThunk = __webpack_require__(41)
+	var isVHook = __webpack_require__(35)
 
 	module.exports = VirtualNode
 
@@ -4898,10 +5076,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(35)
+	var version = __webpack_require__(37)
 
 	module.exports = VirtualText
 
@@ -4914,12 +5092,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var split = __webpack_require__(50);
+	var split = __webpack_require__(52);
 
 	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
 	var notClassId = /^\.|#/;
@@ -4974,7 +5152,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports) {
 
 	/*!
@@ -5086,7 +5264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -5109,12 +5287,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EvStore = __webpack_require__(53);
+	var EvStore = __webpack_require__(55);
 
 	module.exports = EvHook;
 
@@ -5142,12 +5320,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var OneVersionConstraint = __webpack_require__(54);
+	var OneVersionConstraint = __webpack_require__(56);
 
 	var MY_VERSION = '7';
 	OneVersionConstraint('ev-store', MY_VERSION);
@@ -5168,12 +5346,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Individual = __webpack_require__(55);
+	var Individual = __webpack_require__(57);
 
 	module.exports = OneVersion;
 
@@ -5196,7 +5374,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -5222,24 +5400,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var patch = __webpack_require__(57)
+	var patch = __webpack_require__(59)
 
 	module.exports = patch
 
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var document = __webpack_require__(29)
-	var isArray = __webpack_require__(42)
+	var document = __webpack_require__(31)
+	var isArray = __webpack_require__(44)
 
-	var render = __webpack_require__(28)
-	var domIndex = __webpack_require__(58)
-	var patchOp = __webpack_require__(59)
+	var render = __webpack_require__(30)
+	var domIndex = __webpack_require__(60)
+	var patchOp = __webpack_require__(61)
 	module.exports = patch
 
 	function patch(rootNode, patches, renderOptions) {
@@ -5317,7 +5495,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports) {
 
 	// Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
@@ -5408,15 +5586,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var applyProperties = __webpack_require__(31)
+	var applyProperties = __webpack_require__(33)
 
-	var isWidget = __webpack_require__(37)
-	var VPatch = __webpack_require__(43)
+	var isWidget = __webpack_require__(39)
+	var VPatch = __webpack_require__(45)
 
-	var updateWidget = __webpack_require__(60)
+	var updateWidget = __webpack_require__(62)
 
 	module.exports = applyPatch
 
@@ -5565,10 +5743,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isWidget = __webpack_require__(37)
+	var isWidget = __webpack_require__(39)
 
 	module.exports = updateWidget
 
@@ -5583,184 +5761,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return false
 	}
-
-
-/***/ },
-/* 61 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * lodash 3.0.4 (Custom Build) <https://lodash.com/>
-	 * Build: `lodash modern modularize exports="npm" -o ./`
-	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
-	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
-	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-	 * Available under MIT license <https://lodash.com/license>
-	 */
-	var arrayEach = __webpack_require__(5),
-	    baseCallback = __webpack_require__(22),
-	    baseCreate = __webpack_require__(62),
-	    baseFor = __webpack_require__(12),
-	    isArray = __webpack_require__(11),
-	    isFunction = __webpack_require__(18),
-	    isTypedArray = __webpack_require__(24),
-	    keys = __webpack_require__(8);
-
-	/**
-	 * The base implementation of `_.forOwn` without support for callback
-	 * shorthands and `this` binding.
-	 *
-	 * @private
-	 * @param {Object} object The object to iterate over.
-	 * @param {Function} iteratee The function invoked per iteration.
-	 * @returns {Object} Returns `object`.
-	 */
-	function baseForOwn(object, iteratee) {
-	  return baseFor(object, iteratee, keys);
-	}
-
-	/**
-	 * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
-	 * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-	 *
-	 * @static
-	 * @memberOf _
-	 * @category Lang
-	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-	 * @example
-	 *
-	 * _.isObject({});
-	 * // => true
-	 *
-	 * _.isObject([1, 2, 3]);
-	 * // => true
-	 *
-	 * _.isObject(1);
-	 * // => false
-	 */
-	function isObject(value) {
-	  // Avoid a V8 JIT bug in Chrome 19-20.
-	  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-	  var type = typeof value;
-	  return !!value && (type == 'object' || type == 'function');
-	}
-
-	/**
-	 * An alternative to `_.reduce`; this method transforms `object` to a new
-	 * `accumulator` object which is the result of running each of its own enumerable
-	 * properties through `iteratee`, with each invocation potentially mutating
-	 * the `accumulator` object. The `iteratee` is bound to `thisArg` and invoked
-	 * with four arguments: (accumulator, value, key, object). Iteratee functions
-	 * may exit iteration early by explicitly returning `false`.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @category Object
-	 * @param {Array|Object} object The object to iterate over.
-	 * @param {Function} [iteratee=_.identity] The function invoked per iteration.
-	 * @param {*} [accumulator] The custom accumulator value.
-	 * @param {*} [thisArg] The `this` binding of `iteratee`.
-	 * @returns {*} Returns the accumulated value.
-	 * @example
-	 *
-	 * _.transform([2, 3, 4], function(result, n) {
-	 *   result.push(n *= n);
-	 *   return n % 2 == 0;
-	 * });
-	 * // => [4, 9]
-	 *
-	 * _.transform({ 'a': 1, 'b': 2 }, function(result, n, key) {
-	 *   result[key] = n * 3;
-	 * });
-	 * // => { 'a': 3, 'b': 6 }
-	 */
-	function transform(object, iteratee, accumulator, thisArg) {
-	  var isArr = isArray(object) || isTypedArray(object);
-	  iteratee = baseCallback(iteratee, thisArg, 4);
-
-	  if (accumulator == null) {
-	    if (isArr || isObject(object)) {
-	      var Ctor = object.constructor;
-	      if (isArr) {
-	        accumulator = isArray(object) ? new Ctor : [];
-	      } else {
-	        accumulator = baseCreate(isFunction(Ctor) ? Ctor.prototype : undefined);
-	      }
-	    } else {
-	      accumulator = {};
-	    }
-	  }
-	  (isArr ? arrayEach : baseForOwn)(object, function(value, index, object) {
-	    return iteratee(accumulator, value, index, object);
-	  });
-	  return accumulator;
-	}
-
-	module.exports = transform;
-
-
-/***/ },
-/* 62 */
-/***/ function(module, exports) {
-
-	/**
-	 * lodash 3.0.3 (Custom Build) <https://lodash.com/>
-	 * Build: `lodash modern modularize exports="npm" -o ./`
-	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
-	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
-	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-	 * Available under MIT license <https://lodash.com/license>
-	 */
-
-	/**
-	 * The base implementation of `_.create` without support for assigning
-	 * properties to the created object.
-	 *
-	 * @private
-	 * @param {Object} prototype The object to inherit from.
-	 * @returns {Object} Returns the new object.
-	 */
-	var baseCreate = (function() {
-	  function object() {}
-	  return function(prototype) {
-	    if (isObject(prototype)) {
-	      object.prototype = prototype;
-	      var result = new object;
-	      object.prototype = undefined;
-	    }
-	    return result || {};
-	  };
-	}());
-
-	/**
-	 * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
-	 * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-	 *
-	 * @static
-	 * @memberOf _
-	 * @category Lang
-	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-	 * @example
-	 *
-	 * _.isObject({});
-	 * // => true
-	 *
-	 * _.isObject([1, 2, 3]);
-	 * // => true
-	 *
-	 * _.isObject(1);
-	 * // => false
-	 */
-	function isObject(value) {
-	  // Avoid a V8 JIT bug in Chrome 19-20.
-	  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-	  var type = typeof value;
-	  return !!value && (type == 'object' || type == 'function');
-	}
-
-	module.exports = baseCreate;
 
 
 /***/ },

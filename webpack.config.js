@@ -14,6 +14,7 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: './dist',
+        library: 'InspireTree',
         libraryTarget: 'umd'
     },
     module: {
