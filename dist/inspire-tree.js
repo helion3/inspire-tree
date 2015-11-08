@@ -491,9 +491,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {array|object} Object model.
 	     */
 	    function collectionToModel(collection) {
-	        map(collection, function(object) {
-	            return objectToModel(object);
-	        });
+	        map(collection, objectToModel);
 
 	        return collection;
 	    };
@@ -506,6 +504,40 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function generateId() {
 	        return cuid();
+	    };
+
+	    /**
+	     * Merge a node into an existing context - a model
+	     * or another node's children. If the ID exists
+	     * the node is skipped and we try its children.
+	     *
+	     * @param {array} context Array of node objects.
+	     * @param {object} node Node object.
+	     * @return {array} Array of new nodes.
+	     */
+	    var mergeNode = function(context, node) {
+	        var newNodes = [];
+
+	        if (node.id) {
+	            // Does node already exist
+	            var existing = data.getNodeById(node.id);
+	            if (existing) {
+	                // Ensure existing accepts children
+	                if (!isArray(existing.children)) {
+	                    existing.children = [];
+	                }
+
+	                each(node.children, function(child) {
+	                    newNodes.concat(mergeNode(existing.children, child));
+	                });
+	            }
+	            else {
+	                context.push(node);
+	                newNodes.push(node);
+	            }
+	        }
+
+	        return newNodes;
 	    };
 
 	    /**
@@ -574,11 +606,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    data.addNode = function(node) {
 	        node = objectToModel(node);
-	        model.push(node);
+	        var newNodes = mergeNode(model, node);
 
-	        api.events.emit('node.added', node);
-
-	        rerender();
+	        if (newNodes.length) {
+	            api.events.emit('node.added', node);
+	            rerender();
+	        }
 
 	        return node;
 	    };
@@ -6309,7 +6342,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
