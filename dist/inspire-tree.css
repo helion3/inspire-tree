@@ -38,7 +38,7 @@
     padding: 0; }
     .inspire-tree ol ol {
       margin-left: 20px; }
-  .inspire-tree .collapsed > ol {
+  .inspire-tree .collapsed > ol, .inspire-tree .hidden {
     display: none; }
   .inspire-tree .selected > div {
     background: #a4eaf5;

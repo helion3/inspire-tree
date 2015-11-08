@@ -52,6 +52,13 @@
                 data: []
             });
 
+            $('.move-one').on('click', function() {
+                var selected = sourceTree.data.getSelected();
+                sourceTree.data.hideNodes(selected);
+
+                destTree.data.addNodes(sourceTree.data.getSelected(null, true));
+            });
+
             $('.log-selected').on('click', function() {
                 console.log(sourceTree.data.getSelected());
             });

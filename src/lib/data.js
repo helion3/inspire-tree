@@ -1,5 +1,6 @@
 'use strict';
 
+// Libs
 var cloneDeep = require('lodash.cloneDeep');
 var cuid = require('cuid');
 var each = require('lodash.foreach');
@@ -7,6 +8,7 @@ var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
 var map = require('lodash.map');
+var transform = require('lodash.transform');
 
 module.exports = function InspireData(api) {
     /**
@@ -47,6 +49,7 @@ module.exports = function InspireData(api) {
             object.itree = {
                 state: {
                     collapsed: true,
+                    hidden: false,
                     selected: false
                 }
             };
@@ -87,19 +90,60 @@ module.exports = function InspireData(api) {
     var model = [];
 
     /**
+     * Add a node.
+     *
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    data.addNode = function(node) {
+        node.itree = null;
+        node = objectToModel(node);
+        model.push(node);
+
+        api.events.emit('node.added', node);
+
+        rerender();
+
+        return node;
+    };
+
+    /**
+     * Add nodes.
+     *
+     * @param {array} nodes Array of node objects.
+     * @return {array} Added node objects.
+     */
+    data.addNodes = function(nodes) {
+        transform(nodes, function(newNodes, node) {
+            newNodes.push(data.addNode(node));
+        });
+
+        return nodes;
+    };
+
+    /**
      * Expand immediate children for this node, if any.
      *
      * @param {object} node Node object.
-     * @return {void}
+     * @return {object} Node object.
      */
     data.collapseNode = function(node) {
-        node.itree.state.collapsed = true;
+        if (!node.itree.state.collapsed) {
+            node.itree.state.collapsed = true;
 
-        api.events.emit('node.collapsed', node);
+            api.events.emit('node.collapsed', node);
 
-        rerender();
+            rerender();
+        }
+
+        return node;
     };
 
+    /**
+     * Deselect all nodes.
+     *
+     * @return {void}
+     */
     data.deselectAll = function() {
         recurse(model, data.deselectNode);
     };
@@ -111,11 +155,13 @@ module.exports = function InspireData(api) {
      * @return {pbject} Node object.
      */
     data.deselectNode = function(node) {
-        node.itree.state.selected = false;
+        if (node.itree.state.selected) {
+            node.itree.state.selected = false;
 
-        api.events.emit('node.deselected', node);
+            api.events.emit('node.deselected', node);
 
-        rerender();
+            rerender();
+        }
 
         return node;
     };
@@ -124,27 +170,62 @@ module.exports = function InspireData(api) {
      * Expand immediate children for this node, if any.
      *
      * @param {object} node Node object.
-     * @return {void}
+     * @return {object} Node object.
      */
     data.expandNode = function(node) {
-        node.itree.state.collapsed = false;
+        if (node.itree.state.collapsed) {
+            node.itree.state.collapsed = false;
 
-        api.events.emit('node.expanded', node);
+            api.events.emit('node.expanded', node);
 
-        rerender();
+            rerender();
+        }
+
+        return node;
     };
 
-    data.getSelected = function(nodes, flat) {
+    /**
+     * Flattens a hierarchy, returning only node(s) with the
+     * expected state, for operations which must exclude parents.
+     *
+     * @param {array} nodes Array of node objects.
+     * @param {string} flag Which state flag to filter by.
+     * @return {array} Flat array of matching nodes.
+     */
+    data.flatten = function(nodes, flag) {
+        var flat = [];
+        flag = flag || 'selected';
+
+        if (isArray(nodes) && !isEmpty(nodes)) {
+            each(nodes, function(node) {
+                if (node.itree.state[flag]) {
+                    flat.push(node);
+                }
+                else {
+                    flat = flat.concat(data.flatten(node.children));
+                }
+            });
+        }
+
+        return flat;
+    };
+
+    /**
+     * Returns a flat array of selected nodes.
+     *
+     * If `hierarchy` is false, it'll returned selected nodes
+     * along with their parents. However, the data will be cloned
+     * to prevent conflicts with original data.
+     *
+     * @param {array} nodes Array of node objects to search within.
+     * @param {boolean} hierarchy Whether to return a hierarchy or flat array.
+     * @return {array} Selected nodes.
+     */
+    data.getSelected = function(nodes, hierarchy) {
         var selected = [];
 
-        if (flat) {
-            recurse((nodes || model), function(node) {
-                if (node.itree.state.selected) {
-                    selected.push(node);
-                }
-
-                return node;
-            });
+        if (!hierarchy) {
+            selected = data.flatten((nodes || model), 'selected');
         }
         else {
             each((nodes || model), function(node) {
@@ -200,6 +281,35 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Hide a node.
+     *
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    data.hideNode = function(node) {
+        if (!node.itree.state.hidden) {
+            node.itree.state.hidden = true;
+
+            api.events.emit('node.hidden', node);
+
+            rerender();
+        }
+
+        return node;
+    };
+
+    /**
+     * Hide all nodes in an array.
+     *
+     * @param {array} nodes Array of node objects.
+     * @return {array} Array of node objects.
+     */
+    data.hideNodes = function(nodes) {
+        each(nodes, data.hideNode);
+        return nodes;
+    };
+
+    /**
      * Loads data. Accepts an array or a promise.
      *
      * @param {array|function} loader Array of nodes, or promise resolving an array of nodes.
@@ -239,14 +349,36 @@ module.exports = function InspireData(api) {
      * Select a node. If already selected, no change made.
      *
      * @param {object} node Node object.
-     * @return {void}
+     * @return {object} Node object.
      */
     data.selectNode = function(node) {
-        node.itree.state.selected = true;
+        if (!node.itree.state.selected) {
+            node.itree.state.selected = true;
 
-        api.events.emit('node.selected', node);
+            api.events.emit('node.selected', node);
 
-        rerender();
+            rerender();
+        }
+
+        return node;
+    };
+
+    /**
+     * Hide a node.
+     *
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    data.showNode = function(node) {
+        if (node.itree.state.hidden) {
+            node.itree.state.hidden = false;
+
+            api.events.emit('node.shown', node);
+
+            rerender();
+        }
+
+        return node;
     };
 
     return data;
