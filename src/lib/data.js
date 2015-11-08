@@ -397,9 +397,20 @@ module.exports = function InspireData(api) {
      */
     data.load = function(loader) {
         return new Promise(function(resolve, reject) {
+            var doResolve = function() {
+                api.events.emit('data.loaded', model);
+                resolve(model);
+                api.dom.renderNodes(model);
+            };
+
+            var doReject = function(err) {
+                api.events.emit('data.loaderror', err);
+                reject(err);
+            };
+
             if (isArray(loader)) {
                 model = collectionToModel(loader);
-                resolve(model);
+                doResolve();
             }
 
             else if (typeof loader === 'object') {
@@ -407,16 +418,16 @@ module.exports = function InspireData(api) {
                 if (isFunction(loader.then)) {
                     loader.then(function(results) {
                         model = collectionToModel(results);
-                        resolve(model);
+                        doResolve();
                     });
                 }
 
                 // jQuery promises use "error".
                 if (isFunction(loader.error)) {
-                    loader.error(reject);
+                    loader.error(doReject);
                 }
                 else if (isFunction(loader.catch)) {
-                    loader.catch(reject);
+                    loader.catch(doReject);
                 }
             }
         });

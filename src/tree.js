@@ -28,17 +28,7 @@ module.exports = function InspireTree(opts) {
     });
 
     // Load initial user data
-    (function() {
-        var promise = data.load(opts.data);
-        promise.then(function(nodes) {
-            events.emit('loaded', nodes);
-            dom.renderNodes(nodes);
-        });
-
-        promise.catch(function(err) {
-            events.emit('error', err);
-        });
-    }());
+    data.load(opts.data);
 
     return api;
 };

@@ -84,17 +84,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    // Load initial user data
-	    (function() {
-	        var promise = data.load(opts.data);
-	        promise.then(function(nodes) {
-	            events.emit('loaded', nodes);
-	            dom.renderNodes(nodes);
-	        });
-
-	        promise.catch(function(err) {
-	            events.emit('error', err);
-	        });
-	    }());
+	    data.load(opts.data);
 
 	    return api;
 	};
@@ -869,9 +859,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    data.load = function(loader) {
 	        return new Promise(function(resolve, reject) {
+	            var doResolve = function() {
+	                api.events.emit('data.loaded', model);
+	                resolve(model);
+	                api.dom.renderNodes(model);
+	            };
+
+	            var doReject = function(err) {
+	                api.events.emit('data.loaderror', err);
+	                reject(err);
+	            };
+
 	            if (isArray(loader)) {
 	                model = collectionToModel(loader);
-	                resolve(model);
+	                doResolve();
 	            }
 
 	            else if (typeof loader === 'object') {
@@ -879,16 +880,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (isFunction(loader.then)) {
 	                    loader.then(function(results) {
 	                        model = collectionToModel(results);
-	                        resolve(model);
+	                        doResolve();
 	                    });
 	                }
 
 	                // jQuery promises use "error".
 	                if (isFunction(loader.error)) {
-	                    loader.error(reject);
+	                    loader.error(doReject);
 	                }
 	                else if (isFunction(loader.catch)) {
-	                    loader.catch(reject);
+	                    loader.catch(doReject);
 	                }
 	            }
 	        });
@@ -4241,6 +4242,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!rootNode) {
 	            rootNode = createElement(newOl);
 	            $target.appendChild(rootNode);
+
+	            api.events.emit('tree.ready');
 	        }
 	        else {
 	            var patches = diff(ol, newOl);
@@ -6511,7 +6514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license

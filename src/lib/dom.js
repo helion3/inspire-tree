@@ -170,6 +170,8 @@ module.exports = function InspireDOM(api) {
         if (!rootNode) {
             rootNode = createElement(newOl);
             $target.appendChild(rootNode);
+
+            api.events.emit('tree.ready');
         }
         else {
             var patches = diff(ol, newOl);
