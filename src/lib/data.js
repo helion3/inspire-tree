@@ -81,8 +81,13 @@ module.exports = function InspireData(api) {
         return array;
     };
 
+    var batching = false;
     var rerender = function() {
-        // @todo move this. should be abstracted and allow batch changes
+        // Never rerender when until batch complete
+        if (batching) {
+            return;
+        }
+
         api.dom.renderNodes(model);
     };
 
@@ -113,11 +118,24 @@ module.exports = function InspireData(api) {
      * @return {array} Added node objects.
      */
     data.addNodes = function(nodes) {
+        data.batch();
+
         transform(nodes, function(newNodes, node) {
             newNodes.push(data.addNode(node));
         });
 
+        data.end();
+
         return nodes;
+    };
+
+    /**
+     * Disable rendering in preparation for multiple changes.
+     *
+     * @return {void}
+     */
+    data.batch = function() {
+        batching = true;
     };
 
     /**
@@ -144,7 +162,9 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     data.deselectAll = function() {
+        data.batch();
         recurse(model, data.deselectNode);
+        data.end();
     };
 
     /**
@@ -163,6 +183,16 @@ module.exports = function InspireData(api) {
         }
 
         return node;
+    };
+
+    /**
+     * Permit rerendering of batched changes.
+     *
+     * @return {void}
+     */
+    data.end = function() {
+        batching = false;
+        rerender();
     };
 
     /**
@@ -308,7 +338,9 @@ module.exports = function InspireData(api) {
      * @return {array} Array of node objects.
      */
     data.hideNodes = function(nodes) {
+        data.batch();
         each(nodes, data.hideNode);
+        data.end();
         return nodes;
     };
 
@@ -356,6 +388,8 @@ module.exports = function InspireData(api) {
      */
     data.selectNode = function(node) {
         if (!node.itree.state.selected) {
+            data.deselectAll();
+
             node.itree.state.selected = true;
 
             api.events.emit('node.selected', node);

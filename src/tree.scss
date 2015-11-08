@@ -11,7 +11,7 @@
     font-style: normal;
 }
 
-.icon {
+.icon:before {
     font-family: 'itree';
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
@@ -66,11 +66,26 @@
         line-height: 25px;
     }
 
+    li > div {
+        position: relative;
+    }
+
+    .title {
+        padding-left: 30px;
+
+        &:before {
+            color: #ccc;
+            left: -6px;
+            position: relative;
+        }
+    }
+
     .toggle, .toggle:before {
-        float: left;
         font-size: 16px;
         height: 25px;
+        left: 0;
         line-height: 25px;
+        position: absolute;
         text-align: center;
         width: 25px;
     }

@@ -6,7 +6,7 @@
   font-weight: normal;
   font-style: normal; }
 
-.icon {
+.icon:before {
   font-family: 'itree';
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -47,10 +47,19 @@
     display: block;
     height: 25px;
     line-height: 25px; }
+  .inspire-tree li > div {
+    position: relative; }
+  .inspire-tree .title {
+    padding-left: 30px; }
+    .inspire-tree .title:before {
+      color: #ccc;
+      left: -6px;
+      position: relative; }
   .inspire-tree .toggle, .inspire-tree .toggle:before {
-    float: left;
     font-size: 16px;
     height: 25px;
+    left: 0;
     line-height: 25px;
+    position: absolute;
     text-align: center;
     width: 25px; }

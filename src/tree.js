@@ -13,7 +13,7 @@ require('es6-promise').polyfill();
 require('./tree.scss');
 
 module.exports = function InspireTree(opts) {
-    if (!get(opts, 'selected')) {
+    if (!get(opts, 'selector')) {
         throw new TypeError('Selector is required.');
     }
 

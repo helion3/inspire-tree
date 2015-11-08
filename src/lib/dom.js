@@ -66,11 +66,15 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates an anchor around the node title.
      *
-     * @param {string} text Title
+     * @param {object} node Node object.
      * @return {object} Anchor node.
      */
-    function createTitleAnchor(text) {
-        return h('a', { onclick: function(event) {
+    function createTitleAnchor(node) {
+        var classNames = ['title', 'icon'];
+
+        classNames.push(node.iconClass || (isEmpty(node.children) ? 'icon-file-empty' : 'icon-folder'));
+
+        return h('a.' + classNames.join('.'), { onclick: function(event) {
             var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
             var node = api.data.getNodeById(uid);
 
@@ -84,7 +88,7 @@ module.exports = function InspireDOM(api) {
 
             // Emit
             api.events.emit('node.click', event, node);
-        } }, [text]);
+        } }, [node.title]);
     }
 
     /**
@@ -100,7 +104,7 @@ module.exports = function InspireDOM(api) {
             contents.push(createToggleAnchor());
         }
 
-        contents.push(createTitleAnchor(node.title));
+        contents.push(createTitleAnchor(node));
 
         return h('div', contents);
     };
