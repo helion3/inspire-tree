@@ -37,6 +37,7 @@ tree.events.on('node.click', function(event, node) {
 
 #### Event List
 
+- *loaded*
 - *node.added*
 - *node.click*
 - *node.collapsed*

@@ -16,10 +16,13 @@ module.exports = function InspireData(api) {
      * within a tree. Adds state and other internal properties.
      *
      * @param {array|object} collection Collection of nodes
+     * @param {object} parent Pointer to parent object
      * @return {array|object} Object model.
      */
-    function collectionToModel(collection) {
-        map(collection, objectToModel);
+    function collectionToModel(collection, parent) {
+        map(collection, function(node) {
+            objectToModel(node, parent);
+        });
 
         return collection;
     };
@@ -74,10 +77,12 @@ module.exports = function InspireData(api) {
      * Parse a raw object into a model used within a tree.
      *
      * @param {object} object Source object
+     * @param {object} parent Pointer to parent object.
      * @return {object} Final object
      */
-    function objectToModel(object) {
+    function objectToModel(object, parent) {
         object.id = object.id || generateId();
+        object.parent = parent;
 
         if (!object.itree) {
             object.itree = {
@@ -90,7 +95,7 @@ module.exports = function InspireData(api) {
         }
 
         if (isArray(object.children) && !isEmpty(object.children)) {
-            collectionToModel(object.children);
+            collectionToModel(object.children, object);
         }
 
         return object;
