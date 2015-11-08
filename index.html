@@ -11,7 +11,8 @@
 
             .inspire-tree {
                 background: #fff;
-                border: 1px solid #eee;
+                border: 1px solid #bbb;
+                border-radius: 2px;
                 min-height: 400px;
                 width: 300px;
             }
@@ -68,6 +69,14 @@
 
                 var selectedHierarchy = sourceTree.data.getSelected(null, true);
                 destTree.data.addNodes(selectedHierarchy);
+            });
+
+            $('.revert-one').on('click', function() {
+                var selected = destTree.data.getSelected();
+                destTree.data.hideNodes(selected);
+
+                var selectedHierarchy = destTree.data.getSelected(null, true);
+                sourceTree.data.addNodes(selectedHierarchy);
             });
 
             $('.log-selected').on('click', function() {
