@@ -5,12 +5,16 @@ Inspire Tree is a highly efficient javascript-based UI tree component, built for
 Features include:
 
 - Robust API.
+- Load data directly, via Promise, or via callback.
+- Optionally load child nodes dynamically.
+- Search by plain string or RegExp, or via external resources.
 - Events everywhere.
 - Virtual DOM for blazing fast DOM updates.
-- Supports promises for loading data, etc.
+- Valid HTML5 DOM structure and extremely clean, easy-to-override CSS.
 - AMD and CommonJS support (RequireJS, Node).
 - Supports IE10+.
 - Supports multiple instances on a single page.
+- Includes functionality for moving nodes between instances.
 
 ## Using
 

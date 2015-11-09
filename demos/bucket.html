@@ -9,12 +9,6 @@
                 background: #eee;
             }
 
-            input {
-                font-size: 14px;
-                padding: 5px;
-                width: 290px
-            }
-
             .inspire-tree {
                 background: #fff;
                 border: 1px solid #bbb;
@@ -24,11 +18,6 @@
             }
 
             body > div {
-                margin-bottom: 15px;
-                overflow: hidden;
-            }
-
-            body > div > div {
                 float: left;
             }
 
@@ -43,23 +32,14 @@
         </style>
     </head>
     <body>
-        <div>
-            <input type="text" placeholder="Search">
+        <div class="source-tree"></div>
+        <div class="toolbar">
+            <button class="move-one">&gt;</button>
+            <button class="revert-one">&lt;</button>
+            <button class="move-all">&gt;&gt;</button>
+            <button class="revert-all">&lt;&lt;</button>
         </div>
-        <div>
-            <div class="source-tree"></div>
-            <div class="toolbar">
-                <button class="move-one">&gt;</button>
-                <button class="revert-one">&lt;</button>
-                <button class="move-all">&gt;&gt;</button>
-                <button class="revert-all">&lt;&lt;</button>
-            </div>
-            <div class="dest-tree"></div>
-        </div>
-        <button class="log-selected">Log Selected</button>
-        <button class="clear-selected">Clear Selected</button>
-        <ul class="log">
-        </ul>
+        <div class="dest-tree"></div>
     </body>
     <script src="../bower_components/requirejs/require.js"></script>
     <script>
@@ -79,22 +59,6 @@
             var sourceTree = new InspireTree({
                 target: '.source-tree',
                 data: $.getJSON('../sample-data/full.json')
-            });
-
-            $('input').on('keyup', _.debounce(function(event) {
-                if (this.value.length) {
-                    sourceTree.data.search(new RegExp(this.value, 'i'));
-                } else {
-                    sourceTree.data.clearSearch();
-                }
-            }, 500));
-
-            console.log('api', sourceTree);
-
-            $log = $('.log');
-            sourceTree.events.onAny(function() {
-                $log.append('<li>captured <span>' + this.event + '</span></li>')
-                console.log(this.event, arguments);
             });
 
             var destTree = new InspireTree({
@@ -130,14 +94,6 @@
             $('.revert-all').on('click', function() {
                 var nodes = destTree.data.getNodes();
                 destTree.data.sendNodesTo(nodes, sourceTree);
-            });
-
-            $('.log-selected').on('click', function() {
-                console.log(sourceTree.data.getSelected());
-            });
-
-            $('.clear-selected').on('click', function() {
-                sourceTree.data.deselectAll();
             });
         });
     </script>

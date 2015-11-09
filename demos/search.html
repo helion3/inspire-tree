@@ -26,8 +26,9 @@
         </style>
     </head>
     <body>
-        <p>Perform a search on external data.</p>
-        <p>This demo is not fully implemented.</p>
+        <p>Tip: "ryan" is a good sample query.</p>
+        <p>Filters tree nodes by search query. This example executes a search 500ms after keyup events have stopped
+            firing. An optional regular expression is used for case-insensitivity.</p>
         <input type="text" placeholder="Search">
         <div class="tree"></div>
     </body>
@@ -48,17 +49,7 @@
         ], function($, _, InspireTree) {
             var sourceTree = new InspireTree({
                 target: '.tree',
-                data: $.getJSON('../sample-data/full.json'),
-                search: function(query, resolve, reject) {
-                    var promise = $.getJSON('../sample-data/full.json');
-                    promise.then(function(results) {
-                        var matches = _.filter(results, function(result) {
-                            return query.test(result.title);
-                        });
-
-                        resolve(matches);
-                    });
-                }
+                data: $.getJSON('../sample-data/full.json')
             });
 
             $('input').on('keyup', _.debounce(function(event) {
