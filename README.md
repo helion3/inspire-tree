@@ -1,6 +1,11 @@
 # Inspire Tree
 
-Inspire Tree is a highly efficient javascript-based UI tree component, built for the modern web.
+[![Build Status](https://travis-ci.org/helion3/inspire-tree.svg)](https://travis-ci.org/helion3/inspire-tree)
+
+Inspire Tree is a performance-driven javascript-based UI tree component, built for the modern web. Inspired by
+our need for one - the only existing solution which met our *feature* needs was a nightmare to *develop* for.
+
+[Demos](http://helion3.com/inspire-tree/)
 
 Features include:
 
@@ -12,9 +17,14 @@ Features include:
 - Virtual DOM for blazing fast DOM updates.
 - Valid HTML5 DOM structure and extremely clean, easy-to-override CSS.
 - AMD and CommonJS support (RequireJS, Node).
-- Supports IE10+.
 - Supports multiple instances on a single page.
 - Includes functionality for moving nodes between instances.
+- Supports IE10+.
+
+### Installation
+
+- Node: `npm install -save inspire-tree`
+- Bower `bower install --save inspire-tree`
 
 ## Using
 
@@ -68,3 +78,7 @@ Live-compile source changes as you develop:
 When needed, lint your code. Will happen automatically on commit.
 
 - `npm run lint`
+
+Run tests:
+
+- `npm test`
