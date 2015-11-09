@@ -16,6 +16,7 @@ Features include:
 - Events everywhere.
 - Virtual DOM for blazing fast DOM updates.
 - Valid HTML5 DOM structure and extremely clean, easy-to-override CSS.
+- Custom context menu (optional).
 - AMD and CommonJS support (RequireJS, Node).
 - Supports multiple instances on a single page.
 - Includes functionality for moving nodes between instances.
@@ -56,6 +57,7 @@ tree.events.on('node.click', function(event, node) {
 - *node.added*
 - *node.click*
 - *node.collapsed*
+- *node.contextmenu*
 - *node.dblclick*
 - *node.deselected*
 - *node.expanded*

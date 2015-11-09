@@ -18,6 +18,36 @@ module.exports = function InspireDOM(api) {
     var $target;
 
     /**
+     * Creates a context menu unordered list.
+     *
+     * @param {array} choices Array of choice objects.
+     * @param {object} node Clicked node.
+     * @return {object} Unordered list node.
+     */
+    function createContextMenu(choices, node) {
+        return h('ul.itree-menu', transform(choices, function(contents, choice) {
+            contents.push(createContextMenuListItem(choice, node));
+        }));
+    }
+
+    /**
+     * Creates a context menu list item.
+     *
+     * @param {object} choice Choice object.
+     * @param {object} node Node object.
+     * @return {object} List item node.
+     */
+    function createContextMenuListItem(choice, node) {
+        return h('li', [[
+            h('a', {
+                onclick: function(event) {
+                    choice.handler(event, node);
+                }
+            }, choice.text)
+        ]]);
+    }
+
+    /**
      * Creates a list item node when a dynamic node returns no children.
      *
      * Cannot be clicked or expanded.
@@ -101,9 +131,16 @@ module.exports = function InspireDOM(api) {
         classNames.push(node.iconClass || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
 
         return h('a.' + classNames.join('.'), {
+            oncontextmenu: function(event) {
+                var node = getNodeFromTitleDOMElement(event.target);
+
+                renderContextMenu(event, node);
+
+                // Emit
+                api.events.emit('node.contextmenu', event, node);
+            },
             onclick: function(event) {
-                var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
-                var node = api.data.getNodeById(uid);
+                var node = getNodeFromTitleDOMElement(event.target);
 
                 // Toggle selected state
                 if (node.itree.state.selected) {
@@ -116,10 +153,8 @@ module.exports = function InspireDOM(api) {
                 // Emit
                 api.events.emit('node.click', event, node);
             },
-
             ondblclick: function(event) {
-                var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
-                var node = api.data.getNodeById(uid);
+                var node = getNodeFromTitleDOMElement(event.target);
 
                 // Toggle selected state
                 if (node.itree.state.collapsed) {
@@ -181,6 +216,51 @@ module.exports = function InspireDOM(api) {
                 api.data.collapseNode(node);
             }
         } });
+    }
+
+    /**
+     * Helper method for obtaining the data-uid from a DOM element.
+     *
+     * @param {HTMLElement} element HTML Element.
+     * @return {object} Node object
+     */
+    function getNodeFromTitleDOMElement(element) {
+        var uid = element.parentNode.parentNode.getAttribute('data-uid');
+        return api.data.getNodeById(uid);
+    }
+
+    var contextUl;
+    var contextMenuNode;
+
+    /**
+     * Renders a context menu for a given contextmenu click and node.
+     *
+     * @param {object} event Click event.
+     * @param {object} node Clicked node object.
+     * @return {void}
+     */
+    function renderContextMenu(event, node) {
+        var choices = get(api, 'config.contextMenu');
+
+        if (isArray(choices)) {
+            event.preventDefault();
+
+            var newUl = createContextMenu(choices, node);
+
+            if (!contextUl) {
+                contextMenuNode = createElement(newUl);
+                document.body.appendChild(contextMenuNode);
+            }
+            else {
+                var patches = diff(contextUl, newUl);
+                contextMenuNode = patch(contextMenuNode, patches);
+            }
+
+            contextMenuNode.style.top = event.clientY + 'px';
+            contextMenuNode.style.left = event.clientX + 'px';
+
+            contextUl = newUl;
+        }
     }
 
     var dom = this;
