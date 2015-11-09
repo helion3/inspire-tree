@@ -3,6 +3,7 @@
 // Libs
 var cloneDeep = require('lodash.cloneDeep');
 var cuid = require('cuid');
+var defaultsDeep = require('lodash.defaultsdeep');
 var each = require('lodash.foreach');
 var get = require('lodash.get');
 var isArray = require('lodash.isarray');
@@ -105,15 +106,13 @@ module.exports = function InspireData(api) {
         object.id = object.id || generateId();
         object.parent = parent;
 
-        if (!object.itree) {
-            object.itree = {
-                state: {
-                    collapsed: true,
-                    hidden: false,
-                    selected: false
-                }
-            };
-        }
+        object.itree = defaultsDeep(object.itree || {}, {
+            state: {
+                collapsed: true,
+                hidden: false,
+                selected: false
+            }
+        });
 
         if (isArray(object.children) && !isEmpty(object.children)) {
             collectionToModel(object.children, object);

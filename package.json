@@ -20,6 +20,7 @@
     "karma-mocha-reporter": "^1.1.1",
     "karma-phantomjs-launcher": "^0.2.1",
     "lodash.clonedeep": "^3.0.2",
+    "lodash.defaultsdeep": "^3.10.0",
     "lodash.filter": "^3.1.1",
     "lodash.foreach": "^3.0.3",
     "lodash.get": "^3.7.0",
@@ -50,9 +51,9 @@
   },
   "main": "dist/inspire-tree.js",
   "files": [
-      "dist",
-      "*.json",
-      "LICENSE",
-      "README.md"
+    "dist",
+    "*.json",
+    "LICENSE",
+    "README.md"
   ]
 }
