@@ -26,8 +26,8 @@
         </style>
     </head>
     <body>
+        <p>Tip: "io" is a good sample query.</p>
         <p>Perform a search on external data.</p>
-        <p>This demo is not fully implemented.</p>
         <input type="text" placeholder="Search">
         <div class="tree"></div>
     </body>
@@ -48,9 +48,9 @@
         ], function($, _, InspireTree) {
             var sourceTree = new InspireTree({
                 target: '.tree',
-                data: $.getJSON('../sample-data/full.json'),
+                data: $.getJSON('../sample-data/root.json'),
                 search: function(query, resolve, reject) {
-                    var promise = $.getJSON('../sample-data/full.json');
+                    var promise = $.getJSON('../sample-data/root.json');
                     promise.then(function(results) {
                         var matches = _.filter(results, function(result) {
                             return query.test(result.title);

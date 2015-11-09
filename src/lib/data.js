@@ -472,6 +472,15 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Hides all nodes.
+     *
+     * @return {void}
+     */
+    data.hideAll = function() {
+        data.hideNodes(model);
+    };
+
+    /**
      * Loads data. Accepts an array or a promise.
      *
      * @param {array|function} loader Array of nodes, or promise resolving an array of nodes.
@@ -567,7 +576,14 @@ module.exports = function InspireData(api) {
             return custom(
                 query,
                 function resolver(nodes) {
-                    console.log('resolved', nodes);
+                    data.batch();
+
+                    data.hideAll();
+                    each(nodes, function(node) {
+                        mergeNode(model, node);
+                    });
+
+                    data.end();
                 },
                 function rejecter(err) {
                     api.events.emit('data.loaderror', err);
