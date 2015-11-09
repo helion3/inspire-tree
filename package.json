@@ -45,7 +45,8 @@
     "test": "./node_modules/karma/bin/karma start",
     "watch": "webpack --progress --colors --watch",
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
-    "lint": "eslint src *.js"
+    "lint": "eslint src *.js",
+    "deploy": "DIR=dist webpack && PROD=1 DIR=dist webpack -p"
   },
   "main": "dist/inspire-tree.js",
   "files": [
