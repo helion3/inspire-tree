@@ -9,7 +9,10 @@ describe('API - Data', function() {
     var tree;
 
     it('returns data api', function() {
-        tree = new InspireTree({ selector: 'div' });
+        tree = new InspireTree({
+            target: 'div',
+            data: []
+        });
 
         expect(tree.data).to.be.an('object');
     });
