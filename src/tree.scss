@@ -1,5 +1,3 @@
-/* ~~~~~~~@ Icons @~~~~~~~ */
-
 @font-face {
     font-family: 'itree';
     src: url('../fonts/itree.eot?bhulrm');
@@ -11,39 +9,43 @@
     font-style: normal;
 }
 
-.icon:before {
-    font-family: 'itree';
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: normal;
-    line-height: 1;
-    speak: none;
-    text-transform: none;
-}
-
-.icon-caret:before {
-    content: '\e800';
-}
-.icon-caret-down:before {
-    @extend .icon-caret:before;
-    transform: rotate(90deg);
-}
-.icon-file-empty:before {
-    content: '\e801';
-}
-.icon-folder:before {
-    content: '\e802';
-}
-.icon-folder-open:before {
-    content: '\e803';
-}
-
 /* ~~~~~~~@ Tree Theme @~~~~~~~ */
 
 .inspire-tree {
     font: 400 12px Helvetica Nueue, Verdana, sans-serif;
+
+    .icon:before {
+        font-family: 'itree';
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-variant: normal;
+        font-weight: normal;
+        line-height: 1;
+        speak: none;
+        text-transform: none;
+    }
+
+    .icon-caret:before {
+        content: '\e800';
+    }
+
+    .icon-caret-down:before {
+        @extend .icon-caret:before;
+        transform: rotate(90deg);
+    }
+
+    .icon-file-empty:before {
+        content: '\e801';
+    }
+
+    .icon-folder:before {
+        content: '\e802';
+    }
+
+    .icon-folder-open:before {
+        content: '\e803';
+    }
 
     > ol {
         position: relative;
@@ -79,7 +81,10 @@
     }
 
     .title {
+        overflow: hidden;
         padding-left: 30px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
         &:before {
             color: #ccc;
