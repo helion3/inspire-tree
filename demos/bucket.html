@@ -69,31 +69,27 @@
             $('.move-one').on('click', function() {
                 var selected = sourceTree.data.getSelected();
                 sourceTree.data.hideNodes(selected);
-
-                var selectedHierarchy = sourceTree.data.getSelected(null, true);
-                destTree.data.addNodes(selectedHierarchy);
+                sourceTree.data.copyNodes(selected, true).to(destTree);
             });
 
             sourceTree.events.on('node.dblclick', function(event, node) {
-                destTree.data.addNode(node);
+                sourceTree.data.copyNode(node, true).to(destTree);
             });
 
             $('.revert-one').on('click', function() {
                 var selected = destTree.data.getSelected();
                 destTree.data.hideNodes(selected);
-
-                var selectedHierarchy = destTree.data.getSelected(null, true);
-                sourceTree.data.addNodes(selectedHierarchy);
+                destTree.data.copyNodes(selected, true).to(sourceTree);
             });
 
             $('.move-all').on('click', function() {
-                var nodes = sourceTree.data.getNodes();
-                sourceTree.data.sendNodesTo(nodes, destTree);
+                sourceTree.data.copyNodes().to(destTree);
+                sourceTree.data.hideAll();
             });
 
             $('.revert-all').on('click', function() {
-                var nodes = destTree.data.getNodes();
-                destTree.data.sendNodesTo(nodes, sourceTree);
+                destTree.data.copyNodes().to(sourceTree);
+                destTree.data.hideAll();
             });
         });
     </script>

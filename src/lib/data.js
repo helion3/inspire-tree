@@ -39,8 +39,8 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     function expandParents(node) {
-        if (node.parent) {
-            node = node.parent;
+        if (node.itree.parent) {
+            node = node.itree.parent;
 
             node.itree.state.collapsed = false;
             api.events.emit('node.expanded', node);
@@ -103,9 +103,13 @@ module.exports = function InspireData(api) {
      * @return {object} Final object
      */
     function objectToModel(object, parent) {
+        // Create or type-ensure ID
         object.id = object.id || generateId();
-        object.parent = parent;
+        if (!isString(object.id)) {
+            object.id = object.id.toString();
+        }
 
+        // Add all itree values
         object.itree = defaultsDeep(object.itree || {}, {
             state: {
                 collapsed: true,
@@ -113,6 +117,9 @@ module.exports = function InspireData(api) {
                 selected: false
             }
         });
+
+        // Save parent, if any.
+        object.itree.parent = parent;
 
         if (isArray(object.children) && !isEmpty(object.children)) {
             collectionToModel(object.children, object);
@@ -155,8 +162,8 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     function showParents(node) {
-        if (node.parent) {
-            node = node.parent;
+        if (node.itree.parent) {
+            node = node.itree.parent;
 
             node.itree.state.hidden = false;
             api.events.emit('node.shown', node);
@@ -190,8 +197,9 @@ module.exports = function InspireData(api) {
 
         if (newNodes.length) {
             api.events.emit('node.added', node);
-            rerender();
         }
+
+        rerender();
 
         return node;
     };
@@ -239,7 +247,7 @@ module.exports = function InspireData(api) {
      * @return {object} Node object.
      */
     data.collapseNode = function(node) {
-        if (!node.itree.state.collapsed && !isEmpty(node.children)) {
+        if (!node.itree.state.collapsed && !isEmpty(get(node, 'children'))) {
             node.itree.state.collapsed = true;
 
             api.events.emit('node.collapsed', node);
@@ -248,6 +256,103 @@ module.exports = function InspireData(api) {
         }
 
         return node;
+    };
+
+    /**
+     * Copies all parents of a node.
+     *
+     * @param {object} node Object node.
+     * @param {boolean} excludeNode Exclude given node from hierarchy.
+     * @return {object} Root node object with hierarchy.
+     */
+    data.copyHierarchy = function(node, excludeNode) {
+        var parents = cloneDeep(data.getParents(node));
+
+        // Remove old hierarchy data
+        map(parents, function(node) {
+            delete node.itree.parent;
+            delete node.children;
+            return node;
+        });
+
+        parents = parents.reverse();
+
+        if (!excludeNode) {
+            parents.push(node);
+        }
+
+        var hierarchy = parents[0];
+        var pointer = hierarchy;
+        var l = parents.length;
+        each(parents, function(parent, key) {
+            if (key + 1 < l) {
+                pointer.children = [
+                    parents[key + 1]
+                ];
+
+                pointer = pointer.children[0];
+            }
+        });
+
+        return hierarchy;
+    };
+
+    /**
+     * Copies nodes to a new tree instance.
+     *
+     * @param {array} node Node object
+     * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @return {void}
+     */
+    data.copyNode = function(node, hierarchy) {
+        if (hierarchy) {
+            node = data.copyHierarchy(node);
+        }
+
+        return {
+
+            /**
+             * Sets a destination.
+             *
+             * @param {object} dest Destination Inspire Tree.
+             * @return {void}
+             */
+            to: function(dest) {
+                if (!isFunction(dest.data.addNode)) {
+                    throw new Error('Destination must be an Inspire Tree instance.');
+                }
+
+                dest.data.addNode(data.exportNode(node));
+            }
+        };
+    };
+
+    /**
+     * Copies nodes to a new tree instance.
+     *
+     * @param {array} nodes Array of node objects.
+     * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @return {void}
+     */
+    data.copyNodes = function(nodes, hierarchy) {
+        return {
+
+            /**
+             * Sets a destination.
+             *
+             * @param {object} dest Destination Inspire Tree.
+             * @return {void}
+             */
+            to: function(dest) {
+                if (!isFunction(dest.data.addNodes)) {
+                    throw new Error('Destination must be an Inspire Tree instance.');
+                }
+
+                each((nodes || model), function(node) {
+                    data.copyNode(node, hierarchy).to(dest);
+                });
+            }
+        };
     };
 
     /**
@@ -297,7 +402,7 @@ module.exports = function InspireData(api) {
      */
     data.expandNode = function(node) {
         var isDynamic = get(api, 'config.dynamic');
-        var allow = (!isEmpty(node.children) || isDynamic);
+        var allow = (!isEmpty(get(node, 'children')) || isDynamic);
 
         if (allow && node.itree.state.collapsed) {
             node.itree.state.collapsed = false;
@@ -313,6 +418,24 @@ module.exports = function InspireData(api) {
         }
 
         return node;
+    };
+
+    /**
+     * Clones a node object and removes any
+     * itree instance information/state.
+     *
+     * @param {array} node Node object
+     * @return {array} Cloned/modified node object.
+     */
+    data.exportNode = function(node) {
+        var nodeClone = cloneDeep(node);
+
+        recurse(nodeClone, function(node) {
+            node.itree = null;
+            return node;
+        });
+
+        return nodeClone;
     };
 
     /**
@@ -369,51 +492,6 @@ module.exports = function InspireData(api) {
     };
 
     /**
-     * Returns a flat array of selected nodes.
-     *
-     * If `hierarchy` is false, it'll returned selected nodes
-     * along with their parents. However, the data will be cloned
-     * to prevent conflicts with original data.
-     *
-     * @param {array} nodes Array of node objects to search within.
-     * @param {boolean} hierarchy Whether to return a hierarchy or flat array.
-     * @return {array} Selected nodes.
-     */
-    data.getSelected = function(nodes, hierarchy) {
-        var selected = [];
-
-        if (!hierarchy) {
-            selected = data.flatten((nodes || model), 'selected');
-        }
-        else {
-            each((nodes || model), function(node) {
-                var nodeClone;
-
-                if (node.itree.state.selected) {
-                    nodeClone = cloneDeep(node);
-                }
-
-                // Are any children selected?
-                if (!nodeClone && isArray(node.children) && node.children.length) {
-                    var children = data.getSelected(node.children, hierarchy);
-                    if (children.length) {
-                        nodeClone = cloneDeep(node);
-                        nodeClone.children = children;
-                    }
-                }
-
-                if (nodeClone) {
-                    selected.push(nodeClone);
-                }
-            });
-
-            selected = data.exportNodes(selected);
-        }
-
-        return selected;
-    };
-
-    /**
      * Get a node by it's unique id.
      *
      * @param {string} id Unique ID.
@@ -422,6 +500,10 @@ module.exports = function InspireData(api) {
      */
     data.getNodeById = function(id, nodes) {
         var node;
+
+        if (!isString(id)) {
+            id = id.toString();
+        }
 
         each((nodes || model), function(item) {
             if (item.id === id) {
@@ -441,6 +523,33 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Returns parent nodes for a node. Excludes any siblings.
+     *
+     * @param {object} node Node object.
+     * @return {array} Node objects.
+     */
+    data.getParents = function(node) {
+        var parents = [];
+
+        if (get(node, 'itree.parent')) {
+            parents.push(node.itree.parent);
+            parents = parents.concat(data.getParents(node.itree.parent));
+        }
+
+        return parents;
+    };
+
+    /**
+     * Returns a flat array of selected nodes.
+     *
+     * @param {array} nodes Array of node objects to search within.
+     * @return {array} Selected nodes.
+     */
+    data.getSelected = function(nodes) {
+        return data.flatten((nodes || model), 'selected');
+    };
+
+    /**
      * Hide a node.
      *
      * @param {object} node Node object.
@@ -451,6 +560,11 @@ module.exports = function InspireData(api) {
             node.itree.state.hidden = true;
 
             api.events.emit('node.hidden', node);
+
+            // Update children
+            if (get(node, 'children')) {
+                data.hideNodes(node.children);
+            }
 
             rerender();
         }
@@ -565,6 +679,16 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Removes all nodes.
+     *
+     * @return {void}
+     */
+    data.removeAll = function() {
+        model = [];
+        rerender();
+    };
+
+    /**
      * Search nodes, showing only those that match and the necessary hierarchy.
      *
      * @param {*} query Search string, RegExp, or function.
@@ -646,24 +770,6 @@ module.exports = function InspireData(api) {
         }
 
         return node;
-    };
-
-    /**
-     * Copies nodes to a new tree instance.
-     *
-     * @param {array} nodes Array of node objects.
-     * @param {object} destTree Destination Inspire Tree.
-     * @return {void}
-     */
-    data.sendNodesTo = function(nodes, destTree) {
-        if (!isFunction(destTree.data.addNodes)) {
-            throw new Error('Destination must be an Inspire Tree instance.');
-        }
-
-        data.hideNodes(nodes);
-
-        var exported = data.exportNodes(nodes);
-        destTree.data.addNodes(exported);
     };
 
     /**
