@@ -3,6 +3,10 @@
 module.exports = function(config) {
     config.set({
         files: [
+            {
+                pattern: 'sample-data/*.json',
+                included: false
+            },
             'bower_components/jquery/dist/jquery.js',
             'build/inspire-tree.js',
             'test/helpers.js',
