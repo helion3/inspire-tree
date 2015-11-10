@@ -213,5 +213,12 @@ describe('Modification', function() {
         tree2.data.removeAll();
     });
 
+    it('removes a node', function() {
+        var node = tree1.data.getNode(1);
+        tree1.data.removeNode(node);
+
+        expect(tree1.data.getNodes()).to.have.length(4);
+    });
+
     after(helpers.clearDOM);
 });

@@ -62,6 +62,7 @@ tree.events.on('node.click', function(event, node) {
 - *node.deselected*
 - *node.expanded*
 - *node.hidden*
+- *node.removed*
 - *node.selected*
 - *node.shown*
 - *tree.ready*

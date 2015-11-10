@@ -33,6 +33,7 @@
     "lodash.isstring": "^3.0.1",
     "lodash.map": "^3.1.4",
     "lodash.pairs": "^3.0.1",
+    "lodash.remove": "^3.1.0",
     "lodash.transform": "^3.0.4",
     "mocha": "^2.3.3",
     "node-sass": "^3.4.1",

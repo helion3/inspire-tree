@@ -13,6 +13,7 @@ var isObject = require('lodash.isobject');
 var isRegExp = require('lodash.isregexp');
 var isString = require('lodash.isstring');
 var map = require('lodash.map');
+var remove = require('lodash.remove');
 var transform = require('lodash.transform');
 
 module.exports = function InspireData(api) {
@@ -696,6 +697,21 @@ module.exports = function InspireData(api) {
      */
     data.removeAll = function() {
         model = [];
+        rerender();
+    };
+
+    /**
+     * Remove a node from the tree.
+     *
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    data.removeNode = function(node) {
+        var context = (node.parent ? node.parent.children : model);
+        remove(context, { id: node.id });
+
+        api.events.emit('node.removed', data.exportNode(node));
+
         rerender();
     };
 
