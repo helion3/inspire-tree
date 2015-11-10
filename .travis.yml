@@ -2,6 +2,10 @@ language: node_js
 node_js:
     - 0.12
     - 4.0.0
+before_script:
+    - npm install -g bower webpack
+    - bower install
+    - npm run deploy
 script:
   - npm run lint
   - npm test

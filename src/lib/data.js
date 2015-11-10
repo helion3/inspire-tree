@@ -483,12 +483,14 @@ module.exports = function InspireData(api) {
     };
 
     /**
-     * Get all nodes in a tree.
+     * Get a node.
      *
-     * @return {array} Array of node objects.
+     * @alias getNodeById
+     * @param {string|number} ref ID of node.
+     * @return {object} Node object.
      */
-    data.getNodes = function() {
-        return model;
+    data.getNode = function(ref) {
+        return data.getNodeById(ref);
     };
 
     /**
@@ -520,6 +522,15 @@ module.exports = function InspireData(api) {
         });
 
         return node;
+    };
+
+    /**
+     * Get all nodes in a tree.
+     *
+     * @return {array} Array of node objects.
+     */
+    data.getNodes = function() {
+        return model;
     };
 
     /**
