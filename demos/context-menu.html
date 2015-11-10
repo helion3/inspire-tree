@@ -41,7 +41,8 @@
                 contextMenu: [{
                     text: 'Alert',
                     handler: function(event, node) {
-                        console.log('handling', node);
+                        alert('Clicked on ' + node.title)
+                        tree.dom.closeContextMenu();
                     }
                 }]
             });

@@ -25,7 +25,11 @@ module.exports = function InspireDOM(api) {
      * @return {object} Unordered list node.
      */
     function createContextMenu(choices, node) {
-        return h('ul.itree-menu', transform(choices, function(contents, choice) {
+        return h('ul.itree-menu', {
+            onclick: function(event) {
+                event.stopPropagation();
+            }
+        }, transform(choices, function(contents, choice) {
             contents.push(createContextMenuListItem(choice, node));
         }));
     }
@@ -132,12 +136,14 @@ module.exports = function InspireDOM(api) {
 
         return h('a.' + classNames.join('.'), {
             oncontextmenu: function(event) {
-                var node = getNodeFromTitleDOMElement(event.target);
+                if (get(api, 'config.contextMenu')) {
+                    var node = getNodeFromTitleDOMElement(event.target);
 
-                renderContextMenu(event, node);
+                    renderContextMenu(event, node);
 
-                // Emit
-                api.events.emit('node.contextmenu', event, node);
+                    // Emit
+                    api.events.emit('node.contextmenu', event, node);
+                }
             },
             onclick: function(event) {
                 var node = getNodeFromTitleDOMElement(event.target);
@@ -229,7 +235,6 @@ module.exports = function InspireDOM(api) {
         return api.data.getNodeById(uid);
     }
 
-    var contextUl;
     var contextMenuNode;
 
     /**
@@ -245,21 +250,14 @@ module.exports = function InspireDOM(api) {
         if (isArray(choices)) {
             event.preventDefault();
 
-            var newUl = createContextMenu(choices, node);
-
-            if (!contextUl) {
-                contextMenuNode = createElement(newUl);
+            if (!contextMenuNode) {
+                var ul = createContextMenu(choices, node);
+                contextMenuNode = createElement(ul);
                 document.body.appendChild(contextMenuNode);
-            }
-            else {
-                var patches = diff(contextUl, newUl);
-                contextMenuNode = patch(contextMenuNode, patches);
             }
 
             contextMenuNode.style.top = event.clientY + 'px';
             contextMenuNode.style.left = event.clientX + 'px';
-
-            contextUl = newUl;
         }
     }
 
@@ -290,6 +288,24 @@ module.exports = function InspireDOM(api) {
         }
 
         $target.className += ' inspire-tree';
+
+        if (get(api, 'config.contextMenu')) {
+            document.body.addEventListener('click', function() {
+                dom.closeContextMenu();
+            });
+        }
+    };
+
+    /**
+     * Closes any open context menu.
+     *
+     * @return {void}
+     */
+    dom.closeContextMenu = function() {
+        if (contextMenuNode) {
+            contextMenuNode.parentNode.removeChild(contextMenuNode);
+            contextMenuNode = null;
+        }
     };
 
     // Cache our root node, so we can patch re-render in the future.
