@@ -11,7 +11,7 @@
   },
   "main": "dist/inspire-tree.min.js",
   "ignore": [
-      "demos"
+      "demos",
       "fonts",
       "hooks",
       "sample-data",
