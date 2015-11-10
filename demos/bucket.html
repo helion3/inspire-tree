@@ -67,7 +67,7 @@
             });
 
             $('.move-one').on('click', function() {
-                var selected = sourceTree.data.getSelected();
+                var selected = sourceTree.data.getSelectedNodes();
                 sourceTree.data.hideNodes(selected);
                 sourceTree.data.copyNodes(selected, true).to(destTree);
             });
@@ -77,7 +77,7 @@
             });
 
             $('.revert-one').on('click', function() {
-                var selected = destTree.data.getSelected();
+                var selected = destTree.data.getSelectedNodes();
                 destTree.data.hideNodes(selected);
                 destTree.data.copyNodes(selected, true).to(sourceTree);
             });

@@ -33,7 +33,7 @@ describe('Selection', function() {
     });
 
     it('returns array of selected nodes', function() {
-        var selected = tree.data.getSelected();
+        var selected = tree.data.getSelectedNodes();
 
         expect(selected).to.have.length(1);
         expect(selected[0].title).to.equal('A');

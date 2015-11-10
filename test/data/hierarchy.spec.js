@@ -25,7 +25,7 @@ describe('Hierarchy', function() {
 
     it('returns flat array of parents', function() {
         var node = tree.data.getNodeById(111);
-        var parents = tree.data.getParents(node);
+        var parents = tree.data.getParentNodes(node);
 
         expect(parents).to.have.length(2);
     });

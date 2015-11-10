@@ -266,7 +266,7 @@ module.exports = function InspireData(api) {
      * @return {object} Root node object with hierarchy.
      */
     data.copyHierarchy = function(node, excludeNode) {
-        var parents = cloneDeep(data.getParents(node));
+        var parents = cloneDeep(data.getParentNodes(node));
 
         // Remove old hierarchy data
         map(parents, function(node) {
@@ -464,7 +464,7 @@ module.exports = function InspireData(api) {
      * @param {string} flag Which state flag to filter by.
      * @return {array} Flat array of matching nodes.
      */
-    data.flatten = function(nodes, flag) {
+    data.flattenNodes = function(nodes, flag) {
         var flat = [];
         flag = flag || 'selected';
 
@@ -474,7 +474,7 @@ module.exports = function InspireData(api) {
                     flat.push(node);
                 }
                 else {
-                    flat = flat.concat(data.flatten(node.children));
+                    flat = flat.concat(data.flattenNodes(node.children));
                 }
             });
         }
@@ -539,12 +539,12 @@ module.exports = function InspireData(api) {
      * @param {object} node Node object.
      * @return {array} Node objects.
      */
-    data.getParents = function(node) {
+    data.getParentNodes = function(node) {
         var parents = [];
 
         if (get(node, 'itree.parent')) {
             parents.push(node.itree.parent);
-            parents = parents.concat(data.getParents(node.itree.parent));
+            parents = parents.concat(data.getParentNodes(node.itree.parent));
         }
 
         return parents;
@@ -556,8 +556,8 @@ module.exports = function InspireData(api) {
      * @param {array} nodes Array of node objects to search within.
      * @return {array} Selected nodes.
      */
-    data.getSelected = function(nodes) {
-        return data.flatten((nodes || model), 'selected');
+    data.getSelectedNodes = function(nodes) {
+        return data.flattenNodes((nodes || model), 'selected');
     };
 
     /**
