@@ -7,20 +7,22 @@
   ],
   "description": "Inspired Javascript Tree UI Component",
   "license": "MIT",
-  "dependencies": {
-  },
   "main": "dist/inspire-tree.min.js",
   "ignore": [
-      "demos",
-      "fonts",
-      "hooks",
-      "sample-data",
-      "src",
-      "test",
-      ".*",
-      "karma*",
-      "webpack*"
+    "demos",
+    "fonts",
+    "hooks",
+    "sample-data",
+    "src",
+    "test",
+    ".*",
+    "karma*",
+    "webpack*"
   ],
-  "devDependencies": [],
-  "private": false
+  "private": false,
+  "devDependencies": {
+    "requirejs": "~2.1.20",
+    "lodash": "~3.10.1",
+    "jquery": "~2.1.4"
+  }
 }

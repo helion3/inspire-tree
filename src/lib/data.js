@@ -1,7 +1,7 @@
 'use strict';
 
 // Libs
-var cloneDeep = require('lodash.cloneDeep');
+var cloneDeep = require('lodash.clonedeep');
 var cuid = require('cuid');
 var defaultsDeep = require('lodash.defaultsdeep');
 var each = require('lodash.foreach');

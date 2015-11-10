@@ -5,7 +5,8 @@ node_js:
 before_script:
     - npm install -g bower webpack
     - bower install
-    - npm run deploy
+    - webpack
+    - ls -al
 script:
   - npm run lint
   - npm test
