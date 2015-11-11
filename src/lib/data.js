@@ -311,6 +311,7 @@ module.exports = function InspireData(api) {
             /**
              * Sets a destination.
              *
+             * @category CopyNode
              * @param {object} dest Destination Inspire Tree.
              * @return {void}
              */
@@ -338,6 +339,7 @@ module.exports = function InspireData(api) {
             /**
              * Sets a destination.
              *
+             * @category CopyNode
              * @param {object} dest Destination Inspire Tree.
              * @return {void}
              */
@@ -642,6 +644,7 @@ module.exports = function InspireData(api) {
     /**
      * Iterate down node/children recursively.
      *
+     * @category Data
      * @param {array|object} collection Array of nodes or node object.
      * @param {function} iteratee Iteratee function.
      * @return {array} Resulting node array.

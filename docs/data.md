@@ -4,6 +4,14 @@
 
 <!-- div -->
 
+## `CopyNode`
+* <a href="#to">`to`</a>
+* <a href="#to">`to`</a>
+
+<!-- /div -->
+
+<!-- div -->
+
 ## `Data`
 * <a href="#addChildNode">`addChildNode`</a>
 * <a href="#addNode">`addNode`</a>
@@ -28,6 +36,7 @@
 * <a href="#getSelectedNodes">`getSelectedNodes`</a>
 * <a href="#load">`load`</a>
 * <a href="#loadChildren">`loadChildren`</a>
+* <a href="#recurseDown">`recurseDown`</a>
 * <a href="#removeAll">`removeAll`</a>
 * <a href="#removeNode">`removeNode`</a>
 * <a href="#search">`search`</a>
@@ -35,18 +44,43 @@
 
 <!-- /div -->
 
-<!-- div -->
-
-## `Methods`
-* <a href="#recurseDown">`recurseDown`</a>
-* <a href="#to">`to`</a>
-* <a href="#to">`to`</a>
-
-<!-- /div -->
-
 <!-- /div -->
 
 <!-- div class="doc-container" -->
+
+<!-- div -->
+
+## `“CopyNode” Methods`
+
+<!-- div -->
+
+### <a id="to"></a>`to(dest)`
+<a href="#to">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L318 "View in source") [&#x24C9;][1]
+
+Sets a destination.
+
+#### Arguments
+1. `dest` *(object)*: Destination Inspire Tree.
+
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
+### <a id="to"></a>`to(dest)`
+<a href="#to">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L318 "View in source") [&#x24C9;][1]
+
+Sets a destination.
+
+#### Arguments
+1. `dest` *(object)*: Destination Inspire Tree.
+
+* * *
+
+<!-- /div -->
+
+<!-- /div -->
 
 <!-- div -->
 
@@ -150,7 +184,7 @@ Copies nodes to a new tree instance.
 <!-- div -->
 
 ### <a id="copyNodes"></a>`copyNodes(nodes, hierarchy)`
-<a href="#copyNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L335 "View in source") [&#x24C9;][1]
+<a href="#copyNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L336 "View in source") [&#x24C9;][1]
 
 Copies nodes to a new tree instance.
 
@@ -165,7 +199,7 @@ Copies nodes to a new tree instance.
 <!-- div -->
 
 ### <a id="deselectAll"></a>`deselectAll`
-<a href="#deselectAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L362 "View in source") [&#x24C9;][1]
+<a href="#deselectAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L364 "View in source") [&#x24C9;][1]
 
 Deselect all nodes.
 
@@ -176,7 +210,7 @@ Deselect all nodes.
 <!-- div -->
 
 ### <a id="deselectNode"></a>`deselectNode(node)`
-<a href="#deselectNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L375 "View in source") [&#x24C9;][1]
+<a href="#deselectNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L377 "View in source") [&#x24C9;][1]
 
 Deselect a node.
 
@@ -190,7 +224,7 @@ Deselect a node.
 <!-- div -->
 
 ### <a id="end"></a>`end`
-<a href="#end">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L393 "View in source") [&#x24C9;][1]
+<a href="#end">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L395 "View in source") [&#x24C9;][1]
 
 Permit rerendering of batched changes.
 
@@ -201,7 +235,7 @@ Permit rerendering of batched changes.
 <!-- div -->
 
 ### <a id="exportNode"></a>`exportNode(node)`
-<a href="#exportNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L406 "View in source") [&#x24C9;][1]
+<a href="#exportNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L408 "View in source") [&#x24C9;][1]
 
 Clones a node object and removes any
 itree instance information/state.
@@ -216,7 +250,7 @@ itree instance information/state.
 <!-- div -->
 
 ### <a id="exportNodes"></a>`exportNodes(nodes)`
-<a href="#exportNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L425 "View in source") [&#x24C9;][1]
+<a href="#exportNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L427 "View in source") [&#x24C9;][1]
 
 Clones an array of node objects and removes any
 itree instance information/state.
@@ -231,7 +265,7 @@ itree instance information/state.
 <!-- div -->
 
 ### <a id="flattenNodes"></a>`flattenNodes(nodes, flag)`
-<a href="#flattenNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L445 "View in source") [&#x24C9;][1]
+<a href="#flattenNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L447 "View in source") [&#x24C9;][1]
 
 Flattens a hierarchy, returning only node(s) with the
 expected state, for operations which must exclude parents.
@@ -247,7 +281,7 @@ expected state, for operations which must exclude parents.
 <!-- div -->
 
 ### <a id="getNode"></a>`getNode(ref)`
-<a href="#getNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L481 "View in source") [&#x24C9;][1]
+<a href="#getNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L483 "View in source") [&#x24C9;][1]
 
 Get a node.
 
@@ -264,7 +298,7 @@ Get a node.
 <!-- div -->
 
 ### <a id="getNodeById"></a>`getNodeById(id, nodes)`
-<a href="#getNodeById">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L493 "View in source") [&#x24C9;][1]
+<a href="#getNodeById">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L495 "View in source") [&#x24C9;][1]
 
 Get a node by it's unique id.
 
@@ -279,7 +313,7 @@ Get a node by it's unique id.
 <!-- div -->
 
 ### <a id="getNodes"></a>`getNodes`
-<a href="#getNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L469 "View in source") [&#x24C9;][1]
+<a href="#getNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L471 "View in source") [&#x24C9;][1]
 
 Get all nodes in a tree.
 
@@ -290,7 +324,7 @@ Get all nodes in a tree.
 <!-- div -->
 
 ### <a id="getNodes"></a>`getNodes`
-<a href="#getNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L469 "View in source") [&#x24C9;][1]
+<a href="#getNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L471 "View in source") [&#x24C9;][1]
 
 Get all nodes in a tree.
 
@@ -301,7 +335,7 @@ Get all nodes in a tree.
 <!-- div -->
 
 ### <a id="getParentNodes"></a>`getParentNodes(node)`
-<a href="#getParentNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L534 "View in source") [&#x24C9;][1]
+<a href="#getParentNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L536 "View in source") [&#x24C9;][1]
 
 Returns parent nodes for a node. Excludes any siblings.
 
@@ -315,7 +349,7 @@ Returns parent nodes for a node. Excludes any siblings.
 <!-- div -->
 
 ### <a id="getSelectedNodes"></a>`getSelectedNodes(nodes)`
-<a href="#getSelectedNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L552 "View in source") [&#x24C9;][1]
+<a href="#getSelectedNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L554 "View in source") [&#x24C9;][1]
 
 Returns a flat array of selected nodes.
 
@@ -329,7 +363,7 @@ Returns a flat array of selected nodes.
 <!-- div -->
 
 ### <a id="load"></a>`load(loader)`
-<a href="#load">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L566 "View in source") [&#x24C9;][1]
+<a href="#load">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L568 "View in source") [&#x24C9;][1]
 
 Loads data. Accepts an array or a promise.
 
@@ -347,7 +381,7 @@ data.load($.getJSON('nodes.json'));
 <!-- div -->
 
 ### <a id="loadChildren"></a>`loadChildren(node)`
-<a href="#loadChildren">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L624 "View in source") [&#x24C9;][1]
+<a href="#loadChildren">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L626 "View in source") [&#x24C9;][1]
 
 Initiate a dynamic load of children for a given node.
 <br>
@@ -371,67 +405,8 @@ On error, pass the Error to `reject`.
 
 <!-- div -->
 
-### <a id="removeAll"></a>`removeAll`
-<a href="#removeAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L675 "View in source") [&#x24C9;][1]
-
-Removes all nodes.
-
-* * *
-
-<!-- /div -->
-
-<!-- div -->
-
-### <a id="removeNode"></a>`removeNode(node)`
-<a href="#removeNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L687 "View in source") [&#x24C9;][1]
-
-Remove a node from the tree.
-
-#### Arguments
-1. `node` *(object)*: Node object.
-
-* * *
-
-<!-- /div -->
-
-<!-- div -->
-
-### <a id="search"></a>`search(query)`
-<a href="#search">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L703 "View in source") [&#x24C9;][1]
-
-Search nodes, showing only those that match and the necessary hierarchy.
-
-#### Arguments
-1. `query` *(&#42;)*: Search string, RegExp, or function.
-
-* * *
-
-<!-- /div -->
-
-<!-- div -->
-
-### <a id="selectNode"></a>`selectNode(node)`
-<a href="#selectNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L775 "View in source") [&#x24C9;][1]
-
-Select a node. If already selected, no change made.
-
-#### Arguments
-1. `node` *(object)*: Node object.
-
-* * *
-
-<!-- /div -->
-
-<!-- /div -->
-
-<!-- div -->
-
-## `Methods`
-
-<!-- div -->
-
 ### <a id="recurseDown"></a>`recurseDown(collection, iteratee)`
-<a href="#recurseDown">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L649 "View in source") [&#x24C9;][1]
+<a href="#recurseDown">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L652 "View in source") [&#x24C9;][1]
 
 Iterate down node/children recursively.
 
@@ -445,13 +420,10 @@ Iterate down node/children recursively.
 
 <!-- div -->
 
-### <a id="to"></a>`to(dest)`
-<a href="#to">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L317 "View in source") [&#x24C9;][1]
+### <a id="removeAll"></a>`removeAll`
+<a href="#removeAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L678 "View in source") [&#x24C9;][1]
 
-Sets a destination.
-
-#### Arguments
-1. `dest` *(object)*: Destination Inspire Tree.
+Removes all nodes.
 
 * * *
 
@@ -459,13 +431,41 @@ Sets a destination.
 
 <!-- div -->
 
-### <a id="to"></a>`to(dest)`
-<a href="#to">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L317 "View in source") [&#x24C9;][1]
+### <a id="removeNode"></a>`removeNode(node)`
+<a href="#removeNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L690 "View in source") [&#x24C9;][1]
 
-Sets a destination.
+Remove a node from the tree.
 
 #### Arguments
-1. `dest` *(object)*: Destination Inspire Tree.
+1. `node` *(object)*: Node object.
+
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
+### <a id="search"></a>`search(query)`
+<a href="#search">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L706 "View in source") [&#x24C9;][1]
+
+Search nodes, showing only those that match and the necessary hierarchy.
+
+#### Arguments
+1. `query` *(&#42;)*: Search string, RegExp, or function.
+
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
+### <a id="selectNode"></a>`selectNode(node)`
+<a href="#selectNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L778 "View in source") [&#x24C9;][1]
+
+Select a node. If already selected, no change made.
+
+#### Arguments
+1. `node` *(object)*: Node object.
 
 * * *
 
@@ -475,4 +475,4 @@ Sets a destination.
 
 <!-- /div -->
 
- [1]: #data "Jump back to the TOC."
+ [1]: #copynode "Jump back to the TOC."

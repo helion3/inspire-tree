@@ -13,12 +13,6 @@
 * <a href="#hideNode">`hideNode`</a>
 * <a href="#hideNodes">`hideNodes`</a>
 * <a href="#renderNodes">`renderNodes`</a>
-
-<!-- /div -->
-
-<!-- div -->
-
-## `Data`
 * <a href="#showAll">`showAll`</a>
 * <a href="#showNode">`showNode`</a>
 
@@ -137,12 +131,6 @@ Triggers rendering for the given node array.
 * * *
 
 <!-- /div -->
-
-<!-- /div -->
-
-<!-- div -->
-
-## `“Data” Methods`
 
 <!-- div -->
 

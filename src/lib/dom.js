@@ -614,7 +614,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Shows all nodes.
      *
-     * @category Data
+     * @category DOM
      * @return {void}
      */
     dom.showAll = function() {
@@ -626,7 +626,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Hide a node.
      *
-     * @category Data
+     * @category DOM
      * @param {object} node Node object.
      * @return {object} Node object.
      */
