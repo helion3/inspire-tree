@@ -27,6 +27,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates a context menu unordered list.
      *
+     * @private
      * @param {array} choices Array of choice objects.
      * @param {object} node Clicked node.
      * @return {object} Unordered list node.
@@ -44,6 +45,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates a context menu list item.
      *
+     * @private
      * @param {object} choice Choice object.
      * @param {object} node Node object.
      * @return {object} List item node.
@@ -62,6 +64,7 @@ module.exports = function InspireDOM(api) {
      * Creates a draggable element by cloning a target,
      * registers a listener for mousemove.
      *
+     * @private
      * @param {HTMLElement} element DOM Element.
      * @param {Event} event Click event to use.
      * @return {void}
@@ -90,6 +93,7 @@ module.exports = function InspireDOM(api) {
      *
      * Cannot be clicked or expanded.
      *
+     * @private
      * @return {object} List Item node.
      */
     function createEmptyListItemNode() {
@@ -103,6 +107,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates a list item node for a specific data node.
      *
+     * @private
      * @param {object} node Data node.
      * @return {object} List Item node.
      */
@@ -141,6 +146,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates list item nodes for an array of data nodes.
      *
+     * @private
      * @param {array} nodes Data nodes.
      * @return {array} Array of List Item nodes.
      */
@@ -154,6 +160,7 @@ module.exports = function InspireDOM(api) {
      * Creates an ordered list containing list item for
      * provided data nodes.
      *
+     * @private
      * @param {array} nodes Data nodes.
      * @return {object} Oredered List node.
      */
@@ -164,6 +171,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates an anchor around the node title.
      *
+     * @private
      * @param {object} node Node object.
      * @param {boolean} hasVisibleChildren If this node has visible children.
      * @return {object} Anchor node.
@@ -223,6 +231,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates a container element for the title/toggle/icons.
      *
+     * @private
      * @param {string} node Node object.
      * @return {object} Container node.
      */
@@ -248,6 +257,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Creates an anchor used for expanding and collapsing a node.
      *
+     * @private
      * @param {object} node Node object.
      * @return {object} Anchor node.
      */
@@ -271,6 +281,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Calculcates the absolute offset values of an element.
      *
+     * @private
      * @param {HTMLElement} element HTML Element.
      * @return {object} Object with top/left values.
      */
@@ -298,6 +309,7 @@ module.exports = function InspireDOM(api) {
      * Get an HTMLElement through various means:
      * An element, jquery object, or a selector.
      *
+     * @private
      * @param {mixed} target Element, jQuery selector, selector.
      * @return {HTMLElement} Matching element.
      */
@@ -323,6 +335,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Helper method for obtaining the data-uid from a DOM element.
      *
+     * @private
      * @param {HTMLElement} element HTML Element.
      * @return {object} Node object
      */
@@ -335,6 +348,7 @@ module.exports = function InspireDOM(api) {
      * Listener for mouse move events for drag and drop.
      * Is removed automatically on mouse up.
      *
+     * @private
      * @param {Event} event Mouse move event.
      * @return {void}
      */
@@ -373,6 +387,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Renders a context menu for a given contextmenu click and node.
      *
+     * @private
      * @param {object} event Click event.
      * @param {object} node Clicked node object.
      * @return {void}
@@ -399,6 +414,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Attaches to the DOM element for rendering.
      *
+     * @category DOM
      * @param {HTMLElement} target Element, selector, or jQuery-like object.
      * @return {void}
      */
@@ -463,6 +479,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Closes any open context menu.
      *
+     * @category DOM
      * @return {void}
      */
     dom.closeContextMenu = function() {
@@ -476,6 +493,13 @@ module.exports = function InspireDOM(api) {
     var rootNode;
     var ol;
 
+    /**
+     * Triggers rendering for the given node array.
+     *
+     * @category DOM
+     * @param {array} nodes Array of node objects.
+     * @return {void}
+     */
     dom.renderNodes = function(nodes) {
         var newOl = createOrderedList(nodes, true);
 

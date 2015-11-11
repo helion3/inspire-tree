@@ -25,6 +25,7 @@ module.exports = function InspireData(api) {
      * Parses a raw collection of objects into a model used
      * within a tree. Adds state and other internal properties.
      *
+     * @private
      * @param {array|object} collection Collection of nodes
      * @param {object} parent Pointer to parent object
      * @return {array|object} Object model.
@@ -38,6 +39,7 @@ module.exports = function InspireData(api) {
     /**
      * Ensure all parent nodes are expanded.
      *
+     * @private
      * @param {object} node Node object.
      * @return {void}
      */
@@ -56,6 +58,7 @@ module.exports = function InspireData(api) {
      * Generates a unique ID. Useful for generating keys
      * for nodes if source data doesn't define one.
      *
+     * @private
      * @return {string} Unique ID.
      */
     function generateId() {
@@ -67,6 +70,7 @@ module.exports = function InspireData(api) {
      * or another node's children. If the ID exists
      * the node is skipped and we try its children.
      *
+     * @private
      * @param {array} context Array of node objects.
      * @param {object} node Node object.
      * @return {array} Array of new nodes.
@@ -101,6 +105,7 @@ module.exports = function InspireData(api) {
     /**
      * Parse a raw object into a model used within a tree.
      *
+     * @private
      * @param {object} object Source object
      * @param {object} parent Pointer to parent object.
      * @return {object} Final object
@@ -139,6 +144,7 @@ module.exports = function InspireData(api) {
     /**
      * Iterate nodes recursively.
      *
+     * @private
      * @param {array|object} collection Array of nodes or node object.
      * @param {function} iteratee Iteratee function.
      * @return {array} Resulting node array.
@@ -166,6 +172,7 @@ module.exports = function InspireData(api) {
     /**
      * Ensure all parent nodes are visible.
      *
+     * @private
      * @param {object} node Node object.
      * @return {void}
      */
@@ -196,6 +203,7 @@ module.exports = function InspireData(api) {
     /**
      * Add new node as a child of another.
      *
+     * @category Data
      * @param {object} parent Node object.
      * @param {object} child Node object.
      * @return {object} Node object.
@@ -217,6 +225,7 @@ module.exports = function InspireData(api) {
     /**
      * Add a node.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {object} Node object.
      */
@@ -236,6 +245,7 @@ module.exports = function InspireData(api) {
     /**
      * Add nodes.
      *
+     * @category Data
      * @param {array} nodes Array of node objects.
      * @return {array} Added node objects.
      */
@@ -254,6 +264,7 @@ module.exports = function InspireData(api) {
     /**
      * Disable rendering in preparation for multiple changes.
      *
+     * @category Data
      * @return {void}
      */
     data.batch = function() {
@@ -263,6 +274,7 @@ module.exports = function InspireData(api) {
     /**
      * Shows all nodes and collapses parents.
      *
+     * @category Data
      * @return {void}
      */
     data.clearSearch = function() {
@@ -272,6 +284,7 @@ module.exports = function InspireData(api) {
     /**
      * Expand immediate children for this node, if any.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {object} Node object.
      */
@@ -290,6 +303,7 @@ module.exports = function InspireData(api) {
     /**
      * Copies all parents of a node.
      *
+     * @category Data
      * @param {object} node Object node.
      * @param {boolean} excludeNode Exclude given node from hierarchy.
      * @return {object} Root node object with hierarchy.
@@ -329,6 +343,7 @@ module.exports = function InspireData(api) {
     /**
      * Copies nodes to a new tree instance.
      *
+     * @category Data
      * @param {array} node Node object
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
      * @return {void}
@@ -359,6 +374,7 @@ module.exports = function InspireData(api) {
     /**
      * Copies nodes to a new tree instance.
      *
+     * @category Data
      * @param {array} nodes Array of node objects.
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
      * @return {void}
@@ -387,6 +403,7 @@ module.exports = function InspireData(api) {
     /**
      * Deselect all nodes.
      *
+     * @category Data
      * @return {void}
      */
     data.deselectAll = function() {
@@ -398,6 +415,7 @@ module.exports = function InspireData(api) {
     /**
      * Deselect a node.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {pbject} Node object.
      */
@@ -416,6 +434,7 @@ module.exports = function InspireData(api) {
     /**
      * Permit rerendering of batched changes.
      *
+     * @category Data
      * @return {void}
      */
     data.end = function() {
@@ -426,6 +445,7 @@ module.exports = function InspireData(api) {
     /**
      * Expand immediate children for this node, if any.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {object} Node object.
      */
@@ -453,6 +473,7 @@ module.exports = function InspireData(api) {
      * Clones a node object and removes any
      * itree instance information/state.
      *
+     * @category Data
      * @param {array} node Node object
      * @return {array} Cloned/modified node object.
      */
@@ -471,6 +492,7 @@ module.exports = function InspireData(api) {
      * Clones an array of node objects and removes any
      * itree instance information/state.
      *
+     * @category Data
      * @param {array} nodes Array of node objects.
      * @return {array} Cloned/modified node objects.
      */
@@ -489,6 +511,7 @@ module.exports = function InspireData(api) {
      * Flattens a hierarchy, returning only node(s) with the
      * expected state, for operations which must exclude parents.
      *
+     * @category Data
      * @param {array} nodes Array of node objects.
      * @param {string} flag Which state flag to filter by.
      * @return {array} Flat array of matching nodes.
@@ -512,8 +535,19 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Get all nodes in a tree.
+     *
+     * @category Data
+     * @return {array} Array of node objects.
+     */
+    data.getNodes = function() {
+        return model;
+    };
+
+    /**
      * Get a node.
      *
+     * @category Data
      * @alias getNodeById
      * @param {string|number} ref ID of node.
      * @return {object} Node object.
@@ -525,6 +559,7 @@ module.exports = function InspireData(api) {
     /**
      * Get a node by it's unique id.
      *
+     * @category Data
      * @param {string} id Unique ID.
      * @param {array} nodes Base collection to search in.
      * @return {object} Found node.
@@ -556,6 +591,7 @@ module.exports = function InspireData(api) {
     /**
      * Get all nodes in a tree.
      *
+     * @category Data
      * @return {array} Array of node objects.
      */
     data.getNodes = function() {
@@ -565,6 +601,7 @@ module.exports = function InspireData(api) {
     /**
      * Returns parent nodes for a node. Excludes any siblings.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {array} Node objects.
      */
@@ -582,6 +619,7 @@ module.exports = function InspireData(api) {
     /**
      * Returns a flat array of selected nodes.
      *
+     * @category Data
      * @param {array} nodes Array of node objects to search within.
      * @return {array} Selected nodes.
      */
@@ -592,6 +630,7 @@ module.exports = function InspireData(api) {
     /**
      * Hide a node.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {object} Node object.
      */
@@ -615,6 +654,7 @@ module.exports = function InspireData(api) {
     /**
      * Hide all nodes in an array.
      *
+     * @category Data
      * @param {array} nodes Array of node objects.
      * @return {array} Array of node objects.
      */
@@ -628,6 +668,7 @@ module.exports = function InspireData(api) {
     /**
      * Hides all nodes.
      *
+     * @category Data
      * @return {void}
      */
     data.hideAll = function() {
@@ -637,6 +678,7 @@ module.exports = function InspireData(api) {
     /**
      * Loads data. Accepts an array or a promise.
      *
+     * @category Data
      * @param {array|function} loader Array of nodes, or promise resolving an array of nodes.
      * @return {object} Promise
      * @example
@@ -697,6 +739,7 @@ module.exports = function InspireData(api) {
      * On load success, pass the result array to `resolve`.
      * On error, pass the Error to `reject`.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {void}
      */
@@ -721,6 +764,7 @@ module.exports = function InspireData(api) {
     /**
      * Removes all nodes.
      *
+     * @category Data
      * @return {void}
      */
     data.removeAll = function() {
@@ -731,6 +775,7 @@ module.exports = function InspireData(api) {
     /**
      * Remove a node from the tree.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {void}
      */
@@ -746,6 +791,7 @@ module.exports = function InspireData(api) {
     /**
      * Search nodes, showing only those that match and the necessary hierarchy.
      *
+     * @category Data
      * @param {*} query Search string, RegExp, or function.
      * @return {array} Array of matching node objects.
      */
@@ -817,6 +863,7 @@ module.exports = function InspireData(api) {
     /**
      * Select a node. If already selected, no change made.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {object} Node object.
      */
@@ -837,6 +884,7 @@ module.exports = function InspireData(api) {
     /**
      * Shows all nodes.
      *
+     * @category Data
      * @return {void}
      */
     data.showAll = function() {
@@ -848,6 +896,7 @@ module.exports = function InspireData(api) {
     /**
      * Hide a node.
      *
+     * @category Data
      * @param {object} node Node object.
      * @return {object} Node object.
      */
