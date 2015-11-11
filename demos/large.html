@@ -16,13 +16,19 @@
                 border-radius: 2px;
                 margin-bottom: 20px;
                 min-height: 400px;
-                max-width: 500px;
+                width: 500px;
+            }
+
+            .tree, .log {
+                float: left;
+                margin-right: 20px;
             }
         </style>
     </head>
     <body>
         <p>Loads 100 company nodes with 100 employees each.</p>
         <div class="tree"></div>
+        <ul class="log"></ul>
     </body>
     <script src="../bower_components/requirejs/require.js"></script>
     <script>
@@ -40,6 +46,25 @@
             var tree = new InspireTree({
                 target: '.tree',
                 data: $.getJSON('../sample-data/large.json')
+            });
+
+            var lastTime = (new Date()).getTime();
+            function getTimeSince() {
+                var newTime = (new Date()).getTime();
+                var deltaTime = newTime - lastTime;
+                lastTime = newTime;
+                return deltaTime;
+            }
+
+            $log = $('.log');
+            $log.append('<li>fetching json from server...</li>');
+
+            tree.events.on('data.loaded', function() {
+                $log.append('<li>JSON response received...' + getTimeSince() + 'ms</li>');
+            });
+
+            tree.events.on('model.loaded', function() {
+                $log.append('<li>Data parsed into model...' + getTimeSince() + 'ms</li>');
             });
         });
     </script>

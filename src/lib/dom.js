@@ -139,16 +139,14 @@ module.exports = function InspireDOM(api) {
             }
 
             // Add classes for any enabled states
-            var classNames = '';
-            each(node.itree.state, function(val, key) {
-                if (val) {
+            // http://jsperf.com/object-keys-to-classnames
+            var classNames = '.';
+            var state = node.itree.state;
+            each(Object.keys(state), function(key) {
+                if (state[key]) {
                     classNames += '.' + key;
                 }
             });
-
-            if (classNames.length) {
-                classNames = '.' + classNames;
-            }
 
             var attributes = node.itree.li.attributes || {};
 

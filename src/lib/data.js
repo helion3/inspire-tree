@@ -4,7 +4,6 @@
 var assign = require('lodash.assign');
 var cloneDeep = require('lodash.clonedeep');
 var cuid = require('cuid');
-var defaultsDeep = require('lodash.defaultsdeep');
 var each = require('lodash.foreach');
 var get = require('lodash.get');
 var isArray = require('lodash.isarray');
@@ -55,17 +54,6 @@ module.exports = function InspireData(api) {
     }
 
     /**
-     * Generates a unique ID. Useful for generating keys
-     * for nodes if source data doesn't define one.
-     *
-     * @private
-     * @return {string} Unique ID.
-     */
-    function generateId() {
-        return cuid();
-    };
-
-    /**
      * Merge a node into an existing context - a model
      * or another node's children. If the ID exists
      * the node is skipped and we try its children.
@@ -105,6 +93,9 @@ module.exports = function InspireData(api) {
     /**
      * Parse a raw object into a model used within a tree.
      *
+     * Note: Uses native js over lodash where performance
+     * benefits most, since this handles every node.
+     *
      * @private
      * @param {object} object Source object
      * @param {object} parent Pointer to parent object.
@@ -112,28 +103,27 @@ module.exports = function InspireData(api) {
      */
     function objectToModel(object, parent) {
         // Create or type-ensure ID
-        object.id = object.id || generateId();
-        if (!isString(object.id)) {
+        object.id = object.id || cuid();
+        if (typeof object.id !== 'string') {
             object.id = object.id.toString();
         }
 
-        // Add all itree values
-        object.itree = defaultsDeep(object.itree || {}, {
-            icon: false,
-            li: {
-                attributes: {}
-            },
-            state: {
-                collapsed: true,
-                hidden: false,
-                selected: false
-            }
-        });
+        // High-performance default assignments
+        var itree = object.itree = object.itree || {};
+        itree.icon = itree.icon || false;
+
+        var li = itree.li = itree.li || {};
+        li.attributes = li.attributes || {};
+
+        var state = itree.state = itree.state || {};
+        state.collapsed = state.collapsed || true;
+        state.hidden = state.hidden || false;
+        state.selected = state.selected || false;
 
         // Save parent, if any.
         object.itree.parent = parent;
 
-        if (isArray(object.children) && !isEmpty(object.children)) {
+        if (isArray(object.children) && object.children.length) {
             object.children = collectionToModel(object.children, object);
         }
 
@@ -541,8 +531,12 @@ module.exports = function InspireData(api) {
      */
     data.load = function(loader) {
         var resolve = function(nodes) {
+            // Emit raw data
+            api.events.emit('data.loaded', nodes);
+
             model = collectionToModel(nodes);
-            api.events.emit('data.loaded', model);
+
+            api.events.emit('model.loaded', model);
             api.dom.renderNodes(model);
         };
 

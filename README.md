@@ -84,6 +84,7 @@ tree.events.on('node.click', function(event, node) {
 
 - **data.loaded** - `(Array nodes)` - Data has been loaded successfully.
 - **data.loaderror** - `(Error err)` - Loading failed.
+- **model.loaded** - `(Array nodes)` - Data has been parsed into an internal model.
 - **node.added** - `(TreeNode node)` - Node added.
 - **node.click** - `(Event event, TreeNode node)` - User clicked node.
 - **node.collapsed** - `(TreeNode node)` - Node collapsed.
