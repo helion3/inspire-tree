@@ -410,6 +410,24 @@ module.exports = function InspireDOM(api) {
     }
 
     var dom = this;
+    var batching = 0;
+
+    /**
+     * Apply pending data changes to the DOM.
+     *
+     * Will skip rendering as long as any calls
+     * to `batch` have yet to be resolved,
+     *
+     * @return {[type]} [description]
+     */
+    dom.applyChanges = function() {
+        // Never rerender when until batch complete
+        if (batching > 0) {
+            return;
+        }
+
+        api.dom.renderNodes();
+    };
 
     /**
      * Attaches to the DOM element for rendering.
@@ -477,6 +495,16 @@ module.exports = function InspireDOM(api) {
     };
 
     /**
+     * Disable rendering in preparation for multiple changes.
+     *
+     * @category DOM
+     * @return {void}
+     */
+    dom.batch = function() {
+        batching++;
+    };
+
+    /**
      * Closes any open context menu.
      *
      * @category DOM
@@ -506,6 +534,20 @@ module.exports = function InspireDOM(api) {
         }
 
         return node;
+    };
+
+    /**
+     * Permit rerendering of batched changes.
+     *
+     * @category DOM
+     * @return {void}
+     */
+    dom.end = function() {
+        batching--;
+
+        if (batching === 0) {
+            dom.applyChanges();
+        }
     };
 
     /**
@@ -567,9 +609,9 @@ module.exports = function InspireDOM(api) {
      * @return {array} Array of node objects.
      */
     dom.hideNodes = function(nodes) {
-        api.data.batch();
+        dom.batch();
         each(nodes, dom.hideNode);
-        api.data.end();
+        dom.end();
         return nodes;
     };
 
@@ -618,9 +660,9 @@ module.exports = function InspireDOM(api) {
      * @return {void}
      */
     dom.showAll = function() {
-        api.data.batch();
+        dom.batch();
         api.data.recurseDown(api.data.getNodes(), dom.showNode);
-        api.data.end();
+        dom.end();
     };
 
     /**

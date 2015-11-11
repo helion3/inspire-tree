@@ -159,16 +159,6 @@ module.exports = function InspireData(api) {
         }
     }
 
-    var batching = false;
-    var rerender = function() {
-        // Never rerender when until batch complete
-        if (batching) {
-            return;
-        }
-
-        api.dom.renderNodes(model);
-    };
-
     var data = this;
     var model = [];
 
@@ -189,7 +179,7 @@ module.exports = function InspireData(api) {
 
         parent.children.push(child);
 
-        rerender();
+        api.dom.applyChanges();
 
         return child;
     };
@@ -209,7 +199,7 @@ module.exports = function InspireData(api) {
             api.events.emit('node.added', node);
         }
 
-        rerender();
+        api.dom.applyChanges();
 
         return node;
     };
@@ -222,25 +212,15 @@ module.exports = function InspireData(api) {
      * @return {array} Added node objects.
      */
     data.addNodes = function(nodes) {
-        data.batch();
+        api.dom.batch();
 
         transform(nodes, function(newNodes, node) {
             newNodes.push(data.addNode(node));
         });
 
-        data.end();
+        api.dom.end();
 
         return nodes;
-    };
-
-    /**
-     * Disable rendering in preparation for multiple changes.
-     *
-     * @category Data
-     * @return {void}
-     */
-    data.batch = function() {
-        batching = true;
     };
 
     /**
@@ -362,9 +342,9 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     data.deselectAll = function() {
-        data.batch();
+        api.dom.batch();
         data.recurseDown(model, data.deselectNode);
-        data.end();
+        api.dom.end();
     };
 
     /**
@@ -380,21 +360,10 @@ module.exports = function InspireData(api) {
 
             api.events.emit('node.deselected', node);
 
-            rerender();
+            api.dom.applyChanges();
         }
 
         return node;
-    };
-
-    /**
-     * Permit rerendering of batched changes.
-     *
-     * @category Data
-     * @return {void}
-     */
-    data.end = function() {
-        batching = false;
-        rerender();
     };
 
     /**
@@ -630,12 +599,12 @@ module.exports = function InspireData(api) {
                 node,
                 function resolver(results) {
                     node.children = collectionToModel(results);
-                    rerender();
+                    api.dom.applyChanges();
                 },
                 function rejecter(err) {
                     node.children = [];
                     api.events.emit('data.loaderror', err);
-                    rerender();
+                    api.dom.applyChanges();
                 }
             );
         }
@@ -677,7 +646,7 @@ module.exports = function InspireData(api) {
      */
     data.removeAll = function() {
         model = [];
-        rerender();
+        api.dom.applyChanges();
     };
 
     /**
@@ -693,7 +662,7 @@ module.exports = function InspireData(api) {
 
         api.events.emit('node.removed', data.exportNode(node));
 
-        rerender();
+        api.dom.applyChanges();
     };
 
     /**
@@ -711,14 +680,14 @@ module.exports = function InspireData(api) {
             return custom(
                 query,
                 function resolver(nodes) {
-                    data.batch();
+                    api.dom.batch();
 
                     api.dom.hideAll();
                     each(nodes, function(node) {
                         mergeNode(model, node);
                     });
 
-                    data.end();
+                    api.dom.end();
                 },
                 function rejecter(err) {
                     api.events.emit('data.loaderror', err);
@@ -763,7 +732,7 @@ module.exports = function InspireData(api) {
             return node;
         });
 
-        rerender();
+        api.dom.applyChanges();
 
         return matches;
     };
@@ -783,7 +752,7 @@ module.exports = function InspireData(api) {
 
             api.events.emit('node.selected', node);
 
-            rerender();
+            api.dom.applyChanges();
         }
 
         return node;
