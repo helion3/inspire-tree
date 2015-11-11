@@ -714,7 +714,7 @@ module.exports = function InspireData(api) {
         var predicate;
         if (isRegExp(query)) {
             predicate = function(node) {
-                return query.test(node.title);
+                return query.test(node.text);
             };
         }
         else {

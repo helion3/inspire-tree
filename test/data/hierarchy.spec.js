@@ -9,13 +9,13 @@ describe('Hierarchy', function() {
         tree = new InspireTree({
             target: '.tree',
             data: [{
-                title: 'A',
+                text: 'A',
                 id: 1,
                 children: [{
-                    title: 'AA',
+                    text: 'AA',
                     id: 11,
                     children: [{
-                        title: 'AAA',
+                        text: 'AAA',
                         id: 111
                     }]
                 }]
@@ -35,9 +35,9 @@ describe('Hierarchy', function() {
         var root = tree.data.copyHierarchy(node);
 
         expect(root).to.be.an('object');
-        expect(root.title).to.equal('A');
-        expect(root.children[0].title).to.equal('AA');
-        expect(root.children[0].children[0].title).to.equal('AAA');
+        expect(root.text).to.equal('A');
+        expect(root.children[0].text).to.equal('AA');
+        expect(root.children[0].children[0].text).to.equal('AAA');
     });
 
     it('returns hierarchy excluding given node', function() {
@@ -45,8 +45,8 @@ describe('Hierarchy', function() {
         var root = tree.data.copyHierarchy(node, true);
 
         expect(root).to.be.an('object');
-        expect(root.title).to.equal('A');
-        expect(root.children[0].title).to.equal('AA');
+        expect(root.text).to.equal('A');
+        expect(root.children[0].text).to.equal('AA');
         expect(root.children[0].children).to.be.undefned;
     });
 

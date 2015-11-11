@@ -10,12 +10,12 @@ describe('Visibility', function() {
         tree = new InspireTree({
             target: '.tree',
             data: [{
-                title: 'A',
+                text: 'A',
                 id: 1
             }, {
-                title: 'B',
+                text: 'B',
                 children: [{
-                    title: 'B1'
+                    text: 'B1'
                 }]
             }]
         });

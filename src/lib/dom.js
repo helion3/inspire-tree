@@ -197,7 +197,7 @@ module.exports = function InspireDOM(api) {
     function createTitleAnchor(node, hasVisibleChildren) {
         return new VCache({
             icon: node.itree.icon,
-            title: node.title,
+            text: node.text,
             hasVisibleChildren: hasVisibleChildren
         }, VStateCompare, function(previous, current) {
             var classNames = ['title', 'icon'];
@@ -244,7 +244,7 @@ module.exports = function InspireDOM(api) {
                         createDraggableElement(event.target, event);
                     }
                 }
-            }, [current.state.title]);
+            }, [current.state.text]);
         });
     }
 

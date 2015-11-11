@@ -10,7 +10,7 @@ describe('DOM Configurations', function() {
         new InspireTree({
             target: '.tree',
             data: [{
-                title: 'Test',
+                text: 'Test',
                 itree: {
                     icon: 'fake'
                 }
@@ -24,7 +24,7 @@ describe('DOM Configurations', function() {
         new InspireTree({
             target: '.tree',
             data: [{
-                title: 'Test',
+                text: 'Test',
                 itree: {
                     li: {
                         attributes: {

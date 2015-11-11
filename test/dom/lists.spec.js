@@ -11,11 +11,11 @@ describe('DOM', function() {
         new InspireTree({
             target: '.tree',
             data: [{
-                title: 'A'
+                text: 'A'
             }, {
-                title: 'B',
+                text: 'B',
                 children: [{
-                    title: 'B1'
+                    text: 'B1'
                 }]
             }]
         });

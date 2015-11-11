@@ -9,15 +9,15 @@ describe('Search', function() {
         tree = new InspireTree({
             target: '.tree',
             data: [{
-                title: 'fox',
+                text: 'fox',
                 id: 1
             }, {
-                title: 'lemur',
+                text: 'lemur',
                 id: 2,
                 children: [{
-                    title: 'bob'
+                    text: 'bob'
                 }, {
-                    title: 'sue'
+                    text: 'sue'
                 }]
             }]
         });
@@ -39,7 +39,7 @@ describe('Search', function() {
 
     it('returns matches for a custom matching function', function() {
         var matcher = function(node) {
-            return node.title.length < 4;
+            return node.text.length < 4;
         };
 
         expect(tree.data.search(matcher)).to.have.length(3);

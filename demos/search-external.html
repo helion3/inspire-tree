@@ -53,7 +53,7 @@
                     var promise = $.getJSON('../sample-data/root.json');
                     promise.then(function(results) {
                         var matches = _.filter(results, function(result) {
-                            return new RegExp(query, 'i').test(result.title);
+                            return new RegExp(query, 'i').test(result.text);
                         });
 
                         resolve(matches);

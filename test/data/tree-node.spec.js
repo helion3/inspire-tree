@@ -10,13 +10,13 @@ describe('TreeNode', function() {
         tree = new InspireTree({
             target: '.tree',
             data: [{
-                title: 'A',
+                text: 'A',
                 id: 1,
                 children: [{
-                    title: 'AA',
+                    text: 'AA',
                     id: 11,
                     children: [{
-                        title: 'AAA',
+                        text: 'AAA',
                         id: 111
                     }]
                 }]

@@ -10,7 +10,7 @@ describe('Loaders', function() {
         var tree = new InspireTree({
             target: '.tree',
             data: [{
-                title: 'Test'
+                text: 'Test'
             }]
         });
 
@@ -38,7 +38,7 @@ describe('Loaders', function() {
             target: '.tree',
             data: function(node, resolve) {
                 resolve([{
-                    title: 'Test'
+                    text: 'Test'
                 }]);
             }
         });
@@ -53,13 +53,13 @@ describe('Loaders', function() {
             data: function(node, resolve) {
                 if (!node) {
                     resolve([{
-                        title: 'A',
+                        text: 'A',
                         id: 1
                     }]);
                 }
                 else {
                     resolve([{
-                        title: 'B'
+                        text: 'B'
                     }]);
                 }
             }

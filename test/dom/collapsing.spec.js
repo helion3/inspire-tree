@@ -10,10 +10,10 @@ describe('Expand & Collapse', function() {
         tree = new InspireTree({
             target: '.tree',
             data: [{
-                title: 'A',
+                text: 'A',
                 id: 1,
                 children: [{
-                    title: 'A1',
+                    text: 'A1',
                     id: 10
                 }]
             }]

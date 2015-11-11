@@ -46,7 +46,7 @@ var tree = new InspireTree({
 });
 ```
 
-Data objects must have at least a `title` property. Additional properties are listed below in "Node Configuration".
+Data objects must have at least a `text` property. Additional properties are listed below in "Node Configuration".
 
 ## API Docs
 
@@ -62,7 +62,7 @@ Data objects must have at least a `title` property. Additional properties are li
 
 ## Node Configuration
 
-- **title** - Text used in display.
+- **text** - Text used in display.
 - **id** - Unique ID. If missing, one will be generated.
 - **li.attributes** - Custom attributes for this node's root `li`.
 - **itree** - An object used to describe initial tree values:

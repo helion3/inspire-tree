@@ -13,13 +13,13 @@ describe('Modification', function() {
         tree1 = new InspireTree({
             target: '.tree',
             data: [{
-                title: 'A',
+                text: 'A',
                 id: 1
             }, {
-                title: 'B',
+                text: 'B',
                 id: 2,
                 children: [{
-                    title: 'B1',
+                    text: 'B1',
                     id: 20
                 }]
             }]
@@ -35,12 +35,12 @@ describe('Modification', function() {
 
     it('adds a node', function() {
         tree1.data.addNode({
-            title: 'C'
+            text: 'C'
         });
 
         // Model
         expect(tree1.data.getNodes()).to.have.length(3);
-        expect(tree1.data.getNodes()[2].title).to.equal('C');
+        expect(tree1.data.getNodes()[2].text).to.equal('C');
 
         // DOM
         expect($tree1.find('> ol > li')).to.have.length(3);
@@ -48,9 +48,9 @@ describe('Modification', function() {
 
     it('adds an array of nodes', function() {
         tree1.data.addNodes([{
-            title: 'D'
+            text: 'D'
         }, {
-            title: 'E'
+            text: 'E'
         }]);
 
         expect(tree1.data.getNodes()).to.have.length(5);
@@ -137,7 +137,7 @@ describe('Modification', function() {
         // Push a new child to the copied data
         var parent = tree2.data.getNodeById(2);
         parent.addChild({
-            title: 'New'
+            text: 'New'
         });
 
         // Re-copy the node to the original tree

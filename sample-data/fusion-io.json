@@ -1,10 +1,10 @@
 [{
-    "title": "Administrative",
+    "text": "Administrative",
     "id": "administrative"
 }, {
-    "title": "Development",
+    "text": "Development",
     "id": "development"
 }, {
-    "title": "Accounting",
+    "text": "Accounting",
     "id": "accounting"
 }]
