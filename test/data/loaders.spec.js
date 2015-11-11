@@ -46,5 +46,34 @@ describe('Loaders', function() {
         expect(tree.data.getNodes()).to.have.length(1);
     });
 
+    it('loads child node data dynamically', function() {
+        var tree = new InspireTree({
+            target: '.tree',
+            dynamic: true,
+            data: function(node, resolve) {
+                if (!node) {
+                    resolve([{
+                        title: 'A',
+                        id: 1
+                    }]);
+                }
+                else {
+                    resolve([{
+                        title: 'B'
+                    }]);
+                }
+            }
+        });
+
+        expect(tree.data.getNodes()).to.have.length(1);
+
+        var parent = tree.data.getNode(1);
+        expect(parent.children).to.be.undefined;
+
+        tree.data.expandNode(parent);
+        expect(parent.children).to.not.be.undefined;
+        expect(parent.children).to.have.length(1);
+    });
+
     after(helpers.clearDOM);
 });
