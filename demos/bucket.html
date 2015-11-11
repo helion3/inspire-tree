@@ -68,7 +68,7 @@
 
             $('.move-one').on('click', function() {
                 var selected = sourceTree.data.getSelectedNodes();
-                sourceTree.data.hideNodes(selected);
+                sourceTree.dom.hideNodes(selected);
                 sourceTree.data.copyNodes(selected, true).to(destTree);
             });
 
@@ -78,18 +78,18 @@
 
             $('.revert-one').on('click', function() {
                 var selected = destTree.data.getSelectedNodes();
-                destTree.data.hideNodes(selected);
+                destTree.dom.hideNodes(selected);
                 destTree.data.copyNodes(selected, true).to(sourceTree);
             });
 
             $('.move-all').on('click', function() {
                 sourceTree.data.copyNodes().to(destTree);
-                sourceTree.data.hideAll();
+                sourceTree.dom.hideAll();
             });
 
             $('.revert-all').on('click', function() {
                 destTree.data.copyNodes().to(sourceTree);
-                destTree.data.hideAll();
+                destTree.dom.hideAll();
             });
         });
     </script>

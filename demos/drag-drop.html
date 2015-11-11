@@ -51,8 +51,7 @@
             });
 
             sourceTree.events.on('node.drop', function(node) {
-                // node.hide();
-                sourceTree.data.hideNode(node);
+                node.hide();
             });
 
             var destTree = new InspireTree({

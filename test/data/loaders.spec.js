@@ -70,7 +70,7 @@ describe('Loaders', function() {
         var parent = tree.data.getNode(1);
         expect(parent.children).to.be.undefined;
 
-        tree.data.expandNode(parent);
+        tree.dom.expandNode(parent);
         expect(parent.children).to.not.be.undefined;
         expect(parent.children).to.have.length(1);
     });

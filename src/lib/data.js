@@ -142,34 +142,6 @@ module.exports = function InspireData(api) {
     };
 
     /**
-     * Iterate nodes recursively.
-     *
-     * @private
-     * @param {array|object} collection Array of nodes or node object.
-     * @param {function} iteratee Iteratee function.
-     * @return {array} Resulting node array.
-     */
-    function recurse(collection, iteratee) {
-        // Recurse each element in this array
-        if (isArray(collection)) {
-            each(collection, function(element, i) {
-                collection[i] = recurse(element, iteratee);
-            });
-        }
-
-        else if (isObject(collection)) {
-            collection = iteratee(collection);
-
-            // Recurse children
-            if (isArray(collection.children) && !isEmpty(collection.children)) {
-                collection.children = recurse(collection.children, iteratee);
-            }
-        }
-
-        return collection;
-    };
-
-    /**
      * Ensure all parent nodes are visible.
      *
      * @private
@@ -278,26 +250,7 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     data.clearSearch = function() {
-        data.showAll();
-    };
-
-    /**
-     * Expand immediate children for this node, if any.
-     *
-     * @category Data
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    data.collapseNode = function(node) {
-        if (!node.itree.state.collapsed && !isEmpty(get(node, 'children'))) {
-            node.itree.state.collapsed = true;
-
-            api.events.emit('node.collapsed', node);
-
-            rerender();
-        }
-
-        return node;
+        api.dom.showAll();
     };
 
     /**
@@ -408,7 +361,7 @@ module.exports = function InspireData(api) {
      */
     data.deselectAll = function() {
         data.batch();
-        recurse(model, data.deselectNode);
+        data.recurseDown(model, data.deselectNode);
         data.end();
     };
 
@@ -443,33 +396,6 @@ module.exports = function InspireData(api) {
     };
 
     /**
-     * Expand immediate children for this node, if any.
-     *
-     * @category Data
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    data.expandNode = function(node) {
-        var isDynamic = get(api, 'config.dynamic');
-        var allow = (!isEmpty(get(node, 'children')) || isDynamic);
-
-        if (allow && node.itree.state.collapsed) {
-            node.itree.state.collapsed = false;
-
-            api.events.emit('node.expanded', node);
-
-            if (isDynamic) {
-                data.loadChildren(node);
-            }
-            else {
-                rerender();
-            }
-        }
-
-        return node;
-    };
-
-    /**
      * Clones a node object and removes any
      * itree instance information/state.
      *
@@ -480,7 +406,7 @@ module.exports = function InspireData(api) {
     data.exportNode = function(node) {
         var nodeClone = cloneDeep(node);
 
-        recurse(nodeClone, function(node) {
+        data.recurseDown(nodeClone, function(node) {
             node.itree = null;
             return node;
         });
@@ -499,7 +425,7 @@ module.exports = function InspireData(api) {
     data.exportNodes = function(nodes) {
         var nodeClones = cloneDeep(nodes);
 
-        recurse(nodeClones, function(node) {
+        data.recurseDown(nodeClones, function(node) {
             node.itree = null;
             return node;
         });
@@ -628,54 +554,6 @@ module.exports = function InspireData(api) {
     };
 
     /**
-     * Hide a node.
-     *
-     * @category Data
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    data.hideNode = function(node) {
-        if (!node.itree.state.hidden) {
-            node.itree.state.hidden = true;
-
-            api.events.emit('node.hidden', node);
-
-            // Update children
-            if (get(node, 'children')) {
-                data.hideNodes(node.children);
-            }
-
-            rerender();
-        }
-
-        return node;
-    };
-
-    /**
-     * Hide all nodes in an array.
-     *
-     * @category Data
-     * @param {array} nodes Array of node objects.
-     * @return {array} Array of node objects.
-     */
-    data.hideNodes = function(nodes) {
-        data.batch();
-        each(nodes, data.hideNode);
-        data.end();
-        return nodes;
-    };
-
-    /**
-     * Hides all nodes.
-     *
-     * @category Data
-     * @return {void}
-     */
-    data.hideAll = function() {
-        data.hideNodes(model);
-    };
-
-    /**
      * Loads data. Accepts an array or a promise.
      *
      * @category Data
@@ -762,6 +640,33 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Iterate down node/children recursively.
+     *
+     * @param {array|object} collection Array of nodes or node object.
+     * @param {function} iteratee Iteratee function.
+     * @return {array} Resulting node array.
+     */
+    data.recurseDown = function(collection, iteratee) {
+        // Recurse each element in this array
+        if (isArray(collection)) {
+            each(collection, function(element, i) {
+                collection[i] = data.recurseDown(element, iteratee);
+            });
+        }
+
+        else if (isObject(collection)) {
+            collection = iteratee(collection);
+
+            // Recurse children
+            if (isArray(collection.children) && !isEmpty(collection.children)) {
+                collection.children = data.recurseDown(collection.children, iteratee);
+            }
+        }
+
+        return collection;
+    };
+
+    /**
      * Removes all nodes.
      *
      * @category Data
@@ -805,7 +710,7 @@ module.exports = function InspireData(api) {
                 function resolver(nodes) {
                     data.batch();
 
-                    data.hideAll();
+                    api.dom.hideAll();
                     each(nodes, function(node) {
                         mergeNode(model, node);
                     });
@@ -841,7 +746,7 @@ module.exports = function InspireData(api) {
             throw new TypeError('Search predicate must be a string, RegExp, or function.');
         }
 
-        recurse(model, function(node) {
+        data.recurseDown(model, function(node) {
             var match = predicate(node);
             node.itree.state.hidden = !match;
 
@@ -874,37 +779,6 @@ module.exports = function InspireData(api) {
             node.itree.state.selected = true;
 
             api.events.emit('node.selected', node);
-
-            rerender();
-        }
-
-        return node;
-    };
-
-    /**
-     * Shows all nodes.
-     *
-     * @category Data
-     * @return {void}
-     */
-    data.showAll = function() {
-        data.batch();
-        recurse(model, data.showNode);
-        data.end();
-    };
-
-    /**
-     * Hide a node.
-     *
-     * @category Data
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    data.showNode = function(node) {
-        if (node.itree.state.hidden) {
-            node.itree.state.hidden = false;
-
-            api.events.emit('node.shown', node);
 
             rerender();
         }

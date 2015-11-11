@@ -151,7 +151,7 @@ describe('Modification', function() {
         var node = tree1.data.getNodeById(20);
 
         // Hide source copy
-        tree1.data.hideNode(node);
+        tree1.dom.hideNode(node);
         expect(node.itree.state.hidden).to.be.true;
 
         // Move it
@@ -174,7 +174,7 @@ describe('Modification', function() {
         var node = tree1.data.getNodeById(20);
 
         // Hide source copy
-        tree1.data.hideNode(node);
+        tree1.dom.hideNode(node);
         expect(node.itree.state.hidden).to.be.true;
 
         // Move it
@@ -200,7 +200,7 @@ describe('Modification', function() {
     it('only shows nodes merged back in', function() {
         // Move all to one tree
         tree1.data.copyNodes().to(tree2);
-        tree1.data.hideAll();
+        tree1.dom.hideAll();
 
         var node = tree2.data.getNodeById(20);
         tree2.data.copyNode(node, true).to(tree1);

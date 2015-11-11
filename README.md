@@ -12,7 +12,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Robust API.
 - Events everywhere.
-- Extremely light (<50k) minified, uncompressed.
+- <60k minified, uncompressed.
 - No external dependencies.
 - Load data directly, via promises, callbacks, etc.
 - Load child nodes upfront or dynamically.

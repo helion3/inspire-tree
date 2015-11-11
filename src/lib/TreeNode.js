@@ -29,7 +29,7 @@ module.exports = function(api) {
      * @return {object} Node object.
      */
     TreeNode.prototype.collapse = function() {
-        return api.data.collapseNode(this);
+        return api.dom.collapseNode(this);
     };
 
     /**
@@ -47,7 +47,7 @@ module.exports = function(api) {
      * @return {object} Node object.
      */
     TreeNode.prototype.expand = function() {
-        return api.data.expandNode(this);
+        return api.dom.expandNode(this);
     };
 
     /**
@@ -56,7 +56,7 @@ module.exports = function(api) {
      * @return {object} Node object.
      */
     TreeNode.prototype.hide = function() {
-        return api.data.hideNode(this);
+        return api.dom.hideNode(this);
     };
 
     /**
@@ -74,7 +74,7 @@ module.exports = function(api) {
      * @return {object} Node object.
      */
     TreeNode.prototype.show = function() {
-        return api.data.showNode(this);
+        return api.dom.showNode(this);
     };
 
     return TreeNode;

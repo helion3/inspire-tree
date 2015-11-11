@@ -211,10 +211,10 @@ module.exports = function InspireDOM(api) {
 
                 // Toggle selected state
                 if (node.itree.state.collapsed) {
-                    api.data.expandNode(node);
+                    api.dom.expandNode(node);
                 }
                 else {
-                    api.data.collapseNode(node);
+                    api.dom.collapseNode(node);
                 }
 
                 // Emit
@@ -270,10 +270,10 @@ module.exports = function InspireDOM(api) {
 
             // Toggle selected state
             if (node.itree.state.collapsed) {
-                api.data.expandNode(node);
+                api.dom.expandNode(node);
             }
             else {
-                api.data.collapseNode(node);
+                api.dom.collapseNode(node);
             }
         } });
     }
@@ -489,6 +489,100 @@ module.exports = function InspireDOM(api) {
         }
     };
 
+    /**
+     * Expand immediate children for this node, if any.
+     *
+     * @category DOM
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    dom.collapseNode = function(node) {
+        if (!node.itree.state.collapsed && !isEmpty(get(node, 'children'))) {
+            node.itree.state.collapsed = true;
+
+            api.events.emit('node.collapsed', node);
+
+            dom.renderNodes();
+        }
+
+        return node;
+    };
+
+    /**
+     * Expand immediate children for this node, if any.
+     *
+     * @category DOM
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    dom.expandNode = function(node) {
+        var isDynamic = get(api, 'config.dynamic');
+        var allow = (!isEmpty(get(node, 'children')) || isDynamic);
+
+        if (allow && node.itree.state.collapsed) {
+            node.itree.state.collapsed = false;
+
+            api.events.emit('node.expanded', node);
+
+            if (isDynamic) {
+                api.data.loadChildren(node);
+            }
+            else {
+                dom.renderNodes();
+            }
+        }
+
+        return node;
+    };
+
+    /**
+     * Hide a node.
+     *
+     * @category DOM
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    dom.hideNode = function(node) {
+        if (!node.itree.state.hidden) {
+            node.itree.state.hidden = true;
+
+            api.events.emit('node.hidden', node);
+
+            // Update children
+            if (get(node, 'children')) {
+                dom.hideNodes(node.children);
+            }
+
+            dom.renderNodes();
+        }
+
+        return node;
+    };
+
+    /**
+     * Hide all nodes in an array.
+     *
+     * @category DOM
+     * @param {array} nodes Array of node objects.
+     * @return {array} Array of node objects.
+     */
+    dom.hideNodes = function(nodes) {
+        api.data.batch();
+        each(nodes, dom.hideNode);
+        api.data.end();
+        return nodes;
+    };
+
+    /**
+     * Hides all nodes.
+     *
+     * @category DOM
+     * @return {void}
+     */
+    dom.hideAll = function() {
+        dom.hideNodes(api.data.getNodes());
+    };
+
     // Cache our root node, so we can patch re-render in the future.
     var rootNode;
     var ol;
@@ -501,7 +595,7 @@ module.exports = function InspireDOM(api) {
      * @return {void}
      */
     dom.renderNodes = function(nodes) {
-        var newOl = createOrderedList(nodes, true);
+        var newOl = createOrderedList(nodes || api.data.getNodes(), true);
 
         if (!rootNode) {
             rootNode = createElement(newOl);
@@ -515,6 +609,37 @@ module.exports = function InspireDOM(api) {
         }
 
         ol = newOl;
+    };
+
+    /**
+     * Shows all nodes.
+     *
+     * @category Data
+     * @return {void}
+     */
+    dom.showAll = function() {
+        api.data.batch();
+        api.data.recurseDown(api.data.getNodes(), dom.showNode);
+        api.data.end();
+    };
+
+    /**
+     * Hide a node.
+     *
+     * @category Data
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    dom.showNode = function(node) {
+        if (node.itree.state.hidden) {
+            node.itree.state.hidden = false;
+
+            api.events.emit('node.shown', node);
+
+            dom.renderNodes();
+        }
+
+        return node;
     };
 
     return dom;
