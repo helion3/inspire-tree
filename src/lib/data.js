@@ -120,7 +120,9 @@ module.exports = function InspireData(api) {
         // Add all itree values
         object.itree = defaultsDeep(object.itree || {}, {
             icon: false,
-            attributes: false,
+            li: {
+                attributes: {}
+            },
             state: {
                 collapsed: true,
                 hidden: false,
@@ -179,6 +181,7 @@ module.exports = function InspireData(api) {
 
         parent.children.push(child);
 
+        api.dom.markNodeDirty(child);
         api.dom.applyChanges();
 
         return child;
@@ -199,6 +202,7 @@ module.exports = function InspireData(api) {
             api.events.emit('node.added', node);
         }
 
+        api.dom.markNodeDirty(node);
         api.dom.applyChanges();
 
         return node;
@@ -360,6 +364,7 @@ module.exports = function InspireData(api) {
 
             api.events.emit('node.deselected', node);
 
+            api.dom.markNodeDirty(node);
             api.dom.applyChanges();
         }
 
@@ -639,6 +644,24 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Iterate up a node and its parents.
+     *
+     * @category Data
+     * @param {object} node Object node.
+     * @param {function} iteratee Iteratee function.
+     * @return {object} Resulting node.
+     */
+    data.recurseUp = function(node, iteratee) {
+        iteratee(node);
+
+        if (isObject(node.itree.parent)) {
+            data.recurseUp(node.itree.parent, iteratee);
+        }
+
+        return node;
+    };
+
+    /**
      * Removes all nodes.
      *
      * @category Data
@@ -746,13 +769,17 @@ module.exports = function InspireData(api) {
      */
     data.selectNode = function(node) {
         if (!node.itree.state.selected) {
+            // Batch selection changes
+            api.dom.batch();
             data.deselectAll();
-
             node.itree.state.selected = true;
 
+            // Emit this event
             api.events.emit('node.selected', node);
 
-            api.dom.applyChanges();
+            // Mark hierarchy dirty and apply
+            api.dom.markNodeDirty(node);
+            api.dom.end();
         }
 
         return node;

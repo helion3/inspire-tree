@@ -11,9 +11,12 @@ var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
-var pairs = require('lodash.pairs');
 var patch = require('virtual-dom/patch');
 var transform = require('lodash.transform');
+var VCache = require('./VCache');
+var VArrayDirtyCompare = require('./VArrayDirtyCompare');
+var VDirtyCompare = require('./VDirtyCompare');
+var VStateCompare = require('./VStateCompare');
 
 module.exports = function InspireDOM(api) {
     var $activeDropTarget;
@@ -23,6 +26,10 @@ module.exports = function InspireDOM(api) {
     var dragHandleOffset;
     var dropTargets = [];
     var isDragDropEnabled = false;
+
+    // Cache because we use in loops
+    var isDynamic = api.config.dynamic;
+    var contextMenuChoices = api.config.contextMenu;
 
     /**
      * Creates a context menu unordered list.
@@ -97,11 +104,13 @@ module.exports = function InspireDOM(api) {
      * @return {object} List Item node.
      */
     function createEmptyListItemNode() {
-        return h('ol', [
-            h('li', [
-                h('span.title.icon.icon-file-empty.empty', ['No Results'])
-            ])
-        ]);
+        return new VCache({}, VStateCompare, function() {
+            return h('ol', [
+                h('li', [
+                    h('span.title.icon.icon-file-empty.empty', ['No Results'])
+                ])
+            ]);
+        });
     };
 
     /**
@@ -112,35 +121,42 @@ module.exports = function InspireDOM(api) {
      * @return {object} List Item node.
      */
     function createListItemNode(node) {
-        var contents = [
-            h('div.wholerow'),
-            createTitleContainer(node)
-        ];
+        return new VCache({
+            dirty: node.itree.dirty
+        }, VDirtyCompare, function() {
+            node.itree.dirty = false;
 
-        if (!isEmpty(node.children)) {
-            contents.push(createOrderedList(node.children));
-        }
-        else if (get(api, 'config.dynamic') && isArray(node.children)) {
-            contents.push(createEmptyListItemNode());
-        }
+            var contents = [
+                h('div.wholerow'),
+                createTitleContainer(node)
+            ];
 
-        // Add classes for any enabled states
-        var classNames = transform(pairs(node.itree.state), function(keys, value) {
-            if (value[1]) {
-                keys.push(value[0]);
+            if (!isEmpty(node.children)) {
+                contents.push(createOrderedList(node.children));
             }
-        }).join('.');
+            else if (isDynamic && isArray(node.children)) {
+                contents.push(createEmptyListItemNode());
+            }
 
-        if (classNames.length) {
-            classNames = '.' + classNames;
-        }
+            // Add classes for any enabled states
+            var classNames = '';
+            each(node.itree.state, function(val, key) {
+                if (val) {
+                    classNames += '.' + key;
+                }
+            });
 
-        var attributes = get(node, 'itree.li.attributes') || {};
+            if (classNames.length) {
+                classNames = '.' + classNames;
+            }
 
-        // Force internal-use attributes
-        attributes['data-uid'] = node.id;
+            var attributes = node.itree.li.attributes || {};
 
-        return h('li' + classNames, { attributes: attributes }, contents);
+            // Force internal-use attributes
+            attributes['data-uid'] = node.id;
+
+            return h('li' + classNames, { attributes: attributes }, contents);
+        });
     };
 
     /**
@@ -165,7 +181,11 @@ module.exports = function InspireDOM(api) {
      * @return {object} Oredered List node.
      */
     function createOrderedList(nodes) {
-        return h('ol', createListItemNodes(nodes));
+        return new VCache({
+            nodes: nodes
+        }, VArrayDirtyCompare, function() {
+            return h('ol', createListItemNodes(nodes));
+        });
     };
 
     /**
@@ -177,55 +197,57 @@ module.exports = function InspireDOM(api) {
      * @return {object} Anchor node.
      */
     function createTitleAnchor(node, hasVisibleChildren) {
-        var classNames = ['title', 'icon'];
+        return new VCache({
+            icon: node.itree.icon,
+            title: node.title,
+            hasVisibleChildren: hasVisibleChildren
+        }, VStateCompare, function(previous, current) {
+            var classNames = ['title', 'icon'];
 
-        classNames.push(node.itree.icon || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
+            classNames.push(current.state.icon || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
 
-        return h('a.' + classNames.join('.'), {
-            oncontextmenu: function(event) {
-                if (get(api, 'config.contextMenu')) {
-                    var node = getNodeFromTitleDOMElement(event.target);
+            return h('a.' + classNames.join('.'), {
+                oncontextmenu: function(event) {
+                    if (contextMenuChoices) {
+                        renderContextMenu(event, node);
 
-                    renderContextMenu(event, node);
+                        // Emit
+                        api.events.emit('node.contextmenu', event, node);
+                    }
+                },
+                onclick: function(event) {
+                    // Toggle selected state
+                    if (node.itree.state.selected) {
+                        api.data.deselectNode(node);
+                    }
+                    else {
+                        api.data.selectNode(node);
+                    }
 
                     // Emit
-                    api.events.emit('node.contextmenu', event, node);
-                }
-            },
-            onclick: function(event) {
-                var node = getNodeFromTitleDOMElement(event.target);
+                    api.events.emit('node.click', event, node);
+                },
+                ondblclick: function(event) {
+                    var node = getNodeFromTitleDOMElement(event.target);
 
-                // Toggle selected state
-                if (node.itree.state.selected) {
-                    api.data.deselectNode(node);
-                }
-                else {
-                    api.data.selectNode(node);
-                }
+                    // Toggle selected state
+                    if (node.itree.state.collapsed) {
+                        api.dom.expandNode(node);
+                    }
+                    else {
+                        api.dom.collapseNode(node);
+                    }
 
-                // Emit
-                api.events.emit('node.click', event, node);
-            },
-            ondblclick: function(event) {
-                var node = getNodeFromTitleDOMElement(event.target);
-
-                // Toggle selected state
-                if (node.itree.state.collapsed) {
-                    api.dom.expandNode(node);
+                    // Emit
+                    api.events.emit('node.dblclick', event, node);
+                },
+                onmousedown: function(event) {
+                    if (isDragDropEnabled) {
+                        createDraggableElement(event.target, event);
+                    }
                 }
-                else {
-                    api.dom.collapseNode(node);
-                }
-
-                // Emit
-                api.events.emit('node.dblclick', event, node);
-            },
-            onmousedown: function(event) {
-                if (isDragDropEnabled) {
-                    createDraggableElement(event.target, event);
-                }
-            }
-        }, [node.title]);
+            }, [current.state.title]);
+        });
     }
 
     /**
@@ -236,22 +258,27 @@ module.exports = function InspireDOM(api) {
      * @return {object} Container node.
      */
     function createTitleContainer(node) {
-        var contents = [];
-
         var hasVisibleChildren = true;
-        if (!get(api, 'config.dynamic')) {
+        if (!isDynamic) {
             var l = node.children ? node.children.length : 0;
             var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
             hasVisibleChildren = (l > 0 && hiddenCount < l);
         }
 
-        if (hasVisibleChildren) {
-            contents.push(createToggleAnchor(node));
-        }
+        return new VCache({
+            hasVisibleChildren: hasVisibleChildren,
+            collapsed: node.itree.state.collapsed
+        }, VStateCompare, function() {
+            var contents = [];
 
-        contents.push(createTitleAnchor(node, hasVisibleChildren));
+            if (hasVisibleChildren) {
+                contents.push(createToggleAnchor(node));
+            }
 
-        return h('div', contents);
+            contents.push(createTitleAnchor(node, hasVisibleChildren));
+
+            return h('div', contents);
+        });
     };
 
     /**
@@ -262,20 +289,21 @@ module.exports = function InspireDOM(api) {
      * @return {object} Anchor node.
      */
     function createToggleAnchor(node) {
-        var caret = (node.itree.state.collapsed ? '.icon-caret' : '.icon-caret-down');
+        return new VCache({
+            collapsed: node.itree.state.collapsed
+        }, VStateCompare, function(previous, current) {
+            var caret = (current.state.collapsed ? '.icon-caret' : '.icon-caret-down');
 
-        return h('a.toggle.icon' + caret, { onclick: function(event) {
-            var uid = event.target.parentNode.parentNode.getAttribute('data-uid');
-            var node = api.data.getNodeById(uid);
-
-            // Toggle selected state
-            if (node.itree.state.collapsed) {
-                api.dom.expandNode(node);
-            }
-            else {
-                api.dom.collapseNode(node);
-            }
-        } });
+            return h('a.toggle.icon' + caret, { onclick: function() {
+                // Toggle selected state
+                if (node.itree.state.collapsed) {
+                    api.dom.expandNode(node);
+                }
+                else {
+                    api.dom.collapseNode(node);
+                }
+            } });
+        });
     }
 
     /**
@@ -393,7 +421,7 @@ module.exports = function InspireDOM(api) {
      * @return {void}
      */
     function renderContextMenu(event, node) {
-        var choices = get(api, 'config.contextMenu');
+        var choices = contextMenuChoices;
 
         if (isArray(choices)) {
             event.preventDefault();
@@ -445,8 +473,7 @@ module.exports = function InspireDOM(api) {
 
         $target.className += ' inspire-tree';
 
-
-        if (get(api, 'config.contextMenu')) {
+        if (contextMenuChoices) {
             document.body.addEventListener('click', function() {
                 dom.closeContextMenu();
             });
@@ -530,6 +557,7 @@ module.exports = function InspireDOM(api) {
 
             api.events.emit('node.collapsed', node);
 
+            dom.markNodeDirty(node);
             dom.renderNodes();
         }
 
@@ -558,7 +586,6 @@ module.exports = function InspireDOM(api) {
      * @return {object} Node object.
      */
     dom.expandNode = function(node) {
-        var isDynamic = get(api, 'config.dynamic');
         var allow = (!isEmpty(get(node, 'children')) || isDynamic);
 
         if (allow && node.itree.state.collapsed) {
@@ -570,6 +597,7 @@ module.exports = function InspireDOM(api) {
                 api.data.loadChildren(node);
             }
             else {
+                dom.markNodeDirty(node);
                 dom.renderNodes();
             }
         }
@@ -595,6 +623,7 @@ module.exports = function InspireDOM(api) {
                 dom.hideNodes(node.children);
             }
 
+            dom.markNodeDirty(node);
             dom.renderNodes();
         }
 
@@ -623,6 +652,19 @@ module.exports = function InspireDOM(api) {
      */
     dom.hideAll = function() {
         dom.hideNodes(api.data.getNodes());
+    };
+
+    /**
+     * Mark a node as dirty, rebuilding this node in the virtual DOM
+     * and rerendering to the live DOM, next time renderNodes is called.
+     *
+     * @param {object} startingNode Node object.
+     * @return {void}
+     */
+    dom.markNodeDirty = function(startingNode) {
+        api.data.recurseUp(startingNode, function(node) {
+            node.itree.dirty = true;
+        });
     };
 
     // Cache our root node, so we can patch re-render in the future.
@@ -678,6 +720,7 @@ module.exports = function InspireDOM(api) {
 
             api.events.emit('node.shown', node);
 
+            dom.markNodeDirty(node);
             dom.renderNodes();
         }
 

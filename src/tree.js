@@ -1,6 +1,7 @@
 'use strict';
 
 // Libs
+var defaultsDeep = require('lodash.defaultsdeep');
 var get = require('lodash.get');
 var InspireData = require('./lib/data');
 var InspireDOM = require('./lib/dom');
@@ -13,6 +14,12 @@ module.exports = function InspireTree(opts) {
     if (!get(opts, 'target')) {
         throw new TypeError('Property "target" is required, either an element or a selector.');
     }
+
+    // Assign defaults
+    opts = defaultsDeep(opts, {
+        contextMenu: false,
+        dynamic: false
+    });
 
     var api = new (function InspireApi() {});
     api.events = new InspireEvents();
