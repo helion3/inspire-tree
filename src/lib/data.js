@@ -264,7 +264,7 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     data.clearSearch = function() {
-        // @todo
+        data.showAll();
     };
 
     /**
@@ -745,9 +745,11 @@ module.exports = function InspireData(api) {
      * Search nodes, showing only those that match and the necessary hierarchy.
      *
      * @param {*} query Search string, RegExp, or function.
-     * @return {void}
+     * @return {array} Array of matching node objects.
      */
     data.search = function(query) {
+        var matches = [];
+
         var custom = get(api, 'config.search');
         if (isFunction(custom)) {
             return custom(
@@ -768,22 +770,23 @@ module.exports = function InspireData(api) {
             );
         }
 
-        var predicate;
-
         // Don't search if query empty
         if (isString(query) && isEmpty(query)) {
             return data.clearSearch();
         }
 
         if (isString(query)) {
-            predicate = function(node) {
-                return node.title === query;
-            };
+            query = new RegExp(query, 'i');
         }
-        else if (isRegExp(query)) {
+
+        var predicate;
+        if (isRegExp(query)) {
             predicate = function(node) {
                 return query.test(node.title);
             };
+        }
+        else {
+            predicate = query;
         }
 
         if (!isFunction(predicate)) {
@@ -795,6 +798,8 @@ module.exports = function InspireData(api) {
             node.itree.state.hidden = !match;
 
             if (match) {
+                matches.push(node);
+
                 showParents(node);
                 expandParents(node);
             }
@@ -803,6 +808,8 @@ module.exports = function InspireData(api) {
         });
 
         rerender();
+
+        return matches;
     };
 
     /**
@@ -823,6 +830,17 @@ module.exports = function InspireData(api) {
         }
 
         return node;
+    };
+
+    /**
+     * Shows all nodes.
+     *
+     * @return {void}
+     */
+    data.showAll = function() {
+        data.batch();
+        recurse(model, data.showNode);
+        data.end();
     };
 
     /**
