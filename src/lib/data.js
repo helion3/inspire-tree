@@ -583,12 +583,16 @@ module.exports = function InspireData(api) {
             api.config.data(
                 node,
                 function resolver(results) {
-                    node.children = collectionToModel(results);
-                    api.dom.applyChanges();
+                    api.dom.batch();
+                    node.children = collectionToModel(results, node);
+                    api.dom.markNodeDirty(node);
+                    api.dom.end();
                 },
                 function rejecter(err) {
-                    node.children = [];
                     api.events.emit('data.loaderror', err);
+
+                    node.children = [];
+                    api.dom.markNodeDirty(node);
                     api.dom.applyChanges();
                 }
             );
