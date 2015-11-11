@@ -114,6 +114,8 @@ module.exports = function InspireData(api) {
 
         // Add all itree values
         object.itree = defaultsDeep(object.itree || {}, {
+            icon: false,
+            attributes: false,
             state: {
                 collapsed: true,
                 hidden: false,

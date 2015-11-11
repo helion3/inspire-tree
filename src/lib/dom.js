@@ -130,7 +130,12 @@ module.exports = function InspireDOM(api) {
             classNames = '.' + classNames;
         }
 
-        return h('li' + classNames, { attributes: { 'data-uid': node.id } }, contents);
+        var attributes = get(node, 'itree.li.attributes') || {};
+
+        // Force internal-use attributes
+        attributes['data-uid'] = node.id;
+
+        return h('li' + classNames, { attributes: attributes }, contents);
     };
 
     /**
@@ -166,7 +171,7 @@ module.exports = function InspireDOM(api) {
     function createTitleAnchor(node, hasVisibleChildren) {
         var classNames = ['title', 'icon'];
 
-        classNames.push(node.iconClass || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
+        classNames.push(node.itree.icon || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
 
         return h('a.' + classNames.join('.'), {
             oncontextmenu: function(event) {
