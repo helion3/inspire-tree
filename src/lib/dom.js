@@ -2,6 +2,7 @@
 
 // Libs
 var createElement = require('virtual-dom/create-element');
+var each = require('lodash.foreach');
 var diff = require('virtual-dom/diff');
 var filter = require('lodash.filter');
 var get = require('lodash.get');
@@ -15,7 +16,13 @@ var patch = require('virtual-dom/patch');
 var transform = require('lodash.transform');
 
 module.exports = function InspireDOM(api) {
+    var $activeDropTarget;
+    var $dragElement;
+    var $dragNode;
     var $target;
+    var dragHandleOffset;
+    var dropTargets = [];
+    var isDragDropEnabled = false;
 
     /**
      * Creates a context menu unordered list.
@@ -49,6 +56,33 @@ module.exports = function InspireDOM(api) {
                 }
             }, choice.text)
         ]]);
+    }
+
+    /**
+     * Creates a draggable element by cloning a target,
+     * registers a listener for mousemove.
+     *
+     * @param {HTMLElement} element DOM Element.
+     * @param {Event} event Click event to use.
+     * @return {void}
+     */
+    function createDraggableElement(element, event) {
+        $dragNode = getNodeFromTitleDOMElement(element);
+
+        var offset = getAbsoluteOffset(element);
+        var diffX = event.clientX - offset.left;
+        var diffY = event.clientY - offset.top;
+
+        dragHandleOffset = { left: diffX, top: diffY };
+
+        $dragElement = element.cloneNode(true);
+        $dragElement.className += ' dragging';
+        $dragElement.style.top = offset.top + 'px';
+        $dragElement.style.left = offset.left + 'px';
+        $target.appendChild($dragElement);
+
+        // Listen to mouse move
+        document.addEventListener('mousemove', mouseMoveListener);
     }
 
     /**
@@ -172,6 +206,11 @@ module.exports = function InspireDOM(api) {
 
                 // Emit
                 api.events.emit('node.dblclick', event, node);
+            },
+            onmousedown: function(event) {
+                if (isDragDropEnabled) {
+                    createDraggableElement(event.target, event);
+                }
             }
         }, [node.title]);
     }
@@ -225,6 +264,58 @@ module.exports = function InspireDOM(api) {
     }
 
     /**
+     * Calculcates the absolute offset values of an element.
+     *
+     * @param {HTMLElement} element HTML Element.
+     * @return {object} Object with top/left values.
+     */
+    function getAbsoluteOffset(element) {
+        var x = 0;
+        var y = 0;
+
+        while (element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop)) {
+            x += element.offsetLeft - element.scrollLeft;
+            y += element.offsetTop - element.scrollTop;
+            element = element.offsetParent;
+        }
+
+        // IE10 stores scroll values on documentElement instead.
+        // Due to unit testing, document may not always exist
+        if (typeof document !== 'undefined') {
+            x -= document.documentElement.scrollLeft;
+            y -= document.documentElement.scrollTop;
+        }
+
+        return { top: y, left: x };
+    }
+
+    /**
+     * Get an HTMLElement through various means:
+     * An element, jquery object, or a selector.
+     *
+     * @param {mixed} target Element, jQuery selector, selector.
+     * @return {HTMLElement} Matching element.
+     */
+    function getElement(target) {
+        var $element;
+
+        if (target instanceof HTMLElement) {
+            $element = target;
+        }
+        else if (isObject(target) && isObject(target[0])) {
+            $element = target[0];
+        }
+        else if (isString(target)) {
+            var match = document.querySelector(target);
+            if (match) {
+                $element = match;
+            }
+        }
+
+        return $element;
+    }
+
+    /**
      * Helper method for obtaining the data-uid from a DOM element.
      *
      * @param {HTMLElement} element HTML Element.
@@ -234,6 +325,43 @@ module.exports = function InspireDOM(api) {
         var uid = element.parentNode.parentNode.getAttribute('data-uid');
         return api.data.getNodeById(uid);
     }
+
+    /**
+     * Listener for mouse move events for drag and drop.
+     * Is removed automatically on mouse up.
+     *
+     * @param {Event} event Mouse move event.
+     * @return {void}
+     */
+    function mouseMoveListener(event) {
+        if ($dragElement) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var x = event.clientX - dragHandleOffset.left;
+            var y = event.clientY - dragHandleOffset.top;
+
+            $dragElement.style.left = x + 'px';
+            $dragElement.style.top = y + 'px';
+
+            var validTarget;
+            each(dropTargets, function(target) {
+                var rect = target.getBoundingClientRect();
+
+                if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                    validTarget = target;
+                    return false;
+                }
+            });
+
+            // If new target found for the first time
+            if (!$activeDropTarget && validTarget && validTarget.className.indexOf('drop-target') === -1) {
+                validTarget.className += ' drop-target';
+            }
+
+            $activeDropTarget = validTarget;
+        }
+    };
 
     var contextMenuNode;
 
@@ -270,18 +398,7 @@ module.exports = function InspireDOM(api) {
      * @return {void}
      */
     dom.attach = function(target) {
-        if (target instanceof HTMLElement) {
-            $target = target;
-        }
-        else if (isObject(target) && isObject(target[0])) {
-            $target = target[0];
-        }
-        else if (isString(target)) {
-            var match = document.querySelector(target);
-            if (match) {
-                $target = match;
-            }
-        }
+        $target = getElement(target);
 
         if (!$target) {
             throw new Error('No valid element to attach to.');
@@ -289,11 +406,53 @@ module.exports = function InspireDOM(api) {
 
         $target.className += ' inspire-tree';
 
+
         if (get(api, 'config.contextMenu')) {
             document.body.addEventListener('click', function() {
                 dom.closeContextMenu();
             });
         }
+
+        var dragTargetSelectors = get(api, 'config.dragTargets');
+        if (!isEmpty(dragTargetSelectors)) {
+            each(dragTargetSelectors, function(selector) {
+                var dropTarget = getElement(selector);
+
+                if (dropTarget) {
+                    dropTargets.push(dropTarget);
+                }
+                else {
+                    throw new Error('No valid element found for drop target ' + selector);
+                }
+            });
+        }
+
+        isDragDropEnabled = dropTargets.length > 0;
+
+        if (isDragDropEnabled) {
+            document.addEventListener('mouseup', function() {
+                if ($dragElement) {
+                    $dragElement.parentNode.removeChild($dragElement);
+                    document.removeEventListener('mousemove', mouseMoveListener);
+
+                    if ($activeDropTarget && $activeDropTarget.inspireTree) {
+                        $activeDropTarget.inspireTree.data.addNode($dragNode);
+                    }
+
+                    api.events.emit('node.drop', $dragNode, $activeDropTarget);
+                }
+
+                if ($activeDropTarget) {
+                    $activeDropTarget.className = $activeDropTarget.className.replace('drop-target', '');
+                }
+
+                $dragNode = null;
+                $dragElement = null;
+                $activeDropTarget = null;
+            });
+        }
+
+        $target.inspireTree = api;
     };
 
     /**

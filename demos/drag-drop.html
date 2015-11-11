@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
+        <style>
+            body {
+                background: #eee;
+            }
+
+            .inspire-tree {
+                background: #fff;
+                border: 1px solid #bbb;
+                border-radius: 2px;
+                min-height: 400px;
+                width: 300px;
+            }
+
+            body > div {
+                float: left;
+                margin-right: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="source-tree"></div>
+        <div class="dest-tree"></div>
+    </body>
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+            paths: {
+                jquery: '../bower_components/jquery/dist/jquery.min',
+                inspireTree: '../build/inspire-tree',
+                lodash: '../bower_components/lodash/lodash.min'
+            }
+        });
+
+        require([
+            'jquery',
+            'lodash',
+            'inspireTree'
+        ], function($, _, InspireTree) {
+            var sourceTree = new InspireTree({
+                target: '.source-tree',
+                data: $.getJSON('../sample-data/full.json'),
+                dragTargets: [
+                    '.dest-tree'
+                ]
+            });
+
+            sourceTree.events.on('node.drop', function(node) {
+                // node.hide();
+                sourceTree.data.hideNode(node);
+            });
+
+            var destTree = new InspireTree({
+                target: '.dest-tree',
+                data: []
+            });
+        });
+    </script>
+</html>

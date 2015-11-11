@@ -10,13 +10,16 @@ our need for one - the only existing solution which met our *feature* needs was 
 Features include:
 
 - Robust API.
+- Events everywhere.
+- Extremely light (<50k) minified, uncompressed.
+- No external dependencies.
 - Load data directly, via Promise, or via callback.
 - Optionally load child nodes dynamically.
 - Search by plain string or RegExp, or via external resources.
-- Events everywhere.
 - Virtual DOM for blazing fast DOM updates.
 - Valid HTML5 DOM structure and extremely clean, easy-to-override CSS.
 - Custom context menu (optional).
+- Drag and Drop between trees.
 - AMD and CommonJS support (RequireJS, Node).
 - Supports multiple instances on a single page.
 - Includes functionality for moving nodes between instances.
@@ -60,6 +63,7 @@ tree.events.on('node.click', function(event, node) {
 - *node.contextmenu*
 - *node.dblclick*
 - *node.deselected*
+- *node.drop*
 - *node.expanded*
 - *node.hidden*
 - *node.removed*

@@ -14,6 +14,10 @@
 .inspire-tree {
     font: 400 12px Helvetica Nueue, Verdana, sans-serif;
 
+    &.drop-target {
+        border: 1px solid #2dadc5;
+    }
+
     .icon:before {
         font-family: 'itree';
         -moz-osx-font-smoothing: grayscale;
@@ -114,6 +118,11 @@
         position: absolute;
         width: 100%;
         z-index: 1;
+    }
+
+    .dragging {
+        position: fixed;
+        z-index: 5000;
     }
 }
 
