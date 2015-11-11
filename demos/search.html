@@ -53,11 +53,7 @@
             });
 
             $('input').on('keyup', _.debounce(function(event) {
-                if (this.value.length) {
-                    sourceTree.data.search(new RegExp(this.value, 'i'));
-                } else {
-                    sourceTree.data.clearSearch();
-                }
+                sourceTree.data.search(this.value);
             }, 500));
         });
     </script>
