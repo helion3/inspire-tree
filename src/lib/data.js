@@ -47,6 +47,9 @@ module.exports = function InspireData(api) {
             node = node.itree.parent;
 
             node.itree.state.collapsed = false;
+            node.itree.state.hidden = false;
+            api.dom.markNodeDirty(node);
+
             api.events.emit('node.expanded', node);
 
             expandParents(node);
@@ -132,24 +135,6 @@ module.exports = function InspireData(api) {
 
         return object;
     };
-
-    /**
-     * Ensure all parent nodes are visible.
-     *
-     * @private
-     * @param {object} node Node object.
-     * @return {void}
-     */
-    function showParents(node) {
-        if (node.itree.parent) {
-            node = node.itree.parent;
-
-            node.itree.state.hidden = false;
-            api.events.emit('node.shown', node);
-
-            showParents(node);
-        }
-    }
 
     var data = this;
     var model = [];
@@ -735,21 +720,28 @@ module.exports = function InspireData(api) {
             throw new TypeError('Search predicate must be a string, RegExp, or function.');
         }
 
+        api.dom.batch();
+
         data.recurseDown(model, function(node) {
             var match = predicate(node);
+            var wasHidden = node.itree.state.hidden;
             node.itree.state.hidden = !match;
+
+            // If hidden state will change
+            if (wasHidden !== node.itree.state.hidden) {
+                api.dom.markNodeDirty(node);
+            }
 
             if (match) {
                 matches.push(node);
 
-                showParents(node);
                 expandParents(node);
             }
 
             return node;
         });
 
-        api.dom.applyChanges();
+        api.dom.end();
 
         return matches;
     };

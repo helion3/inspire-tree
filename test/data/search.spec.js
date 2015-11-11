@@ -64,6 +64,7 @@ describe('Search', function() {
 
         expect(tree.data.getNode(1).itree.state.hidden).to.be.true;
         expect(tree.data.getNode(2).itree.state.hidden).to.be.false;
+        expect(tree.data.getNode(2).itree.state.collapsed).to.be.false;
         expect(tree.data.getNode(2).children[0].itree.state.hidden).to.be.false;
         expect(tree.data.getNode(2).children[1].itree.state.hidden).to.be.true;
     });
