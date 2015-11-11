@@ -74,6 +74,7 @@ module.exports = function InspireData(api) {
             var existing = data.getNodeById(node.id);
             if (existing) {
                 existing.itree.state.hidden = false;
+                api.dom.markNodeDirty(existing);
 
                 // Ensure existing accepts children
                 if (!isArray(existing.children)) {
