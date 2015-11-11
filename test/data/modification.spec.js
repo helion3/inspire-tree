@@ -136,7 +136,7 @@ describe('Modification', function() {
 
         // Push a new child to the copied data
         var parent = tree2.data.getNodeById(2);
-        parent.children.push({
+        parent.addChild({
             title: 'New'
         });
 

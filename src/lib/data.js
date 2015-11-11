@@ -1,6 +1,7 @@
 'use strict';
 
 // Libs
+var assign = require('lodash.assign');
 var cloneDeep = require('lodash.clonedeep');
 var cuid = require('cuid');
 var defaultsDeep = require('lodash.defaultsdeep');
@@ -15,8 +16,11 @@ var isString = require('lodash.isstring');
 var map = require('lodash.map');
 var remove = require('lodash.remove');
 var transform = require('lodash.transform');
+var treeNodeFactory = require('./TreeNode');
 
 module.exports = function InspireData(api) {
+    var TreeNode = treeNodeFactory(api);
+
     /**
      * Parses a raw collection of objects into a model used
      * within a tree. Adds state and other internal properties.
@@ -26,11 +30,9 @@ module.exports = function InspireData(api) {
      * @return {array|object} Object model.
      */
     function collectionToModel(collection, parent) {
-        map(collection, function(node) {
-            objectToModel(node, parent);
+        return transform(collection, function(newCollection, node) {
+            newCollection.push(objectToModel(node, parent));
         });
-
-        return collection;
     };
 
     /**
@@ -123,8 +125,11 @@ module.exports = function InspireData(api) {
         object.itree.parent = parent;
 
         if (isArray(object.children) && !isEmpty(object.children)) {
-            collectionToModel(object.children, object);
+            object.children = collectionToModel(object.children, object);
         }
+
+        // Wrap
+        object = assign(new TreeNode(), object);
 
         return object;
     };
@@ -185,6 +190,27 @@ module.exports = function InspireData(api) {
 
     var data = this;
     var model = [];
+
+    /**
+     * Add new node as a child of another.
+     *
+     * @param {object} parent Node object.
+     * @param {object} child Node object.
+     * @return {object} Node object.
+     */
+    data.addChildNode = function(parent, child) {
+        child = objectToModel(child);
+
+        if (!isArray(parent.children)) {
+            parent.children = [];
+        }
+
+        parent.children.push(child);
+
+        rerender();
+
+        return child;
+    };
 
     /**
      * Add a node.
