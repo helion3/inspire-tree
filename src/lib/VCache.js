@@ -1,5 +1,16 @@
 'use strict';
 
+/**
+ * Used for caching VNodes.
+ *
+ * If a given state fails comparison with the previous state,
+ * the node will be created via the provided rendering method.
+ *
+ * @param {object} state State object.
+ * @param {function} cmpFn Comparison function.
+ * @param {function} renderFn Rendering function. Must return a VNode.
+ * @return {VNode} New or cached node.
+ */
 var VCache = function VCache(state, cmpFn, renderFn) {
     this.renderFn = renderFn;
     this.cmpFn = cmpFn;

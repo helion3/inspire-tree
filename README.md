@@ -19,7 +19,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 - Search by plain string, RegExp, custom matcher, or external resources (optional).
 - Custom context menu (optional).
 - Drag and Drop (optional).
-- Virtual DOM for speedy rendering.
+- Virtual DOM for blazing fast change rendering.
 - Valid HTML structure.
 - Clean and easy-to-override CSS.
 - AMD and CommonJS support (RequireJS, Node/Webpack).
