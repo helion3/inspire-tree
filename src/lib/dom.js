@@ -500,7 +500,7 @@ module.exports = function InspireDOM(api) {
                     document.removeEventListener('mousemove', mouseMoveListener);
 
                     if ($activeDropTarget && $activeDropTarget.inspireTree) {
-                        $activeDropTarget.inspireTree.data.addNode($dragNode);
+                        $activeDropTarget.inspireTree.data.addNode(api.data.exportNode($dragNode));
                     }
 
                     api.events.emit('node.drop', $dragNode, $activeDropTarget);
