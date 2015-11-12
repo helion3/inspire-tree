@@ -202,7 +202,7 @@ module.exports = function InspireDOM(api) {
         }, VStateCompare, function(previous, current) {
             var classNames = ['title', 'icon'];
 
-            classNames.push(current.state.icon || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
+            classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
 
             return h('a.' + classNames.join('.'), {
                 oncontextmenu: function(event) {
@@ -256,11 +256,16 @@ module.exports = function InspireDOM(api) {
      * @return {object} Container node.
      */
     function createTitleContainer(node) {
-        var hasVisibleChildren = true;
+        var hasVisibleChildren = false;
+
         if (!isDynamic) {
-            var l = node.children ? node.children.length : 0;
-            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
-            hasVisibleChildren = (l > 0 && hiddenCount < l);
+            if (isArray(node.children)) {
+                var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
+                hasVisibleChildren = (hiddenCount < node.children.length);
+            }
+        }
+        else {
+            hasVisibleChildren = Boolean(node.children);
         }
 
         return new VCache({
