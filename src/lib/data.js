@@ -506,6 +506,27 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Get a textual hierarchy for a given node. An array
+     * of text from this node's root ancestor to the given node.
+     *
+     * @category Data
+     * @param {object} node Node object.
+     * @return {array} Array of node texts.
+     */
+    data.getTextualHierarchy = function(node) {
+        var paths = [];
+
+        var parents = data.getParentNodes(node).reverse();
+        each(parents, function(parent) {
+            paths.push(parent.text);
+        });
+
+        paths.push(node.text);
+
+        return paths;
+    };
+
+    /**
      * Loads data. Accepts an array or a promise.
      *
      * @category Data
