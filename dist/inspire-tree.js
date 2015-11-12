@@ -61,10 +61,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var get = __webpack_require__(19);
 	var InspireData = __webpack_require__(22);
 	var InspireDOM = __webpack_require__(45);
-	var InspireEvents = __webpack_require__(90);
+	var InspireEvents = __webpack_require__(87);
 
 	// CSS
-	__webpack_require__(92);
+	__webpack_require__(89);
 
 	module.exports = function InspireTree(opts) {
 	    if (!get(opts, 'target')) {
@@ -2301,6 +2301,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            node = node.itree.parent;
 
 	            node.itree.state.collapsed = false;
+	            node.itree.state.hidden = false;
+	            api.dom.markNodeDirty(node);
+
 	            api.events.emit('node.expanded', node);
 
 	            expandParents(node);
@@ -2325,6 +2328,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var existing = data.getNodeById(node.id);
 	            if (existing) {
 	                existing.itree.state.hidden = false;
+	                api.dom.markNodeDirty(existing);
 
 	                // Ensure existing accepts children
 	                if (!isArray(existing.children)) {
@@ -2386,24 +2390,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return object;
 	    };
-
-	    /**
-	     * Ensure all parent nodes are visible.
-	     *
-	     * @private
-	     * @param {object} node Node object.
-	     * @return {void}
-	     */
-	    function showParents(node) {
-	        if (node.itree.parent) {
-	            node = node.itree.parent;
-
-	            node.itree.state.hidden = false;
-	            api.events.emit('node.shown', node);
-
-	            showParents(node);
-	        }
-	    }
 
 	    var data = this;
 	    var model = [];
@@ -2774,6 +2760,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Get a textual hierarchy for a given node. An array
+	     * of text from this node's root ancestor to the given node.
+	     *
+	     * @category Data
+	     * @param {object} node Node object.
+	     * @return {array} Array of node texts.
+	     */
+	    data.getTextualHierarchy = function(node) {
+	        var paths = [];
+
+	        var parents = data.getParentNodes(node).reverse();
+	        each(parents, function(parent) {
+	            paths.push(parent.text);
+	        });
+
+	        paths.push(node.text);
+
+	        return paths;
+	    };
+
+	    /**
 	     * Loads data. Accepts an array or a promise.
 	     *
 	     * @category Data
@@ -2851,12 +2858,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	            api.config.data(
 	                node,
 	                function resolver(results) {
-	                    node.children = collectionToModel(results);
-	                    api.dom.applyChanges();
+	                    api.dom.batch();
+	                    node.children = collectionToModel(results, node);
+	                    api.dom.markNodeDirty(node);
+	                    api.dom.end();
 	                },
 	                function rejecter(err) {
-	                    node.children = [];
 	                    api.events.emit('data.loaderror', err);
+
+	                    node.children = [];
+	                    api.dom.markNodeDirty(node);
 	                    api.dom.applyChanges();
 	                }
 	            );
@@ -2978,7 +2989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var predicate;
 	        if (isRegExp(query)) {
 	            predicate = function(node) {
-	                return query.test(node.title);
+	                return query.test(node.text);
 	            };
 	        }
 	        else {
@@ -2989,21 +3000,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	            throw new TypeError('Search predicate must be a string, RegExp, or function.');
 	        }
 
+	        api.dom.batch();
+
 	        data.recurseDown(model, function(node) {
 	            var match = predicate(node);
+	            var wasHidden = node.itree.state.hidden;
 	            node.itree.state.hidden = !match;
+
+	            // If hidden state will change
+	            if (wasHidden !== node.itree.state.hidden) {
+	                api.dom.markNodeDirty(node);
+	            }
 
 	            if (match) {
 	                matches.push(node);
 
-	                showParents(node);
 	                expandParents(node);
 	            }
 
 	            return node;
 	        });
 
-	        api.dom.applyChanges();
+	        api.dom.end();
 
 	        return matches;
 	    };
@@ -5725,19 +5743,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var createElement = __webpack_require__(46);
 	var each = __webpack_require__(28);
 	var diff = __webpack_require__(59);
-	var filter = __webpack_require__(64);
 	var get = __webpack_require__(19);
-	var h = __webpack_require__(67);
+	var h = __webpack_require__(64);
 	var isArray = __webpack_require__(10);
 	var isEmpty = __webpack_require__(30);
 	var isObject = __webpack_require__(33);
 	var isString = __webpack_require__(32);
-	var patch = __webpack_require__(78);
+	var patch = __webpack_require__(75);
 	var transform = __webpack_require__(42);
-	var VCache = __webpack_require__(83);
-	var VArrayDirtyCompare = __webpack_require__(84);
-	var VDirtyCompare = __webpack_require__(88);
-	var VStateCompare = __webpack_require__(89);
+	var VCache = __webpack_require__(80);
+	var VArrayDirtyCompare = __webpack_require__(81);
+	var VDirtyCompare = __webpack_require__(85);
+	var VStateCompare = __webpack_require__(86);
 
 	module.exports = function InspireDOM(api) {
 	    var $activeDropTarget;
@@ -5918,12 +5935,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function createTitleAnchor(node, hasVisibleChildren) {
 	        return new VCache({
 	            icon: node.itree.icon,
-	            title: node.title,
+	            text: node.text,
 	            hasVisibleChildren: hasVisibleChildren
 	        }, VStateCompare, function(previous, current) {
 	            var classNames = ['title', 'icon'];
 
-	            classNames.push(current.state.icon || (!hasVisibleChildren ? 'icon-file-empty' : 'icon-folder'));
+	            classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
 
 	            return h('a.' + classNames.join('.'), {
 	                oncontextmenu: function(event) {
@@ -5965,7 +5982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        createDraggableElement(event.target, event);
 	                    }
 	                }
-	            }, [current.state.title]);
+	            }, [current.state.text]);
 	        });
 	    }
 
@@ -5977,11 +5994,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {object} Container node.
 	     */
 	    function createTitleContainer(node) {
-	        var hasVisibleChildren = true;
+	        var hasVisibleChildren = false;
+
 	        if (!isDynamic) {
-	            var l = node.children ? node.children.length : 0;
-	            var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
-	            hasVisibleChildren = (l > 0 && hiddenCount < l);
+	            if (isArray(node.children) && node.children.length) {
+	                // Count visible children
+	                // http://jsperf.com/count-subdoc-state/2
+	                var visibleCount = 0;
+	                each(node.children, function(child) {
+	                    if (!child.itree.state.hidden) {
+	                        visibleCount++;
+	                    }
+	                });
+
+	                hasVisibleChildren = (visibleCount > 0);
+	            }
+	        }
+	        else {
+	            hasVisibleChildren = Boolean(node.children);
 	        }
 
 	        return new VCache({
@@ -6221,7 +6251,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    document.removeEventListener('mousemove', mouseMoveListener);
 
 	                    if ($activeDropTarget && $activeDropTarget.inspireTree) {
-	                        $activeDropTarget.inspireTree.data.addNode($dragNode);
+	                        $activeDropTarget.inspireTree.data.addNode(api.data.exportNode($dragNode));
 	                    }
 
 	                    api.events.emit('node.drop', $dragNode, $activeDropTarget);
@@ -7319,181 +7349,30 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * lodash 3.1.1 (Custom Build) <https://lodash.com/>
-	 * Build: `lodash modern modularize exports="npm" -o ./`
-	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
-	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
-	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-	 * Available under MIT license <https://lodash.com/license>
-	 */
-	var arrayFilter = __webpack_require__(65),
-	    baseCallback = __webpack_require__(37),
-	    baseFilter = __webpack_require__(66),
-	    isArray = __webpack_require__(10);
-
-	/**
-	 * Iterates over elements of `collection`, returning an array of all elements
-	 * `predicate` returns truthy for. The predicate is bound to `thisArg` and
-	 * invoked with three arguments: (value, index|key, collection).
-	 *
-	 * If a property name is provided for `predicate` the created `_.property`
-	 * style callback returns the property value of the given element.
-	 *
-	 * If a value is also provided for `thisArg` the created `_.matchesProperty`
-	 * style callback returns `true` for elements that have a matching property
-	 * value, else `false`.
-	 *
-	 * If an object is provided for `predicate` the created `_.matches` style
-	 * callback returns `true` for elements that have the properties of the given
-	 * object, else `false`.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @alias select
-	 * @category Collection
-	 * @param {Array|Object|string} collection The collection to iterate over.
-	 * @param {Function|Object|string} [predicate=_.identity] The function invoked
-	 *  per iteration.
-	 * @param {*} [thisArg] The `this` binding of `predicate`.
-	 * @returns {Array} Returns the new filtered array.
-	 * @example
-	 *
-	 * _.filter([4, 5, 6], function(n) {
-	 *   return n % 2 == 0;
-	 * });
-	 * // => [4, 6]
-	 *
-	 * var users = [
-	 *   { 'user': 'barney', 'age': 36, 'active': true },
-	 *   { 'user': 'fred',   'age': 40, 'active': false }
-	 * ];
-	 *
-	 * // using the `_.matches` callback shorthand
-	 * _.pluck(_.filter(users, { 'age': 36, 'active': true }), 'user');
-	 * // => ['barney']
-	 *
-	 * // using the `_.matchesProperty` callback shorthand
-	 * _.pluck(_.filter(users, 'active', false), 'user');
-	 * // => ['fred']
-	 *
-	 * // using the `_.property` callback shorthand
-	 * _.pluck(_.filter(users, 'active'), 'user');
-	 * // => ['barney']
-	 */
-	function filter(collection, predicate, thisArg) {
-	  var func = isArray(collection) ? arrayFilter : baseFilter;
-	  predicate = baseCallback(predicate, thisArg, 3);
-	  return func(collection, predicate);
-	}
-
-	module.exports = filter;
-
-
-/***/ },
-/* 65 */
-/***/ function(module, exports) {
-
-	/**
-	 * lodash 3.0.0 (Custom Build) <https://lodash.com/>
-	 * Build: `lodash modern modularize exports="npm" -o ./`
-	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
-	 * Based on Underscore.js 1.7.0 <http://underscorejs.org/LICENSE>
-	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-	 * Available under MIT license <https://lodash.com/license>
-	 */
-
-	/**
-	 * A specialized version of `_.filter` for arrays without support for callback
-	 * shorthands or `this` binding.
-	 *
-	 * @private
-	 * @param {Array} array The array to iterate over.
-	 * @param {Function} predicate The function invoked per iteration.
-	 * @returns {Array} Returns the new filtered array.
-	 */
-	function arrayFilter(array, predicate) {
-	  var index = -1,
-	      length = array.length,
-	      resIndex = -1,
-	      result = [];
-
-	  while (++index < length) {
-	    var value = array[index];
-	    if (predicate(value, index, array)) {
-	      result[++resIndex] = value;
-	    }
-	  }
-	  return result;
-	}
-
-	module.exports = arrayFilter;
-
-
-/***/ },
-/* 66 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * lodash 3.0.0 (Custom Build) <https://lodash.com/>
-	 * Build: `lodash modern modularize exports="npm" -o ./`
-	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
-	 * Based on Underscore.js 1.7.0 <http://underscorejs.org/LICENSE>
-	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-	 * Available under MIT license <https://lodash.com/license>
-	 */
-	var baseEach = __webpack_require__(29);
-
-	/**
-	 * The base implementation of `_.filter` without support for callback
-	 * shorthands or `this` binding.
-	 *
-	 * @private
-	 * @param {Array|Object|string} collection The collection to iterate over.
-	 * @param {Function} predicate The function invoked per iteration.
-	 * @returns {Array} Returns the new filtered array.
-	 */
-	function baseFilter(collection, predicate) {
-	  var result = [];
-	  baseEach(collection, function(value, index, collection) {
-	    if (predicate(value, index, collection)) {
-	      result.push(value);
-	    }
-	  });
-	  return result;
-	}
-
-	module.exports = baseFilter;
-
-
-/***/ },
-/* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var h = __webpack_require__(68)
+	var h = __webpack_require__(65)
 
 	module.exports = h
 
 
 /***/ },
-/* 68 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var isArray = __webpack_require__(61);
 
-	var VNode = __webpack_require__(69);
-	var VText = __webpack_require__(70);
+	var VNode = __webpack_require__(66);
+	var VText = __webpack_require__(67);
 	var isVNode = __webpack_require__(53);
 	var isVText = __webpack_require__(55);
 	var isWidget = __webpack_require__(56);
 	var isHook = __webpack_require__(52);
 	var isVThunk = __webpack_require__(58);
 
-	var parseTag = __webpack_require__(71);
-	var softSetHook = __webpack_require__(73);
-	var evHook = __webpack_require__(74);
+	var parseTag = __webpack_require__(68);
+	var softSetHook = __webpack_require__(70);
+	var evHook = __webpack_require__(71);
 
 	module.exports = h;
 
@@ -7619,7 +7498,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 69 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var version = __webpack_require__(54)
@@ -7697,7 +7576,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 70 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var version = __webpack_require__(54)
@@ -7713,12 +7592,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 71 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var split = __webpack_require__(72);
+	var split = __webpack_require__(69);
 
 	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
 	var notClassId = /^\.|#/;
@@ -7773,7 +7652,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 72 */
+/* 69 */
 /***/ function(module, exports) {
 
 	/*!
@@ -7885,7 +7764,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 73 */
+/* 70 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -7908,12 +7787,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 74 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EvStore = __webpack_require__(75);
+	var EvStore = __webpack_require__(72);
 
 	module.exports = EvHook;
 
@@ -7941,12 +7820,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 75 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var OneVersionConstraint = __webpack_require__(76);
+	var OneVersionConstraint = __webpack_require__(73);
 
 	var MY_VERSION = '7';
 	OneVersionConstraint('ev-store', MY_VERSION);
@@ -7967,12 +7846,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 76 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Individual = __webpack_require__(77);
+	var Individual = __webpack_require__(74);
 
 	module.exports = OneVersion;
 
@@ -7995,7 +7874,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 77 */
+/* 74 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -8021,24 +7900,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 78 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var patch = __webpack_require__(79)
+	var patch = __webpack_require__(76)
 
 	module.exports = patch
 
 
 /***/ },
-/* 79 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var document = __webpack_require__(48)
 	var isArray = __webpack_require__(61)
 
 	var render = __webpack_require__(47)
-	var domIndex = __webpack_require__(80)
-	var patchOp = __webpack_require__(81)
+	var domIndex = __webpack_require__(77)
+	var patchOp = __webpack_require__(78)
 	module.exports = patch
 
 	function patch(rootNode, patches, renderOptions) {
@@ -8116,7 +7995,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 80 */
+/* 77 */
 /***/ function(module, exports) {
 
 	// Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
@@ -8207,7 +8086,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 81 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var applyProperties = __webpack_require__(50)
@@ -8215,7 +8094,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var isWidget = __webpack_require__(56)
 	var VPatch = __webpack_require__(62)
 
-	var updateWidget = __webpack_require__(82)
+	var updateWidget = __webpack_require__(79)
 
 	module.exports = applyPatch
 
@@ -8364,7 +8243,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 82 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isWidget = __webpack_require__(56)
@@ -8385,7 +8264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 83 */
+/* 80 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8431,12 +8310,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 84 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var find = __webpack_require__(85);
+	var find = __webpack_require__(82);
 
 	/**
 	 * Returns whether or not a state is marked as dirty in
@@ -8454,7 +8333,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 85 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8467,8 +8346,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var baseCallback = __webpack_require__(37),
 	    baseEach = __webpack_require__(29),
-	    baseFind = __webpack_require__(86),
-	    baseFindIndex = __webpack_require__(87),
+	    baseFind = __webpack_require__(83),
+	    baseFindIndex = __webpack_require__(84),
 	    isArray = __webpack_require__(10);
 
 	/**
@@ -8546,7 +8425,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 86 */
+/* 83 */
 /***/ function(module, exports) {
 
 	/**
@@ -8586,7 +8465,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 87 */
+/* 84 */
 /***/ function(module, exports) {
 
 	/**
@@ -8624,7 +8503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 88 */
+/* 85 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8644,7 +8523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 89 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8675,13 +8554,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 90 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	// Libs
-	var EventEmitter = __webpack_require__(91);
+	var EventEmitter = __webpack_require__(88);
 
 	function InspireEvents() {};
 	InspireEvents.prototype = Object.create(EventEmitter.prototype);
@@ -8690,7 +8569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 91 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9269,7 +9148,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 92 */
+/* 89 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
