@@ -456,7 +456,8 @@ module.exports = function InspireDOM(api) {
      * Will skip rendering as long as any calls
      * to `batch` have yet to be resolved,
      *
-     * @return {[type]} [description]
+     * @category DOM
+     * @return {void}
      */
     dom.applyChanges = function() {
         // Never rerender when until batch complete
@@ -668,6 +669,7 @@ module.exports = function InspireDOM(api) {
      * Mark a node as dirty, rebuilding this node in the virtual DOM
      * and rerendering to the live DOM, next time renderNodes is called.
      *
+     * @category DOM
      * @param {object} startingNode Node object.
      * @return {void}
      */

@@ -26,8 +26,8 @@
 * <a href="#exportNodes">`exportNodes`</a>
 * <a href="#flattenNodes">`flattenNodes`</a>
 * <a href="#getNode">`getNode`</a>
-* <a href="#getNode" class="alias">`getNodeById` -> `getNode`</a>
 * <a href="#getNodeById">`getNodeById`</a>
+* <a href="#getNode" class="alias">`getNodeById` -> `getNode`</a>
 * <a href="#getNodes">`getNodes`</a>
 * <a href="#getNodes">`getNodes`</a>
 * <a href="#getParentNodes">`getParentNodes`</a>
@@ -40,7 +40,9 @@
 * <a href="#removeAll">`removeAll`</a>
 * <a href="#removeNode">`removeNode`</a>
 * <a href="#search">`search`</a>
+* <a href="#selectFirstVisibleNode">`selectFirstVisibleNode`</a>
 * <a href="#selectNode">`selectNode`</a>
+* <a href="#setNodeProperty">`setNodeProperty`</a>
 
 <!-- /div -->
 
@@ -467,13 +469,40 @@ Search nodes, showing only those that match and the necessary hierarchy.
 
 <!-- div -->
 
+### <a id="selectFirstVisibleNode"></a>`selectFirstVisibleNode`
+<a href="#selectFirstVisibleNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L781 "View in source") [&#x24C9;][1]
+
+Select the first visible node at the root level.
+
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
 ### <a id="selectNode"></a>`selectNode(node)`
-<a href="#selectNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L782 "View in source") [&#x24C9;][1]
+<a href="#selectNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L803 "View in source") [&#x24C9;][1]
 
 Select a node. If already selected, no change made.
 
 #### Arguments
 1. `node` *(object)*: Node object.
+
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
+### <a id="setNodeProperty"></a>`setNodeProperty(node, property, value)`
+<a href="#setNodeProperty">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/lib/data.js#L830 "View in source") [&#x24C9;][1]
+
+Set a new value for the given property.
+
+#### Arguments
+1. `node` *(object)*: Node object.
+2. `property` *(string)*: Property name.
+3. `value` *(&#42;)*: New value.
 
 * * *
 

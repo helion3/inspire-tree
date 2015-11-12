@@ -7,6 +7,7 @@ module.exports = function(api) {
     /**
      * Add a child to this node.
      *
+     * @category TreeNode
      * @param {object} node Node object.
      * @return {object} Node object.
      */
@@ -17,6 +18,7 @@ module.exports = function(api) {
     /**
      * Get the immediate parent, if any.
      *
+     * @category TreeNode
      * @return {object} Node object.
      */
     TreeNode.prototype.getParent = function() {
@@ -26,6 +28,7 @@ module.exports = function(api) {
     /**
      * Collapse this node.
      *
+     * @category TreeNode
      * @return {object} Node object.
      */
     TreeNode.prototype.collapse = function() {
@@ -35,6 +38,7 @@ module.exports = function(api) {
     /**
      * Deselect this node.
      *
+     * @category TreeNode
      * @return {object} Node object.
      */
     TreeNode.prototype.deselect = function() {
@@ -44,6 +48,7 @@ module.exports = function(api) {
     /**
      * Expand this node.
      *
+     * @category TreeNode
      * @return {object} Node object.
      */
     TreeNode.prototype.expand = function() {
@@ -53,6 +58,7 @@ module.exports = function(api) {
     /**
      * Hide this node.
      *
+     * @category TreeNode
      * @return {object} Node object.
      */
     TreeNode.prototype.hide = function() {
@@ -62,6 +68,7 @@ module.exports = function(api) {
     /**
      * Select this node.
      *
+     * @category TreeNode
      * @return {object} Node object.
      */
     TreeNode.prototype.select = function() {
@@ -71,6 +78,7 @@ module.exports = function(api) {
     /**
      * Select this node.
      *
+     * @category TreeNode
      * @param {string|number} property Property name.
      * @param {*} value New value.
      * @return {object} Node object.
@@ -82,6 +90,7 @@ module.exports = function(api) {
     /**
      * Show this node.
      *
+     * @category TreeNode
      * @return {object} Node object.
      */
     TreeNode.prototype.show = function() {

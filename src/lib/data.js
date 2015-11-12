@@ -773,6 +773,27 @@ module.exports = function InspireData(api) {
     };
 
     /**
+     * Select the first visible node at the root level.
+     *
+     * @category Data
+     * @return {object} Selected node object.
+     */
+    data.selectFirstVisibleNode = function() {
+        var select;
+
+        each(model, function(node) {
+            if (!node.itree.state.hidden) {
+                node.select();
+
+                select = node;
+                return false;
+            }
+        });
+
+        return select;
+    };
+
+    /**
      * Select a node. If already selected, no change made.
      *
      * @category Data
@@ -800,6 +821,7 @@ module.exports = function InspireData(api) {
     /**
      * Set a new value for the given property.
      *
+     * @category Data
      * @param {object} node Node object.
      * @param {string} property Property name.
      * @param {*} value New value.

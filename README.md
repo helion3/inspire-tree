@@ -52,6 +52,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 - [Data API](docs/data.md)
 - [DOM API](docs/dom.md)
+- [TreeNode API](docs/TreeNode.md)
 
 ## Tree Configuration
 
@@ -117,7 +118,7 @@ tree.data.addNode({ title: 'Example' });
 
 **TreeNode**
 
-Each incoming javascript object is wrapped as a `TreeNode`, which aliases methods useful on a single node.
+Each incoming javascript object is wrapped as a `TreeNode` ([Doc](docs/TreeNode.md)), which aliases methods useful on a single node.
 
 For example, you can operate purely with the data api:
 
