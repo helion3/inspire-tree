@@ -797,5 +797,20 @@ module.exports = function InspireData(api) {
         return node;
     };
 
+    /**
+     * Set a new value for the given property.
+     *
+     * @param {object} node Node object.
+     * @param {string} property Property name.
+     * @param {*} value New value.
+     * @return {object} Node object.
+     */
+    data.setNodeProperty = function(node, property, value) {
+        node[property] = value;
+        api.dom.markNodeDirty(node);
+
+        return node;
+    };
+
     return data;
 };

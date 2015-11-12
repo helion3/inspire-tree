@@ -69,6 +69,17 @@ module.exports = function(api) {
     };
 
     /**
+     * Select this node.
+     *
+     * @param {string|number} property Property name.
+     * @param {*} value New value.
+     * @return {object} Node object.
+     */
+    TreeNode.prototype.set = function(property, value) {
+        return api.data.setNodeProperty(this, property, value);
+    };
+
+    /**
      * Show this node.
      *
      * @return {object} Node object.

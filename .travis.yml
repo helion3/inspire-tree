@@ -6,7 +6,6 @@ before_script:
     - npm install -g bower webpack
     - bower install
     - webpack
-    - ls -al
 script:
   - npm run lint
   - npm test

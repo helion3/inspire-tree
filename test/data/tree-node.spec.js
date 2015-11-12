@@ -82,6 +82,19 @@ describe('TreeNode', function() {
         });
     });
 
+    describe('"set" method', function() {
+        it('exists', function() {
+            expect(node.set).to.be.a('function');
+        });
+
+        it('updates node text', function() {
+            node.set('newProp', 'hello');
+
+            expect(node.newProp).to.equal('hello');
+            expect(node.itree.dirty).to.be.true;
+        });
+    });
+
     describe('"show" method', function() {
         it('exists', function() {
             expect(node.show).to.be.a('function');
