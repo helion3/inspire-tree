@@ -1,7 +1,9 @@
 [{
     "text": "Fusion IO",
-    "id": "fusion-io"
+    "id": "fusion-io",
+    "children": true
 }, {
     "text": "Kerns Meridian",
-    "id": "kerns-meridian"
+    "id": "kerns-meridian",
+    "children": true
 }]
