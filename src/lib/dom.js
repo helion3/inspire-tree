@@ -4,7 +4,6 @@
 var createElement = require('virtual-dom/create-element');
 var each = require('lodash.foreach');
 var diff = require('virtual-dom/diff');
-var filter = require('lodash.filter');
 var get = require('lodash.get');
 var h = require('virtual-dom/h');
 var isArray = require('lodash.isarray');
@@ -259,9 +258,17 @@ module.exports = function InspireDOM(api) {
         var hasVisibleChildren = false;
 
         if (!isDynamic) {
-            if (isArray(node.children)) {
-                var hiddenCount = filter(node.children, 'itree.state.hidden', true).length;
-                hasVisibleChildren = (hiddenCount < node.children.length);
+            if (isArray(node.children) && node.children.length) {
+                // Count visible children
+                // http://jsperf.com/count-subdoc-state/2
+                var visibleCount = 0;
+                each(node.children, function(child) {
+                    if (!child.itree.state.hidden) {
+                        visibleCount++;
+                    }
+                });
+
+                hasVisibleChildren = (visibleCount > 0);
             }
         }
         else {
