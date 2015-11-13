@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
+        <style>
+            body {
+                background: #eee;
+            }
+
+            input {
+                font-size: 14px;
+                margin-bottom: 15px;
+                padding: 5px;
+                width: 290px
+            }
+
+            .inspire-tree {
+                background: #fff;
+                border: 1px solid #bbb;
+                border-radius: 2px;
+                min-height: 400px;
+                width: 300px;
+            }
+
+            body > div {
+                overflow: hidden;
+            }
+
+            body > div > div {
+                float: left;
+            }
+
+            .toolbar {
+                width: 50px;
+            }
+
+            .toolbar button {
+                display: block;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body>
+        <input type="text" placeholder="Search">
+        <div>
+            <div class="source-tree"></div>
+            <div class="toolbar">
+                <button class="move-one">&gt;</button>
+                <button class="revert-one">&lt;</button>
+                <button class="move-all">&gt;&gt;</button>
+                <button class="revert-all">&lt;&lt;</button>
+            </div>
+            <div class="dest-tree"></div>
+        </div>
+    </body>
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+            paths: {
+                jquery: '../bower_components/jquery/dist/jquery.min',
+                inspireTree: '../build/inspire-tree',
+                lodash: '../bower_components/lodash/lodash.min'
+            }
+        });
+
+        require([
+            'jquery',
+            'lodash',
+            'inspireTree'
+        ], function($, _, InspireTree) {
+            var sourceTree = new InspireTree({
+                target: '.source-tree',
+                data: $.getJSON('../sample-data/full.json')
+            });
+
+            var destTree = new InspireTree({
+                target: '.dest-tree',
+                data: []
+            });
+
+            $('input').on('keyup', _.debounce(function(event) {
+                sourceTree.data.search(this.value);
+            }, 500));
+
+            $('.move-one').on('click', function() {
+                var selected = sourceTree.data.getSelectedNodes();
+                sourceTree.dom.hideNodes(selected);
+
+                var newNodes = sourceTree.data.copyNodes(selected, true).to(destTree);
+
+                // If we moved a child node, expand nodes down to it
+                _.each(selected, function(node) {
+                    destTree.data.getNode(node.id).expandParents();
+                });
+            });
+
+            sourceTree.events.on('node.dblclick', function(event, node) {
+                sourceTree.data.copyNode(node, true).to(destTree);
+            });
+
+            $('.revert-one').on('click', function() {
+                var selected = destTree.data.getSelectedNodes();
+                destTree.dom.hideNodes(selected);
+                destTree.data.copyNodes(selected, true).to(sourceTree);
+            });
+
+            $('.move-all').on('click', function() {
+                sourceTree.data.copyNodes().to(destTree);
+                sourceTree.dom.hideAll();
+            });
+
+            $('.revert-all').on('click', function() {
+                destTree.data.copyNodes().to(sourceTree);
+                destTree.dom.hideAll();
+            });
+        });
+    </script>
+</html>

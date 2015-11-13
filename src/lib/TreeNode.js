@@ -86,6 +86,26 @@ module.exports = function(api) {
     };
 
     /**
+     * Expand parent nodes.
+     *
+     * @category TreeNode
+     * @return {void}
+     */
+    TreeNode.prototype.expandParents = function() {
+        return api.dom.expandParents(this);
+    };
+
+    /**
+     * If node has a parent.
+     *
+     * @category TreeNode
+     * @return {boolean} If parent.
+     */
+    TreeNode.prototype.hasParent = function() {
+        return Boolean(this.itree.parent);
+    };
+
+    /**
      * Hide this node.
      *
      * @category TreeNode

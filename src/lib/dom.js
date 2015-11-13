@@ -676,6 +676,7 @@ module.exports = function InspireDOM(api) {
 
         if (allow && node.itree.state.collapsed) {
             node.itree.state.collapsed = false;
+            node.itree.state.hidden = false;
 
             api.events.emit('node.expanded', node);
 
@@ -689,6 +690,19 @@ module.exports = function InspireDOM(api) {
         }
 
         return node;
+    };
+
+    /**
+     * Ensure all parent nodes are expanded.
+     *
+     * @category DOM
+     * @param {object} node Node object.
+     * @return {void}
+     */
+    dom.expandParents = function(node) {
+        if (node.hasParent()) {
+            api.data.recurseUp(node.getParent(), dom.expandNode);
+        }
     };
 
     /**

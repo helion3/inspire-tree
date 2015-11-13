@@ -40,27 +40,6 @@ module.exports = function InspireData(api) {
     };
 
     /**
-     * Ensure all parent nodes are expanded.
-     *
-     * @private
-     * @param {object} node Node object.
-     * @return {void}
-     */
-    function expandParents(node) {
-        if (node.itree.parent) {
-            node = node.itree.parent;
-
-            node.itree.state.collapsed = false;
-            node.itree.state.hidden = false;
-            api.dom.markNodeDirty(node);
-
-            api.events.emit('node.expanded', node);
-
-            expandParents(node);
-        }
-    }
-
-    /**
      * Merge a node into an existing context - a model
      * or another node's children. If the ID exists
      * the node is skipped and we try its children.
@@ -278,14 +257,14 @@ module.exports = function InspireData(api) {
              *
              * @category CopyNode
              * @param {object} dest Destination Inspire Tree.
-             * @return {void}
+             * @return {object} New node object.
              */
             to: function(dest) {
                 if (!isFunction(dest.data.addNode)) {
                     throw new Error('Destination must be an Inspire Tree instance.');
                 }
 
-                dest.data.addNode(data.exportNode(node));
+                return dest.data.addNode(data.exportNode(node));
             }
         };
     };
@@ -306,16 +285,20 @@ module.exports = function InspireData(api) {
              *
              * @category CopyNode
              * @param {object} dest Destination Inspire Tree.
-             * @return {void}
+             * @return {array} Array of new nodes.
              */
             to: function(dest) {
                 if (!isFunction(dest.data.addNodes)) {
                     throw new Error('Destination must be an Inspire Tree instance.');
                 }
 
+                var newNodes = [];
+
                 each((nodes || model), function(node) {
-                    data.copyNode(node, hierarchy).to(dest);
+                    newNodes.push(data.copyNode(node, hierarchy).to(dest));
                 });
+
+                return newNodes;
             }
         };
     };
@@ -765,8 +748,7 @@ module.exports = function InspireData(api) {
 
             if (match) {
                 matches.push(node);
-
-                expandParents(node);
+                api.dom.expandParents(node);
             }
 
             return node;
