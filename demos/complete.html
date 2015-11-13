@@ -86,7 +86,7 @@
 
             $('.move-one').on('click', function() {
                 var selected = sourceTree.data.getSelectedNodes();
-                sourceTree.dom.hideNodes(selected);
+                selected.hide();
 
                 var newNodes = sourceTree.data.copyNodes(selected, true).to(destTree);
 

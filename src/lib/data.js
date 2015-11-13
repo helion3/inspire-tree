@@ -2,7 +2,6 @@
 
 // Libs
 var assign = require('lodash.assign');
-var cloneDeep = require('lodash.clonedeep');
 var cuid = require('cuid');
 var each = require('lodash.foreach');
 var get = require('lodash.get');
@@ -14,11 +13,12 @@ var isRegExp = require('lodash.isregexp');
 var isString = require('lodash.isstring');
 var map = require('lodash.map');
 var remove = require('lodash.remove');
-var TreeNodes = require('./TreeNodes');
 var treeNodeFactory = require('./TreeNode');
+var treeNodesFactory = require('./TreeNodes');
 
 module.exports = function InspireData(api) {
     var TreeNode = treeNodeFactory(api);
+    var TreeNodes = treeNodesFactory(api);
 
     /**
      * Parses a raw collection of objects into a model used
@@ -50,7 +50,7 @@ module.exports = function InspireData(api) {
      * @return {array} Array of new nodes.
      */
     var mergeNode = function(context, node) {
-        var newNodes = [];
+        var newNodes = new TreeNodes();
 
         if (node.id) {
             // Does node already exist
@@ -61,7 +61,7 @@ module.exports = function InspireData(api) {
 
                 // Ensure existing accepts children
                 if (!isArrayLike(existing.children)) {
-                    existing.children = [];
+                    existing.children = new TreeNodes();
                 }
 
                 each(node.children, function(child) {
@@ -110,18 +110,18 @@ module.exports = function InspireData(api) {
         // Save parent, if any.
         object.itree.parent = parent;
 
+        // Wrap
+        object = assign(new TreeNode(), object);
+
         if (isArrayLike(object.children) && object.children.length) {
             object.children = collectionToModel(object.children, object);
         }
-
-        // Wrap
-        object = assign(new TreeNode(), object);
 
         return object;
     };
 
     var data = this;
-    var model = [];
+    var model = new TreeNodes();
 
     /**
      * Add new node as a child of another.
@@ -135,7 +135,7 @@ module.exports = function InspireData(api) {
         child = objectToModel(child);
 
         if (!isArrayLike(parent.children)) {
-            parent.children = [];
+            parent.children = new TreeNodes();
         }
 
         parent.children.push(child);
@@ -206,7 +206,7 @@ module.exports = function InspireData(api) {
      * @return {object} Root node object with hierarchy.
      */
     data.copyHierarchy = function(node, excludeNode) {
-        var parents = cloneDeep(data.getParentNodes(node));
+        var parents = data.getParentNodes(node).clone();
 
         // Remove old hierarchy data
         map(parents, function(node) {
@@ -225,10 +225,11 @@ module.exports = function InspireData(api) {
         var pointer = hierarchy;
         var l = parents.length;
         each(parents, function(parent, key) {
+            var children = new TreeNodes();
+
             if (key + 1 < l) {
-                pointer.children = [
-                    parents[key + 1]
-                ];
+                children.push(parents[key + 1]);
+                pointer.children = children;
 
                 pointer = pointer.children[0];
             }
@@ -292,7 +293,7 @@ module.exports = function InspireData(api) {
                     throw new Error('Destination must be an Inspire Tree instance.');
                 }
 
-                var newNodes = [];
+                var newNodes = new TreeNodes();
 
                 each((nodes || model), function(node) {
                     newNodes.push(data.copyNode(node, hierarchy).to(dest));
@@ -344,7 +345,7 @@ module.exports = function InspireData(api) {
      * @return {array} Cloned/modified node object.
      */
     data.exportNode = function(node) {
-        var nodeClone = cloneDeep(node);
+        var nodeClone = node.clone();
 
         data.recurseDown(nodeClone, function(node) {
             node.itree = null;
@@ -363,7 +364,7 @@ module.exports = function InspireData(api) {
      * @return {array} Cloned/modified node objects.
      */
     data.exportNodes = function(nodes) {
-        var nodeClones = cloneDeep(nodes);
+        var nodeClones = nodes.clone();
 
         data.recurseDown(nodeClones, function(node) {
             node.itree = null;
@@ -383,7 +384,7 @@ module.exports = function InspireData(api) {
      * @return {array} Flat array of matching nodes.
      */
     data.flattenNodes = function(nodes, flag) {
-        var flat = [];
+        var flat = new TreeNodes();
         flag = flag || 'selected';
 
         if (isArrayLike(nodes) && !isEmpty(nodes)) {
@@ -472,11 +473,12 @@ module.exports = function InspireData(api) {
      * @return {array} Node objects.
      */
     data.getParentNodes = function(node) {
-        var parents = [];
+        var parents = new TreeNodes();
 
-        if (get(node, 'itree.parent')) {
-            parents.push(node.itree.parent);
-            parents = parents.concat(data.getParentNodes(node.itree.parent));
+        var parent = node.itree.parent;
+        if (parent) {
+            parents.push(parent);
+            parents = parents.concat(data.getParentNodes(parent));
         }
 
         return parents;
@@ -600,7 +602,7 @@ module.exports = function InspireData(api) {
                 function rejecter(err) {
                     api.events.emit('data.loaderror', err);
 
-                    node.children = [];
+                    node.children = new TreeNodes();
                     api.dom.markNodeDirty(node);
                     api.dom.applyChanges();
                 }
@@ -661,7 +663,7 @@ module.exports = function InspireData(api) {
      * @return {void}
      */
     data.removeAll = function() {
-        model = [];
+        model = new TreeNodes();
         api.dom.applyChanges();
     };
 
@@ -689,7 +691,7 @@ module.exports = function InspireData(api) {
      * @return {array} Array of matching node objects.
      */
     data.search = function(query) {
-        var matches = [];
+        var matches = new TreeNodes();
 
         var custom = get(api, 'config.search');
         if (isFunction(custom)) {

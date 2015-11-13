@@ -1,8 +1,30 @@
 'use strict';
 
+var cloneDeep = require('lodash.clonedeep');
+var each = require('lodash.foreach');
+var isArrayLike = require('./isArrayLike');
+var isFunction = require('lodash.isfunction');
+var isObject = require('lodash.isobject');
+
 module.exports = function(api) {
     // Define a wrapper we'll use for each node
-    var TreeNode = function TreeNode() {};
+    var TreeNode = function TreeNode(source) {
+        var node = this;
+
+        each(source, function(value, key) {
+            if (isObject(value) && isFunction(value.clone)) {
+                if (value.clone) {
+                    node[key] = value.clone();
+                }
+            }
+            else if (isObject(value)) {
+                node[key] = cloneDeep(value);
+            }
+            else {
+                node[key] = value;
+            }
+        });
+    };
 
     /**
      * Add a child to this node.
@@ -13,6 +35,22 @@ module.exports = function(api) {
      */
     TreeNode.prototype.addChild = function(node) {
         return api.data.addChildNode(this, node);
+    };
+
+    /**
+     * Clones this node.
+     *
+     * @category TreeNode
+     * @return {object} New node object.
+     */
+    TreeNode.prototype.clone = function() {
+        var newClone = new TreeNode(this);
+
+        if (this.hasChildren()) {
+            newClone.children = this.children.clone();
+        }
+
+        return newClone;
     };
 
     /**
@@ -66,26 +104,6 @@ module.exports = function(api) {
     };
 
     /**
-     * Get the immediate parent, if any.
-     *
-     * @category TreeNode
-     * @return {object} Node object.
-     */
-    TreeNode.prototype.getParent = function() {
-        return this.itree.parent;
-    };
-
-    /**
-     * Get if node hidden.
-     *
-     * @category TreeNode
-     * @return {boolean} If hidden.
-     */
-    TreeNode.prototype.hidden = function() {
-        return this.itree.state.hidden;
-    };
-
-    /**
      * Expand parent nodes.
      *
      * @category TreeNode
@@ -96,6 +114,26 @@ module.exports = function(api) {
     };
 
     /**
+     * Get the immediate parent, if any.
+     *
+     * @category TreeNode
+     * @return {object} Node object.
+     */
+    TreeNode.prototype.getParent = function() {
+        return this.itree.parent;
+    };
+
+    /**
+     * If node has any children.
+     *
+     * @category TreeNode
+     * @return {boolean} If children.
+     */
+    TreeNode.prototype.hasChildren = function() {
+        return isArrayLike(this.children) && this.children.length;
+    };
+
+    /**
      * If node has a parent.
      *
      * @category TreeNode
@@ -103,6 +141,16 @@ module.exports = function(api) {
      */
     TreeNode.prototype.hasParent = function() {
         return Boolean(this.itree.parent);
+    };
+
+    /**
+     * Get if node hidden.
+     *
+     * @category TreeNode
+     * @return {boolean} If hidden.
+     */
+    TreeNode.prototype.hidden = function() {
+        return this.itree.state.hidden;
     };
 
     /**

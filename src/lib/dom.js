@@ -674,7 +674,7 @@ module.exports = function InspireDOM(api) {
     dom.expandNode = function(node) {
         var allow = (!isEmpty(get(node, 'children')) || isDynamic);
 
-        if (allow && node.itree.state.collapsed) {
+        if (allow && (node.itree.state.collapsed || node.itree.state.hidden)) {
             node.itree.state.collapsed = false;
             node.itree.state.hidden = false;
 
