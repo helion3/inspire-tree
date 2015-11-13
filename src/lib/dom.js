@@ -4,13 +4,18 @@
 var createElement = require('virtual-dom/create-element');
 var each = require('lodash.foreach');
 var diff = require('virtual-dom/diff');
+var find = require('lodash.find');
+var findIndex = require('lodash.findindex');
+var findLast = require('lodash.findlast');
 var get = require('lodash.get');
 var h = require('virtual-dom/h');
 var isArray = require('lodash.isarray');
 var isEmpty = require('lodash.isempty');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
+var keyCodes = require('key-codes');
 var patch = require('virtual-dom/patch');
+var slice = require('lodash.slice');
 var transform = require('lodash.transform');
 var VCache = require('./VCache');
 var VArrayDirtyCompare = require('./VArrayDirtyCompare');
@@ -420,6 +425,68 @@ module.exports = function InspireDOM(api) {
         }
     };
 
+    /**
+     * Listen to keyboard event for navigation.
+     *
+     * @private
+     * @param {Event} event Keyboard event.
+     * @return {void}
+     */
+    function keyboardListener(event) {
+        // Navigation
+        var selected = api.data.getSelectedNodes();
+        if (selected.length === 1) {
+            var focusedNode = selected[0];
+
+            switch (event.which) {
+                case keyCodes.UP:
+                    moveSelectionUpFrom(focusedNode);
+                    break;
+                case keyCodes.DOWN:
+                    moveSelectionDownFrom(focusedNode);
+                    break;
+                case keyCodes.ENTER: {
+                    if (focusedNode.collapsed()) {
+                        focusedNode.expand();
+                    }
+                    else {
+                        focusedNode.collapse();
+                    }
+                    break;
+                }
+                default:
+            }
+        }
+    }
+
+    /**
+     * Move select down the visible tree from a starting node.
+     *
+     * @param {object} startingNode Node object.
+     * @return {void}
+     */
+    function moveSelectionDownFrom(startingNode) {
+        var next = api.dom.nextVisibleNode(startingNode);
+        console.log('found', next);
+        if (next) {
+            api.data.selectNode(next);
+        }
+    }
+
+    /**
+     * Move select up the visible tree from a starting node.
+     *
+     * @param {object} startingNode Node object.
+     * @return {void}
+     */
+    function moveSelectionUpFrom(startingNode) {
+        var prev = api.dom.previousVisibleNode(startingNode);
+        console.log('found', prev);
+        if (prev) {
+            api.data.selectNode(prev);
+        }
+    }
+
     var contextMenuNode;
 
     /**
@@ -483,6 +550,10 @@ module.exports = function InspireDOM(api) {
         }
 
         $target.className += ' inspire-tree';
+        $target.setAttribute('tabindex', get(api, 'config.tabindex') || 0);
+
+        // Handle keyboard interaction
+        $target.addEventListener('keyup', keyboardListener);
 
         if (contextMenuChoices) {
             document.body.addEventListener('click', function() {
@@ -666,6 +737,32 @@ module.exports = function InspireDOM(api) {
     };
 
     /**
+     * Checks whether a node is visible to a user. Returns false
+     * if it's hidden, or if any ancestor is hidden or collapsed.
+     *
+     * @category DOM
+     * @param {object} node Node object.
+     * @return {boolean} Whether visible.
+     */
+    dom.isNodeVisible = function(node) {
+        var state = node.itree.state;
+        var parentVisible = false;
+
+        // We can't be visible if parent is hidden/collapsed
+        if (node.itree.parent) {
+            // Is parent collapsed?
+            if (!node.itree.parent.itree.state.collapsed) {
+                parentVisible = dom.isNodeVisible(node.itree.parent);
+            }
+        }
+        else {
+            parentVisible = true;
+        }
+
+        return (!state.hidden && parentVisible);
+    };
+
+    /**
      * Mark a node as dirty, rebuilding this node in the virtual DOM
      * and rerendering to the live DOM, next time renderNodes is called.
      *
@@ -677,6 +774,105 @@ module.exports = function InspireDOM(api) {
         api.data.recurseUp(startingNode, function(node) {
             node.itree.dirty = true;
         });
+    };
+
+    /**
+     * Find first visible child node.
+     *
+     * @category DOM
+     * @param {object} startingNode Node object.
+     * @return {object} Node object, if any.
+     */
+    dom.nextVisibleChildNode = function(startingNode) {
+        var next;
+
+        if (isArray(startingNode.children) && !isEmpty(startingNode.children)) {
+            next = find(startingNode.children, function(child) {
+                return dom.isNodeVisible(child);
+            });
+        }
+
+        return next;
+    };
+
+    /**
+     * Get the next visible node.
+     *
+     * @category DOM
+     * @param {object} startingNode Node object to start at.
+     * @return {object} Node object if any.
+     */
+    dom.nextVisibleNode = function(startingNode) {
+        var next;
+
+        // 1. Any visible children
+        next = dom.nextVisibleChildNode(startingNode);
+
+        // 2. Any Siblings
+        if (!next) {
+            next = dom.nextVisibleSiblingNode(startingNode);
+        }
+
+        // 3. Find sibling of ancestor(s)
+        if (!next && startingNode.itree.parent) {
+            next = dom.nextVisibleSiblingNode(startingNode.itree.parent);
+        }
+
+        return next;
+    };
+
+    /**
+     * Find the next visible sibling node.
+     *
+     * @category DOM
+     * @param {object} startingNode Node object.
+     * @return {object} Node object, if any.
+     */
+    dom.nextVisibleSiblingNode = function(startingNode) {
+        var context = (startingNode.itree.parent ? startingNode.itree.parent.children : api.data.getNodes());
+        var i = findIndex(context, { id: startingNode.id });
+
+        return find(slice(context, i + 1), dom.isNodeVisible);
+    };
+
+    /**
+     * Find the previous visible node.
+     *
+     * @category DOM
+     * @param {object} startingNode Node object.
+     * @return {object} Node object, if any.
+     */
+    dom.previousVisibleNode = function(startingNode) {
+        var prev;
+
+        // 1. Any Siblings
+        prev = dom.previousVisibleSiblingNode(startingNode);
+
+        // 2. If that sibling has children though, go there
+        if (prev && prev.children && !prev.itree.state.collapsed && prev.children.length) {
+            prev = findLast(prev.children, dom.isNodeVisible);
+        }
+
+        // 3. Parent
+        if (!prev && startingNode.itree.parent) {
+            prev = startingNode.itree.parent;
+        }
+
+        return prev;
+    };
+
+    /**
+     * Find the previous visible sibling node.
+     *
+     * @category DOM
+     * @param {object} startingNode Node object.
+     * @return {object} Node object, if any.
+     */
+    dom.previousVisibleSiblingNode = function(startingNode) {
+        var context = (startingNode.itree.parent ? startingNode.itree.parent.children : api.data.getNodes());
+        var i = findIndex(context, { id: startingNode.id });
+
+        return findLast(slice(context, 0, i), dom.isNodeVisible);
     };
 
     // Cache our root node, so we can patch re-render in the future.

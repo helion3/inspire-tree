@@ -16,16 +16,6 @@ module.exports = function(api) {
     };
 
     /**
-     * Get the immediate parent, if any.
-     *
-     * @category TreeNode
-     * @return {object} Node object.
-     */
-    TreeNode.prototype.getParent = function() {
-        return this.itree.parent;
-    };
-
-    /**
      * Collapse this node.
      *
      * @category TreeNode
@@ -33,6 +23,16 @@ module.exports = function(api) {
      */
     TreeNode.prototype.collapse = function() {
         return api.dom.collapseNode(this);
+    };
+
+    /**
+     * Get if node collapsed.
+     *
+     * @category TreeNode
+     * @return {boolean} If collapsed.
+     */
+    TreeNode.prototype.collapsed = function() {
+        return this.itree.state.collapsed;
     };
 
     /**
@@ -56,6 +56,36 @@ module.exports = function(api) {
     };
 
     /**
+     * Get if node expanded.
+     *
+     * @category TreeNode
+     * @return {boolean} If expanded.
+     */
+    TreeNode.prototype.expanded = function() {
+        return !this.itree.state.collapsed;
+    };
+
+    /**
+     * Get the immediate parent, if any.
+     *
+     * @category TreeNode
+     * @return {object} Node object.
+     */
+    TreeNode.prototype.getParent = function() {
+        return this.itree.parent;
+    };
+
+    /**
+     * Get if node hidden.
+     *
+     * @category TreeNode
+     * @return {boolean} If hidden.
+     */
+    TreeNode.prototype.hidden = function() {
+        return this.itree.state.hidden;
+    };
+
+    /**
      * Hide this node.
      *
      * @category TreeNode
@@ -73,6 +103,16 @@ module.exports = function(api) {
      */
     TreeNode.prototype.select = function() {
         return api.data.selectNode(this);
+    };
+
+    /**
+     * Get if node selected.
+     *
+     * @category TreeNode
+     * @return {boolean} If selected.
+     */
+    TreeNode.prototype.selected = function() {
+        return this.itree.state.selected;
     };
 
     /**
