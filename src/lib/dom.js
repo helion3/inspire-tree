@@ -462,6 +462,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Move select down the visible tree from a starting node.
      *
+     * @private
      * @param {object} startingNode Node object.
      * @return {void}
      */
@@ -476,6 +477,7 @@ module.exports = function InspireDOM(api) {
     /**
      * Move select up the visible tree from a starting node.
      *
+     * @private
      * @param {object} startingNode Node object.
      * @return {void}
      */
