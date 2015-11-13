@@ -9,7 +9,7 @@ var findIndex = require('lodash.findindex');
 var findLast = require('lodash.findlast');
 var get = require('lodash.get');
 var h = require('virtual-dom/h');
-var isArray = require('lodash.isarray');
+var isArrayLike = require('./isArrayLike');
 var isEmpty = require('lodash.isempty');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
@@ -138,7 +138,7 @@ module.exports = function InspireDOM(api) {
             if (!isEmpty(node.children)) {
                 contents.push(createOrderedList(node.children));
             }
-            else if (isDynamic && isArray(node.children)) {
+            else if (isDynamic && isArrayLike(node.children)) {
                 contents.push(createEmptyListItemNode());
             }
 
@@ -169,9 +169,13 @@ module.exports = function InspireDOM(api) {
      * @return {array} Array of List Item nodes.
      */
     function createListItemNodes(nodes) {
-        return transform(nodes, function(elements, node) {
-            elements.push(createListItemNode(node));
+        var domNodes = [];
+
+        each(nodes, function(node) {
+            domNodes.push(createListItemNode(node));
         });
+
+        return domNodes;
     };
 
     /**
@@ -263,7 +267,7 @@ module.exports = function InspireDOM(api) {
         var hasVisibleChildren = false;
 
         if (!isDynamic) {
-            if (isArray(node.children) && node.children.length) {
+            if (isArrayLike(node.children) && node.children.length) {
                 // Count visible children
                 // http://jsperf.com/count-subdoc-state/2
                 var visibleCount = 0;
@@ -468,9 +472,8 @@ module.exports = function InspireDOM(api) {
      */
     function moveSelectionDownFrom(startingNode) {
         var next = api.dom.nextVisibleNode(startingNode);
-        console.log('found', next);
         if (next) {
-            api.data.selectNode(next);
+            next.select();
         }
     }
 
@@ -483,9 +486,8 @@ module.exports = function InspireDOM(api) {
      */
     function moveSelectionUpFrom(startingNode) {
         var prev = api.dom.previousVisibleNode(startingNode);
-        console.log('found', prev);
         if (prev) {
-            api.data.selectNode(prev);
+            prev.select();
         }
     }
 
@@ -502,7 +504,7 @@ module.exports = function InspireDOM(api) {
     function renderContextMenu(event, node) {
         var choices = contextMenuChoices;
 
-        if (isArray(choices)) {
+        if (isArrayLike(choices)) {
             event.preventDefault();
 
             if (!contextMenuNode) {
@@ -788,7 +790,7 @@ module.exports = function InspireDOM(api) {
     dom.nextVisibleChildNode = function(startingNode) {
         var next;
 
-        if (isArray(startingNode.children) && !isEmpty(startingNode.children)) {
+        if (isArrayLike(startingNode.children) && !isEmpty(startingNode.children)) {
             next = find(startingNode.children, function(child) {
                 return dom.isNodeVisible(child);
             });

@@ -6,7 +6,7 @@ var cloneDeep = require('lodash.clonedeep');
 var cuid = require('cuid');
 var each = require('lodash.foreach');
 var get = require('lodash.get');
-var isArray = require('lodash.isarray');
+var isArrayLike = require('./isArrayLike');
 var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
 var isObject = require('lodash.isobject');
@@ -14,7 +14,7 @@ var isRegExp = require('lodash.isregexp');
 var isString = require('lodash.isstring');
 var map = require('lodash.map');
 var remove = require('lodash.remove');
-var transform = require('lodash.transform');
+var TreeNodes = require('./TreeNodes');
 var treeNodeFactory = require('./TreeNode');
 
 module.exports = function InspireData(api) {
@@ -25,14 +25,18 @@ module.exports = function InspireData(api) {
      * within a tree. Adds state and other internal properties.
      *
      * @private
-     * @param {array|object} collection Collection of nodes
+     * @param {array|object} array Array of nodes
      * @param {object} parent Pointer to parent object
      * @return {array|object} Object model.
      */
-    function collectionToModel(collection, parent) {
-        return transform(collection, function(newCollection, node) {
-            newCollection.push(objectToModel(node, parent));
+    function collectionToModel(array, parent) {
+        var collection = new TreeNodes();
+
+        each(array, function(node) {
+            collection.push(objectToModel(node, parent));
         });
+
+        return collection;
     };
 
     /**
@@ -77,7 +81,7 @@ module.exports = function InspireData(api) {
                 api.dom.markNodeDirty(existing);
 
                 // Ensure existing accepts children
-                if (!isArray(existing.children)) {
+                if (!isArrayLike(existing.children)) {
                     existing.children = [];
                 }
 
@@ -127,7 +131,7 @@ module.exports = function InspireData(api) {
         // Save parent, if any.
         object.itree.parent = parent;
 
-        if (isArray(object.children) && object.children.length) {
+        if (isArrayLike(object.children) && object.children.length) {
             object.children = collectionToModel(object.children, object);
         }
 
@@ -151,7 +155,7 @@ module.exports = function InspireData(api) {
     data.addChildNode = function(parent, child) {
         child = objectToModel(child);
 
-        if (!isArray(parent.children)) {
+        if (!isArrayLike(parent.children)) {
             parent.children = [];
         }
 
@@ -194,13 +198,14 @@ module.exports = function InspireData(api) {
     data.addNodes = function(nodes) {
         api.dom.batch();
 
-        transform(nodes, function(newNodes, node) {
+        var newNodes = new TreeNodes();
+        each(nodes, function(node) {
             newNodes.push(data.addNode(node));
         });
 
         api.dom.end();
 
-        return nodes;
+        return newNodes;
     };
 
     /**
@@ -398,7 +403,7 @@ module.exports = function InspireData(api) {
         var flat = [];
         flag = flag || 'selected';
 
-        if (isArray(nodes) && !isEmpty(nodes)) {
+        if (isArrayLike(nodes) && !isEmpty(nodes)) {
             each(nodes, function(node) {
                 if (node.itree.state[flag]) {
                     flat.push(node);
@@ -454,7 +459,7 @@ module.exports = function InspireData(api) {
                 node = item;
             }
 
-            if (!node && isArray(item.children) && !isEmpty(item.children)) {
+            if (!node && isArrayLike(item.children) && !isEmpty(item.children)) {
                 node = data.getNodeById(id, item.children);
             }
 
@@ -553,7 +558,7 @@ module.exports = function InspireData(api) {
         };
 
         // Data given already as an array
-        if (isArray(loader)) {
+        if (isArrayLike(loader)) {
             resolve(loader);
         }
 
@@ -630,7 +635,7 @@ module.exports = function InspireData(api) {
      */
     data.recurseDown = function(collection, iteratee) {
         // Recurse each element in this array
-        if (isArray(collection)) {
+        if (isArrayLike(collection)) {
             each(collection, function(element, i) {
                 collection[i] = data.recurseDown(element, iteratee);
             });
@@ -640,7 +645,7 @@ module.exports = function InspireData(api) {
             collection = iteratee(collection);
 
             // Recurse children
-            if (isArray(collection.children) && !isEmpty(collection.children)) {
+            if (isArrayLike(collection.children) && !isEmpty(collection.children)) {
                 collection.children = data.recurseDown(collection.children, iteratee);
             }
         }
