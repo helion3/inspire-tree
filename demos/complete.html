@@ -81,26 +81,26 @@
             });
 
             $('input').on('keyup', _.debounce(function(event) {
-                sourceTree.data.search(this.value);
+                sourceTree.search(this.value);
             }, 500));
 
             $('.move-one').on('click', function() {
-                var selected = sourceTree.data.getSelectedNodes();
+                var selected = sourceTree.getSelectedNodes();
                 selected.hide();
                 var newNodes = selected.copy(true).to(destTree);
 
                 // If we moved a child node, expand nodes down to it
                 _.each(selected, function(node) {
-                    destTree.data.getNode(node.id).expandParents();
+                    destTree.getNode(node.id).expandParents();
                 });
             });
 
-            sourceTree.events.on('node.dblclick', function(event, node) {
-                sourceTree.data.copyNode(node, true).to(destTree);
+            sourceTree.on('node.dblclick', function(event, node) {
+                node.copy(true).to(destTree);
             });
 
             $('.revert-one').on('click', function() {
-                var selected = destTree.data.getSelectedNodes();
+                var selected = destTree.getSelectedNodes();
                 selected.hide();
                 selected.copy(true).to(sourceTree);
 

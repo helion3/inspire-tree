@@ -111,7 +111,7 @@ tree.addNode({ text: 'Example' });
 
 **TreeNode**
 
-Each incoming javascript object is wrapped as a `TreeNode` ([Doc](docs/TreeNode.md)), which aliases methods useful on a single node.
+Each incoming javascript object is wrapped as a `TreeNode`, which aliases methods useful on a single node.
 
 ```js
 tree.getNode('a-unique-id').select();
