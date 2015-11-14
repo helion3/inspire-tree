@@ -59,11 +59,11 @@
             $log = $('.log');
             $log.append('<li>fetching json from server...</li>');
 
-            tree.events.on('data.loaded', function() {
+            tree.on('data.loaded', function() {
                 $log.append('<li>JSON response received...' + getTimeSince() + 'ms</li>');
             });
 
-            tree.events.on('model.loaded', function() {
+            tree.on('model.loaded', function() {
                 $log.append('<li>Data parsed into model...' + getTimeSince() + 'ms</li>');
             });
         });

@@ -26,6 +26,7 @@ module.exports = function InspireDOM(tree) {
     var dragHandleOffset;
     var dropTargets = [];
     var isDragDropEnabled = false;
+    var isMouseHeld = false;
 
     // Cache because we use in loops
     var isDynamic = tree.config.dynamic;
@@ -90,9 +91,6 @@ module.exports = function InspireDOM(tree) {
         $dragElement.style.top = offset.top + 'px';
         $dragElement.style.left = offset.left + 'px';
         $target.appendChild($dragElement);
-
-        // Listen to mouse move
-        document.addEventListener('mousemove', mouseMoveListener);
     }
 
     /**
@@ -243,9 +241,9 @@ module.exports = function InspireDOM(tree) {
                     // Emit
                     tree.emit('node.dblclick', event, node);
                 },
-                onmousedown: function(event) {
+                onmousedown: function() {
                     if (isDragDropEnabled) {
-                        createDraggableElement(event.target, event);
+                        isMouseHeld = true;
                     }
                 }
             }, [current.state.text]);
@@ -370,44 +368,6 @@ module.exports = function InspireDOM(tree) {
     }
 
     /**
-     * Listener for mouse move events for drag and drop.
-     * Is removed automatically on mouse up.
-     *
-     * @private
-     * @param {Event} event Mouse move event.
-     * @return {void}
-     */
-    function mouseMoveListener(event) {
-        if ($dragElement) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            var x = event.clientX - dragHandleOffset.left;
-            var y = event.clientY - dragHandleOffset.top;
-
-            $dragElement.style.left = x + 'px';
-            $dragElement.style.top = y + 'px';
-
-            var validTarget;
-            each(dropTargets, function(target) {
-                var rect = target.getBoundingClientRect();
-
-                if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                    validTarget = target;
-                    return false;
-                }
-            });
-
-            // If new target found for the first time
-            if (!$activeDropTarget && validTarget && validTarget.className.indexOf('drop-target') === -1) {
-                validTarget.className += ' drop-target';
-            }
-
-            $activeDropTarget = validTarget;
-        }
-    };
-
-    /**
      * Listen to keyboard event for navigation.
      *
      * @private
@@ -439,6 +399,74 @@ module.exports = function InspireDOM(tree) {
                 default:
             }
         }
+    }
+
+    /**
+     * Listener for mouse move events for drag and drop.
+     * Is removed automatically on mouse up.
+     *
+     * @private
+     * @param {Event} event Mouse move event.
+     * @return {void}
+     */
+    function mouseMoveListener(event) {
+        if (isMouseHeld && !$dragElement) {
+            createDraggableElement(event.target, event);
+        }
+        else if ($dragElement) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var x = event.clientX - dragHandleOffset.left;
+            var y = event.clientY - dragHandleOffset.top;
+
+            $dragElement.style.left = x + 'px';
+            $dragElement.style.top = y + 'px';
+
+            var validTarget;
+            each(dropTargets, function(target) {
+                var rect = target.getBoundingClientRect();
+
+                if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
+                    validTarget = target;
+                    return false;
+                }
+            });
+
+            // If new target found for the first time
+            if (!$activeDropTarget && validTarget && validTarget.className.indexOf('drop-target') === -1) {
+                validTarget.className += ' drop-target';
+            }
+
+            $activeDropTarget = validTarget;
+        }
+    };
+
+    /**
+     * Handle mouse up events for dragged elements.
+     *
+     * @return {void}
+     */
+    function mouseUpListener() {
+        isMouseHeld = false;
+
+        if ($dragElement) {
+            $dragElement.parentNode.removeChild($dragElement);
+
+            if ($activeDropTarget && $activeDropTarget.inspireTree) {
+                $activeDropTarget.inspireTree.addNode($dragNode.export());
+
+                tree.emit('node.drop', $dragNode, $activeDropTarget);
+            }
+        }
+
+        if ($activeDropTarget) {
+            $activeDropTarget.className = $activeDropTarget.className.replace('drop-target', '');
+        }
+
+        $dragNode = null;
+        $dragElement = null;
+        $activeDropTarget = null;
     }
 
     /**
@@ -562,26 +590,8 @@ module.exports = function InspireDOM(tree) {
         isDragDropEnabled = dropTargets.length > 0;
 
         if (isDragDropEnabled) {
-            document.addEventListener('mouseup', function() {
-                if ($dragElement) {
-                    $dragElement.parentNode.removeChild($dragElement);
-                    document.removeEventListener('mousemove', mouseMoveListener);
-
-                    if ($activeDropTarget && $activeDropTarget.inspireTree) {
-                        $activeDropTarget.inspireTree.tree.addNode(tree.exportNode($dragNode));
-                    }
-
-                    tree.emit('node.drop', $dragNode, $activeDropTarget);
-                }
-
-                if ($activeDropTarget) {
-                    $activeDropTarget.className = $activeDropTarget.className.replace('drop-target', '');
-                }
-
-                $dragNode = null;
-                $dragElement = null;
-                $activeDropTarget = null;
-            });
+            document.addEventListener('mouseup', mouseUpListener);
+            document.addEventListener('mousemove', mouseMoveListener);
         }
 
         $target.inspireTree = tree;
