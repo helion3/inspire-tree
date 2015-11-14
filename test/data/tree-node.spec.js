@@ -23,7 +23,7 @@ describe('TreeNode', function() {
             }]
         });
 
-        node = tree.data.getNode(1);
+        node = tree.getNode(1);
     });
 
     describe('"addChild" method', function() {
@@ -72,7 +72,7 @@ describe('TreeNode', function() {
         });
 
         it('returns immediate parent', function() {
-            expect(tree.data.getNode(11).getParent().id).to.equal('1');
+            expect(tree.getNode(11).getParent().id).to.equal('1');
         });
     });
 

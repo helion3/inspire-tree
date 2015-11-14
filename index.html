@@ -92,17 +92,17 @@
             console.log('api', tree);
 
             $log = $('.log > ul');
-            tree.events.onAny(function() {
+            tree.onAny(function() {
                 $log.prepend('<li>captured <span>' + this.event + '</span></li>')
                 console.log(this.event, arguments);
             });
 
             $('.log-selected').on('click', function() {
-                console.log(tree.data.getSelectedNodes());
+                console.log(tree.getSelectedNodes());
             });
 
             $('.clear-selected').on('click', function() {
-                tree.data.deselectAll();
+                tree.deselectAll();
             });
         });
     </script>

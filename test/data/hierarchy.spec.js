@@ -24,15 +24,13 @@ describe('Hierarchy', function() {
     });
 
     it('returns flat array of parents', function() {
-        var node = tree.data.getNodeById(111);
-        var parents = tree.data.getParentNodes(node);
+        var parents = tree.getNode(111).getParents();
 
         expect(parents).to.have.length(2);
     });
 
     it('returns hierarchy', function() {
-        var node = tree.data.getNodeById(111);
-        var root = tree.data.copyHierarchy(node);
+        var root = tree.getNode(111).copyHierarchy();
 
         expect(root).to.be.an('object');
         expect(root.text).to.equal('A');
@@ -41,8 +39,7 @@ describe('Hierarchy', function() {
     });
 
     it('returns hierarchy excluding given node', function() {
-        var node = tree.data.getNodeById(111);
-        var root = tree.data.copyHierarchy(node, true);
+        var root = tree.getNode(111).copyHierarchy(true);
 
         expect(root).to.be.an('object');
         expect(root.text).to.equal('A');

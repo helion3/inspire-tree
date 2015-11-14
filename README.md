@@ -50,9 +50,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 ## API Docs
 
-- [Data API](docs/data.md)
-- [DOM API](docs/dom.md)
-- [TreeNode API](docs/TreeNode.md)
+- [Tree API](docs/tree.md)
 
 ## Tree Configuration
 
@@ -74,16 +72,15 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 ## Events
 
-Events are triggered to inform you of changes or user interaction. Listeners are always registered on `tree.events.on`. Methods available in our event system are described at [EventEmitter2](https://github.com/asyncly/EventEmitter2).
+Events are triggered to inform you of changes or user interaction. Listeners are always registered on `tree.on`. Methods available in our event system are described at [EventEmitter2](https://github.com/asyncly/EventEmitter2).
 
 ```js
-tree.events.on('node.click', function(event, node) {
+tree.on('node.click', function(event, node) {
     // node clicked!
 });
 ```
 
 #### Event List
-
 
 - **data.loaded** - `(Array nodes)` - Data has been loaded successfully.
 - **data.loaderror** - `(Error err)` - Loading failed.
@@ -104,33 +101,31 @@ tree.events.on('node.click', function(event, node) {
 
 ## API Basics
 
-Each Inspire Tree instance returns an API object, with a few namespaced APIs.
+Each Inspire Tree instance returns an API object.
 
-- `tree.data` - Methods for getting, modifying, nodes or node state. [API Docs](docs/data.md)
-- `tree.dom` - Exposed DOM methods. [API Docs](docs/dom.md)
-- `tree.events` - Events service.
-
-You'll work with the Data API most often. It provides methods for working with an array of or individual nodes.
+All methods not specific to existing node/s are found directly on the API:
 
 ```js
-tree.data.addNode({ title: 'Example' });
+tree.addNode({ text: 'Example' });
 ```
 
 **TreeNode**
 
 Each incoming javascript object is wrapped as a `TreeNode` ([Doc](docs/TreeNode.md)), which aliases methods useful on a single node.
 
-For example, you can operate purely with the data api:
-
 ```js
-var node = tree.data.getNode('a-unique-id');
-tree.data.selectNode(node);
+tree.getNode('a-unique-id').select();
 ```
 
-Or you can use the cleaner TreeNode api:
+**TreeNodes**
+
+Arrays of `TreeNode`s are contained within an Array-like object. Most methods on `TreeNode` which
+can be applied in bulk to each node in the array have aliases on this class.
+
+*Expands all nodes:*
 
 ```js
-tree.data.getNode('a-unique-id').select();
+tree.getNodes().expand();
 ```
 
 ## Development

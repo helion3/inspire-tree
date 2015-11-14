@@ -1,16 +1,30 @@
 'use strict';
 
 // Libs
+var assign = require('lodash.assign');
+var cloneDeep = require('lodash.clonedeep');
+var cuid = require('cuid');
 var defaultsDeep = require('lodash.defaultsdeep');
+var each = require('lodash.foreach');
+var EventEmitter = require('eventemitter2');
+var find = require('lodash.find');
+var findIndex = require('lodash.findindex');
+var findLast = require('lodash.findlast');
 var get = require('lodash.get');
-var InspireData = require('./lib/data');
-var InspireDOM = require('./lib/dom');
-var InspireEvents = require('./lib/events');
+var isArrayLike = require('./lib/isArrayLike');
+var isEmpty = require('lodash.isempty');
+var isFunction = require('lodash.isfunction');
+var isObject = require('lodash.isobject');
+var isRegExp = require('lodash.isregexp');
+var isString = require('lodash.isstring');
+var map = require('lodash.map');
+var remove = require('lodash.remove');
+var slice = require('lodash.slice');
 
 // CSS
 require('./tree.scss');
 
-module.exports = function InspireTree(opts) {
+function InspireTree(opts) {
     if (!get(opts, 'target')) {
         throw new TypeError('Property "target" is required, either an element or a selector.');
     }
@@ -21,18 +35,1314 @@ module.exports = function InspireTree(opts) {
         dynamic: false
     });
 
-    var api = new (function InspireApi() {});
-    api.events = new InspireEvents();
-    api.config = opts;
+    // Cache some configs
+    var isDynamic = opts.dynamic;
 
-    var data = api.data = new InspireData(api);
-    var dom = api.dom = new InspireDOM(api);
+    var tree = this;
+    tree.config = opts;
+
+    // Rendering
+    var dom = new (require('./lib/dom'))(tree);
+
+    /**
+     * Represents a singe node object within the tree.
+     *
+     * @param {TreeNode} source TreeNode to copy.
+     * @return {TreeNode} Tree node object.
+     */
+    function TreeNode(source) {
+        var node = this;
+
+        each(source, function(value, key) {
+            if (isObject(value) && isFunction(value.clone)) {
+                if (value.clone) {
+                    node[key] = value.clone();
+                }
+            }
+            else if (isObject(value)) {
+                node[key] = cloneDeep(value);
+            }
+            else {
+                node[key] = value;
+            }
+        });
+    };
+
+    /**
+     * Add a child to this node.
+     *
+     * @category TreeNode
+     * @param {object} child Node object.
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.addChild = function(child) {
+        child = objectToModel(child);
+
+        if (!isArrayLike(this.children)) {
+            this.children = new TreeNodes();
+        }
+
+        this.children.push(child);
+
+        child.markDirty();
+        dom.applyChanges();
+
+        return child;
+    };
+
+    /**
+     * Clones this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} New node object.
+     */
+    TreeNode.prototype.clone = function() {
+        var newClone = new TreeNode(this);
+
+        if (this.hasChildren()) {
+            newClone.children = this.children.clone();
+        }
+
+        return newClone;
+    };
+
+    /**
+     * Copies node to a new tree instance.
+     *
+     * @category TreeNode
+     * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @return {object} Property "to" for defining destination.
+     */
+    TreeNode.prototype.copy = function(hierarchy) {
+        var node = this;
+
+        if (hierarchy) {
+            node = node.copyHierarchy();
+        }
+
+        return {
+
+            /**
+             * Sets a destination.
+             *
+             * @category CopyNode
+             * @param {object} dest Destination Inspire Tree.
+             * @return {object} New node object.
+             */
+            to: function(dest) {
+                if (!isFunction(dest.addNode)) {
+                    throw new Error('Destination must be an Inspire Tree instance.');
+                }
+
+                return dest.addNode(node.export());
+            }
+        };
+    };
+
+    /**
+     * Copies all parents of a node.
+     *
+     * @category TreeNode
+     * @param {boolean} excludeNode Exclude given node from hierarchy.
+     * @return {TreeNode} Root node object with hierarchy.
+     */
+    TreeNode.prototype.copyHierarchy = function(excludeNode) {
+        var node = this;
+        var parents = node.getParents().clone();
+
+        // Remove old hierarchy data
+        map(parents, function(node) {
+            delete node.itree.parent;
+            delete node.children;
+            return node;
+        });
+
+        parents = parents.reverse();
+
+        if (!excludeNode) {
+            parents.push(node);
+        }
+
+        var hierarchy = parents[0];
+        var pointer = hierarchy;
+        var l = parents.length;
+        each(parents, function(parent, key) {
+            var children = new TreeNodes();
+
+            if (key + 1 < l) {
+                children.push(parents[key + 1]);
+                pointer.children = children;
+
+                pointer = pointer.children[0];
+            }
+        });
+
+        return hierarchy;
+    };
+
+    /**
+     * Collapse this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.collapse = function() {
+        var node = this;
+        if (!node.collapsed() && !isEmpty(get(node, 'children'))) {
+            node.itree.state.collapsed = true;
+
+            tree.emit('node.collapsed', node);
+
+            node.markDirty();
+            dom.renderNodes();
+        }
+
+        return node;
+    };
+
+    /**
+     * Get if node collapsed.
+     *
+     * @category TreeNode
+     * @return {boolean} If collapsed.
+     */
+    TreeNode.prototype.collapsed = function() {
+        return this.itree.state.collapsed;
+    };
+
+    /**
+     * Deselect this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.deselect = function() {
+        var node = this;
+
+        if (node.selected()) {
+            node.itree.state.selected = false;
+
+            tree.emit('node.deselected', node);
+
+            node.markDirty();
+            dom.applyChanges();
+        }
+
+        return node;
+    };
+
+    /**
+     * Expand this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.expand = function() {
+        var node = this;
+        var allow = (!isEmpty(get(node, 'children')) || isDynamic);
+
+        if (allow && (node.itree.state.collapsed || node.itree.state.hidden)) {
+            node.itree.state.collapsed = false;
+            node.itree.state.hidden = false;
+
+            tree.emit('node.expanded', node);
+
+            if (isDynamic) {
+                node.loadChildren();
+            }
+            else {
+                node.markDirty();
+                dom.renderNodes();
+            }
+        }
+
+        return node;
+    };
+
+    /**
+     * Get if node expanded.
+     *
+     * @category TreeNode
+     * @return {boolean} If expanded.
+     */
+    TreeNode.prototype.expanded = function() {
+        return !this.itree.state.collapsed;
+    };
+
+    /**
+     * Expand parent nodes.
+     *
+     * @category TreeNode
+     * @return {void}
+     */
+    TreeNode.prototype.expandParents = function() {
+        if (this.hasParent()) {
+            this.getParent().recurseUp(function(node) {
+                node.expand();
+            });
+        }
+    };
+
+    /**
+     * Clones a node object and removes any
+     * itree instance information/state.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Cloned/modified node object.
+     */
+    TreeNode.prototype.export = function() {
+        var nodeClone = this.clone();
+
+        tree.recurseDown(nodeClone, function(node) {
+            node.itree = null;
+            return node;
+        });
+
+        return nodeClone;
+    };
+
+    /**
+     * Get the immediate parent, if any.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.getParent = function() {
+        return this.itree.parent;
+    };
+
+    /**
+     * Returns parent nodes. Excludes any siblings.
+     *
+     * @category TreeNode
+     * @return {TreeNodes} Node objects.
+     */
+    TreeNode.prototype.getParents = function() {
+        var parents = new TreeNodes();
+
+        var parent = this.getParent();
+        if (parent) {
+            parents.push(parent);
+            parents = parents.concat(parent.getParents());
+        }
+
+        return parents;
+    };
+
+    /**
+     * Get a textual hierarchy for a given node. An array
+     * of text from this node's root ancestor to the given node.
+     *
+     * @category TreeNode
+     * @return {array} Array of node texts.
+     */
+    TreeNode.prototype.getTextualHierarchy = function() {
+        var node = this;
+        var paths = [];
+
+        var parents = node.getParents().reverse();
+        each(parents, function(parent) {
+            paths.push(parent.text);
+        });
+
+        paths.push(node.text);
+
+        return paths;
+    };
+
+
+    /**
+     * If node has any children.
+     *
+     * @category TreeNode
+     * @return {boolean} If children.
+     */
+    TreeNode.prototype.hasChildren = function() {
+        return isArrayLike(this.children) && this.children.length;
+    };
+
+    /**
+     * If node has a parent.
+     *
+     * @category TreeNode
+     * @return {boolean} If parent.
+     */
+    TreeNode.prototype.hasParent = function() {
+        return Boolean(this.itree.parent);
+    };
+
+    /**
+     * If node has any visible children.
+     *
+     * @category TreeNode
+     * @return {boolean} If visible children.
+     */
+    TreeNode.prototype.hasVisibleChildren = function() {
+        var hasVisibleChildren = false;
+
+        if (this.hasChildren()) {
+            // Count visible children
+            // http://jsperf.com/count-subdoc-state/2
+            var visibleCount = 0;
+            each(this.children, function(child) {
+                if (!child.hidden()) {
+                    visibleCount++;
+                }
+            });
+
+            hasVisibleChildren = (visibleCount > 0);
+        }
+
+        return hasVisibleChildren;
+    };
+
+    /**
+     * Get if node hidden.
+     *
+     * @category TreeNode
+     * @return {boolean} If hidden.
+     */
+    TreeNode.prototype.hidden = function() {
+        return this.itree.state.hidden;
+    };
+
+    /**
+     * Hide this node.
+     *
+     * @category TreeNode
+     * @return {object} Node object.
+     */
+    TreeNode.prototype.hide = function() {
+        var node = this;
+
+        if (!node.hidden()) {
+            node.itree.state.hidden = true;
+
+            tree.emit('node.hidden', node);
+
+            // Update children
+            if (node.hasChildren()) {
+                node.children.hide();
+            }
+
+            node.markDirty();
+            dom.renderNodes();
+        }
+
+        return node;
+    };
+
+    /**
+     * Initiate a dynamic load of children for a given node.
+     *
+     * This requires `tree.config.data` to be a function which accepts
+     * three arguments: node, resolve, reject.
+     *
+     * Use the `node` to filter results.
+     *
+     * On load success, pass the result array to `resolve`.
+     * On error, pass the Error to `reject`.
+     *
+     * @category TreeNode
+     * @return {void}
+     */
+    TreeNode.prototype.loadChildren = function() {
+        var node = this;
+
+        if (isDynamic) {
+            tree.config.data(
+                node,
+                function resolver(results) {
+                    dom.batch();
+                    node.children = collectionToModel(results, node);
+                    node.markDirty();
+                    dom.end();
+                },
+                function rejecter(err) {
+                    tree.emit('tree.loaderror', err);
+
+                    node.children = new TreeNodes();
+                    node.markDirty();
+                    dom.applyChanges();
+                }
+            );
+        }
+    };
+
+    /**
+     * Mark a node as dirty, rebuilding this node in the virtual DOM
+     * and rerendering to the live DOM, next time renderNodes is called.
+     *
+     * @category TreeNode
+     * @return {void}
+     */
+    TreeNode.prototype.markDirty = function() {
+        this.recurseUp(function(node) {
+            node.itree.dirty = true;
+        });
+    };
+
+    /**
+     * Find next visible child node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object, if any.
+     */
+    TreeNode.prototype.nextVisibleChildNode = function() {
+        var startingNode = this;
+        var next;
+
+        if (isArrayLike(startingNode.children) && !isEmpty(startingNode.children)) {
+            next = find(startingNode.children, function(child) {
+                return child.visible();
+            });
+        }
+
+        return next;
+    };
+
+    /**
+     * Get the next visible node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object if any.
+     */
+    TreeNode.prototype.nextVisibleNode = function() {
+        var startingNode = this;
+        var next;
+
+        // 1. Any visible children
+        next = startingNode.nextVisibleChildNode();
+
+        // 2. Any Siblings
+        if (!next) {
+            next = startingNode.nextVisibleSiblingNode();
+        }
+
+        // 3. Find sibling of ancestor(s)
+        if (!next && startingNode.hasParent()) {
+            next = startingNode.itree.parent.nextVisibleSiblingNode();
+        }
+
+        return next;
+    };
+
+    /**
+     * Find the next visible sibling node.
+     *
+     * @category TreeNode
+     * @return {object} Node object, if any.
+     */
+    TreeNode.prototype.nextVisibleSiblingNode = function() {
+        var startingNode = this;
+        var context = (startingNode.itree.parent ? startingNode.itree.parent.children : tree.getNodes());
+        var i = findIndex(context, { id: startingNode.id });
+
+        return find(slice(context, i + 1), function(node) {
+            return node.visible();
+        });
+    };
+
+    /**
+     * Find the previous visible node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object, if any.
+     */
+    TreeNode.prototype.previousVisibleNode = function() {
+        var startingNode = this;
+        var prev;
+
+        // 1. Any Siblings
+        prev = startingNode.previousVisibleSiblingNode();
+
+        // 2. If that sibling has children though, go there
+        if (prev && prev.children && !prev.itree.state.collapsed && prev.children.length) {
+            prev = findLast(prev.children, function(node) {
+                return node.visible();
+            });
+        }
+
+        // 3. Parent
+        if (!prev && startingNode.itree.parent) {
+            prev = startingNode.itree.parent;
+        }
+
+        return prev;
+    };
+
+    /**
+     * Find the previous visible sibling node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object, if any.
+     */
+    TreeNode.prototype.previousVisibleSiblingNode = function() {
+        var context = (this.itree.parent ? this.itree.parent.children : tree.getNodes());
+        var i = findIndex(context, { id: this.id });
+
+        return findLast(slice(context, 0, i), function(node) {
+            return node.visible();
+        });
+    };
+
+    /**
+     * Iterate up a node and its parents.
+     *
+     * @category TreeNode
+     * @param {function} iteratee Iteratee function.
+     * @return {TreeNode} Resulting node.
+     */
+    TreeNode.prototype.recurseUp = function(iteratee) {
+        var node = this;
+        iteratee(node);
+
+        if (isObject(node.itree.parent)) {
+            node.getParent().recurseUp(iteratee);
+        }
+
+        return node;
+    };
+
+    /**
+     * Remove a node from the tree.
+     *
+     * @category TreeNode
+     * @return {void}
+     */
+    TreeNode.prototype.remove = function() {
+        var node = this;
+        var context = (node.parent ? node.parent.children : model);
+        remove(context, { id: node.id });
+
+        tree.emit('node.removed', node.export());
+
+        dom.applyChanges();
+    };
+
+    /**
+     * Select this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.select = function() {
+        var node = this;
+
+        if (!node.itree.state.selected) {
+            // Batch selection changes
+            dom.batch();
+            tree.deselectAll();
+            node.itree.state.selected = true;
+
+            // Emit this event
+            tree.emit('node.selected', node);
+
+            // Mark hierarchy dirty and apply
+            node.markDirty();
+            dom.end();
+        }
+
+        return node;
+    };
+
+    /**
+     * Get if node selected.
+     *
+     * @category TreeNode
+     * @return {boolean} If selected.
+     */
+    TreeNode.prototype.selected = function() {
+        return this.itree.state.selected;
+    };
+
+    /**
+     * Select this node.
+     *
+     * @category TreeNode
+     * @param {string|number} property Property name.
+     * @param {*} value New value.
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.set = function(property, value) {
+        this[property] = value;
+        this.markDirty();
+
+        return this;
+    };
+
+    /**
+     * Show this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.show = function() {
+        var node = this;
+        if (node.hidden()) {
+            node.itree.state.hidden = false;
+
+            tree.emit('node.shown', node);
+
+            node.markDirty();
+            dom.renderNodes();
+        }
+
+        return node;
+    };
+
+    /**
+     * Checks whether a node is visible to a user. Returns false
+     * if it's hidden, or if any ancestor is hidden or collapsed.
+     *
+     * @category TreeNode
+     * @param {object} node Node object.
+     * @return {boolean} Whether visible.
+     */
+    TreeNode.prototype.visible = function() {
+        var node = this;
+        var state = node.itree.state;
+        var parentVisible = false;
+
+        // We can't be visible if parent is hidden/collapsed
+        if (node.itree.parent) {
+            // Is parent collapsed?
+            if (!node.itree.parent.itree.state.collapsed) {
+                parentVisible = node.itree.parent.visible();
+            }
+        }
+        else {
+            parentVisible = true;
+        }
+
+        return (!state.hidden && parentVisible);
+    };
+
+    /**
+     * An Array-like collection of TreeNodes.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Collection of TreeNode
+     */
+    function TreeNodes() {};
+    TreeNodes.prototype = Object.create(Array.prototype);
+    TreeNodes.prototype.constructor = TreeNodes;
+
+    /**
+     * Clones (deep) the array of nodes.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Array of cloned nodes.
+     */
+    TreeNodes.prototype.clone = function() {
+        var newArray = new TreeNodes();
+
+        each(this, function(node) {
+            newArray.push(node.clone());
+        });
+
+        return newArray;
+    };
+
+    /**
+     * Copies nodes to a new tree instance.
+     *
+     * @category TreeNodes
+     * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @return {void}
+     */
+    TreeNodes.prototype.copy = function(hierarchy) {
+        var nodes = this;
+
+        return {
+
+            /**
+             * Sets a destination.
+             *
+             * @category CopyNode
+             * @param {object} dest Destination Inspire Tree.
+             * @return {array} Array of new nodes.
+             */
+            to: function(dest) {
+                if (!isFunction(dest.addNodes)) {
+                    throw new Error('Destination must be an Inspire Tree instance.');
+                }
+
+                var newNodes = new TreeNodes();
+
+                each((nodes || model), function(node) {
+                    newNodes.push(node.copy(hierarchy).to(dest));
+                });
+
+                return newNodes;
+            }
+        };
+    };
+
+    /**
+     * Concat nodes like an Array would.
+     *
+     * @category TreeNodes
+     * @param {TreeNodes} nodes Array of nodes.
+     * @return {TreeNodes} Resulting node array.
+     */
+    TreeNodes.prototype.concat = function(nodes) {
+        var newNodes = new TreeNodes();
+
+        var pusher = function(node) {
+            newNodes.push(node);
+        };
+
+        each(this, pusher);
+        each(nodes, pusher);
+
+        return newNodes;
+    };
+
+    /**
+     * Clones an array of node objects and removes any
+     * itree instance information/state.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Cloned/modified node objects.
+     */
+    TreeNodes.prototype.export = function() {
+        var nodeClones = this.clone();
+
+        tree.recurseDown(nodeClones, function(node) {
+            node.itree = null;
+            return node;
+        });
+
+        return nodeClones;
+    };
+
+    /**
+     * Flattens a hierarchy, returning only node(s) with the
+     * expected state, for operations which must exclude parents.
+     *
+     * @category TreeNodes
+     * @param {string} flag Which state flag to filter by.
+     * @return {TreeNodes} Flat array of matching nodes.
+     */
+    TreeNodes.prototype.flatten = function(flag) {
+        var nodes = this;
+        var flat = new TreeNodes();
+        flag = flag || 'selected';
+
+        if (isArrayLike(nodes) && !isEmpty(nodes)) {
+            each(nodes, function(node) {
+                if (node.itree.state[flag]) {
+                    flat.push(node);
+                }
+                else if (node.hasChildren()) {
+                    flat = flat.concat(node.children.flatten());
+                }
+            });
+        }
+
+        return flat;
+    };
+
+    /**
+     * Hide all nodes in an array.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.hide = function() {
+        dom.batch();
+        each(this, dom.hideNode);
+        dom.end();
+        return this;
+    };
+
+    // Define methods we pass through to individual TreeNode objects
+    each(['hide'], function(method) {
+        TreeNodes.prototype[method] = function() {
+            each(this, function(node) {
+                node[method]();
+            });
+        };
+    });
+
+    /**
+     * Parses a raw collection of objects into a model used
+     * within a tree. Adds state and other internal properties.
+     *
+     * @private
+     * @param {array|object} array Array of nodes
+     * @param {object} parent Pointer to parent object
+     * @return {array|object} Object model.
+     */
+    function collectionToModel(array, parent) {
+        var collection = new TreeNodes();
+
+        each(array, function(node) {
+            collection.push(objectToModel(node, parent));
+        });
+
+        return collection;
+    };
+
+    /**
+     * Merge a node into an existing context - a model
+     * or another node's children. If the ID exists
+     * the node is skipped and we try its children.
+     *
+     * @private
+     * @param {array} context Array of node objects.
+     * @param {object} node Node object.
+     * @return {array} Array of new nodes.
+     */
+    var mergeNode = function(context, node) {
+        var newNodes = new TreeNodes();
+
+        if (node.id) {
+            // Does node already exist
+            var existing = tree.getNode(node.id);
+            if (existing) {
+                existing.itree.state.hidden = false;
+                existing.markDirty();
+
+                // Ensure existing accepts children
+                if (!isArrayLike(existing.children)) {
+                    existing.children = new TreeNodes();
+                }
+
+                each(node.children, function(child) {
+                    newNodes.concat(mergeNode(existing, child));
+                });
+            }
+            else {
+                if (context instanceof TreeNode) {
+                    node.itree.parent = context;
+                    context.children.push(node);
+                }
+                else {
+                    context.push(node);
+                }
+
+                node.markDirty();
+                newNodes.push(node);
+            }
+        }
+
+        return newNodes;
+    };
+
+    /**
+     * Parse a raw object into a model used within a tree.
+     *
+     * Note: Uses native js over lodash where performance
+     * benefits most, since this handles every node.
+     *
+     * @private
+     * @param {object} object Source object
+     * @param {object} parent Pointer to parent object.
+     * @return {object} Final object
+     */
+    function objectToModel(object, parent) {
+        // Create or type-ensure ID
+        object.id = object.id || cuid();
+        if (typeof object.id !== 'string') {
+            object.id = object.id.toString();
+        }
+
+        // High-performance default assignments
+        var itree = object.itree = object.itree || {};
+        itree.icon = itree.icon || false;
+
+        var li = itree.li = itree.li || {};
+        li.attributes = li.attributes || {};
+
+        var state = itree.state = itree.state || {};
+        state.collapsed = state.collapsed || true;
+        state.hidden = state.hidden || false;
+        state.selected = state.selected || false;
+
+        // Save parent, if any.
+        object.itree.parent = parent;
+
+        // Wrap
+        object = assign(new TreeNode(), object);
+
+        if (isArrayLike(object.children) && object.children.length) {
+            object.children = collectionToModel(object.children, object);
+        }
+
+        return object;
+    };
+
+    var data = this;
+    var model = new TreeNodes();
+
+    /**
+     * Add a node.
+     *
+     * @category Tree
+     * @param {object} node Node object.
+     * @return {object} Node object.
+     */
+    tree.addNode = function(node) {
+        node = objectToModel(node);
+        var newNodes = mergeNode(model, node);
+
+        if (newNodes.length) {
+            tree.emit('node.added', node);
+        }
+
+        node.markDirty();
+        dom.applyChanges();
+
+        return node;
+    };
+
+    /**
+     * Add nodes.
+     *
+     * @category Tree
+     * @param {array} nodes Array of node objects.
+     * @return {TreeNodes} Added node objects.
+     */
+    tree.addNodes = function(nodes) {
+        dom.batch();
+
+        var newNodes = new TreeNodes();
+        each(nodes, function(node) {
+            newNodes.push(tree.addNode(node));
+        });
+
+        dom.end();
+
+        return newNodes;
+    };
+
+    /**
+     * Shows all nodes and collapses parents.
+     *
+     * @category Tree
+     * @return {void}
+     */
+    tree.clearSearch = function() {
+        tree.showAll();
+        tree.collapseAll();
+    };
+
+    /**
+     * Collapses all nodes.
+     *
+     * @category Tree
+     * @return {void}
+     */
+    tree.collapseAll = function() {
+        dom.batch();
+        tree.recurseDown(tree.getNodes(), function(node) {
+            return node.collapse();
+        });
+        dom.end();
+    };
+
+    /**
+     * Deselect all nodes.
+     *
+     * @category Tree
+     * @return {void}
+     */
+    tree.deselectAll = function() {
+        dom.batch();
+        tree.recurseDown(model, function(node) {
+            return node.deselect();
+        });
+        dom.end();
+    };
+
+    /**
+     * Get a node.
+     *
+     * @category Tree
+     * @param {string|number} id ID of node.
+     * @param {TreeNodes} nodes Base collection to search in.
+     * @return {TreeNode} Node object.
+     */
+    tree.getNode = function(id, nodes) {
+        var node;
+
+        if (!isString(id)) {
+            id = id.toString();
+        }
+
+        each((nodes || model), function(item) {
+            if (item.id === id) {
+                node = item;
+            }
+
+            if (!node && isArrayLike(item.children) && !isEmpty(item.children)) {
+                node = tree.getNode(id, item.children);
+            }
+
+            if (node) {
+                return false;
+            }
+        });
+
+        return node;
+    };
+
+    /**
+     * Get all nodes in a tree.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    tree.getNodes = function() {
+        return model;
+    };
+
+    /**
+     * Returns a flat array of selected nodes.
+     *
+     * @category Tree
+     * @param {TreeNodes} nodes Array of node objects to search within.
+     * @return {TreeNodes} Selected nodes.
+     */
+    tree.getSelectedNodes = function(nodes) {
+        return (nodes || model).flatten('selected');
+    };
+
+    /**
+     * Hides all nodes.
+     *
+     * @category Tree
+     * @return {void}
+     */
+    tree.hideAll = function() {
+        tree.getNodes().hide();
+    };
+
+    /**
+     * Loads tree. Accepts an array or a promise.
+     *
+     * @category Tree
+     * @param {array|function} loader Array of nodes, or promise resolving an array of nodes.
+     * @return {void}
+     * @example
+     *
+     * tree.load($.getJSON('nodes.json'));
+     */
+    tree.load = function(loader) {
+        var resolve = function(nodes) {
+            // Emit raw data
+            tree.emit('data.loaded', nodes);
+
+            model = collectionToModel(nodes);
+
+            tree.emit('model.loaded', model);
+            dom.renderNodes(model);
+        };
+
+        var reject = function(err) {
+            tree.emit('data.loaderror', err);
+            throw err;
+        };
+
+        // Data given already as an array
+        if (isArrayLike(loader)) {
+            resolve(loader);
+        }
+
+        // Data loader requires a caller/callback
+        else if (isFunction(loader)) {
+            loader(null, resolve, reject);
+        }
+
+        // Data loader is likely a promise
+        else if (isObject(loader)) {
+            // Promise
+            if (isFunction(loader.then)) {
+                loader.then(resolve);
+            }
+
+            // jQuery promises use "error".
+            if (isFunction(loader.error)) {
+                loader.error(reject);
+            }
+            else if (isFunction(loader.catch)) {
+                loader.catch(reject);
+            }
+        }
+
+        else {
+            throw new Error('Invalid data loader.');
+        }
+    };
+
+    /**
+     * Iterate down node/children recursively.
+     *
+     * @category Tree
+     * @param {TreeNodes|TreeNode} collection Array of nodes or node object.
+     * @param {function} iteratee Iteratee function.
+     * @return {TreeNodes} Resulting node array.
+     */
+    tree.recurseDown = function(collection, iteratee) {
+        // Recurse each element in this array
+        if (isArrayLike(collection)) {
+            each(collection, function(element, i) {
+                collection[i] = tree.recurseDown(element, iteratee);
+            });
+        }
+
+        else if (isObject(collection)) {
+            collection = iteratee(collection);
+
+            if (!collection) {
+                throw new Error('Iteratee returned invalid object. Did you forget "return"?');
+            }
+
+            // Recurse children
+            if (isArrayLike(collection.children) && !isEmpty(collection.children)) {
+                collection.children = tree.recurseDown(collection.children, iteratee);
+            }
+        }
+
+        return collection;
+    };
+
+    /**
+     * Removes all nodes.
+     *
+     * @category Tree
+     * @return {void}
+     */
+    tree.removeAll = function() {
+        model = new TreeNodes();
+        dom.applyChanges();
+    };
+
+    /**
+     * Search nodes, showing only those that match and the necessary hierarchy.
+     *
+     * @category Tree
+     * @param {*} query Search string, RegExp, or function.
+     * @return {TreeNodes} Array of matching node objects.
+     */
+    tree.search = function(query) {
+        var matches = new TreeNodes();
+
+        var custom = tree.config.search;
+        if (isFunction(custom)) {
+            return custom(
+                query,
+                function resolver(nodes) {
+                    dom.batch();
+
+                    tree.hideAll();
+                    each(nodes, function(node) {
+                        mergeNode(model, node);
+                    });
+
+                    dom.end();
+                },
+                function rejecter(err) {
+                    tree.emit('tree.loaderror', err);
+                }
+            );
+        }
+
+        // Don't search if query empty
+        if (isString(query) && isEmpty(query)) {
+            return tree.clearSearch();
+        }
+
+        if (isString(query)) {
+            query = new RegExp(query, 'i');
+        }
+
+        var predicate;
+        if (isRegExp(query)) {
+            predicate = function(node) {
+                return query.test(node.text);
+            };
+        }
+        else {
+            predicate = query;
+        }
+
+        if (!isFunction(predicate)) {
+            throw new TypeError('Search predicate must be a string, RegExp, or function.');
+        }
+
+        dom.batch();
+
+        tree.recurseDown(model, function(node) {
+            var match = predicate(node);
+            var wasHidden = node.itree.state.hidden;
+            node.itree.state.hidden = !match;
+
+            // If hidden state will change
+            if (wasHidden !== node.itree.state.hidden) {
+                node.markDirty();
+            }
+
+            if (match) {
+                matches.push(node);
+                node.expandParents();
+            }
+
+            return node;
+        });
+
+        dom.end();
+
+        return matches;
+    };
+
+    /**
+     * Select the first visible node at the root level.
+     *
+     * @category Tree
+     * @return {TreeNode} Selected node object.
+     */
+    tree.selectFirstVisibleNode = function() {
+        var select;
+
+        each(model, function(node) {
+            if (!node.itree.state.hidden) {
+                node.select();
+
+                select = node;
+                return false;
+            }
+        });
+
+        return select;
+    };
+
+    /**
+     * Shows all nodes.
+     *
+     * @category Tree
+     * @return {void}
+     */
+    tree.showAll = function() {
+        dom.batch();
+        tree.recurseDown(tree.getNodes(), function(node) {
+            return node.show();
+        });
+        dom.end();
+    };
 
     // Connect to our target DOM element
-    dom.attach(opts.target);
+    dom.attach(tree.config.target);
 
     // Load initial user data
-    data.load(opts.data);
+    data.load(tree.config.data);
 
-    return api;
+    return tree;
 };
+
+// Mixin EventEmitter
+InspireTree.prototype = Object.create(EventEmitter.prototype);
+
+module.exports = InspireTree;

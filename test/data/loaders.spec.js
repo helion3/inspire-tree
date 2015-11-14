@@ -14,23 +14,7 @@ describe('Loaders', function() {
             }]
         });
 
-        expect(tree.data.getNodes()).to.have.length(1);
-    });
-
-    it('loads data via promise', function(done) {
-        var tree = new InspireTree({
-            target: '.tree',
-            data: $.getJSON('/base/sample-data/root.json')
-        });
-
-        tree.events.on('data.loaded', function(nodes) {
-            expect(nodes).to.have.length(2);
-            done();
-        });
-
-        tree.events.on('data.loaderror', function(err) {
-            done(err);
-        });
+        expect(tree.getNodes()).to.have.length(1);
     });
 
     it('loads data via callback', function() {
@@ -43,7 +27,23 @@ describe('Loaders', function() {
             }
         });
 
-        expect(tree.data.getNodes()).to.have.length(1);
+        expect(tree.getNodes()).to.have.length(1);
+    });
+
+    it('loads data via promise', function(done) {
+        var tree = new InspireTree({
+            target: '.tree',
+            data: $.getJSON('/base/sample-data/root.json')
+        });
+
+        tree.on('data.loaded', function(nodes) {
+            expect(nodes).to.have.length(2);
+            done();
+        });
+
+        tree.on('data.loaderror', function(err) {
+            done(err);
+        });
     });
 
     it('loads child node data dynamically', function() {
@@ -65,12 +65,12 @@ describe('Loaders', function() {
             }
         });
 
-        expect(tree.data.getNodes()).to.have.length(1);
+        expect(tree.getNodes()).to.have.length(1);
 
-        var parent = tree.data.getNode(1);
+        var parent = tree.getNode(1);
         expect(parent.children).to.be.undefined;
 
-        tree.dom.expandNode(parent);
+        parent.expand();
         expect(parent.children).to.not.be.undefined;
         expect(parent.children).to.have.length(1);
     });

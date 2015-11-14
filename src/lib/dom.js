@@ -4,9 +4,6 @@
 var createElement = require('virtual-dom/create-element');
 var each = require('lodash.foreach');
 var diff = require('virtual-dom/diff');
-var find = require('lodash.find');
-var findIndex = require('lodash.findindex');
-var findLast = require('lodash.findlast');
 var get = require('lodash.get');
 var h = require('virtual-dom/h');
 var isArrayLike = require('./isArrayLike');
@@ -15,14 +12,13 @@ var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
 var keyCodes = require('key-codes');
 var patch = require('virtual-dom/patch');
-var slice = require('lodash.slice');
 var transform = require('lodash.transform');
 var VCache = require('./VCache');
 var VArrayDirtyCompare = require('./VArrayDirtyCompare');
 var VDirtyCompare = require('./VDirtyCompare');
 var VStateCompare = require('./VStateCompare');
 
-module.exports = function InspireDOM(api) {
+module.exports = function InspireDOM(tree) {
     var $activeDropTarget;
     var $dragElement;
     var $dragNode;
@@ -32,8 +28,8 @@ module.exports = function InspireDOM(api) {
     var isDragDropEnabled = false;
 
     // Cache because we use in loops
-    var isDynamic = api.config.dynamic;
-    var contextMenuChoices = api.config.contextMenu;
+    var isDynamic = tree.config.dynamic;
+    var contextMenuChoices = tree.config.contextMenu;
 
     /**
      * Creates a context menu unordered list.
@@ -65,7 +61,7 @@ module.exports = function InspireDOM(api) {
         return h('li', [[
             h('a', {
                 onclick: function(event) {
-                    choice.handler(event, node);
+                    choice.handler(event, node, dom.closeContextMenu);
                 }
             }, choice.text)
         ]]);
@@ -218,34 +214,34 @@ module.exports = function InspireDOM(api) {
                         renderContextMenu(event, node);
 
                         // Emit
-                        api.events.emit('node.contextmenu', event, node);
+                        tree.emit('node.contextmenu', event, node);
                     }
                 },
                 onclick: function(event) {
                     // Toggle selected state
-                    if (node.itree.state.selected) {
-                        api.data.deselectNode(node);
+                    if (node.selected()) {
+                        node.deselect();
                     }
                     else {
-                        api.data.selectNode(node);
+                        node.select();
                     }
 
                     // Emit
-                    api.events.emit('node.click', event, node);
+                    tree.emit('node.click', event, node);
                 },
                 ondblclick: function(event) {
                     var node = getNodeFromTitleDOMElement(event.target);
 
                     // Toggle selected state
-                    if (node.itree.state.collapsed) {
-                        api.dom.expandNode(node);
+                    if (node.collapsed()) {
+                        node.expand();
                     }
                     else {
-                        api.dom.collapseNode(node);
+                        node.collapse();
                     }
 
                     // Emit
-                    api.events.emit('node.dblclick', event, node);
+                    tree.emit('node.dblclick', event, node);
                 },
                 onmousedown: function(event) {
                     if (isDragDropEnabled) {
@@ -264,25 +260,7 @@ module.exports = function InspireDOM(api) {
      * @return {object} Container node.
      */
     function createTitleContainer(node) {
-        var hasVisibleChildren = false;
-
-        if (!isDynamic) {
-            if (isArrayLike(node.children) && node.children.length) {
-                // Count visible children
-                // http://jsperf.com/count-subdoc-state/2
-                var visibleCount = 0;
-                each(node.children, function(child) {
-                    if (!child.itree.state.hidden) {
-                        visibleCount++;
-                    }
-                });
-
-                hasVisibleChildren = (visibleCount > 0);
-            }
-        }
-        else {
-            hasVisibleChildren = Boolean(node.children);
-        }
+        var hasVisibleChildren = !isDynamic ? node.hasVisibleChildren() : Boolean(node.children);
 
         return new VCache({
             hasVisibleChildren: hasVisibleChildren,
@@ -315,11 +293,11 @@ module.exports = function InspireDOM(api) {
 
             return h('a.toggle.icon' + caret, { onclick: function() {
                 // Toggle selected state
-                if (node.itree.state.collapsed) {
-                    api.dom.expandNode(node);
+                if (node.collapsed()) {
+                    node.expand();
                 }
                 else {
-                    api.dom.collapseNode(node);
+                    node.collapse();
                 }
             } });
         });
@@ -388,7 +366,7 @@ module.exports = function InspireDOM(api) {
      */
     function getNodeFromTitleDOMElement(element) {
         var uid = element.parentNode.parentNode.getAttribute('data-uid');
-        return api.data.getNodeById(uid);
+        return tree.getNode(uid);
     }
 
     /**
@@ -438,7 +416,7 @@ module.exports = function InspireDOM(api) {
      */
     function keyboardListener(event) {
         // Navigation
-        var selected = api.data.getSelectedNodes();
+        var selected = tree.getSelectedNodes();
         if (selected.length === 1) {
             var focusedNode = selected[0];
 
@@ -471,7 +449,7 @@ module.exports = function InspireDOM(api) {
      * @return {void}
      */
     function moveSelectionDownFrom(startingNode) {
-        var next = api.dom.nextVisibleNode(startingNode);
+        var next = startingNode.nextVisibleNode();
         if (next) {
             next.select();
         }
@@ -485,7 +463,7 @@ module.exports = function InspireDOM(api) {
      * @return {void}
      */
     function moveSelectionUpFrom(startingNode) {
-        var prev = api.dom.previousVisibleNode(startingNode);
+        var prev = startingNode.previousVisibleNode();
         if (prev) {
             prev.select();
         }
@@ -528,6 +506,7 @@ module.exports = function InspireDOM(api) {
      * to `batch` have yet to be resolved,
      *
      * @category DOM
+     * @private
      * @return {void}
      */
     dom.applyChanges = function() {
@@ -536,13 +515,14 @@ module.exports = function InspireDOM(api) {
             return;
         }
 
-        api.dom.renderNodes();
+        dom.renderNodes();
     };
 
     /**
      * Attaches to the DOM element for rendering.
      *
      * @category DOM
+     * @private
      * @param {HTMLElement} target Element, selector, or jQuery-like object.
      * @return {void}
      */
@@ -554,7 +534,7 @@ module.exports = function InspireDOM(api) {
         }
 
         $target.className += ' inspire-tree';
-        $target.setAttribute('tabindex', get(api, 'config.tabindex') || 0);
+        $target.setAttribute('tabindex', get(tree, 'config.tabindex') || 0);
 
         // Handle keyboard interaction
         $target.addEventListener('keyup', keyboardListener);
@@ -565,7 +545,7 @@ module.exports = function InspireDOM(api) {
             });
         }
 
-        var dragTargetSelectors = get(api, 'config.dragTargets');
+        var dragTargetSelectors = get(tree, 'config.dragTargets');
         if (!isEmpty(dragTargetSelectors)) {
             each(dragTargetSelectors, function(selector) {
                 var dropTarget = getElement(selector);
@@ -588,10 +568,10 @@ module.exports = function InspireDOM(api) {
                     document.removeEventListener('mousemove', mouseMoveListener);
 
                     if ($activeDropTarget && $activeDropTarget.inspireTree) {
-                        $activeDropTarget.inspireTree.data.addNode(api.data.exportNode($dragNode));
+                        $activeDropTarget.inspireTree.tree.addNode(tree.exportNode($dragNode));
                     }
 
-                    api.events.emit('node.drop', $dragNode, $activeDropTarget);
+                    tree.emit('node.drop', $dragNode, $activeDropTarget);
                 }
 
                 if ($activeDropTarget) {
@@ -604,13 +584,14 @@ module.exports = function InspireDOM(api) {
             });
         }
 
-        $target.inspireTree = api;
+        $target.inspireTree = tree;
     };
 
     /**
      * Disable rendering in preparation for multiple changes.
      *
      * @category DOM
+     * @private
      * @return {void}
      */
     dom.batch = function() {
@@ -621,6 +602,7 @@ module.exports = function InspireDOM(api) {
      * Closes any open context menu.
      *
      * @category DOM
+     * @private
      * @return {void}
      */
     dom.closeContextMenu = function() {
@@ -631,29 +613,10 @@ module.exports = function InspireDOM(api) {
     };
 
     /**
-     * Expand immediate children for this node, if any.
-     *
-     * @category DOM
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    dom.collapseNode = function(node) {
-        if (!node.itree.state.collapsed && !isEmpty(get(node, 'children'))) {
-            node.itree.state.collapsed = true;
-
-            api.events.emit('node.collapsed', node);
-
-            dom.markNodeDirty(node);
-            dom.renderNodes();
-        }
-
-        return node;
-    };
-
-    /**
      * Permit rerendering of batched changes.
      *
      * @category DOM
+     * @private
      * @return {void}
      */
     dom.end = function() {
@@ -664,235 +627,6 @@ module.exports = function InspireDOM(api) {
         }
     };
 
-    /**
-     * Expand immediate children for this node, if any.
-     *
-     * @category DOM
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    dom.expandNode = function(node) {
-        var allow = (!isEmpty(get(node, 'children')) || isDynamic);
-
-        if (allow && (node.itree.state.collapsed || node.itree.state.hidden)) {
-            node.itree.state.collapsed = false;
-            node.itree.state.hidden = false;
-
-            api.events.emit('node.expanded', node);
-
-            if (isDynamic) {
-                api.data.loadChildren(node);
-            }
-            else {
-                dom.markNodeDirty(node);
-                dom.renderNodes();
-            }
-        }
-
-        return node;
-    };
-
-    /**
-     * Ensure all parent nodes are expanded.
-     *
-     * @category DOM
-     * @param {object} node Node object.
-     * @return {void}
-     */
-    dom.expandParents = function(node) {
-        if (node.hasParent()) {
-            api.data.recurseUp(node.getParent(), dom.expandNode);
-        }
-    };
-
-    /**
-     * Hide a node.
-     *
-     * @category DOM
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    dom.hideNode = function(node) {
-        if (!node.itree.state.hidden) {
-            node.itree.state.hidden = true;
-
-            api.events.emit('node.hidden', node);
-
-            // Update children
-            if (get(node, 'children')) {
-                dom.hideNodes(node.children);
-            }
-
-            dom.markNodeDirty(node);
-            dom.renderNodes();
-        }
-
-        return node;
-    };
-
-    /**
-     * Hide all nodes in an array.
-     *
-     * @category DOM
-     * @param {array} nodes Array of node objects.
-     * @return {array} Array of node objects.
-     */
-    dom.hideNodes = function(nodes) {
-        dom.batch();
-        each(nodes, dom.hideNode);
-        dom.end();
-        return nodes;
-    };
-
-    /**
-     * Hides all nodes.
-     *
-     * @category DOM
-     * @return {void}
-     */
-    dom.hideAll = function() {
-        dom.hideNodes(api.data.getNodes());
-    };
-
-    /**
-     * Checks whether a node is visible to a user. Returns false
-     * if it's hidden, or if any ancestor is hidden or collapsed.
-     *
-     * @category DOM
-     * @param {object} node Node object.
-     * @return {boolean} Whether visible.
-     */
-    dom.isNodeVisible = function(node) {
-        var state = node.itree.state;
-        var parentVisible = false;
-
-        // We can't be visible if parent is hidden/collapsed
-        if (node.itree.parent) {
-            // Is parent collapsed?
-            if (!node.itree.parent.itree.state.collapsed) {
-                parentVisible = dom.isNodeVisible(node.itree.parent);
-            }
-        }
-        else {
-            parentVisible = true;
-        }
-
-        return (!state.hidden && parentVisible);
-    };
-
-    /**
-     * Mark a node as dirty, rebuilding this node in the virtual DOM
-     * and rerendering to the live DOM, next time renderNodes is called.
-     *
-     * @category DOM
-     * @param {object} startingNode Node object.
-     * @return {void}
-     */
-    dom.markNodeDirty = function(startingNode) {
-        api.data.recurseUp(startingNode, function(node) {
-            node.itree.dirty = true;
-        });
-    };
-
-    /**
-     * Find first visible child node.
-     *
-     * @category DOM
-     * @param {object} startingNode Node object.
-     * @return {object} Node object, if any.
-     */
-    dom.nextVisibleChildNode = function(startingNode) {
-        var next;
-
-        if (isArrayLike(startingNode.children) && !isEmpty(startingNode.children)) {
-            next = find(startingNode.children, function(child) {
-                return dom.isNodeVisible(child);
-            });
-        }
-
-        return next;
-    };
-
-    /**
-     * Get the next visible node.
-     *
-     * @category DOM
-     * @param {object} startingNode Node object to start at.
-     * @return {object} Node object if any.
-     */
-    dom.nextVisibleNode = function(startingNode) {
-        var next;
-
-        // 1. Any visible children
-        next = dom.nextVisibleChildNode(startingNode);
-
-        // 2. Any Siblings
-        if (!next) {
-            next = dom.nextVisibleSiblingNode(startingNode);
-        }
-
-        // 3. Find sibling of ancestor(s)
-        if (!next && startingNode.itree.parent) {
-            next = dom.nextVisibleSiblingNode(startingNode.itree.parent);
-        }
-
-        return next;
-    };
-
-    /**
-     * Find the next visible sibling node.
-     *
-     * @category DOM
-     * @param {object} startingNode Node object.
-     * @return {object} Node object, if any.
-     */
-    dom.nextVisibleSiblingNode = function(startingNode) {
-        var context = (startingNode.itree.parent ? startingNode.itree.parent.children : api.data.getNodes());
-        var i = findIndex(context, { id: startingNode.id });
-
-        return find(slice(context, i + 1), dom.isNodeVisible);
-    };
-
-    /**
-     * Find the previous visible node.
-     *
-     * @category DOM
-     * @param {object} startingNode Node object.
-     * @return {object} Node object, if any.
-     */
-    dom.previousVisibleNode = function(startingNode) {
-        var prev;
-
-        // 1. Any Siblings
-        prev = dom.previousVisibleSiblingNode(startingNode);
-
-        // 2. If that sibling has children though, go there
-        if (prev && prev.children && !prev.itree.state.collapsed && prev.children.length) {
-            prev = findLast(prev.children, dom.isNodeVisible);
-        }
-
-        // 3. Parent
-        if (!prev && startingNode.itree.parent) {
-            prev = startingNode.itree.parent;
-        }
-
-        return prev;
-    };
-
-    /**
-     * Find the previous visible sibling node.
-     *
-     * @category DOM
-     * @param {object} startingNode Node object.
-     * @return {object} Node object, if any.
-     */
-    dom.previousVisibleSiblingNode = function(startingNode) {
-        var context = (startingNode.itree.parent ? startingNode.itree.parent.children : api.data.getNodes());
-        var i = findIndex(context, { id: startingNode.id });
-
-        return findLast(slice(context, 0, i), dom.isNodeVisible);
-    };
-
     // Cache our root node, so we can patch re-render in the future.
     var rootNode;
     var ol;
@@ -901,17 +635,18 @@ module.exports = function InspireDOM(api) {
      * Triggers rendering for the given node array.
      *
      * @category DOM
+     * @private
      * @param {array} nodes Array of node objects.
      * @return {void}
      */
     dom.renderNodes = function(nodes) {
-        var newOl = createOrderedList(nodes || api.data.getNodes(), true);
+        var newOl = createOrderedList(nodes || tree.getNodes(), true);
 
         if (!rootNode) {
             rootNode = createElement(newOl);
             $target.appendChild(rootNode);
 
-            api.events.emit('tree.ready');
+            tree.emit('tree.ready');
         }
         else {
             var patches = diff(ol, newOl);
@@ -919,38 +654,6 @@ module.exports = function InspireDOM(api) {
         }
 
         ol = newOl;
-    };
-
-    /**
-     * Shows all nodes.
-     *
-     * @category DOM
-     * @return {void}
-     */
-    dom.showAll = function() {
-        dom.batch();
-        api.data.recurseDown(api.data.getNodes(), dom.showNode);
-        dom.end();
-    };
-
-    /**
-     * Hide a node.
-     *
-     * @category DOM
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    dom.showNode = function(node) {
-        if (node.itree.state.hidden) {
-            node.itree.state.hidden = false;
-
-            api.events.emit('node.shown', node);
-
-            dom.markNodeDirty(node);
-            dom.renderNodes();
-        }
-
-        return node;
     };
 
     return dom;

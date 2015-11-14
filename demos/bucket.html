@@ -67,29 +67,29 @@
             });
 
             $('.move-one').on('click', function() {
-                var selected = sourceTree.data.getSelectedNodes();
-                sourceTree.dom.hideNodes(selected);
-                sourceTree.data.copyNodes(selected, true).to(destTree);
+                var selected = sourceTree.getSelectedNodes();
+                selected.hide();
+                selected.copy(true).to(destTree);
             });
 
-            sourceTree.events.on('node.dblclick', function(event, node) {
-                sourceTree.data.copyNode(node, true).to(destTree);
+            sourceTree.on('node.dblclick', function(event, node) {
+                node.copy(true).to(destTree);
             });
 
             $('.revert-one').on('click', function() {
-                var selected = destTree.data.getSelectedNodes();
-                destTree.dom.hideNodes(selected);
-                destTree.data.copyNodes(selected, true).to(sourceTree);
+                var selected = destTree.getSelectedNodes();
+                selected.hide();
+                selected.copy(true).to(sourceTree);
             });
 
             $('.move-all').on('click', function() {
-                sourceTree.data.copyNodes().to(destTree);
-                sourceTree.dom.hideAll();
+                sourceTree.getNodes().copy().to(destTree);
+                sourceTree.hideAll();
             });
 
             $('.revert-all').on('click', function() {
-                destTree.data.copyNodes().to(sourceTree);
-                destTree.dom.hideAll();
+                destTree.getNodes().copy().to(sourceTree);
+                destTree.hideAll();
             });
         });
     </script>

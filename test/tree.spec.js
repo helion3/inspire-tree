@@ -29,9 +29,7 @@ describe('Inspire Tree', function() {
             data: []
         });
 
-        expect(tree.data).to.be.an('object');
-        expect(tree.dom).to.be.an('object');
-        expect(tree.events).to.be.an('object');
+        expect(tree).to.be.an('object');
     });
 
     after(helpers.clearDOM);

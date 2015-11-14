@@ -87,8 +87,7 @@
             $('.move-one').on('click', function() {
                 var selected = sourceTree.data.getSelectedNodes();
                 selected.hide();
-
-                var newNodes = sourceTree.data.copyNodes(selected, true).to(destTree);
+                var newNodes = selected.copy(true).to(destTree);
 
                 // If we moved a child node, expand nodes down to it
                 _.each(selected, function(node) {
@@ -102,18 +101,31 @@
 
             $('.revert-one').on('click', function() {
                 var selected = destTree.data.getSelectedNodes();
-                destTree.dom.hideNodes(selected);
-                destTree.data.copyNodes(selected, true).to(sourceTree);
+                selected.hide();
+                selected.copy(true).to(sourceTree);
+
+                // Hide all parents without visible children
+                _.each(selected, function(selectedNode) {
+                    selectedNode.recurseUp(function(node) {
+                        if (node.hasParent()) {
+                            var parent = node.getParent();
+
+                            if (!parent.hasVisibleChildren()) {
+                                parent.hide();
+                            }
+                        }
+                    });
+                });
             });
 
             $('.move-all').on('click', function() {
-                sourceTree.data.copyNodes().to(destTree);
-                sourceTree.dom.hideAll();
+                sourceTree.getNodes().copy().to(destTree);
+                sourceTree.hideAll();
             });
 
             $('.revert-all').on('click', function() {
-                destTree.data.copyNodes().to(sourceTree);
-                destTree.dom.hideAll();
+                destTree.getNodes().copy().to(sourceTree);
+                destTree.hideAll();
             });
         });
     </script>

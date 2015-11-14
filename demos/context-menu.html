@@ -40,9 +40,9 @@
                 data: $.getJSON('../sample-data/full.json'),
                 contextMenu: [{
                     text: 'Alert',
-                    handler: function(event, node) {
+                    handler: function(event, node, closer) {
                         alert('Clicked on ' + node.text)
-                        tree.dom.closeContextMenu();
+                        closer();
                     }
                 }]
             });

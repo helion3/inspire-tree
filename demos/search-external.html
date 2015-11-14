@@ -46,7 +46,7 @@
             'lodash',
             'inspireTree'
         ], function($, _, InspireTree) {
-            var sourceTree = new InspireTree({
+            var tree = new InspireTree({
                 target: '.tree',
                 data: $.getJSON('../sample-data/root.json'),
                 search: function(query, resolve, reject) {
@@ -62,7 +62,7 @@
             });
 
             $('input').on('keyup', _.debounce(function(event) {
-                sourceTree.data.search(this.value);
+                tree.search(this.value);
             }, 500));
         });
     </script>

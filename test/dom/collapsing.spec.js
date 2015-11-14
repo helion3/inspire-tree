@@ -42,9 +42,7 @@ describe('Expand & Collapse', function() {
         var $li = $tree.find('li:eq(0)');
         expect($li.hasClass('collapsed')).to.be.true;
 
-        var node = tree.data.getNodeById(1);
-        tree.dom.expandNode(node);
-
+        tree.getNode(1).expand();
         expect($li.hasClass('collapsed')).to.be.false;
     });
 
@@ -52,9 +50,7 @@ describe('Expand & Collapse', function() {
         var $li = $tree.find('li:eq(0)');
         expect($li.hasClass('collapsed')).to.be.false;
 
-        var node = tree.data.getNodeById(1);
-        tree.dom.collapseNode(node);
-
+        tree.getNode(1).collapse();
         expect($li.hasClass('collapsed')).to.be.true;
     });
 

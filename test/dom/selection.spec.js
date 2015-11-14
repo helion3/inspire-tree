@@ -33,7 +33,7 @@ describe('Selection', function() {
     });
 
     it('returns array of selected nodes', function() {
-        var selected = tree.data.getSelectedNodes();
+        var selected = tree.getSelectedNodes();
 
         expect(selected).to.have.length(1);
         expect(selected[0].title).to.equal('A');
@@ -52,16 +52,12 @@ describe('Selection', function() {
     });
 
     it('selects node via api', function() {
-        var node = tree.data.getNodeById(1);
-        tree.data.selectNode(node);
-
+        tree.getNode(1).select();
         expect($tree.find('li:eq(0)').hasClass('selected')).to.be.true;
     });
 
     it('deselects node via api', function() {
-        var node = tree.data.getNodeById(1);
-        tree.data.deselectNode(node);
-
+        tree.getNode(1).deselect();
         expect($tree.find('li:eq(0)').hasClass('selected')).to.be.false;
     });
 

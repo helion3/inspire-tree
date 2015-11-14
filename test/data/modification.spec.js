@@ -34,190 +34,193 @@ describe('Modification', function() {
     });
 
     it('adds a node', function() {
-        tree1.data.addNode({
+        tree1.addNode({
             text: 'C'
         });
 
         // Model
-        expect(tree1.data.getNodes()).to.have.length(3);
-        expect(tree1.data.getNodes()[2].text).to.equal('C');
+        expect(tree1.getNodes()).to.have.length(3);
+        expect(tree1.getNodes()[2].text).to.equal('C');
 
         // DOM
         expect($tree1.find('> ol > li')).to.have.length(3);
     });
 
     it('adds an array of nodes', function() {
-        tree1.data.addNodes([{
+        tree1.addNodes([{
             text: 'D'
         }, {
             text: 'E'
         }]);
 
-        expect(tree1.data.getNodes()).to.have.length(5);
+        expect(tree1.getNodes()).to.have.length(5);
     });
 
     it('throws error if destination tree isn\'t recognized', function() {
-        expect(tree1.data.copyNodes().to).to.throw(Error);
+        expect(tree1.getNodes().copy().to).to.throw(Error);
     });
 
     it('copies all nodes to a new tree', function() {
-        expect(tree2.data.getNodes()).to.have.length(0);
+        expect(tree2.getNodes()).to.have.length(0);
 
-        tree1.data.copyNodes().to(tree2);
-        expect(tree2.data.getNodes()).to.have.length(5);
+        tree1.getNodes().copy().to(tree2);
+        expect(tree2.getNodes()).to.have.length(5);
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('copies given nodes to a new tree', function() {
-        expect(tree2.data.getNodes()).to.have.length(0);
+        expect(tree2.getNodes()).to.have.length(0);
 
-        tree1.data.copyNodes(tree1.data.getNodes()).to(tree2);
-        expect(tree2.data.getNodes()).to.have.length(5);
+        tree1.getNodes().copy().to(tree2);
+        expect(tree2.getNodes()).to.have.length(5);
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('copies selected node to a new tree', function() {
-        expect(tree2.data.getNodes()).to.have.length(0);
+        expect(tree2.getNodes()).to.have.length(0);
 
-        var node = tree1.data.getNodeById(1);
-        tree1.data.selectNode(node);
-        tree1.data.copyNodes(tree1.data.getSelectedNodes()).to(tree2);
+        var node = tree1.getNode(1);
+        node.select();
+        tree1.getSelectedNodes().copy().to(tree2);
 
-        expect(tree2.data.getNodes()).to.have.length(1);
-        expect(tree2.data.getNodes()[0].id).to.equal('1');
+        expect(tree2.getNodes()).to.have.length(1);
+        expect(tree2.getNodes()[0].id).to.equal('1');
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('copies specific node to a new tree', function() {
-        expect(tree2.data.getNodes()).to.have.length(0);
+        expect(tree2.getNodes()).to.have.length(0);
 
-        var node = tree1.data.getNodeById(1);
-        tree1.data.copyNode(node).to(tree2);
+        var node = tree1.getNode(1);
+        node.copy().to(tree2);
 
-        expect(tree2.data.getNodes()).to.have.length(1);
-        expect(tree2.data.getNodes()[0].id).to.equal('1');
+        expect(tree2.getNodes()).to.have.length(1);
+        expect(tree2.getNodes()[0].id).to.equal('1');
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('copies child node to a new tree', function() {
-        expect(tree2.data.getNodes()).to.have.length(0);
+        expect(tree2.getNodes()).to.have.length(0);
 
-        var node = tree1.data.getNodeById(20);
-        tree1.data.copyNode(node).to(tree2);
+        var node = tree1.getNode(20);
+        node.copy().to(tree2);
 
-        expect(tree2.data.getNodes()).to.have.length(1);
-        expect(tree2.data.getNodes()[0].id).to.equal('20');
+        expect(tree2.getNodes()).to.have.length(1);
+        expect(tree2.getNodes()[0].id).to.equal('20');
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('copies child node and its hierarchy to a new tree', function() {
-        expect(tree2.data.getNodes()).to.have.length(0);
+        expect(tree2.getNodes()).to.have.length(0);
 
-        var node = tree1.data.getNodeById(20);
-        tree1.data.copyNode(node, true).to(tree2);
+        var node = tree1.getNode(20);
+        node.copy(true).to(tree2);
 
-        expect(tree2.data.getNodes()).to.have.length(1);
-        expect(tree2.data.getNodes()[0].id).to.equal('2');
+        expect(tree2.getNodes()).to.have.length(1);
+        expect(tree2.getNodes()[0].id).to.equal('2');
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('merges new nodes on copy', function() {
         // Move all nodes over
-        tree1.data.copyNodes().to(tree2);
+        tree1.getNodes().copy().to(tree2);
 
         // Check original child count
-        expect(tree1.data.getNodeById(2).children).to.have.length(1);
+        expect(tree1.getNode(2).children).to.have.length(1);
 
         // Push a new child to the copied data
-        var parent = tree2.data.getNodeById(2);
+        var parent = tree2.getNode(2);
         parent.addChild({
             text: 'New'
         });
 
-        // Re-copy the node to the original tree
-        tree2.data.copyNode(parent, true).to(tree1);
-        expect(tree1.data.getNodeById(2).children).to.have.length(2);
+        // Check new child count
+        expect(tree2.getNode(2).children).to.have.length(2);
 
-        tree2.data.removeAll();
+        // Re-copy the node to the original tree
+        parent.copy(true).to(tree1);
+        expect(tree1.getNode(2).children).to.have.length(2);
+
+        tree2.removeAll();
     });
 
     it('shows child node when merged back into source via api', function() {
-        var node = tree1.data.getNodeById(20);
+        var node = tree1.getNode(20);
 
         // Hide source copy
-        tree1.dom.hideNode(node);
-        expect(node.itree.state.hidden).to.be.true;
+        node.hide();
+        expect(node.hidden()).to.be.true;
 
         // Move it
-        tree1.data.copyNode(node, true).to(tree2);
+        node.copy(true).to(tree2);
 
         // Check new copy
-        var clone = tree2.data.getNodeById(20);
-        expect(clone.itree.state.hidden).to.be.false;
+        var clone = tree2.getNode(20);
+        expect(clone.hidden()).to.be.false;
 
         // Move back
-        tree2.data.copyNode(clone, true).to(tree1);
+        clone.copy(true).to(tree1);
 
         // Check source
-        expect(node.itree.state.hidden).to.be.false;
+        expect(node.hidden()).to.be.false;
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('shows child node when merged back into source by selection', function() {
-        var node = tree1.data.getNodeById(20);
+        var node = tree1.getNode(20);
 
         // Hide source copy
-        tree1.dom.hideNode(node);
-        expect(node.itree.state.hidden).to.be.true;
+        node.hide();
+        expect(node.hidden()).to.be.true;
 
         // Move it
-        tree1.data.copyNode(node, true).to(tree2);
+        node.copy(true).to(tree2);
 
         // Check new copy
-        var clone = tree2.data.getNodeById(20);
-        expect(clone.itree.state.hidden).to.be.false;
+        var clone = tree2.getNode(20);
+        expect(clone.hidden()).to.be.false;
 
         // Re-select in destination
-        tree2.data.selectNode(clone);
-        var selected = tree2.data.getSelectedNodes();
+        clone.select();
+        var selected = tree2.getSelectedNodes();
 
         // Move back
-        tree2.data.copyNodes(selected, true).to(tree1);
+        selected.copy(true).to(tree1);
 
         // Check source
-        expect(node.itree.state.hidden).to.be.false;
+        expect(node.hidden()).to.be.false;
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('only shows nodes merged back in', function() {
         // Move all to one tree
-        tree1.data.copyNodes().to(tree2);
-        tree1.dom.hideAll();
+        tree1.getNodes().copy().to(tree2);
+        tree1.hideAll();
 
-        var node = tree2.data.getNodeById(20);
-        tree2.data.copyNode(node, true).to(tree1);
+        var node = tree2.getNode(20);
+        node.copy(true).to(tree1);
 
-        expect(tree1.data.getNodes()[0].itree.state.hidden).to.be.true;
-        expect(tree1.data.getNodes()[1].itree.state.hidden).to.be.false;
-        expect(tree1.data.getNodes()[1].children[0].itree.state.hidden).to.be.false;
-        expect(tree1.data.getNodes()[1].children[1].itree.state.hidden).to.be.true;
+        expect(tree1.getNodes()[0].hidden()).to.be.true;
+        expect(tree1.getNodes()[1].hidden()).to.be.false;
+        expect(tree1.getNodes()[1].children[0].hidden()).to.be.false;
+        expect(tree1.getNodes()[1].children[1].hidden()).to.be.true;
 
-        tree2.data.removeAll();
+        tree2.removeAll();
     });
 
     it('removes a node', function() {
-        var node = tree1.data.getNode(1);
-        tree1.data.removeNode(node);
+        var node = tree1.getNode(1);
+        node.remove();
 
-        expect(tree1.data.getNodes()).to.have.length(4);
+        expect(tree1.getNodes()).to.have.length(4);
     });
 
     after(helpers.clearDOM);
