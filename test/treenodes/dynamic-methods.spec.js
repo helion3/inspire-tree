@@ -20,8 +20,29 @@ describe('TreeNodes dynamic methods', function() {
         });
     });
 
+    it('"collapse"', function() {
+        expect(tree.getNodes().collapse).to.be.a('function');
+        expect(tree.getNodes().collapseDeep).to.be.a('function');
+    });
+
+    it('"deselect"', function() {
+        expect(tree.getNodes().deselect).to.be.a('function');
+        expect(tree.getNodes().deselectDeep).to.be.a('function');
+    });
+
+    it('"expand"', function() {
+        expect(tree.getNodes().expand).to.be.a('function');
+        expect(tree.getNodes().expandDeep).to.be.a('function');
+    });
+
     it('"hide"', function() {
         expect(tree.getNodes().hide).to.be.a('function');
+        expect(tree.getNodes().hideDeep).to.be.a('function');
+    });
+
+    it('"show"', function() {
+        expect(tree.getNodes().show).to.be.a('function');
+        expect(tree.getNodes().showDeep).to.be.a('function');
     });
 
     after(helpers.clearDOM);

@@ -84,12 +84,12 @@
 
             $('.move-all').on('click', function() {
                 sourceTree.getNodes().copy().to(destTree);
-                sourceTree.hideAll();
+                sourceTree.getNodes().hideDeep();
             });
 
             $('.revert-all').on('click', function() {
                 destTree.getNodes().copy().to(sourceTree);
-                destTree.hideAll();
+                destTree.getNodes().hideDeep();
             });
         });
     </script>

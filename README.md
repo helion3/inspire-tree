@@ -119,14 +119,30 @@ tree.getNode('a-unique-id').select();
 
 **TreeNodes**
 
-Arrays of `TreeNode`s are contained within an Array-like object. Most methods on `TreeNode` which
-can be applied in bulk to each node in the array have aliases on this class.
+Arrays of `TreeNode`s are contained within an Array-like object.
 
-*Expands all nodes:*
+`TreeNodes` maps several TreeNode methods so you can invoke them on all nodes in the collection, or recursively
+down the nodes and their children.
+
+*Expands only root nodes inside this collection:*
 
 ```js
 tree.getNodes().expand();
 ```
+
+*Expands root nodes and their children inside this collection:*
+
+```js
+tree.getNodes().expandDeep();
+```
+
+**Mapped Method List**
+
+- collapse
+- deselect
+- expand
+- hide
+- show
 
 ## Development
 

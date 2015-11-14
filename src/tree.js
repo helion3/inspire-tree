@@ -631,7 +631,7 @@ function InspireTree(opts) {
         if (!node.itree.state.selected) {
             // Batch selection changes
             dom.batch();
-            tree.deselectAll();
+            tree.getNodes().deselectDeep();
             node.itree.state.selected = true;
 
             // Emit this event
@@ -844,12 +844,24 @@ function InspireTree(opts) {
         return flat;
     };
 
-    // Define methods we pass through to individual TreeNode objects
-    each(['hide'], function(method) {
+    // Methods can we map to each TreeNode
+    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'show'];
+    each(mapped, function(method) {
+        // Map shallow to each TreeNode
         TreeNodes.prototype[method] = function() {
             dom.batch();
             each(this, function(node) {
                 node[method]();
+            });
+            dom.end();
+        };
+
+        // Map deeply to all TreeNodes and children
+        TreeNodes.prototype[method + 'Deep'] = function() {
+            dom.batch();
+            tree.recurseDown(this, function(node) {
+                node[method]();
+                return node;
             });
             dom.end();
         };
@@ -1014,36 +1026,8 @@ function InspireTree(opts) {
      * @return {void}
      */
     tree.clearSearch = function() {
-        tree.showAll();
-        tree.collapseAll();
-    };
-
-    /**
-     * Collapses all nodes.
-     *
-     * @category Tree
-     * @return {void}
-     */
-    tree.collapseAll = function() {
-        dom.batch();
-        tree.recurseDown(tree.getNodes(), function(node) {
-            return node.collapse();
-        });
-        dom.end();
-    };
-
-    /**
-     * Deselect all nodes.
-     *
-     * @category Tree
-     * @return {void}
-     */
-    tree.deselectAll = function() {
-        dom.batch();
-        tree.recurseDown(model, function(node) {
-            return node.deselect();
-        });
-        dom.end();
+        tree.getNodes().showDeep();
+        tree.getNodes().collapseDeep();
     };
 
     /**
@@ -1097,16 +1081,6 @@ function InspireTree(opts) {
      */
     tree.getSelectedNodes = function(nodes) {
         return (nodes || model).flatten('selected');
-    };
-
-    /**
-     * Hides all nodes.
-     *
-     * @category Tree
-     * @return {void}
-     */
-    tree.hideAll = function() {
-        tree.getNodes().hide();
     };
 
     /**
@@ -1226,7 +1200,7 @@ function InspireTree(opts) {
                 function resolver(nodes) {
                     dom.batch();
 
-                    tree.hideAll();
+                    tree.getNodes().hideDeep();
                     each(nodes, function(node) {
                         mergeNode(model, node);
                     });
