@@ -609,6 +609,17 @@ function InspireTree(opts) {
     };
 
     /**
+     * Iterate down node and any children.
+     *
+     * @category TreeNode
+     * @param {function} iteratee Iteratee function.
+     * @return {TreeNode} Resulting node.
+     */
+    TreeNode.prototype.recurseDown = function(iteratee) {
+        return tree.recurseDown(this, iteratee);
+    };
+
+    /**
      * Remove a node from the tree.
      *
      * @category TreeNode
@@ -847,6 +858,17 @@ function InspireTree(opts) {
         }
 
         return flat;
+    };
+
+    /**
+     * Iterate down all nodes and any children.
+     *
+     * @category TreeNode
+     * @param {function} iteratee Iteratee function.
+     * @return {TreeNodes} Resulting nodes.
+     */
+    TreeNodes.prototype.recurseDown = function(iteratee) {
+        return tree.recurseDown(this, iteratee);
     };
 
     // Methods can we map to each TreeNode
