@@ -68,7 +68,7 @@
 
             $('.move-one').on('click', function() {
                 var selected = sourceTree.getSelectedNodes();
-                selected.softRemove();
+                selected.softRemoveDeep();
                 selected.copy(true).to(destTree);
             });
 
@@ -78,7 +78,7 @@
 
             $('.revert-one').on('click', function() {
                 var selected = destTree.getSelectedNodes();
-                selected.softRemove();
+                selected.softRemoveDeep();
                 selected.copy(true).to(sourceTree);
             });
 

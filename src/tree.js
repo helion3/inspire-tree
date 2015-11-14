@@ -991,6 +991,7 @@ function InspireTree(opts) {
             var existing = tree.getNode(node.id);
             if (existing) {
                 existing.restore();
+                existing.show();
 
                 // Ensure existing accepts children
                 if (!isArrayLike(existing.children)) {
