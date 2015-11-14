@@ -35,8 +35,9 @@ describe('TreeNode.prototype.recurseUp', function() {
     it('recurse up self and all parents', function() {
         var count = 0;
 
-        tree.getNode(3).recurseUp(function() {
+        tree.getNode(3).recurseUp(function(node) {
             count++;
+            return node;
         });
 
         expect(count).to.equal(3);

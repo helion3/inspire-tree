@@ -269,7 +269,7 @@ function InspireTree(opts) {
     TreeNode.prototype.expandParents = function() {
         if (this.hasParent()) {
             this.getParent().recurseUp(function(node) {
-                node.expand();
+                return node.expand();
             });
         }
     };
@@ -479,6 +479,7 @@ function InspireTree(opts) {
     TreeNode.prototype.markDirty = function() {
         this.recurseUp(function(node) {
             node.itree.dirty = true;
+            return node;
         });
     };
 
@@ -594,7 +595,11 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.recurseUp = function(iteratee) {
         var node = this;
-        iteratee(node);
+        node = iteratee(node);
+
+        if (!node) {
+            throw new TypeError('Invalid recurseUp return value. Did you forget "return"?');
+        }
 
         if (node.hasParent()) {
             node.getParent().recurseUp(iteratee);
