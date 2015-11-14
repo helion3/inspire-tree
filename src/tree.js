@@ -242,7 +242,7 @@ function InspireTree(opts) {
         var node = this;
         var allow = (!isEmpty(get(node, 'children')) || isDynamic);
 
-        if (allow && (node.itree.state.collapsed || node.itree.state.hidden)) {
+        if (allow && (node.collapsed() || node.hidden())) {
             node.itree.state.collapsed = false;
             node.itree.state.hidden = false;
 
@@ -521,7 +521,7 @@ function InspireTree(opts) {
 
         // 3. Find sibling of ancestor(s)
         if (!next && startingNode.hasParent()) {
-            next = startingNode.itree.parent.nextVisibleSiblingNode();
+            next = startingNode.getParent().nextVisibleSiblingNode();
         }
 
         return next;
@@ -535,7 +535,7 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.nextVisibleSiblingNode = function() {
         var startingNode = this;
-        var context = (startingNode.itree.parent ? startingNode.itree.parent.children : tree.getNodes());
+        var context = (startingNode.hasParent() ? startingNode.getParent().children : tree.getNodes());
         var i = findIndex(context, { id: startingNode.id });
 
         return find(slice(context, i + 1), function(node) {
@@ -596,7 +596,7 @@ function InspireTree(opts) {
         var node = this;
         iteratee(node);
 
-        if (isObject(node.itree.parent)) {
+        if (node.hasParent()) {
             node.getParent().recurseUp(iteratee);
         }
 
@@ -628,7 +628,7 @@ function InspireTree(opts) {
     TreeNode.prototype.select = function() {
         var node = this;
 
-        if (!node.itree.state.selected) {
+        if (!node.selected()) {
             // Batch selection changes
             dom.batch();
             tree.getNodes().deselectDeep();
@@ -704,10 +704,10 @@ function InspireTree(opts) {
         var parentVisible = false;
 
         // We can't be visible if parent is hidden/collapsed
-        if (node.itree.parent) {
+        if (node.hasParent()) {
             // Is parent collapsed?
-            if (!node.itree.parent.itree.state.collapsed) {
-                parentVisible = node.itree.parent.visible();
+            if (!node.getParent().collapsed()) {
+                parentVisible = node.getParent().visible();
             }
         }
         else {
@@ -1240,11 +1240,11 @@ function InspireTree(opts) {
 
         tree.recurseDown(model, function(node) {
             var match = predicate(node);
-            var wasHidden = node.itree.state.hidden;
+            var wasHidden = node.hidden();
             node.itree.state.hidden = !match;
 
             // If hidden state will change
-            if (wasHidden !== node.itree.state.hidden) {
+            if (wasHidden !== node.hidden()) {
                 node.markDirty();
             }
 
@@ -1271,7 +1271,7 @@ function InspireTree(opts) {
         var select;
 
         each(model, function(node) {
-            if (!node.itree.state.hidden) {
+            if (!node.hidden()) {
                 node.select();
 
                 select = node;
