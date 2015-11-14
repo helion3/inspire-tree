@@ -13,5 +13,14 @@ var find = require('lodash.find');
  * @return {boolean} Any state is dirty.
  */
 module.exports = function VDirtyCompare(previousState, currentState) {
-    return find(currentState.nodes, 'itree.dirty', true);
+    var diff = false;
+
+    if (previousState.nodeCount !== currentState.nodeCount) {
+        diff = true;
+    }
+    else {
+        diff = find(currentState.nodes, 'itree.dirty', true);
+    }
+
+    return diff;
 };

@@ -126,22 +126,22 @@ describe('Modification', function() {
     it('shows child node when merged back into source via api', function() {
         var node = tree1.getNode(20);
 
-        // Hide source copy
-        node.hide();
-        expect(node.hidden()).to.be.true;
+        // Remove source copy
+        node.softRemove();
+        expect(node.removed()).to.be.true;
 
         // Move it
         node.copy(true).to(tree2);
 
         // Check new copy
         var clone = tree2.getNode(20);
-        expect(clone.hidden()).to.be.false;
+        expect(clone.removed()).to.be.false;
 
         // Move back
         clone.copy(true).to(tree1);
 
         // Check source
-        expect(node.hidden()).to.be.false;
+        expect(node.removed()).to.be.false;
 
         tree2.removeAll();
     });
@@ -149,16 +149,16 @@ describe('Modification', function() {
     it('shows child node when merged back into source by selection', function() {
         var node = tree1.getNode(20);
 
-        // Hide source copy
-        node.hide();
-        expect(node.hidden()).to.be.true;
+        // Remove source copy
+        node.softRemove();
+        expect(node.removed()).to.be.true;
 
         // Move it
         node.copy(true).to(tree2);
 
         // Check new copy
         var clone = tree2.getNode(20);
-        expect(clone.hidden()).to.be.false;
+        expect(clone.removed()).to.be.false;
 
         // Re-select in destination
         clone.select();
@@ -168,7 +168,7 @@ describe('Modification', function() {
         selected.copy(true).to(tree1);
 
         // Check source
-        expect(node.hidden()).to.be.false;
+        expect(node.removed()).to.be.false;
 
         tree2.removeAll();
     });
@@ -176,15 +176,15 @@ describe('Modification', function() {
     it('only shows nodes merged back in', function() {
         // Move all to one tree
         tree1.getNodes().copy().to(tree2);
-        tree1.getNodes().hideDeep();
+        tree1.getNodes().softRemoveDeep();
 
         var node = tree2.getNode(20);
         node.copy(true).to(tree1);
 
-        expect(tree1.getNodes()[0].hidden()).to.be.true;
-        expect(tree1.getNodes()[1].hidden()).to.be.false;
-        expect(tree1.getNodes()[1].children[0].hidden()).to.be.false;
-        expect(tree1.getNodes()[1].children[1].hidden()).to.be.true;
+        expect(tree1.getNodes()[0].removed()).to.be.true;
+        expect(tree1.getNodes()[1].removed()).to.be.false;
+        expect(tree1.getNodes()[1].children[0].removed()).to.be.false;
+        expect(tree1.getNodes()[1].children[1].removed()).to.be.true;
 
         tree2.removeAll();
     });

@@ -86,7 +86,8 @@
 
             $('.move-one').on('click', function() {
                 var selected = sourceTree.getSelectedNodes();
-                selected.hide();
+                selected.softRemove();
+
                 var newNodes = selected.copy(true).to(destTree);
 
                 // If we moved a child node, expand nodes down to it
@@ -101,7 +102,7 @@
 
             $('.revert-one').on('click', function() {
                 var selected = destTree.getSelectedNodes();
-                selected.hide();
+                selected.softRemove();
                 selected.copy(true).to(sourceTree);
 
                 // Hide all parents without visible children
@@ -114,18 +115,20 @@
                                 parent.hide();
                             }
                         }
+
+                        return node;
                     });
                 });
             });
 
             $('.move-all').on('click', function() {
                 sourceTree.getNodes().copy().to(destTree);
-                sourceTree.getNodes().hideDeep();
+                sourceTree.getNodes().softRemoveDeep();
             });
 
             $('.revert-all').on('click', function() {
                 destTree.getNodes().copy().to(sourceTree);
-                destTree.getNodes().hideDeep();
+                destTree.getNodes().softRemoveDeep();
             });
         });
     </script>

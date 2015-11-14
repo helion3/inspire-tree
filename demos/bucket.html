@@ -68,7 +68,7 @@
 
             $('.move-one').on('click', function() {
                 var selected = sourceTree.getSelectedNodes();
-                selected.hide();
+                selected.softRemove();
                 selected.copy(true).to(destTree);
             });
 
@@ -78,18 +78,18 @@
 
             $('.revert-one').on('click', function() {
                 var selected = destTree.getSelectedNodes();
-                selected.hide();
+                selected.softRemove();
                 selected.copy(true).to(sourceTree);
             });
 
             $('.move-all').on('click', function() {
                 sourceTree.getNodes().copy().to(destTree);
-                sourceTree.getNodes().hideDeep();
+                sourceTree.getNodes().softRemoveDeep();
             });
 
             $('.revert-all').on('click', function() {
                 destTree.getNodes().copy().to(sourceTree);
-                destTree.getNodes().hideDeep();
+                destTree.getNodes().softRemoveDeep();
             });
         });
     </script>

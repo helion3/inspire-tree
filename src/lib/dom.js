@@ -146,6 +146,10 @@ module.exports = function InspireDOM(tree) {
                 }
             });
 
+            if (!node.hidden() && node.removed()) {
+                classNames += '.hidden';
+            }
+
             var attributes = node.itree.li.attributes || {};
 
             // Force internal-use attributes
@@ -166,6 +170,8 @@ module.exports = function InspireDOM(tree) {
         var domNodes = [];
 
         each(nodes, function(node) {
+            // We can't just remove the node if soft-removed
+            // https://github.com/Matt-Esch/virtual-dom/issues/333
             domNodes.push(createListItemNode(node));
         });
 
@@ -182,7 +188,8 @@ module.exports = function InspireDOM(tree) {
      */
     function createOrderedList(nodes) {
         return new VCache({
-            nodes: nodes
+            nodes: nodes,
+            nodeCount: nodes.length
         }, VArrayDirtyCompare, function() {
             return h('ol', createListItemNodes(nodes));
         });
@@ -524,6 +531,35 @@ module.exports = function InspireDOM(tree) {
         }
     }
 
+    // Cache our root node, so we can patch re-render in the future.
+    var rootNode;
+    var ol;
+
+    /**
+     * Triggers rendering for the given node array.
+     *
+     * @category DOM
+     * @private
+     * @param {array} nodes Array of node objects.
+     * @return {void}
+     */
+    function renderNodes(nodes) {
+        var newOl = createOrderedList(nodes || tree.getNodes(), true);
+
+        if (!rootNode) {
+            rootNode = createElement(newOl);
+            $target.appendChild(rootNode);
+
+            tree.emit('tree.ready');
+        }
+        else {
+            var patches = diff(ol, newOl);
+            rootNode = patch(rootNode, patches);
+        }
+
+        ol = newOl;
+    };
+
     var dom = this;
     var batching = 0;
 
@@ -543,7 +579,7 @@ module.exports = function InspireDOM(tree) {
             return;
         }
 
-        dom.renderNodes();
+        renderNodes();
     };
 
     /**
@@ -605,6 +641,10 @@ module.exports = function InspireDOM(tree) {
      * @return {void}
      */
     dom.batch = function() {
+        if (batching < 0) {
+            batching = 0;
+        }
+
         batching++;
     };
 
@@ -635,35 +675,6 @@ module.exports = function InspireDOM(tree) {
         if (batching === 0) {
             dom.applyChanges();
         }
-    };
-
-    // Cache our root node, so we can patch re-render in the future.
-    var rootNode;
-    var ol;
-
-    /**
-     * Triggers rendering for the given node array.
-     *
-     * @category DOM
-     * @private
-     * @param {array} nodes Array of node objects.
-     * @return {void}
-     */
-    dom.renderNodes = function(nodes) {
-        var newOl = createOrderedList(nodes || tree.getNodes(), true);
-
-        if (!rootNode) {
-            rootNode = createElement(newOl);
-            $target.appendChild(rootNode);
-
-            tree.emit('tree.ready');
-        }
-        else {
-            var patches = diff(ol, newOl);
-            rootNode = patch(rootNode, patches);
-        }
-
-        ol = newOl;
     };
 
     return dom;

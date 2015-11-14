@@ -121,7 +121,7 @@ function InspireTree(opts) {
             tree.emit('node.collapsed', node);
 
             node.markDirty();
-            dom.renderNodes();
+            dom.applyChanges();
         }
 
         return node;
@@ -253,7 +253,7 @@ function InspireTree(opts) {
             }
             else {
                 node.markDirty();
-                dom.renderNodes();
+                dom.applyChanges();
             }
         }
 
@@ -385,7 +385,7 @@ function InspireTree(opts) {
             // http://jsperf.com/count-subdoc-state/2
             var visibleCount = 0;
             each(this.children, function(child) {
-                if (!child.hidden()) {
+                if (!child.hidden() && !child.removed()) {
                     visibleCount++;
                 }
             });
@@ -426,7 +426,7 @@ function InspireTree(opts) {
             }
 
             node.markDirty();
-            dom.renderNodes();
+            dom.applyChanges();
         }
 
         return node;
@@ -471,7 +471,7 @@ function InspireTree(opts) {
 
     /**
      * Mark a node as dirty, rebuilding this node in the virtual DOM
-     * and rerendering to the live DOM, next time renderNodes is called.
+     * and rerendering to the live DOM, next time applyChanges is called.
      *
      * @category TreeNode
      * @return {void}
@@ -636,6 +636,36 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get if node soft-removed.
+     *
+     * @category TreeNode
+     * @return {boolean} If soft-removed.
+     */
+    TreeNode.prototype.removed = function() {
+        return this.itree.state.removed;
+    };
+
+    /**
+     * Restore state if soft-removed.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.restore = function() {
+        var node = this;
+        if (node.removed()) {
+            node.itree.state.removed = false;
+
+            tree.emit('node.restored', node);
+
+            node.markDirty();
+            dom.applyChanges();
+        }
+
+        return node;
+    };
+
+    /**
      * Select this node.
      *
      * @category TreeNode
@@ -700,7 +730,28 @@ function InspireTree(opts) {
             tree.emit('node.shown', node);
 
             node.markDirty();
-            dom.renderNodes();
+            dom.applyChanges();
+        }
+
+        return node;
+    };
+
+    /**
+     * Mark this node as "removed" without actually removing it.
+     *
+     * Expand/show methods will never reveal this node until restored.
+     *
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.softRemove = function() {
+        var node = this;
+        if (!node.removed()) {
+            node.itree.state.removed = true;
+
+            tree.emit('node.softremoved', node);
+
+            node.markDirty();
+            dom.applyChanges();
         }
 
         return node;
@@ -716,21 +767,24 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.visible = function() {
         var node = this;
-        var state = node.itree.state;
-        var parentVisible = false;
 
-        // We can't be visible if parent is hidden/collapsed
-        if (node.hasParent()) {
-            // Is parent collapsed?
-            if (!node.getParent().collapsed()) {
-                parentVisible = node.getParent().visible();
+        var isVisible = true;
+        if (node.hidden() || node.removed()) {
+            isVisible = false;
+        }
+        else if (node.hasParent()) {
+            if (node.getParent().collapsed()) {
+                isVisible = false;
+            }
+            else {
+                isVisible = node.getParent().visible();
             }
         }
         else {
-            parentVisible = true;
+            isVisible = true;
         }
 
-        return (!state.hidden && parentVisible);
+        return isVisible;
     };
 
     /**
@@ -872,7 +926,7 @@ function InspireTree(opts) {
     };
 
     // Methods can we map to each TreeNode
-    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'show'];
+    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
     each(mapped, function(method) {
         // Map shallow to each TreeNode
         TreeNodes.prototype[method] = function() {
@@ -930,8 +984,7 @@ function InspireTree(opts) {
             // Does node already exist
             var existing = tree.getNode(node.id);
             if (existing) {
-                existing.itree.state.hidden = false;
-                existing.markDirty();
+                existing.restore();
 
                 // Ensure existing accepts children
                 if (!isArrayLike(existing.children)) {
@@ -987,6 +1040,7 @@ function InspireTree(opts) {
         var state = itree.state = itree.state || {};
         state.collapsed = state.collapsed || true;
         state.hidden = state.hidden || false;
+        state.removed = state.removed || false;
         state.selected = state.selected || false;
 
         // Save parent, if any.
@@ -1128,7 +1182,7 @@ function InspireTree(opts) {
             model = collectionToModel(nodes);
 
             tree.emit('model.loaded', model);
-            dom.renderNodes(model);
+            dom.applyChanges();
         };
 
         var reject = function(err) {

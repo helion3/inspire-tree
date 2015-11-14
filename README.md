@@ -68,6 +68,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 	+ **icon** - Custom icon for the anchor.
 	+ **state.collasped** - Set initial collapsed state.
 	+ **state.hidden** - Set initial visibility.
+    + **state.removed** - Soft removed. Never shown until restored.
 	+ **state.selected** - Set initial selection.
 
 ## Events
@@ -95,8 +96,10 @@ tree.on('node.click', function(event, node) {
 - **node.expanded** - `(TreeNode node)` - Node expanded.
 - **node.hidden** - `(TreeNode node)` - Node hidden.
 - **node.removed** - `(object node)` - Node removed.
+- **node.restored** - `(TreeNode node)` - Node restored.
 - **node.selected** - `(TreeNode node)` - Node selected.
 - **node.shown** - `(TreeNode node)` - Node shown.
+- **node.softremoved** - `(TreeNode node)` - Node soft removed.
 - **tree.ready** - Tree has attached target DOM element.
 
 ## API Basics
@@ -142,7 +145,9 @@ tree.getNodes().expandDeep();
 - deselect
 - expand
 - hide
+- restore
 - show
+- softRemove
 
 ## Development
 
