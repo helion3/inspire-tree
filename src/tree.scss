@@ -23,6 +23,8 @@
     }
 
     .icon:before {
+        content: '';
+        display: inline-block;
         font-family: 'itree';
         -moz-osx-font-smoothing: grayscale;
         -webkit-font-smoothing: antialiased;
@@ -53,6 +55,13 @@
 
     .icon-folder-open:before {
         content: '\e803';
+    }
+
+    .loading > div > .title:before {
+        background: url('../img/spinner.gif') 0 0 no-repeat;
+        content: '';
+        height: 14px;
+        width: 14px;
     }
 
     > ol {
@@ -93,12 +102,15 @@
         overflow: hidden;
         padding-left: 30px;
         text-overflow: ellipsis;
+        vertical-align: middle;
         white-space: nowrap;
 
         &:before {
             color: #ccc;
             left: -6px;
             position: relative;
+            top: -2px;
+            vertical-align: middle;
         }
     }
 

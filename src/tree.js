@@ -450,10 +450,15 @@ function InspireTree(opts) {
         var node = this;
 
         if (isDynamic) {
+            node.itree.state.loading = true;
+            node.markDirty();
+            dom.applyChanges();
+
             tree.config.data(
                 node,
                 function resolver(results) {
                     dom.batch();
+                    node.itree.state.loading = false;
                     node.children = collectionToModel(results, node);
                     node.markDirty();
                     dom.end();
@@ -461,6 +466,7 @@ function InspireTree(opts) {
                 function rejecter(err) {
                     tree.emit('tree.loaderror', err);
 
+                    node.itree.state.loading = false;
                     node.children = new TreeNodes();
                     node.markDirty();
                     dom.applyChanges();
@@ -1040,6 +1046,7 @@ function InspireTree(opts) {
         var state = itree.state = itree.state || {};
         state.collapsed = state.collapsed || true;
         state.hidden = state.hidden || false;
+        state.loading = state.loading || false;
         state.removed = state.removed || false;
         state.selected = state.selected || false;
 
