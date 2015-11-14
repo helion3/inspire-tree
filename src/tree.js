@@ -747,6 +747,7 @@ function InspireTree(opts) {
      *
      * Expand/show methods will never reveal this node until restored.
      *
+     * @category TreeNode
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.softRemove = function() {
