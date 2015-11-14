@@ -23,7 +23,7 @@ describe('Inspire Tree', function() {
 
     var tree;
 
-    it('returns APIs', function() {
+    it('returns API', function() {
         tree = new InspireTree({
             target: 'div',
             data: []

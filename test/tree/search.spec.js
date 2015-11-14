@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Search', function() {
+describe('Tree.search', function() {
     var tree;
 
     before(function() {

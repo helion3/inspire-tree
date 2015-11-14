@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Loaders', function() {
+describe('Tree.load', function() {
     beforeEach(function() {
         helpers.clearDOM();
         helpers.createTreeContainer();

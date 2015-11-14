@@ -11,8 +11,10 @@ module.exports = function(config) {
             'build/inspire-tree.js',
             'test/helpers.js',
             'test/tree.spec.js',
+            'test/treenode/*.spec.js',
+            'test/treenodes/*.spec.js',
             'test/dom/*.spec.js',
-            'test/data/*.spec.js'
+            'test/data/*.js'
         ],
         autoWatch: false,
         basePath: '',

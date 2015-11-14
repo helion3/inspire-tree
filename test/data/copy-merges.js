@@ -2,8 +2,6 @@
 
 describe('Modification', function() {
     var tree1;
-    var $tree1;
-
     var tree2;
 
     before(function() {
@@ -25,35 +23,10 @@ describe('Modification', function() {
             }]
         });
 
-        $tree1 = $('.tree');
-
         tree2 = new InspireTree({
             target: '.tree2',
             data: []
         });
-    });
-
-    it('adds a node', function() {
-        tree1.addNode({
-            text: 'C'
-        });
-
-        // Model
-        expect(tree1.getNodes()).to.have.length(3);
-        expect(tree1.getNodes()[2].text).to.equal('C');
-
-        // DOM
-        expect($tree1.find('> ol > li')).to.have.length(3);
-    });
-
-    it('adds an array of nodes', function() {
-        tree1.addNodes([{
-            text: 'D'
-        }, {
-            text: 'E'
-        }]);
-
-        expect(tree1.getNodes()).to.have.length(5);
     });
 
     it('throws error if destination tree isn\'t recognized', function() {
@@ -64,7 +37,7 @@ describe('Modification', function() {
         expect(tree2.getNodes()).to.have.length(0);
 
         tree1.getNodes().copy().to(tree2);
-        expect(tree2.getNodes()).to.have.length(5);
+        expect(tree2.getNodes()).to.have.length(2);
 
         tree2.removeAll();
     });
@@ -73,7 +46,7 @@ describe('Modification', function() {
         expect(tree2.getNodes()).to.have.length(0);
 
         tree1.getNodes().copy().to(tree2);
-        expect(tree2.getNodes()).to.have.length(5);
+        expect(tree2.getNodes()).to.have.length(2);
 
         tree2.removeAll();
     });
@@ -214,13 +187,6 @@ describe('Modification', function() {
         expect(tree1.getNodes()[1].children[1].hidden()).to.be.true;
 
         tree2.removeAll();
-    });
-
-    it('removes a node', function() {
-        var node = tree1.getNode(1);
-        node.remove();
-
-        expect(tree1.getNodes()).to.have.length(4);
     });
 
     after(helpers.clearDOM);

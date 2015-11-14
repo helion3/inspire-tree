@@ -82,6 +82,7 @@ function InspireTree(opts) {
             this.children = new TreeNodes();
         }
 
+        child.itree.parent = this;
         this.children.push(child);
 
         child.markDirty();
@@ -104,6 +105,36 @@ function InspireTree(opts) {
         }
 
         return newClone;
+    };
+
+    /**
+     * Collapse this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.collapse = function() {
+        var node = this;
+        if (!node.collapsed() && !isEmpty(get(node, 'children'))) {
+            node.itree.state.collapsed = true;
+
+            tree.emit('node.collapsed', node);
+
+            node.markDirty();
+            dom.renderNodes();
+        }
+
+        return node;
+    };
+
+    /**
+     * Get if node collapsed.
+     *
+     * @category TreeNode
+     * @return {boolean} If collapsed.
+     */
+    TreeNode.prototype.collapsed = function() {
+        return this.itree.state.collapsed;
     };
 
     /**
@@ -181,36 +212,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Collapse this node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.collapse = function() {
-        var node = this;
-        if (!node.collapsed() && !isEmpty(get(node, 'children'))) {
-            node.itree.state.collapsed = true;
-
-            tree.emit('node.collapsed', node);
-
-            node.markDirty();
-            dom.renderNodes();
-        }
-
-        return node;
-    };
-
-    /**
-     * Get if node collapsed.
-     *
-     * @category TreeNode
-     * @return {boolean} If collapsed.
-     */
-    TreeNode.prototype.collapsed = function() {
-        return this.itree.state.collapsed;
-    };
-
-    /**
      * Deselect this node.
      *
      * @category TreeNode
@@ -260,16 +261,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get if node expanded.
-     *
-     * @category TreeNode
-     * @return {boolean} If expanded.
-     */
-    TreeNode.prototype.expanded = function() {
-        return !this.itree.state.collapsed;
-    };
-
-    /**
      * Expand parent nodes.
      *
      * @category TreeNode
@@ -281,6 +272,16 @@ function InspireTree(opts) {
                 node.expand();
             });
         }
+    };
+
+    /**
+     * Get if node expanded.
+     *
+     * @category TreeNode
+     * @return {boolean} If expanded.
+     */
+    TreeNode.prototype.expanded = function() {
+        return !this.itree.state.collapsed;
     };
 
     /**
@@ -350,7 +351,6 @@ function InspireTree(opts) {
         return paths;
     };
 
-
     /**
      * If node has any children.
      *
@@ -358,7 +358,7 @@ function InspireTree(opts) {
      * @return {boolean} If children.
      */
     TreeNode.prototype.hasChildren = function() {
-        return isArrayLike(this.children) && this.children.length;
+        return (isArrayLike(this.children) && this.children.length > 0);
     };
 
     /**
@@ -492,7 +492,7 @@ function InspireTree(opts) {
         var startingNode = this;
         var next;
 
-        if (isArrayLike(startingNode.children) && !isEmpty(startingNode.children)) {
+        if (startingNode.hasChildren()) {
             next = find(startingNode.children, function(child) {
                 return child.visible();
             });
@@ -557,15 +557,15 @@ function InspireTree(opts) {
         prev = startingNode.previousVisibleSiblingNode();
 
         // 2. If that sibling has children though, go there
-        if (prev && prev.children && !prev.itree.state.collapsed && prev.children.length) {
+        if (prev && prev.hasChildren() && !prev.collapsed()) {
             prev = findLast(prev.children, function(node) {
                 return node.visible();
             });
         }
 
         // 3. Parent
-        if (!prev && startingNode.itree.parent) {
-            prev = startingNode.itree.parent;
+        if (!prev && startingNode.hasParent()) {
+            prev = startingNode.getParent();
         }
 
         return prev;
@@ -578,9 +578,8 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object, if any.
      */
     TreeNode.prototype.previousVisibleSiblingNode = function() {
-        var context = (this.itree.parent ? this.itree.parent.children : tree.getNodes());
+        var context = (this.hasParent() ? this.getParent().children : tree.getNodes());
         var i = findIndex(context, { id: this.id });
-
         return findLast(slice(context, 0, i), function(node) {
             return node.visible();
         });
@@ -835,8 +834,9 @@ function InspireTree(opts) {
                 if (node.itree.state[flag]) {
                     flat.push(node);
                 }
-                else if (node.hasChildren()) {
-                    flat = flat.concat(node.children.flatten());
+
+                if (node.hasChildren()) {
+                    flat = flat.concat(node.children.flatten(flag));
                 }
             });
         }
@@ -844,25 +844,14 @@ function InspireTree(opts) {
         return flat;
     };
 
-    /**
-     * Hide all nodes in an array.
-     *
-     * @category TreeNodes
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.hide = function() {
-        dom.batch();
-        each(this, dom.hideNode);
-        dom.end();
-        return this;
-    };
-
     // Define methods we pass through to individual TreeNode objects
     each(['hide'], function(method) {
         TreeNodes.prototype[method] = function() {
+            dom.batch();
             each(this, function(node) {
                 node[method]();
             });
+            dom.end();
         };
     });
 
