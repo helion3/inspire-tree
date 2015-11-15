@@ -1220,6 +1220,11 @@ function InspireTree(opts) {
             // Emit raw data
             tree.emit('data.loaded', nodes);
 
+            // Clear and call rendering on existing data
+            if (model.length > 0) {
+                tree.removeAll();
+            }
+
             model = collectionToModel(nodes);
 
             tree.emit('model.loaded', model);
