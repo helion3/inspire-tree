@@ -18,7 +18,9 @@ our need for one - the only existing solution which met our *feature* needs was 
 - No external dependencies.
 - Load data directly, via promises, callbacks, etc.
 - Load child nodes upfront or dynamically.
+- Keyboard navigation.
 - Search by plain string, RegExp, custom matcher, or external resources (optional).
+- Sorting (optional).
 - Custom context menu (optional).
 - Drag and Drop (optional).
 - Virtual DOM for blazing fast change rendering.
