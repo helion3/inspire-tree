@@ -67,6 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var findIndex = __webpack_require__(33);
 	var findLast = __webpack_require__(34);
 	var get = __webpack_require__(37);
+	var isArray = __webpack_require__(7);
 	var isArrayLike = __webpack_require__(40);
 	var isEmpty = __webpack_require__(41);
 	var isFunction = __webpack_require__(42);
@@ -76,9 +77,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var map = __webpack_require__(46);
 	var remove = __webpack_require__(48);
 	var slice = __webpack_require__(50);
+	var sortBy = __webpack_require__(52);
 
 	// CSS
-	__webpack_require__(52);
+	__webpack_require__(55);
 
 	function InspireTree(opts) {
 	    if (!get(opts, 'target')) {
@@ -88,7 +90,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Assign defaults
 	    opts = defaultsDeep(opts, {
 	        contextMenu: false,
-	        dynamic: false
+	        dynamic: false,
+	        sort: false
 	    });
 
 	    // Cache some configs
@@ -98,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tree.config = opts;
 
 	    // Rendering
-	    var dom = new (__webpack_require__(61))(tree);
+	    var dom = new (__webpack_require__(64))(tree);
 
 	    /**
 	     * Represents a singe node object within the tree.
@@ -145,6 +148,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dom.applyChanges();
 
 	        return child;
+	    };
+
+	    /**
+	     * Get if node available.
+	     *
+	     * @category TreeNode
+	     * @return {boolean} If available.
+	     */
+	    TreeNode.prototype.available = function() {
+	        return (!this.hidden() && !this.removed());
 	    };
 
 	    /**
@@ -536,13 +549,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * and rerendering to the live DOM, next time applyChanges is called.
 	     *
 	     * @category TreeNode
-	     * @return {void}
+	     * @param {boolean} noRecursion Skip recursing up parent tree.
+	     * @return {TreeNode} Node object.
 	     */
-	    TreeNode.prototype.markDirty = function() {
-	        this.recurseUp(function(node) {
-	            node.itree.dirty = true;
-	            return node;
-	        });
+	    TreeNode.prototype.markDirty = function(noRecursion) {
+	        if (noRecursion) {
+	            this.itree.dirty = true;
+	        }
+	        else {
+	            this.recurseUp(function(node) {
+	                return node.markDirty(true);
+	            });
+	        }
+
+	        return this;
 	    };
 
 	    /**
@@ -854,9 +874,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * An Array-like collection of TreeNodes.
 	     *
 	     * @category TreeNodes
+	     * @param {array} array Array of TreeNode objects.
 	     * @return {TreeNodes} Collection of TreeNode
 	     */
-	    function TreeNodes() {};
+	    function TreeNodes(array) {
+	        var treeNodes = this;
+
+	        if (isArray(array)) {
+	            each(array, function(node) {
+	                treeNodes.push(node);
+	            });
+	        }
+	    };
 	    TreeNodes.prototype = Object.create(Array.prototype);
 	    TreeNodes.prototype.constructor = TreeNodes;
 
@@ -978,9 +1007,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Returns a new TreeNodes array of available nodes.
+	     *
+	     * See README.md for terminology.
+	     *
+	     * @category TreeNodes
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    TreeNodes.prototype.getAvailableNodes = function() {
+	        return this.reduce(function(node) {
+	            return node.available();
+	        });
+	    };
+
+	    /**
+	     * Returns a new TreeNodes array of all available nodes
+	     * at the deepest level (having no children).
+	     *
+	     * See README.md for terminology.
+	     *
+	     * @category TreeNodes
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    TreeNodes.prototype.getDeepestAvailableNodes = function() {
+	        return this.reduceDeep(function(node) {
+	            return (!node.hasChildren() && node.available());
+	        });
+	    };
+
+	    /**
 	     * Iterate down all nodes and any children.
 	     *
-	     * @category TreeNode
+	     * @category TreeNodes
 	     * @param {function} iteratee Iteratee function.
 	     * @return {TreeNodes} Resulting nodes.
 	     */
@@ -988,19 +1046,99 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return tree.recurseDown(this, iteratee);
 	    };
 
-	    // Methods can we map to each TreeNode
-	    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
-	    each(mapped, function(method) {
-	        // Map shallow to each TreeNode
+	    /**
+	     * Get a subset of nodes based on how they match the predicate function.
+	     *
+	     * @category TreeNodes
+	     * @param {function} predicate Predicate function.
+	     * @return {TreeNodes} Array of matching node objects.
+	     */
+	    TreeNodes.prototype.reduce = function(predicate) {
+	        var reduced = new TreeNodes();
+
+	        each(this, function(node) {
+	            if (predicate(node)) {
+	                reduced.push(node);
+	            }
+	        });
+
+	        return reduced;
+	    };
+
+	    /**
+	     * Get a subset of all descendant nodes based on how they match the predicate function.
+	     *
+	     * @category TreeNodes
+	     * @param {function} predicate Predicate function.
+	     * @return {TreeNodes} Array of matching node objects.
+	     */
+	    TreeNodes.prototype.reduceDeep = function(predicate) {
+	        var reduced = new TreeNodes();
+
+	        this.recurseDown(function(node) {
+	            if (predicate(node)) {
+	                reduced.push(node);
+	            }
+
+	            return node;
+	        });
+
+	        return reduced;
+	    };
+
+	    /**
+	     * Sorts all TreeNode objects in this collection.
+	     *
+	     * If no custom sorter given, the configured "sort" value will be used.
+	     *
+	     * @category TreeNodes
+	     * @param {string|function} sorter Sort function or property name.
+	     * @return {TreeNodes} Array of node obejcts.
+	     */
+	    TreeNodes.prototype.sort = function(sorter) {
+	        var nodes = this;
+
+	        if (tree.config.sort && !sorter) {
+	            sorter = tree.config.sort;
+	        }
+
+	        var sorted = sortBy(nodes, sorter);
+
+	        nodes.length = 0;
+	        each(sorted, function(node) {
+	            nodes.push(node);
+	        });
+
+	        return nodes;
+	    };
+
+	    /**
+	     * Map shallow to each TreeNode
+	     *
+	     * @private
+	     * @param {string} method Method name.
+	     * @return {void}
+	     */
+	    function mapToEach(method) {
 	        TreeNodes.prototype[method] = function() {
 	            dom.batch();
 	            each(this, function(node) {
 	                node[method]();
 	            });
 	            dom.end();
-	        };
 
-	        // Map deeply to all TreeNodes and children
+	            return this;
+	        };
+	    }
+
+	    /**
+	     * Map deeply to all TreeNodes and children
+	     *
+	     * @private
+	     * @param {string} method Method name.
+	     * @return {void}
+	     */
+	    function mapToEachDeeply(method) {
 	        TreeNodes.prototype[method + 'Deep'] = function() {
 	            dom.batch();
 	            tree.recurseDown(this, function(node) {
@@ -1008,8 +1146,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return node;
 	            });
 	            dom.end();
+
+	            return this;
 	        };
+	    }
+
+	    // Methods can we map to each/deeply TreeNode
+	    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
+	    each(mapped, function(method) {
+	        mapToEach(method);
+	        mapToEachDeeply(method);
 	    });
+
+	    // Methods can we map to each TreeNode
+	    each(['expandParents'], mapToEach);
 
 	    /**
 	     * Parses a raw collection of objects into a model used
@@ -1177,6 +1327,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Get all available nodes.
+	     *
+	     *  @category Tree
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    tree.getAvailableNodes = function() {
+	        return model.getAvailableNodes();
+	    };
+
+	    /**
+	     * Get all deepest available nodes.
+	     *
+	     * @category Tree
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    tree.getDeepestAvailableNodes = function() {
+	        return model.getDeepestAvailableNodes();
+	    };
+
+	    /**
 	     * Get a node.
 	     *
 	     * @category Tree
@@ -1209,13 +1379,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Get all nodes in a tree.
+	     * Get all nodes in a tree, or nodes for an array of IDs.
 	     *
 	     * @category Tree
+	     * @param {array} refs Array of ID references.
 	     * @return {TreeNodes} Array of node objects.
+	     * @example
+	     *
+	     * var all = tree.getNodes()
+	     * var some = tree.getNodes([1, 2, 3])
 	     */
-	    tree.getNodes = function() {
-	        return model;
+	    tree.getNodes = function(refs) {
+	        var nodes = model;
+
+	        if (isArray(refs)) {
+	            var found = new TreeNodes();
+
+	            each(refs, function(ref) {
+	                var node = tree.getNode(ref);
+	                if (node) {
+	                    found.push(node);
+	                }
+	            });
+
+	            nodes = found;
+	        }
+
+	        return nodes;
 	    };
 
 	    /**
@@ -1243,6 +1433,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var resolve = function(nodes) {
 	            // Emit raw data
 	            tree.emit('data.loaded', nodes);
+
+	            // Clear and call rendering on existing data
+	            if (model.length > 0) {
+	                tree.removeAll();
+	            }
+
+	            // Sort
+	            if (tree.config.sort) {
+	                nodes = sortBy(nodes, tree.config.sort);
+	            }
 
 	            model = collectionToModel(nodes);
 
@@ -7269,41 +7469,298 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * lodash 3.1.5 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+	var baseCallback = __webpack_require__(28),
+	    baseCompareAscending = __webpack_require__(53),
+	    baseEach = __webpack_require__(25),
+	    baseSortBy = __webpack_require__(54),
+	    isIterateeCall = __webpack_require__(10);
+
+	/**
+	 * Used by `_.sortBy` to compare transformed elements of a collection and stable
+	 * sort them in ascending order.
+	 *
+	 * @private
+	 * @param {Object} object The object to compare.
+	 * @param {Object} other The other object to compare.
+	 * @returns {number} Returns the sort order indicator for `object`.
+	 */
+	function compareAscending(object, other) {
+	  return baseCompareAscending(object.criteria, other.criteria) || (object.index - other.index);
+	}
+
+	/**
+	 * Used as the [maximum length](http://ecma-international.org/ecma-262/6.0/#sec-number.max_safe_integer)
+	 * of an array-like value.
+	 */
+	var MAX_SAFE_INTEGER = 9007199254740991;
+
+	/**
+	 * The base implementation of `_.map` without support for callback shorthands
+	 * and `this` binding.
+	 *
+	 * @private
+	 * @param {Array|Object|string} collection The collection to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @returns {Array} Returns the new mapped array.
+	 */
+	function baseMap(collection, iteratee) {
+	  var index = -1,
+	      result = isArrayLike(collection) ? Array(collection.length) : [];
+
+	  baseEach(collection, function(value, key, collection) {
+	    result[++index] = iteratee(value, key, collection);
+	  });
+	  return result;
+	}
+
+	/**
+	 * The base implementation of `_.property` without support for deep paths.
+	 *
+	 * @private
+	 * @param {string} key The key of the property to get.
+	 * @returns {Function} Returns the new function.
+	 */
+	function baseProperty(key) {
+	  return function(object) {
+	    return object == null ? undefined : object[key];
+	  };
+	}
+
+	/**
+	 * Gets the "length" property value of `object`.
+	 *
+	 * **Note:** This function is used to avoid a [JIT bug](https://bugs.webkit.org/show_bug.cgi?id=142792)
+	 * that affects Safari on at least iOS 8.1-8.3 ARM64.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @returns {*} Returns the "length" value.
+	 */
+	var getLength = baseProperty('length');
+
+	/**
+	 * Checks if `value` is array-like.
+	 *
+	 * @private
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+	 */
+	function isArrayLike(value) {
+	  return value != null && isLength(getLength(value));
+	}
+
+	/**
+	 * Checks if `value` is a valid array-like length.
+	 *
+	 * **Note:** This function is based on [`ToLength`](http://ecma-international.org/ecma-262/6.0/#sec-tolength).
+	 *
+	 * @private
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+	 */
+	function isLength(value) {
+	  return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+	}
+
+	/**
+	 * Creates an array of elements, sorted in ascending order by the results of
+	 * running each element in a collection through `iteratee`. This method performs
+	 * a stable sort, that is, it preserves the original sort order of equal elements.
+	 * The `iteratee` is bound to `thisArg` and invoked with three arguments:
+	 * (value, index|key, collection).
+	 *
+	 * If a property name is provided for `iteratee` the created `_.property`
+	 * style callback returns the property value of the given element.
+	 *
+	 * If a value is also provided for `thisArg` the created `_.matchesProperty`
+	 * style callback returns `true` for elements that have a matching property
+	 * value, else `false`.
+	 *
+	 * If an object is provided for `iteratee` the created `_.matches` style
+	 * callback returns `true` for elements that have the properties of the given
+	 * object, else `false`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Collection
+	 * @param {Array|Object|string} collection The collection to iterate over.
+	 * @param {Function|Object|string} [iteratee=_.identity] The function invoked
+	 *  per iteration.
+	 * @param {*} [thisArg] The `this` binding of `iteratee`.
+	 * @returns {Array} Returns the new sorted array.
+	 * @example
+	 *
+	 * _.sortBy([1, 2, 3], function(n) {
+	 *   return Math.sin(n);
+	 * });
+	 * // => [3, 1, 2]
+	 *
+	 * _.sortBy([1, 2, 3], function(n) {
+	 *   return this.sin(n);
+	 * }, Math);
+	 * // => [3, 1, 2]
+	 *
+	 * var users = [
+	 *   { 'user': 'fred' },
+	 *   { 'user': 'pebbles' },
+	 *   { 'user': 'barney' }
+	 * ];
+	 *
+	 * // using the `_.property` callback shorthand
+	 * _.pluck(_.sortBy(users, 'user'), 'user');
+	 * // => ['barney', 'fred', 'pebbles']
+	 */
+	function sortBy(collection, iteratee, thisArg) {
+	  if (collection == null) {
+	    return [];
+	  }
+	  if (thisArg && isIterateeCall(collection, iteratee, thisArg)) {
+	    iteratee = undefined;
+	  }
+	  var index = -1;
+	  iteratee = baseCallback(iteratee, thisArg, 3);
+
+	  var result = baseMap(collection, function(value, key, collection) {
+	    return { 'criteria': iteratee(value, key, collection), 'index': ++index, 'value': value };
+	  });
+	  return baseSortBy(result, compareAscending);
+	}
+
+	module.exports = sortBy;
+
+
+/***/ },
+/* 53 */
+/***/ function(module, exports) {
+
+	/**
+	 * lodash 3.0.2 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+
+	/**
+	 * The base implementation of `compareAscending` which compares values and
+	 * sorts them in ascending order without guaranteeing a stable sort.
+	 *
+	 * @private
+	 * @param {*} value The value to compare.
+	 * @param {*} other The other value to compare.
+	 * @returns {number} Returns the sort order indicator for `value`.
+	 */
+	function baseCompareAscending(value, other) {
+	  if (value !== other) {
+	    var valIsNull = value === null,
+	        valIsUndef = value === undefined,
+	        valIsReflexive = value === value;
+
+	    var othIsNull = other === null,
+	        othIsUndef = other === undefined,
+	        othIsReflexive = other === other;
+
+	    if ((value > other && !othIsNull) || !valIsReflexive ||
+	        (valIsNull && !othIsUndef && othIsReflexive) ||
+	        (valIsUndef && othIsReflexive)) {
+	      return 1;
+	    }
+	    if ((value < other && !valIsNull) || !othIsReflexive ||
+	        (othIsNull && !valIsUndef && valIsReflexive) ||
+	        (othIsUndef && valIsReflexive)) {
+	      return -1;
+	    }
+	  }
+	  return 0;
+	}
+
+	module.exports = baseCompareAscending;
+
+
+/***/ },
+/* 54 */
+/***/ function(module, exports) {
+
+	/**
+	 * lodash 3.0.0 (Custom Build) <https://lodash.com/>
+	 * Build: `lodash modern modularize exports="npm" -o ./`
+	 * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
+	 * Based on Underscore.js 1.7.0 <http://underscorejs.org/LICENSE>
+	 * Copyright 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	 * Available under MIT license <https://lodash.com/license>
+	 */
+
+	/**
+	 * The base implementation of `_.sortBy` and `_.sortByAll` which uses `comparer`
+	 * to define the sort order of `array` and replaces criteria objects with their
+	 * corresponding values.
+	 *
+	 * @private
+	 * @param {Array} array The array to sort.
+	 * @param {Function} comparer The function to define sort order.
+	 * @returns {Array} Returns `array`.
+	 */
+	function baseSortBy(array, comparer) {
+	  var length = array.length;
+
+	  array.sort(comparer);
+	  while (length--) {
+	    array[length] = array[length].value;
+	  }
+	  return array;
+	}
+
+	module.exports = baseSortBy;
+
+
+/***/ },
+/* 55 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 53 */,
-/* 54 */,
-/* 55 */,
 /* 56 */,
 /* 57 */,
 /* 58 */,
 /* 59 */,
 /* 60 */,
-/* 61 */
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	// Libs
-	var createElement = __webpack_require__(62);
+	var createElement = __webpack_require__(65);
 	var each = __webpack_require__(24);
-	var diff = __webpack_require__(75);
+	var diff = __webpack_require__(78);
 	var get = __webpack_require__(37);
-	var h = __webpack_require__(80);
+	var h = __webpack_require__(83);
 	var isArrayLike = __webpack_require__(40);
 	var isEmpty = __webpack_require__(41);
 	var isObject = __webpack_require__(44);
 	var isString = __webpack_require__(43);
-	var keyCodes = __webpack_require__(91);
-	var patch = __webpack_require__(93);
-	var transform = __webpack_require__(98);
-	var VCache = __webpack_require__(100);
-	var VArrayDirtyCompare = __webpack_require__(101);
-	var VDirtyCompare = __webpack_require__(102);
-	var VStateCompare = __webpack_require__(103);
+	var keyCodes = __webpack_require__(94);
+	var patch = __webpack_require__(96);
+	var transform = __webpack_require__(101);
+	var VCache = __webpack_require__(103);
+	var VArrayDirtyCompare = __webpack_require__(104);
+	var VDirtyCompare = __webpack_require__(105);
+	var VStateCompare = __webpack_require__(106);
 
 	module.exports = function InspireDOM(tree) {
 	    var $activeDropTarget;
@@ -7969,26 +8426,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 62 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createElement = __webpack_require__(63)
+	var createElement = __webpack_require__(66)
 
 	module.exports = createElement
 
 
 /***/ },
-/* 63 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var document = __webpack_require__(64)
+	var document = __webpack_require__(67)
 
-	var applyProperties = __webpack_require__(66)
+	var applyProperties = __webpack_require__(69)
 
-	var isVNode = __webpack_require__(69)
-	var isVText = __webpack_require__(71)
-	var isWidget = __webpack_require__(72)
-	var handleThunk = __webpack_require__(73)
+	var isVNode = __webpack_require__(72)
+	var isVText = __webpack_require__(74)
+	var isWidget = __webpack_require__(75)
+	var handleThunk = __webpack_require__(76)
 
 	module.exports = createElement
 
@@ -8030,12 +8487,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 64 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var topLevel = typeof global !== 'undefined' ? global :
 	    typeof window !== 'undefined' ? window : {}
-	var minDoc = __webpack_require__(65);
+	var minDoc = __webpack_require__(68);
 
 	if (typeof document !== 'undefined') {
 	    module.exports = document;
@@ -8052,17 +8509,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 65 */
+/* 68 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 66 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(67)
-	var isHook = __webpack_require__(68)
+	var isObject = __webpack_require__(70)
+	var isHook = __webpack_require__(71)
 
 	module.exports = applyProperties
 
@@ -8161,7 +8618,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 67 */
+/* 70 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8172,7 +8629,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 68 */
+/* 71 */
 /***/ function(module, exports) {
 
 	module.exports = isHook
@@ -8185,10 +8642,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 69 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(70)
+	var version = __webpack_require__(73)
 
 	module.exports = isVirtualNode
 
@@ -8198,17 +8655,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 70 */
+/* 73 */
 /***/ function(module, exports) {
 
 	module.exports = "2"
 
 
 /***/ },
-/* 71 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(70)
+	var version = __webpack_require__(73)
 
 	module.exports = isVirtualText
 
@@ -8218,7 +8675,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 72 */
+/* 75 */
 /***/ function(module, exports) {
 
 	module.exports = isWidget
@@ -8229,13 +8686,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 73 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isVNode = __webpack_require__(69)
-	var isVText = __webpack_require__(71)
-	var isWidget = __webpack_require__(72)
-	var isThunk = __webpack_require__(74)
+	var isVNode = __webpack_require__(72)
+	var isVText = __webpack_require__(74)
+	var isWidget = __webpack_require__(75)
+	var isThunk = __webpack_require__(77)
 
 	module.exports = handleThunk
 
@@ -8275,7 +8732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 74 */
+/* 77 */
 /***/ function(module, exports) {
 
 	module.exports = isThunk
@@ -8286,28 +8743,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 75 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var diff = __webpack_require__(76)
+	var diff = __webpack_require__(79)
 
 	module.exports = diff
 
 
 /***/ },
-/* 76 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isArray = __webpack_require__(77)
+	var isArray = __webpack_require__(80)
 
-	var VPatch = __webpack_require__(78)
-	var isVNode = __webpack_require__(69)
-	var isVText = __webpack_require__(71)
-	var isWidget = __webpack_require__(72)
-	var isThunk = __webpack_require__(74)
-	var handleThunk = __webpack_require__(73)
+	var VPatch = __webpack_require__(81)
+	var isVNode = __webpack_require__(72)
+	var isVText = __webpack_require__(74)
+	var isWidget = __webpack_require__(75)
+	var isThunk = __webpack_require__(77)
+	var handleThunk = __webpack_require__(76)
 
-	var diffProps = __webpack_require__(79)
+	var diffProps = __webpack_require__(82)
 
 	module.exports = diff
 
@@ -8728,7 +9185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 77 */
+/* 80 */
 /***/ function(module, exports) {
 
 	var nativeIsArray = Array.isArray
@@ -8742,10 +9199,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 78 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(70)
+	var version = __webpack_require__(73)
 
 	VirtualPatch.NONE = 0
 	VirtualPatch.VTEXT = 1
@@ -8770,11 +9227,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 79 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(67)
-	var isHook = __webpack_require__(68)
+	var isObject = __webpack_require__(70)
+	var isHook = __webpack_require__(71)
 
 	module.exports = diffProps
 
@@ -8834,33 +9291,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 80 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var h = __webpack_require__(81)
+	var h = __webpack_require__(84)
 
 	module.exports = h
 
 
 /***/ },
-/* 81 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isArray = __webpack_require__(77);
+	var isArray = __webpack_require__(80);
 
-	var VNode = __webpack_require__(82);
-	var VText = __webpack_require__(83);
-	var isVNode = __webpack_require__(69);
-	var isVText = __webpack_require__(71);
-	var isWidget = __webpack_require__(72);
-	var isHook = __webpack_require__(68);
-	var isVThunk = __webpack_require__(74);
+	var VNode = __webpack_require__(85);
+	var VText = __webpack_require__(86);
+	var isVNode = __webpack_require__(72);
+	var isVText = __webpack_require__(74);
+	var isWidget = __webpack_require__(75);
+	var isHook = __webpack_require__(71);
+	var isVThunk = __webpack_require__(77);
 
-	var parseTag = __webpack_require__(84);
-	var softSetHook = __webpack_require__(86);
-	var evHook = __webpack_require__(87);
+	var parseTag = __webpack_require__(87);
+	var softSetHook = __webpack_require__(89);
+	var evHook = __webpack_require__(90);
 
 	module.exports = h;
 
@@ -8986,14 +9443,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 82 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(70)
-	var isVNode = __webpack_require__(69)
-	var isWidget = __webpack_require__(72)
-	var isThunk = __webpack_require__(74)
-	var isVHook = __webpack_require__(68)
+	var version = __webpack_require__(73)
+	var isVNode = __webpack_require__(72)
+	var isWidget = __webpack_require__(75)
+	var isThunk = __webpack_require__(77)
+	var isVHook = __webpack_require__(71)
 
 	module.exports = VirtualNode
 
@@ -9064,10 +9521,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 83 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var version = __webpack_require__(70)
+	var version = __webpack_require__(73)
 
 	module.exports = VirtualText
 
@@ -9080,12 +9537,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 84 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var split = __webpack_require__(85);
+	var split = __webpack_require__(88);
 
 	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
 	var notClassId = /^\.|#/;
@@ -9140,7 +9597,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 85 */
+/* 88 */
 /***/ function(module, exports) {
 
 	/*!
@@ -9252,7 +9709,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 86 */
+/* 89 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9275,12 +9732,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 87 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EvStore = __webpack_require__(88);
+	var EvStore = __webpack_require__(91);
 
 	module.exports = EvHook;
 
@@ -9308,12 +9765,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 88 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var OneVersionConstraint = __webpack_require__(89);
+	var OneVersionConstraint = __webpack_require__(92);
 
 	var MY_VERSION = '7';
 	OneVersionConstraint('ev-store', MY_VERSION);
@@ -9334,12 +9791,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 89 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Individual = __webpack_require__(90);
+	var Individual = __webpack_require__(93);
 
 	module.exports = OneVersion;
 
@@ -9362,7 +9819,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 90 */
+/* 93 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -9388,37 +9845,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 91 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;!function(){"use strict";var E=__webpack_require__(92);!(__WEBPACK_AMD_DEFINE_RESULT__ = function(E){var N=function(E,N,U){Object.defineProperty(E,N,{value:U,enumerable:!1,configurable:!1,writable:!1})},U={};return N(U,"BACKSPACE",8),N(U,"TAB",9),N(U,"NUM_CENTER",12),N(U,"ENTER",13),N(U,"RETURN",13),N(U,"SHIFT",16),N(U,"CTRL",17),N(U,"ALT",18),N(U,"PAUSE",19),N(U,"CAPS_LOCK",20),N(U,"ESC",27),N(U,"SPACE",32),N(U,"PAGE_UP",33),N(U,"PAGE_DOWN",34),N(U,"END",35),N(U,"HOME",36),N(U,"LEFT",37),N(U,"UP",38),N(U,"RIGHT",39),N(U,"DOWN",40),N(U,"PRINT_SCREEN",44),N(U,"INSERT",45),N(U,"DELETE",46),N(U,"ZERO",48),N(U,"ONE",49),N(U,"TWO",50),N(U,"THREE",51),N(U,"FOUR",52),N(U,"FIVE",53),N(U,"SIX",54),N(U,"SEVEN",55),N(U,"EIGHT",56),N(U,"NINE",57),N(U,"A",65),N(U,"B",66),N(U,"C",67),N(U,"D",68),N(U,"E",69),N(U,"F",70),N(U,"G",71),N(U,"H",72),N(U,"I",73),N(U,"J",74),N(U,"K",75),N(U,"L",76),N(U,"M",77),N(U,"N",78),N(U,"O",79),N(U,"P",80),N(U,"Q",81),N(U,"R",82),N(U,"S",83),N(U,"T",84),N(U,"U",85),N(U,"V",86),N(U,"W",87),N(U,"X",88),N(U,"Y",89),N(U,"Z",90),N(U,"CONTEXT_MENU",93),N(U,"NUM_ZERO",96),N(U,"NUM_ONE",97),N(U,"NUM_TWO",98),N(U,"NUM_THREE",99),N(U,"NUM_FOUR",100),N(U,"NUM_FIVE",101),N(U,"NUM_SIX",102),N(U,"NUM_SEVEN",103),N(U,"NUM_EIGHT",104),N(U,"NUM_NINE",105),N(U,"NUM_MULTIPLY",106),N(U,"NUM_PLUS",107),N(U,"NUM_MINUS",109),N(U,"NUM_PERIOD",110),N(U,"NUM_DIVISION",111),N(U,"F1",112),N(U,"F2",113),N(U,"F3",114),N(U,"F4",115),N(U,"F5",116),N(U,"F6",117),N(U,"F7",118),N(U,"F8",119),N(U,"F9",120),N(U,"F10",121),N(U,"F11",122),N(U,"F12",123),U}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))}();
+	var __WEBPACK_AMD_DEFINE_RESULT__;!function(){"use strict";var E=__webpack_require__(95);!(__WEBPACK_AMD_DEFINE_RESULT__ = function(E){var N=function(E,N,U){Object.defineProperty(E,N,{value:U,enumerable:!1,configurable:!1,writable:!1})},U={};return N(U,"BACKSPACE",8),N(U,"TAB",9),N(U,"NUM_CENTER",12),N(U,"ENTER",13),N(U,"RETURN",13),N(U,"SHIFT",16),N(U,"CTRL",17),N(U,"ALT",18),N(U,"PAUSE",19),N(U,"CAPS_LOCK",20),N(U,"ESC",27),N(U,"SPACE",32),N(U,"PAGE_UP",33),N(U,"PAGE_DOWN",34),N(U,"END",35),N(U,"HOME",36),N(U,"LEFT",37),N(U,"UP",38),N(U,"RIGHT",39),N(U,"DOWN",40),N(U,"PRINT_SCREEN",44),N(U,"INSERT",45),N(U,"DELETE",46),N(U,"ZERO",48),N(U,"ONE",49),N(U,"TWO",50),N(U,"THREE",51),N(U,"FOUR",52),N(U,"FIVE",53),N(U,"SIX",54),N(U,"SEVEN",55),N(U,"EIGHT",56),N(U,"NINE",57),N(U,"A",65),N(U,"B",66),N(U,"C",67),N(U,"D",68),N(U,"E",69),N(U,"F",70),N(U,"G",71),N(U,"H",72),N(U,"I",73),N(U,"J",74),N(U,"K",75),N(U,"L",76),N(U,"M",77),N(U,"N",78),N(U,"O",79),N(U,"P",80),N(U,"Q",81),N(U,"R",82),N(U,"S",83),N(U,"T",84),N(U,"U",85),N(U,"V",86),N(U,"W",87),N(U,"X",88),N(U,"Y",89),N(U,"Z",90),N(U,"CONTEXT_MENU",93),N(U,"NUM_ZERO",96),N(U,"NUM_ONE",97),N(U,"NUM_TWO",98),N(U,"NUM_THREE",99),N(U,"NUM_FOUR",100),N(U,"NUM_FIVE",101),N(U,"NUM_SIX",102),N(U,"NUM_SEVEN",103),N(U,"NUM_EIGHT",104),N(U,"NUM_NINE",105),N(U,"NUM_MULTIPLY",106),N(U,"NUM_PLUS",107),N(U,"NUM_MINUS",109),N(U,"NUM_PERIOD",110),N(U,"NUM_DIVISION",111),N(U,"F1",112),N(U,"F2",113),N(U,"F3",114),N(U,"F4",115),N(U,"F5",116),N(U,"F6",117),N(U,"F7",118),N(U,"F8",119),N(U,"F9",120),N(U,"F10",121),N(U,"F11",122),N(U,"F12",123),U}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))}();
 
 /***/ },
-/* 92 */
+/* 95 */
 /***/ function(module, exports) {
 
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
 
 
 /***/ },
-/* 93 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var patch = __webpack_require__(94)
+	var patch = __webpack_require__(97)
 
 	module.exports = patch
 
 
 /***/ },
-/* 94 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var document = __webpack_require__(64)
-	var isArray = __webpack_require__(77)
+	var document = __webpack_require__(67)
+	var isArray = __webpack_require__(80)
 
-	var render = __webpack_require__(63)
-	var domIndex = __webpack_require__(95)
-	var patchOp = __webpack_require__(96)
+	var render = __webpack_require__(66)
+	var domIndex = __webpack_require__(98)
+	var patchOp = __webpack_require__(99)
 	module.exports = patch
 
 	function patch(rootNode, patches, renderOptions) {
@@ -9496,7 +9953,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 95 */
+/* 98 */
 /***/ function(module, exports) {
 
 	// Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
@@ -9587,15 +10044,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 96 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var applyProperties = __webpack_require__(66)
+	var applyProperties = __webpack_require__(69)
 
-	var isWidget = __webpack_require__(72)
-	var VPatch = __webpack_require__(78)
+	var isWidget = __webpack_require__(75)
+	var VPatch = __webpack_require__(81)
 
-	var updateWidget = __webpack_require__(97)
+	var updateWidget = __webpack_require__(100)
 
 	module.exports = applyPatch
 
@@ -9744,10 +10201,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 97 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isWidget = __webpack_require__(72)
+	var isWidget = __webpack_require__(75)
 
 	module.exports = updateWidget
 
@@ -9765,7 +10222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 98 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9778,7 +10235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var arrayEach = __webpack_require__(15),
 	    baseCallback = __webpack_require__(28),
-	    baseCreate = __webpack_require__(99),
+	    baseCreate = __webpack_require__(102),
 	    baseFor = __webpack_require__(16),
 	    isArray = __webpack_require__(7),
 	    isFunction = __webpack_require__(42),
@@ -9880,7 +10337,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 99 */
+/* 102 */
 /***/ function(module, exports) {
 
 	/**
@@ -9943,7 +10400,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 100 */
+/* 103 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9989,7 +10446,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 101 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10021,7 +10478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 102 */
+/* 105 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10041,7 +10498,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 103 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
