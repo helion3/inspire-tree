@@ -480,13 +480,20 @@ function InspireTree(opts) {
      * and rerendering to the live DOM, next time applyChanges is called.
      *
      * @category TreeNode
-     * @return {void}
+     * @param {boolean} noRecursion Skip recursing up parent tree.
+     * @return {TreeNode} Node object.
      */
-    TreeNode.prototype.markDirty = function() {
-        this.recurseUp(function(node) {
-            node.itree.dirty = true;
-            return node;
-        });
+    TreeNode.prototype.markDirty = function(noRecursion) {
+        if (noRecursion) {
+            this.itree.dirty = true;
+        }
+        else {
+            this.recurseUp(function(node) {
+                return node.markDirty(true);
+            });
+        }
+
+        return this;
     };
 
     /**
