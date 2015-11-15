@@ -985,6 +985,25 @@ function InspireTree(opts) {
     TreeNodes.prototype.reduce = function(predicate) {
         var reduced = new TreeNodes();
 
+        each(this, function(node) {
+            if (predicate(node)) {
+                reduced.push(node);
+            }
+        });
+
+        return reduced;
+    };
+
+    /**
+     * Get a subset of all descendant nodes based on how they match the predicate function.
+     *
+     * @category TreeNodes
+     * @param {function} predicate Predicate function.
+     * @return {TreeNodes} Array of matching node objects.
+     */
+    TreeNodes.prototype.reduceDeep = function(predicate) {
+        var reduced = new TreeNodes();
+
         this.recurseDown(function(node) {
             if (predicate(node)) {
                 reduced.push(node);

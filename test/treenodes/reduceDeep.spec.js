@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNodes.prototype.reduce', function() {
+describe('TreeNodes.prototype.reduceDeep', function() {
     var $tree;
     var tree;
 
@@ -28,13 +28,13 @@ describe('TreeNodes.prototype.reduce', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().reduce).to.be.a('function');
+        expect(tree.getNodes().reduceDeep).to.be.a('function');
     });
 
     it('returns only reduced nodes', function() {
-        expect(tree.getNodes().reduce(function(node) {
+        expect(tree.getNodes().reduceDeep(function(node) {
             return (node.company === 'Test');
-        })).to.have.length(1);
+        })).to.have.length(2);
     });
 
     after(helpers.clearDOM);
