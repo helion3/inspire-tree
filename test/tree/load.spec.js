@@ -75,5 +75,24 @@ describe('Tree.load', function() {
         expect(parent.children).to.have.length(1);
     });
 
+    it('applies custom sorter', function() {
+        var tree = new InspireTree({
+            target: '.tree',
+            data: [{
+                text: 'C'
+            }, {
+                text: 'B'
+            }, {
+                text: 'A'
+            }],
+            sort: 'text'
+        });
+
+        var nodes = tree.getNodes();
+        expect(nodes[0].text).to.equal('A');
+        expect(nodes[1].text).to.equal('B');
+        expect(nodes[2].text).to.equal('C');
+    });
+
     after(helpers.clearDOM);
 });

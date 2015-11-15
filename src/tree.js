@@ -21,6 +21,7 @@ var isString = require('lodash.isstring');
 var map = require('lodash.map');
 var remove = require('lodash.remove');
 var slice = require('lodash.slice');
+var sortBy = require('lodash.sortby');
 
 // CSS
 require('./tree.scss');
@@ -33,7 +34,8 @@ function InspireTree(opts) {
     // Assign defaults
     opts = defaultsDeep(opts, {
         contextMenu: false,
-        dynamic: false
+        dynamic: false,
+        sort: false
     });
 
     // Cache some configs
@@ -806,9 +808,18 @@ function InspireTree(opts) {
      * An Array-like collection of TreeNodes.
      *
      * @category TreeNodes
+     * @param {array} array Array of TreeNode objects.
      * @return {TreeNodes} Collection of TreeNode
      */
-    function TreeNodes() {};
+    function TreeNodes(array) {
+        var treeNodes = this;
+
+        if (isArray(array)) {
+            each(array, function(node) {
+                treeNodes.push(node);
+            });
+        }
+    };
     TreeNodes.prototype = Object.create(Array.prototype);
     TreeNodes.prototype.constructor = TreeNodes;
 
@@ -932,12 +943,38 @@ function InspireTree(opts) {
     /**
      * Iterate down all nodes and any children.
      *
-     * @category TreeNode
+     * @category TreeNodes
      * @param {function} iteratee Iteratee function.
      * @return {TreeNodes} Resulting nodes.
      */
     TreeNodes.prototype.recurseDown = function(iteratee) {
         return tree.recurseDown(this, iteratee);
+    };
+
+    /**
+     * Sorts all TreeNode objects in this collection.
+     *
+     * If no custom sorter given, the configured "sort" value will be used.
+     *
+     * @category TreeNodes
+     * @param {string|function} sorter Sort function or property name.
+     * @return {TreeNodes} Array of node obejcts.
+     */
+    TreeNodes.prototype.sort = function(sorter) {
+        var nodes = this;
+
+        if (tree.config.sort && !sorter) {
+            sorter = tree.config.sort;
+        }
+
+        var sorted = sortBy(nodes, sorter);
+
+        nodes.length = 0;
+        each(sorted, function(node) {
+            nodes.push(node);
+        });
+
+        return nodes;
     };
 
     // Methods can we map to each TreeNode
@@ -1223,6 +1260,11 @@ function InspireTree(opts) {
             // Clear and call rendering on existing data
             if (model.length > 0) {
                 tree.removeAll();
+            }
+
+            // Sort
+            if (tree.config.sort) {
+                nodes = sortBy(nodes, tree.config.sort);
             }
 
             model = collectionToModel(nodes);

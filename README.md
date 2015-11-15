@@ -58,6 +58,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 - **data** - An array, promise, or callback function.
 - **dynamic** - True if children will be loaded via `data` function.
 - **search** - Custom search callback (for external handling of entire search).
+- **sort** - Property to sort by, or a custom sort function.
 
 ## Node Configuration
 
