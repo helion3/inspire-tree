@@ -35,14 +35,28 @@ describe('TreeNodes dynamic methods', function() {
         expect(tree.getNodes().expandDeep).to.be.a('function');
     });
 
+    it('"expandParents"', function() {
+        expect(tree.getNodes().expandParents).to.be.a('function');
+    });
+
     it('"hide"', function() {
         expect(tree.getNodes().hide).to.be.a('function');
         expect(tree.getNodes().hideDeep).to.be.a('function');
     });
 
+    it('"restore"', function() {
+        expect(tree.getNodes().restore).to.be.a('function');
+        expect(tree.getNodes().restoreDeep).to.be.a('function');
+    });
+
     it('"show"', function() {
         expect(tree.getNodes().show).to.be.a('function');
         expect(tree.getNodes().showDeep).to.be.a('function');
+    });
+
+    it('"softRemove"', function() {
+        expect(tree.getNodes().softRemove).to.be.a('function');
+        expect(tree.getNodes().softRemoveDeep).to.be.a('function');
     });
 
     after(helpers.clearDOM);

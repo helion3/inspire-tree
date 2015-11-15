@@ -1056,10 +1056,14 @@ function InspireTree(opts) {
         return nodes;
     };
 
-    // Methods can we map to each TreeNode
-    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
-    each(mapped, function(method) {
-        // Map shallow to each TreeNode
+    /**
+     * Map shallow to each TreeNode
+     *
+     * @private
+     * @param {string} method Method name.
+     * @return {void}
+     */
+    function mapToEach(method) {
         TreeNodes.prototype[method] = function() {
             dom.batch();
             each(this, function(node) {
@@ -1069,8 +1073,16 @@ function InspireTree(opts) {
 
             return this;
         };
+    }
 
-        // Map deeply to all TreeNodes and children
+    /**
+     * Map deeply to all TreeNodes and children
+     *
+     * @private
+     * @param {string} method Method name.
+     * @return {void}
+     */
+    function mapToEachDeeply(method) {
         TreeNodes.prototype[method + 'Deep'] = function() {
             dom.batch();
             tree.recurseDown(this, function(node) {
@@ -1081,7 +1093,17 @@ function InspireTree(opts) {
 
             return this;
         };
+    }
+
+    // Methods can we map to each/deeply TreeNode
+    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
+    each(mapped, function(method) {
+        mapToEach(method);
+        mapToEachDeeply(method);
     });
+
+    // Methods can we map to each TreeNode
+    each(['expandParents'], mapToEach);
 
     /**
      * Parses a raw collection of objects into a model used
