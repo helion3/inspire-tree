@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Tree.addNodes', function() {
+describe('Tree.getNodes', function() {
     var $tree;
     var tree;
 
@@ -15,28 +15,27 @@ describe('Tree.addNodes', function() {
             target: $tree,
             data: [{
                 text: 'A',
-                id: 1,
-                children: []
+                id: 1
+            }, {
+                text: 'B',
+                id: 2
+            }, {
+                text: 'C',
+                id: 3
             }]
         });
     });
 
     it('exists', function() {
-        expect(tree.addNodes).to.be.a('function');
+        expect(tree.getNodes).to.be.a('function');
     });
 
-    it('adds new nodes', function() {
-        expect(tree.getNodes()).to.have.length(1);
-        expect($tree.find('li')).to.have.length(1);
-
-        tree.addNodes([{
-            text: 'B'
-        }, {
-            text: 'C'
-        }]);
-
+    it('returns all nodes', function() {
         expect(tree.getNodes()).to.have.length(3);
-        expect($tree.find('li')).to.have.length(3);
+    });
+
+    it('returns nodes matching IDs', function() {
+        expect(tree.getNodes([1, 3])).to.have.length(2);
     });
 
     after(helpers.clearDOM);

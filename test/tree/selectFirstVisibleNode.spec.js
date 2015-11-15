@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNode.prototype.selectFirstVisibleNode', function() {
+describe('Tree.selectFirstVisibleNode', function() {
     var $tree;
     var tree;
 

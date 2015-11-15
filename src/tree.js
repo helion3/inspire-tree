@@ -11,6 +11,7 @@ var find = require('lodash.find');
 var findIndex = require('lodash.findindex');
 var findLast = require('lodash.findlast');
 var get = require('lodash.get');
+var isArray = require('lodash.isarray');
 var isArrayLike = require('./lib/isArrayLike');
 var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
@@ -1164,13 +1165,33 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get all nodes in a tree.
+     * Get all nodes in a tree, or nodes for an array of IDs.
      *
      * @category Tree
+     * @param {array} refs Array of ID references.
      * @return {TreeNodes} Array of node objects.
+     * @example
+     *
+     * var all = tree.getNodes()
+     * var some = tree.getNodes([1, 2, 3])
      */
-    tree.getNodes = function() {
-        return model;
+    tree.getNodes = function(refs) {
+        var nodes = model;
+
+        if (isArray(refs)) {
+            var found = new TreeNodes();
+
+            each(refs, function(ref) {
+                var node = tree.getNode(ref);
+                if (node) {
+                    found.push(node);
+                }
+            });
+
+            nodes = found;
+        }
+
+        return nodes;
     };
 
     /**

@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNode.prototype.getSelectedNodes', function() {
+describe('Tree.getSelectedNodes', function() {
     var $tree;
     var tree;
 

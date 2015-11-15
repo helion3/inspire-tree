@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNode.prototype.addNode', function() {
+describe('Tree.addNode', function() {
     var $tree;
     var tree;
 
