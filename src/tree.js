@@ -95,6 +95,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get if node available.
+     *
+     * @category TreeNode
+     * @return {boolean} If available.
+     */
+    TreeNode.prototype.available = function() {
+        return (!this.hidden() && !this.removed());
+    };
+
+    /**
      * Clones this node.
      *
      * @category TreeNode
@@ -941,6 +951,20 @@ function InspireTree(opts) {
     };
 
     /**
+     * Returns a new TreeNodes array of available nodes.
+     *
+     * See README.md for terminology.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.getAvailableNodes = function() {
+        return this.reduce(function(node) {
+            return node.available();
+        });
+    };
+
+    /**
      * Iterate down all nodes and any children.
      *
      * @category TreeNodes
@@ -949,6 +973,27 @@ function InspireTree(opts) {
      */
     TreeNodes.prototype.recurseDown = function(iteratee) {
         return tree.recurseDown(this, iteratee);
+    };
+
+    /**
+     * Get a subset of nodes based on how they match the predicate function.
+     *
+     * @category TreeNodes
+     * @param {function} predicate Predicate function.
+     * @return {TreeNodes} Array of matching node objects.
+     */
+    TreeNodes.prototype.reduce = function(predicate) {
+        var reduced = new TreeNodes();
+
+        this.recurseDown(function(node) {
+            if (predicate(node)) {
+                reduced.push(node);
+            }
+
+            return node;
+        });
+
+        return reduced;
     };
 
     /**
@@ -1167,6 +1212,15 @@ function InspireTree(opts) {
     tree.clearSearch = function() {
         tree.getNodes().showDeep();
         tree.getNodes().collapseDeep();
+    };
+
+    /**
+     * Get all available nodes.
+     *
+     * @return {TreeNodes} Array of node objects.
+     */
+    tree.getAvailableNodes = function() {
+        return model.getAvailableNodes();
     };
 
     /**

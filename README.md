@@ -14,7 +14,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Robust API.
 - Events everywhere.
-- <60k minified, uncompressed.
+- ~60k minified, uncompressed.
 - No external dependencies.
 - Load data directly, via promises, callbacks, etc.
 - Load child nodes upfront or dynamically.
@@ -149,6 +149,11 @@ tree.getNodes().expandDeep();
 - restore
 - show
 - softRemove
+
+## Terminology
+
+- **available** - Node is not soft-removed or hidden.
+- **visible** - Node is visible to the user. It's ancestors are not hidden/collapsed/removed.
 
 ## Development
 
