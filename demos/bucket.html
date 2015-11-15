@@ -9,6 +9,13 @@
                 background: #eee;
             }
 
+            input {
+                font-size: 14px;
+                margin-bottom: 15px;
+                padding: 5px;
+                width: 290px
+            }
+
             .inspire-tree {
                 background: #fff;
                 border: 1px solid #bbb;
@@ -18,6 +25,10 @@
             }
 
             body > div {
+                overflow: hidden;
+            }
+
+            body > div > div {
                 float: left;
             }
 
@@ -32,14 +43,17 @@
         </style>
     </head>
     <body>
-        <div class="source-tree"></div>
-        <div class="toolbar">
-            <button class="move-one">&gt;</button>
-            <button class="revert-one">&lt;</button>
-            <button class="move-all">&gt;&gt;</button>
-            <button class="revert-all">&lt;&lt;</button>
+        <input type="text" placeholder="Search">
+        <div>
+            <div class="source-tree"></div>
+            <div class="toolbar">
+                <button class="move-one">&gt;</button>
+                <button class="revert-one">&lt;</button>
+                <button class="move-all">&gt;&gt;</button>
+                <button class="revert-all">&lt;&lt;</button>
+            </div>
+            <div class="dest-tree"></div>
         </div>
-        <div class="dest-tree"></div>
     </body>
     <script src="../bower_components/requirejs/require.js"></script>
     <script>
@@ -66,10 +80,18 @@
                 data: []
             });
 
+            $('input').on('keyup', _.debounce(function(event) {
+                sourceTree.search(this.value);
+            }, 500));
+
             $('.move-one').on('click', function() {
                 var selected = sourceTree.getSelectedNodes();
-                selected.softRemoveDeep();
-                selected.copy(true).to(destTree);
+                selected.softRemoveDeep().copy(true).to(destTree);
+
+                // If we moved a child node, expand nodes down to it
+                _.each(selected, function(node) {
+                    destTree.getNode(node.id).expandParents();
+                });
             });
 
             sourceTree.on('node.dblclick', function(event, node) {
@@ -78,18 +100,30 @@
 
             $('.revert-one').on('click', function() {
                 var selected = destTree.getSelectedNodes();
-                selected.softRemoveDeep();
-                selected.copy(true).to(sourceTree);
+                selected.softRemoveDeep().copy(true).to(sourceTree);
+
+                // Hide all parents without visible children
+                _.each(selected, function(selectedNode) {
+                    selectedNode.recurseUp(function(node) {
+                        if (node.hasParent()) {
+                            var parent = node.getParent();
+
+                            if (!parent.hasVisibleChildren()) {
+                                parent.hide();
+                            }
+                        }
+
+                        return node;
+                    });
+                });
             });
 
             $('.move-all').on('click', function() {
-                sourceTree.getNodes().copy().to(destTree);
-                sourceTree.getNodes().softRemoveDeep();
+                sourceTree.getNodes().softRemoveDeep().copy().to(destTree);
             });
 
             $('.revert-all').on('click', function() {
-                destTree.getNodes().copy().to(sourceTree);
-                destTree.getNodes().softRemoveDeep();
+                destTree.getNodes().softRemoveDeep().copy().to(sourceTree);
             });
         });
     </script>

@@ -942,6 +942,8 @@ function InspireTree(opts) {
                 node[method]();
             });
             dom.end();
+
+            return this;
         };
 
         // Map deeply to all TreeNodes and children
@@ -952,6 +954,8 @@ function InspireTree(opts) {
                 return node;
             });
             dom.end();
+
+            return this;
         };
     });
 
