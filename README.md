@@ -153,6 +153,7 @@ tree.getNodes().expandDeep();
 ## Terminology
 
 - **available** - Node is not soft-removed or hidden.
+- **deepest** - Nodes without any children.
 - **visible** - Node is visible to the user. It's ancestors are not hidden/collapsed/removed.
 
 ## Development

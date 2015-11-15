@@ -965,6 +965,21 @@ function InspireTree(opts) {
     };
 
     /**
+     * Returns a new TreeNodes array of all available nodes
+     * at the deepest level (having no children).
+     *
+     * See README.md for terminology.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.getDeepestAvailableNodes = function() {
+        return this.reduceDeep(function(node) {
+            return (!node.hasChildren() && node.available());
+        });
+    };
+
+    /**
      * Iterate down all nodes and any children.
      *
      * @category TreeNodes
@@ -1236,10 +1251,21 @@ function InspireTree(opts) {
     /**
      * Get all available nodes.
      *
+     *  @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     tree.getAvailableNodes = function() {
         return model.getAvailableNodes();
+    };
+
+    /**
+     * Get all deepest available nodes.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    tree.getDeepestAvailableNodes = function() {
+        return model.getDeepestAvailableNodes();
     };
 
     /**
