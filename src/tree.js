@@ -1137,6 +1137,11 @@ function InspireTree(opts) {
     function collectionToModel(array, parent) {
         var collection = new TreeNodes();
 
+        // Sort
+        if (tree.config.sort) {
+            array = sortBy(array, tree.config.sort);
+        }
+
         each(array, function(node) {
             collection.push(objectToModel(node, parent));
         });
@@ -1401,11 +1406,6 @@ function InspireTree(opts) {
             // Clear and call rendering on existing data
             if (model.length > 0) {
                 tree.removeAll();
-            }
-
-            // Sort
-            if (tree.config.sort) {
-                nodes = sortBy(nodes, tree.config.sort);
             }
 
             model = collectionToModel(nodes);
