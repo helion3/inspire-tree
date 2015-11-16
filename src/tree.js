@@ -128,7 +128,7 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.collapse = function() {
         var node = this;
-        if (!node.collapsed() && !isEmpty(get(node, 'children'))) {
+        if (!node.collapsed()) {
             node.itree.state.collapsed = true;
 
             tree.emit('node.collapsed', node);

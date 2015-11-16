@@ -19,6 +19,14 @@ describe('TreeNode.prototype.collapse', function() {
                 children: [{
                     text: 'AA'
                 }]
+            }, {
+                text: 'B',
+                id: 2,
+                itree: {
+                    state: {
+                        collapsed: false
+                    }
+                }
             }]
         });
     });
@@ -47,6 +55,13 @@ describe('TreeNode.prototype.collapse', function() {
 
         node.collapse();
         expect($node.hasClass('collapsed')).to.be.true;
+    });
+
+    it('allows collapse when children empty', function() {
+        var node = tree.getNode(2);
+
+        node.collapse();
+        expect(node.collapsed()).to.be.true;
     });
 
     after(helpers.clearDOM);
