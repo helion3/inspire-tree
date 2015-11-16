@@ -785,6 +785,26 @@ function InspireTree(opts) {
     };
 
     /**
+     * Toggles collapsed state.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.toggleCollapse = function() {
+        return (this.collapsed() ? this.expand() : this.collapse());
+    };
+
+    /**
+     * Toggles collapsed state.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.toggleSelect = function() {
+        return (this.selected() ? this.deselect() : this.select());
+    };
+
+    /**
      * Checks whether a node is visible to a user. Returns false
      * if it's hidden, or if any ancestor is hidden or collapsed.
      *

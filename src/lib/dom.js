@@ -223,27 +223,13 @@ module.exports = function InspireDOM(tree) {
                     }
                 },
                 onclick: function(event) {
-                    // Toggle selected state
-                    if (node.selected()) {
-                        node.deselect();
-                    }
-                    else {
-                        node.select();
-                    }
+                    node.toggleSelect();
 
                     // Emit
                     tree.emit('node.click', event, node);
                 },
                 ondblclick: function(event) {
-                    var node = getNodeFromTitleDOMElement(event.target);
-
-                    // Toggle selected state
-                    if (node.collapsed()) {
-                        node.expand();
-                    }
-                    else {
-                        node.collapse();
-                    }
+                    node.toggleCollapse();
 
                     // Emit
                     tree.emit('node.dblclick', event, node);
