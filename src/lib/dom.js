@@ -447,7 +447,7 @@ module.exports = function InspireDOM(tree) {
             $dragElement.parentNode.removeChild($dragElement);
 
             if ($activeDropTarget && $activeDropTarget.inspireTree) {
-                $activeDropTarget.inspireTree.addNode($dragNode.export());
+                $activeDropTarget.inspireTree.addNode($dragNode.copyHierarchy().export());
 
                 tree.emit('node.drop', $dragNode, $activeDropTarget);
             }

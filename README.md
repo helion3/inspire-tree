@@ -43,7 +43,7 @@ At a minimum you must provide a target DOM element and data / data loader.
 
 ```js
 var tree = new InspireTree({
-    target: ,
+    target: '.tree',
     data: $.getJSON('sample-data.json')
 });
 ```
