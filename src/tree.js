@@ -261,7 +261,7 @@ function InspireTree(opts) {
 
             tree.emit('node.expanded', node);
 
-            if (isDynamic) {
+            if (isDynamic && !node.hasChildren()) {
                 node.loadChildren();
             }
             else {
