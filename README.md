@@ -14,23 +14,28 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Robust API.
 - Events everywhere.
-- ~60k minified, uncompressed.
+- ~40k minified, uncompressed.
 - No external dependencies.
 - Load data directly, via promises, callbacks, etc.
 - Load child nodes upfront or dynamically.
-- Keyboard navigation.
 - Search by plain string, RegExp, custom matcher, or external resources (optional).
 - Sorting (optional).
-- Custom context menu (optional).
-- Drag and Drop (optional).
-- Virtual DOM for blazing fast change rendering.
-- Valid HTML structure.
-- Clean and easy-to-override CSS.
 - AMD and CommonJS support (RequireJS, Node/Webpack).
 - Supports multiple instances on a single page.
 - Includes functionality for moving nodes between instances.
 - Solid coverage by automated tests.
 - Built for IE10+.
+
+### DOM Renderer
+
+- Can be replaced with a custom renderer (see details below) for native framework support.
+- Virtual DOM for blazing fast change rendering.
+- Valid HTML structure.
+- Clean and easy-to-override CSS.
+- Keyboard navigation.
+- Custom context menu (optional).
+- Drag and Drop (optional).
+- ~20k minified, uncompressed.
 
 ### Installation
 
@@ -151,6 +156,39 @@ tree.getNodes().expandDeep();
 - restore
 - show
 - softRemove
+
+## Custom Rendering
+
+While Inspire Tree comes with a super-fast virtual DOM engine for element rendering, there are times
+when you need your own. Useful for integrating with existing engines like Angular, React, etc.
+
+1. Use only the `inspire-tree-core.js` file. This **excludes** our DOM code.
+2. Set the `renderer` option to a function which returns an object with the following methods. If/how you implement them
+depends on your rendering engine.
+
+- **applyChanges** - Called when *core* has altered something which will impact rendering.
+- **attach** - Called on load to attach to a given HTML element.
+- **batch** - Pause live rendering because multiple changes are coming.
+- **end** - Batch changes are done, rendering may resume.
+
+Again, you may not need to implement these depending on how you render the data.
+
+Your custom rendering function will be given the `tree` instance as an argument.
+
+```js
+var tree = new InspireTree({
+    target: '.tree',
+    data: [],
+    renderer: function(tree) {
+        return {
+            applyChanges: function() {},
+            attach: function() {},
+            batch: function() {},
+            end: function() {}
+        }
+    }
+});
+```
 
 ## Terminology
 

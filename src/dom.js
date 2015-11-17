@@ -6,17 +6,17 @@ var each = require('lodash.foreach');
 var diff = require('virtual-dom/diff');
 var get = require('lodash.get');
 var h = require('virtual-dom/h');
-var isArrayLike = require('./isArrayLike');
+var isArrayLike = require('./lib/isArrayLike');
 var isEmpty = require('lodash.isempty');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
 var keyCodes = require('key-codes');
 var patch = require('virtual-dom/patch');
 var transform = require('lodash.transform');
-var VCache = require('./VCache');
-var VArrayDirtyCompare = require('./VArrayDirtyCompare');
-var VDirtyCompare = require('./VDirtyCompare');
-var VStateCompare = require('./VStateCompare');
+var VCache = require('./lib/VCache');
+var VArrayDirtyCompare = require('./lib/VArrayDirtyCompare');
+var VDirtyCompare = require('./lib/VDirtyCompare');
+var VStateCompare = require('./lib/VStateCompare');
 
 module.exports = function InspireDOM(tree) {
     var $activeDropTarget;
@@ -31,6 +31,20 @@ module.exports = function InspireDOM(tree) {
     // Cache because we use in loops
     var isDynamic = tree.config.dynamic;
     var contextMenuChoices = tree.config.contextMenu;
+
+    /**
+     * Closes any open context menu.
+     *
+     * @category DOM
+     * @private
+     * @return {void}
+     */
+    function closeContextMenu() {
+        if (contextMenuNode) {
+            contextMenuNode.parentNode.removeChild(contextMenuNode);
+            contextMenuNode = null;
+        }
+    };
 
     /**
      * Creates a context menu unordered list.
@@ -62,7 +76,7 @@ module.exports = function InspireDOM(tree) {
         return h('li', [[
             h('a', {
                 onclick: function(event) {
-                    choice.handler(event, node, dom.closeContextMenu);
+                    choice.handler(event, node, closeContextMenu);
                 }
             }, choice.text)
         ]]);
@@ -583,7 +597,7 @@ module.exports = function InspireDOM(tree) {
 
         if (contextMenuChoices) {
             document.body.addEventListener('click', function() {
-                dom.closeContextMenu();
+                closeContextMenu();
             });
         }
 
@@ -624,20 +638,6 @@ module.exports = function InspireDOM(tree) {
         }
 
         batching++;
-    };
-
-    /**
-     * Closes any open context menu.
-     *
-     * @category DOM
-     * @private
-     * @return {void}
-     */
-    dom.closeContextMenu = function() {
-        if (contextMenuNode) {
-            contextMenuNode.parentNode.removeChild(contextMenuNode);
-            contextMenuNode = null;
-        }
     };
 
     /**

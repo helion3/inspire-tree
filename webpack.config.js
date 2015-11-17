@@ -2,8 +2,14 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var path = require('path');
 var webpack = require('webpack');
 
+// Are we minifying for prod?
 var PROD = process.env.PROD || '';
+
+// Which dir are we building to?
 var DIR = process.env.DIR || 'build';
+
+// Include DOM package?
+var EXCLUDE_DOM = process.env.EXCLUDE_DOM || '';
 
 var sassLoaders = [
     'css-loader',
@@ -12,11 +18,30 @@ var sassLoaders = [
 ];
 
 var plugins = [
-    new ExtractTextPlugin('[name].css')
+    new ExtractTextPlugin('[name].css'),
+    new webpack.DefinePlugin({
+        DOM: !Boolean(EXCLUDE_DOM)
+    })
 ];
 
 if (PROD) {
     plugins.push(new webpack.optimize.UglifyJsPlugin({ minimize: true }));
+}
+
+function getFileName() {
+    var base = '[name]';
+
+    if (EXCLUDE_DOM) {
+        base += '-core';
+    }
+
+    if (PROD) {
+        base += '.min';
+    }
+
+    base += '.js';
+
+    return base;
 }
 
 module.exports = {
@@ -24,7 +49,7 @@ module.exports = {
         'inspire-tree': './src/tree.js'
     },
     output: {
-        filename: PROD ? '[name].min.js' : '[name].js',
+        filename: getFileName(),
         path: DIR,
         library: 'InspireTree',
         libraryTarget: 'umd'

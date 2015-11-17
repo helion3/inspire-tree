@@ -31,21 +31,33 @@ function InspireTree(opts) {
         throw new TypeError('Property "target" is required, either an element or a selector.');
     }
 
+    var noop = function() {};
+    var tree = this;
+
     // Assign defaults
-    opts = defaultsDeep(opts, {
+    tree.config = defaultsDeep(opts, {
         contextMenu: false,
         dynamic: false,
         sort: false
     });
 
     // Cache some configs
-    var isDynamic = opts.dynamic;
-
-    var tree = this;
-    tree.config = opts;
+    var isDynamic = tree.config.dynamic;
 
     // Rendering
-    var dom = new (require('./lib/dom'))(tree);
+    var dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
+        applyChanges: noop,
+        attach: noop,
+        batch: noop,
+        end: noop
+    };
+
+    // Webpack has a DOM boolean that when false,
+    // allows us to exclude this library from our build.
+    // For those doing their own rendering, it's useless.
+    if (DOM) {
+        dom = new (require('./dom'))(tree);
+    }
 
     /**
      * Represents a singe node object within the tree.

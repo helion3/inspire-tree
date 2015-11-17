@@ -55,7 +55,7 @@
     "watch": "webpack --progress --colors --watch",
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
     "lint": "eslint test src *.js",
-    "deploy": "./lib/docs.js && DIR=dist webpack && PROD=1 DIR=dist webpack -p"
+    "deploy": "./lib/docs.js && DIR=dist webpack && PROD=1 DIR=dist webpack -p && EXCLUDE_DOM=1 DIR=dist webpack && EXCLUDE_DOM=1 PROD=1 DIR=dist webpack -p"
   },
   "main": "dist/inspire-tree.js",
   "files": [
