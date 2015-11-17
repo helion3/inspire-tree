@@ -184,7 +184,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.collapse = function() {
 	        var node = this;
-	        if (!node.collapsed() && !isEmpty(get(node, 'children'))) {
+	        if (!node.collapsed()) {
 	            node.itree.state.collapsed = true;
 
 	            tree.emit('node.collapsed', node);
@@ -317,7 +317,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            tree.emit('node.expanded', node);
 
-	            if (isDynamic) {
+	            if (isDynamic && !node.hasChildren()) {
 	                node.loadChildren();
 	            }
 	            else {
@@ -841,6 +841,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Toggles collapsed state.
+	     *
+	     * @category TreeNode
+	     * @return {TreeNode} Node object.
+	     */
+	    TreeNode.prototype.toggleCollapse = function() {
+	        return (this.collapsed() ? this.expand() : this.collapse());
+	    };
+
+	    /**
+	     * Toggles collapsed state.
+	     *
+	     * @category TreeNode
+	     * @return {TreeNode} Node object.
+	     */
+	    TreeNode.prototype.toggleSelect = function() {
+	        return (this.selected() ? this.deselect() : this.select());
+	    };
+
+	    /**
 	     * Checks whether a node is visible to a user. Returns false
 	     * if it's hidden, or if any ancestor is hidden or collapsed.
 	     *
@@ -1173,6 +1193,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function collectionToModel(array, parent) {
 	        var collection = new TreeNodes();
 
+	        // Sort
+	        if (tree.config.sort) {
+	            array = sortBy(array, tree.config.sort);
+	        }
+
 	        each(array, function(node) {
 	            collection.push(objectToModel(node, parent));
 	        });
@@ -1439,11 +1464,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                tree.removeAll();
 	            }
 
-	            // Sort
-	            if (tree.config.sort) {
-	                nodes = sortBy(nodes, tree.config.sort);
-	            }
-
 	            model = collectionToModel(nodes);
 
 	            tree.emit('model.loaded', model);
@@ -1644,6 +1664,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Connect to our target DOM element
 	    dom.attach(tree.config.target);
+	    tree.emit('tree.ready');
 
 	    // Load initial user data
 	    data.load(tree.config.data);
@@ -7967,27 +7988,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                },
 	                onclick: function(event) {
-	                    // Toggle selected state
-	                    if (node.selected()) {
-	                        node.deselect();
-	                    }
-	                    else {
-	                        node.select();
-	                    }
+	                    node.toggleSelect();
 
 	                    // Emit
 	                    tree.emit('node.click', event, node);
 	                },
 	                ondblclick: function(event) {
-	                    var node = getNodeFromTitleDOMElement(event.target);
-
-	                    // Toggle selected state
-	                    if (node.collapsed()) {
-	                        node.expand();
-	                    }
-	                    else {
-	                        node.collapse();
-	                    }
+	                    node.toggleCollapse();
 
 	                    // Emit
 	                    tree.emit('node.dblclick', event, node);
@@ -8138,15 +8145,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                case keyCodes.DOWN:
 	                    moveSelectionDownFrom(focusedNode);
 	                    break;
-	                case keyCodes.ENTER: {
-	                    if (focusedNode.collapsed()) {
-	                        focusedNode.expand();
-	                    }
-	                    else {
-	                        focusedNode.collapse();
-	                    }
+	                case keyCodes.ENTER:
+	                    focusedNode.toggleCollapse();
 	                    break;
-	                }
 	                default:
 	            }
 	        }
@@ -8205,7 +8206,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            $dragElement.parentNode.removeChild($dragElement);
 
 	            if ($activeDropTarget && $activeDropTarget.inspireTree) {
-	                $activeDropTarget.inspireTree.addNode($dragNode.export());
+	                $activeDropTarget.inspireTree.addNode($dragNode.copyHierarchy().export());
 
 	                tree.emit('node.drop', $dragNode, $activeDropTarget);
 	            }
@@ -8293,8 +8294,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!rootNode) {
 	            rootNode = createElement(newOl);
 	            $target.appendChild(rootNode);
-
-	            tree.emit('tree.ready');
 	        }
 	        else {
 	            var patches = diff(ol, newOl);
