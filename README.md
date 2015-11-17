@@ -164,6 +164,8 @@ tree.getNodes().expandDeep();
 
 ## Custom Rendering
 
+[AngularJS Demo](http://helion3.com/inspire-tree/demos/angular.html)
+
 While Inspire Tree comes with a super-fast virtual DOM engine for element rendering, there are times
 when you need your own. Useful for integrating with existing engines like Angular, React, etc.
 

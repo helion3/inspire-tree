@@ -23,6 +23,7 @@
   "devDependencies": {
     "requirejs": "~2.1.20",
     "lodash": "~3.10.1",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "angular": "~1.4.7"
   }
 }

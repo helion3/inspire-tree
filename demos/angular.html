@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
+        <link rel="stylesheet" href="demo.css" />
+        <style>
+            /* Angular directives require an extra DIV */
+            .collapsed > div > ol {
+                display: none;
+            }
+
+            li > div > .title-wrap {
+                position: relative;
+                z-index: 2;
+            }
+
+            .selected > div > .wholerow {
+                background: #a4eaf5;
+            }
+        </style>
+    </head>
+    <body ng-controller="TestController">
+        <p>This demo replaces the default inspire-tree DOM renderer with an <a href="https://github.com/helion3/inspire-tree/blob/master/connectors/angular/inspire-tree.js">AngularJS-native directive</a>.</p>
+        <div>
+            <inspire-tree options="sourceOptions"></inspire-tree>
+            <div class="toolbar">
+                <button ng-click="moveOne()">&gt;</button>
+                <button ng-click="revertOne()">&lt;</button>
+                <button ng-click="moveAll()">&gt;&gt;</button>
+                <button ng-click="revertAll()">&lt;&lt;</button>
+            </div>
+            <inspire-tree options="destOptions"></inspire-tree>
+        </div>
+    </body>
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+            paths: {
+                angular: '../bower_components/angular/angular.min',
+                inspireTree: '../build/inspire-tree-core',
+                ngInspireTree: '../connectors/angular/inspire-tree',
+                lodash: '../bower_components/lodash/lodash.min'
+            },
+            shim: {
+                angular: {
+                    exports: 'angular'
+                }
+            }
+        });
+
+        require([
+            'angular',
+            'lodash',
+            'ngInspireTree'
+        ], function(angular, _) {
+            var module = angular.module('inspire', ['ngInspireTree']);
+
+            module.controller('TestController', ['$http', '$scope', function($http, $scope) {
+                var sourceTree;
+                var destTree;
+
+                $scope.sourceOptions = {
+                    data: function(node, resolve, reject) {
+                        var res = $http.get('sample-data/full.json').then(function(response) {
+                            resolve(response.data);
+                        }).catch(reject);
+                    },
+                    onRegisterApi: function(api) {
+                        sourceTree = api;
+                    }
+                }
+
+                $scope.destOptions = {
+                    data: [],
+                    onRegisterApi: function(api) {
+                        destTree = api;
+                    }
+                }
+
+                $scope.moveOne = function() {
+                    var selected = sourceTree.getSelectedNodes();
+                    selected.softRemoveDeep().copy(true).to(destTree);
+                    destTree.getNodes(_.pluck(selected, 'id')).expandParents();
+                };
+
+                $scope.revertOne = function() {
+                    var selected = destTree.getSelectedNodes();
+                    selected.softRemoveDeep().copy(true).to(sourceTree);
+
+                    // Hide all parents without visible children
+                    _.each(selected, function(selectedNode) {
+                        selectedNode.recurseUp(function(node) {
+                            if (node.hasParent()) {
+                                var parent = node.getParent();
+
+                                if (!parent.hasVisibleChildren()) {
+                                    parent.hide();
+                                }
+                            }
+
+                            return node;
+                        });
+                    });
+                };
+
+                $scope.moveAll = function() {
+                    sourceTree.getNodes().softRemoveDeep().copy().to(destTree);
+                };
+
+                $scope.revertAll = function() {
+                    destTree.getNodes().softRemoveDeep().copy().to(sourceTree);
+                };
+            }]);
+
+            // Bootstrap the SAMMWeb application
+            angular.element(document).ready(function() {
+                angular.bootstrap(document, ['inspire']);
+            });
+        });
+    </script>
+</html>

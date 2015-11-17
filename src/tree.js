@@ -39,6 +39,7 @@ function InspireTree(opts) {
         dragTargets: false,
         dynamic: false,
         multiselect: false,
+        renderer: false,
         search: false,
         sort: false,
         tabindex: -1
