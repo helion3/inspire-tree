@@ -1608,6 +1608,7 @@ function InspireTree(opts) {
 
     // Connect to our target DOM element
     dom.attach(tree.config.target);
+    tree.emit('tree.ready');
 
     // Load initial user data
     data.load(tree.config.data);

@@ -380,15 +380,9 @@ module.exports = function InspireDOM(tree) {
                 case keyCodes.DOWN:
                     moveSelectionDownFrom(focusedNode);
                     break;
-                case keyCodes.ENTER: {
-                    if (focusedNode.collapsed()) {
-                        focusedNode.expand();
-                    }
-                    else {
-                        focusedNode.collapse();
-                    }
+                case keyCodes.ENTER:
+                    focusedNode.toggleCollapse();
                     break;
-                }
                 default:
             }
         }
@@ -535,8 +529,6 @@ module.exports = function InspireDOM(tree) {
         if (!rootNode) {
             rootNode = createElement(newOl);
             $target.appendChild(rootNode);
-
-            tree.emit('tree.ready');
         }
         else {
             var patches = diff(ol, newOl);
