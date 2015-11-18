@@ -715,7 +715,11 @@ function InspireTree(opts) {
         if (!node.selected()) {
             // Batch selection changes
             dom.batch();
-            tree.getNodes().deselectDeep();
+
+            if (!tree.config.multiselect) {
+                tree.getNodes().deselectDeep();
+            }
+
             node.itree.state.selected = true;
 
             // Emit this event

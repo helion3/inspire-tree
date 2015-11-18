@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
+        <style>
+            body {
+                background: #eee;
+            }
+
+            .inspire-tree {
+                background: #fff;
+                border: 1px solid #bbb;
+                border-radius: 2px;
+                min-height: 400px;
+                width: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="tree"></div>
+        <button class="log-selected">Log Selected</button>
+        <button class="clear-selected">Clear Selected</button>
+    </body>
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+            paths: {
+                jquery: '../bower_components/jquery/dist/jquery.min',
+                inspireTree: '../build/inspire-tree',
+                lodash: '../bower_components/lodash/lodash.min'
+            }
+        });
+
+        require([
+            'jquery',
+            'lodash',
+            'inspireTree'
+        ], function($, _, InspireTree) {
+            var tree = new InspireTree({
+                target: '.tree',
+                data: $.getJSON('../sample-data/full.json'),
+                multiselect: true
+            });
+
+            $('.log-selected').on('click', function() {
+                console.log(tree.getSelectedNodes());
+            });
+
+            $('.clear-selected').on('click', function() {
+                tree.deselectAll();
+            });
+        });
+    </script>
+</html>

@@ -53,5 +53,14 @@ describe('TreeNode.prototype.select', function() {
         expect($node.hasClass('selected')).to.be.true;
     });
 
+    it('allows multiple select', function() {
+        tree.config.multiselect = true;
+
+        tree.getNode(1).select();
+        tree.getNode(2).select();
+
+        expect(tree.getSelectedNodes()).to.have.length(2);
+    });
+
     after(helpers.clearDOM);
 });
