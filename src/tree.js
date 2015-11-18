@@ -10,7 +10,6 @@ var EventEmitter = require('eventemitter2');
 var find = require('lodash.find');
 var findIndex = require('lodash.findindex');
 var findLast = require('lodash.findlast');
-var get = require('lodash.get');
 var isArray = require('lodash.isarray');
 var isArrayLike = require('./lib/isArrayLike');
 var isEmpty = require('lodash.isempty');
@@ -27,7 +26,7 @@ var sortBy = require('lodash.sortby');
 require('./tree.scss');
 
 function InspireTree(opts) {
-    if (!get(opts, 'target')) {
+    if (!isObject(opts) || !opts.target) {
         throw new TypeError('Property "target" is required, either an element or a selector.');
     }
 
@@ -37,8 +36,12 @@ function InspireTree(opts) {
     // Assign defaults
     tree.config = defaultsDeep(opts, {
         contextMenu: false,
+        dragTargets: false,
         dynamic: false,
-        sort: false
+        multiselect: false,
+        search: false,
+        sort: false,
+        tabindex: -1
     });
 
     // Cache some configs
@@ -265,7 +268,7 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.expand = function() {
         var node = this;
-        var allow = (!isEmpty(get(node, 'children')) || isDynamic);
+        var allow = (node.hasChildren() || isDynamic);
 
         if (allow && (node.collapsed() || node.hidden())) {
             node.itree.state.collapsed = false;

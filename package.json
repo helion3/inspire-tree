@@ -29,7 +29,6 @@
     "lodash.findindex": "^3.2.1",
     "lodash.findlast": "^3.2.1",
     "lodash.foreach": "^3.0.3",
-    "lodash.get": "^3.7.0",
     "lodash.isarray": "^3.0.4",
     "lodash.isempty": "^3.0.4",
     "lodash.isfunction": "^3.0.6",

@@ -62,11 +62,15 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 ## Tree Configuration
 
-- **target** - An Element, selector, or jQuery object.
 - **data** - An array, promise, or callback function.
+- **dragTargets** - Array of other tree elements which accept drag/drop.
 - **dynamic** - True if children will be loaded via `data` function.
+- **multiselect** - Allow multiple nodes to be selected at a time.
+- **renderer** - Function which returns a custom renderer (see below).
 - **search** - Custom search callback (for external handling of entire search).
 - **sort** - Property to sort by, or a custom sort function.
+- **tabindex** - Define a tab index for the tree container (used for key nav).
+- **target** - An Element, selector, or jQuery object.
 
 ## Node Configuration
 

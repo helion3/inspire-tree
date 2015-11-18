@@ -4,7 +4,6 @@
 var createElement = require('virtual-dom/create-element');
 var each = require('lodash.foreach');
 var diff = require('virtual-dom/diff');
-var get = require('lodash.get');
 var h = require('virtual-dom/h');
 var isArrayLike = require('./lib/isArrayLike');
 var isEmpty = require('lodash.isempty');
@@ -590,7 +589,7 @@ module.exports = function InspireDOM(tree) {
         }
 
         $target.className += ' inspire-tree';
-        $target.setAttribute('tabindex', get(tree, 'config.tabindex') || 0);
+        $target.setAttribute('tabindex', tree.config.tabindex || -1);
 
         // Handle keyboard interaction
         $target.addEventListener('keyup', keyboardListener);
@@ -601,7 +600,7 @@ module.exports = function InspireDOM(tree) {
             });
         }
 
-        var dragTargetSelectors = get(tree, 'config.dragTargets');
+        var dragTargetSelectors = tree.config.dragTargets;
         if (!isEmpty(dragTargetSelectors)) {
             each(dragTargetSelectors, function(selector) {
                 var dropTarget = getElement(selector);
