@@ -142,10 +142,10 @@ module.exports = function InspireDOM(tree) {
                 createTitleContainer(node)
             ];
 
-            if (!isEmpty(node.children)) {
+            if (node.hasChildren()) {
                 contents.push(createOrderedList(node.children));
             }
-            else if (isDynamic && isArrayLike(node.children)) {
+            else if (isDynamic) {
                 contents.push(createEmptyListItemNode());
             }
 
@@ -268,7 +268,7 @@ module.exports = function InspireDOM(tree) {
 
         return new VCache({
             hasVisibleChildren: hasVisibleChildren,
-            collapsed: node.itree.state.collapsed
+            collapsed: node.collapsed()
         }, VStateCompare, function() {
             var contents = [];
 
@@ -291,18 +291,12 @@ module.exports = function InspireDOM(tree) {
      */
     function createToggleAnchor(node) {
         return new VCache({
-            collapsed: node.itree.state.collapsed
+            collapsed: node.collapsed()
         }, VStateCompare, function(previous, current) {
             var caret = (current.state.collapsed ? '.icon-caret' : '.icon-caret-down');
 
             return h('a.toggle.icon' + caret, { onclick: function() {
-                // Toggle selected state
-                if (node.collapsed()) {
-                    node.expand();
-                }
-                else {
-                    node.collapse();
-                }
+                node.toggleCollapse();
             } });
         });
     }

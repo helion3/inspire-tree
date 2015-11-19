@@ -309,7 +309,7 @@ function InspireTree(opts) {
      * @return {boolean} If expanded.
      */
     TreeNode.prototype.expanded = function() {
-        return !this.itree.state.collapsed;
+        return !this.collapsed();
     };
 
     /**
@@ -1252,7 +1252,7 @@ function InspireTree(opts) {
         // Wrap
         object = assign(new TreeNode(), object);
 
-        if (isArrayLike(object.children) && object.children.length) {
+        if (object.hasChildren()) {
             object.children = collectionToModel(object.children, object);
         }
 
@@ -1354,7 +1354,7 @@ function InspireTree(opts) {
                 node = item;
             }
 
-            if (!node && isArrayLike(item.children) && !isEmpty(item.children)) {
+            if (!node && item.hasChildren()) {
                 node = tree.getNode(id, item.children);
             }
 
