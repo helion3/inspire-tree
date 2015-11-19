@@ -1,0 +1,64 @@
+body {
+    background: #eee;
+    font-family: sans-serif;
+}
+
+article {
+    margin: 0 auto;
+    width: 960px;
+}
+
+section {
+    overflow: hidden;
+}
+
+input {
+    font-size: 14px;
+    margin-bottom: 15px;
+    padding: 5px;
+    width: 290px
+}
+
+body > div {
+    overflow: hidden;
+}
+
+body > div > div {
+    float: left;
+}
+
+.toolbar {
+    width: 50px;
+}
+
+.toolbar button {
+    display: block;
+    margin: 0 auto;
+}
+
+.wrap, .log {
+    float: left;
+    width: 48%;
+}
+
+.log {
+    float: right;
+    max-height: 500px;
+    overflow: auto;
+}
+
+.log ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.inspire-tree {
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    max-width: 500px;
+    min-height: 400px;
+    min-width: 300px;
+}
