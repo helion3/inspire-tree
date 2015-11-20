@@ -278,7 +278,7 @@ module.exports = function InspireDOM(tree) {
 
             contents.push(createTitleAnchor(node, hasVisibleChildren));
 
-            return h('div', contents);
+            return h('div.title-wrap', contents);
         });
     };
 

@@ -1,15 +1,14 @@
-@font-face {
-    font-family: 'itree';
-    src: url('../fonts/itree.eot?bhulrm');
-    src: url('../fonts/itree.eot?bhulrm#iefix') format('embedded-opentype'),
-         url('../fonts/itree.ttf?bhulrm') format('truetype'),
-         url('../fonts/itree.woff?bhulrm') format('woff'),
-         url('../fonts/itree.svg?bhulrm#icomoon') format('svg');
-    font-weight: normal;
-    font-style: normal;
+@mixin icon-caret($color: #222) {
+    background-image: url('data:image/svg+xml;charset=utf-8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 32 32"><path fill="#{$color}" d="M6 4l20 12-20 12z"></path></svg>');
 }
 
-/* ~~~~~~~@ Tree Theme @~~~~~~~ */
+@mixin icon-file-empty($color: #ccc) {
+    background-image: url('data:image/svg+xml;charset=utf-8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 32 32"><path fill="#{$color}" d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path></svg>');
+}
+
+@mixin icon-folder($color: #ccc) {
+    background-image: url('data:image/svg+xml;charset=utf-8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 32 32"><path fill="#{$color}" d="M14 4l4 4h14v22h-32v-26z"></path></svg>');
+}
 
 .inspire-tree {
     font: 400 12px Helvetica Nueue, Verdana, sans-serif;
@@ -18,26 +17,22 @@
         outline: none;
     }
 
-    &.drop-target {
-        border: 1px solid #2dadc5;
-    }
-
+    /* ~~@@@~~~~~ Icons ~~~~~@@@~~ */
     .icon:before {
+        background-repeat: no-repeat;
         content: '';
         display: inline-block;
-        font-family: 'itree';
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        font-style: normal;
-        font-variant: normal;
-        font-weight: normal;
-        line-height: 1;
-        speak: none;
-        text-transform: none;
+        fill: currentColor;
+        height: 14px;
+        width: 14px;
+    }
+
+    .icon-folder:before {
+        @include icon-folder;
     }
 
     .icon-caret:before {
-        content: '\e800';
+        @include icon-caret;
     }
 
     .icon-caret-down:before {
@@ -46,24 +41,27 @@
     }
 
     .icon-file-empty:before {
-        content: '\e801';
+        @include icon-file-empty;
     }
 
-    .icon-folder:before {
-        content: '\e802';
+    .selected > .title-wrap {
+        .icon-folder:before {
+            @include icon-folder(#2dadc5);
+        }
+
+        .icon-file-empty:before {
+            @include icon-file-empty(#2dadc5);
+        }
     }
 
-    .icon-folder-open:before {
-        content: '\e803';
-    }
-
-    .loading > div > .title:before {
+    .loading > .title-wrap .title:before {
         background: url('../img/spinner.gif') 0 0 no-repeat;
         content: '';
         height: 14px;
         width: 14px;
     }
 
+    /* ~~@@@~~~~~ Lists ~~~~~@@@~~ */
     > ol {
         position: relative;
     }
@@ -82,10 +80,6 @@
         display: none;
     }
 
-    .selected > .wholerow {
-        background: #a4eaf5;
-    }
-
     a {
         cursor: default;
         display: block;
@@ -93,9 +87,24 @@
         line-height: 25px;
     }
 
-    li > div {
+    li > .title-wrap {
         position: relative;
         z-index: 2;
+    }
+
+    /* ~~@@@~~~~~ Node Content ~~~~~@@@~~ */
+    .toggle {
+        height: 25px;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 25px;
+
+        &:before {
+            left: 3px;
+            position: relative;
+            top: 3px;
+        }
     }
 
     .title {
@@ -106,7 +115,6 @@
         white-space: nowrap;
 
         &:before {
-            color: #ccc;
             left: -6px;
             position: relative;
             top: -2px;
@@ -114,20 +122,7 @@
         }
     }
 
-    .selected > div > .title:before {
-        color: #2dadc5;
-    }
-
-    .toggle, .toggle:before {
-        font-size: 16px;
-        height: 25px;
-        left: 0;
-        line-height: 25px;
-        position: absolute;
-        text-align: center;
-        width: 25px;
-    }
-
+    /* ~~@@@~~~~~ Wholerow ~~~~~@@@~~ */
     .wholerow {
         height: 25px;
         left: 0;
@@ -136,12 +131,22 @@
         z-index: 1;
     }
 
+    .selected > .wholerow {
+        background: #a4eaf5;
+    }
+
+    /* ~~@@@~~~~~ Drag/Drop ~~~~~@@@~~ */
     .dragging {
         position: fixed;
         z-index: 5000;
     }
+
+    &.drop-target {
+        border: 1px solid #2dadc5;
+    }
 }
 
+/* ~~@@@~~~~~ Context Menu ~~~~~@@@~~ */
 .itree-menu {
     background: #ddd;
     border: 1px solid darken(#ddd, 10%);

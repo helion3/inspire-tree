@@ -74,9 +74,6 @@ module.exports = {
             test: /\.eot/,
             loader: 'file'
         }, {
-            test: /\.svg/,
-            loader: 'file'
-        }, {
             test: /\.png/,
             loader: 'file'
         }, {
