@@ -4,7 +4,7 @@ module.exports = function(config) {
     config.set({
         files: [
             {
-                pattern: 'sample-data/*.json',
+                pattern: 'demos/sample-data/*.json',
                 included: false
             },
             'bower_components/jquery/dist/jquery.js',

@@ -30,7 +30,7 @@
         ], function($, _, InspireTree) {
             var tree = new InspireTree({
                 target: '.tree',
-                data: $.getJSON('../sample-data/full.json')
+                data: $.getJSON('sample-data/full.json')
             });
 
             $('input').on('keyup', _.debounce(function(event) {

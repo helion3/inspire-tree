@@ -28,12 +28,12 @@
                 dynamic: true,
                 data: function(node, resolve, reject) {
                     if (!node) {
-                        var promise = $.getJSON('../sample-data/root.json');
+                        var promise = $.getJSON('sample-data/root.json');
                         promise.then(resolve);
                         promise.error(reject);
                     }
                     else {
-                        var promise = $.getJSON('../sample-data/' + node.id + '.json');
+                        var promise = $.getJSON('sample-data/' + node.id + '.json');
                         promise.then(resolve);
                         promise.error(reject);
                     }
