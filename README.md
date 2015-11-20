@@ -113,7 +113,7 @@ tree.on('node.click', function(event, node) {
 - **node.selected** - `(TreeNode node)` - Node selected.
 - **node.shown** - `(TreeNode node)` - Node shown.
 - **node.softremoved** - `(TreeNode node)` - Node soft removed.
-- **tree.ready** - Tree has attached target DOM element.
+- **tree.ready** - `(InspireTree tree)` - Tree has attached target DOM element.
 
 ## API Basics
 
