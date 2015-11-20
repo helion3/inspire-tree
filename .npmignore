@@ -1,0 +1,9 @@
+demos
+hooks
+img
+scripts
+test
+.*
+bower.json
+karma*
+webpack*
