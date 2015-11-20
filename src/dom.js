@@ -47,6 +47,35 @@ module.exports = function InspireDOM(tree) {
     };
 
     /**
+     * Creates a tri-state checkbox input.
+     *
+     * @param {TreeNode} node Node object.
+     * @return {object} Input node element.
+     */
+    function createCheckbox(node) {
+        return new VCache({
+            selected: node.selected(),
+            indeterminate: node.itree.state.indeterminate
+        }, VStateCompare, function() {
+            var attributes = {
+                type: 'checkbox',
+                checked: node.selected() ? 'checked' : undefined // eslint-disable-line no-undefined
+            };
+
+            return h('input', {
+                attributes: attributes,
+                indeterminate: node.itree.state.indeterminate,
+                onclick: function(event) {
+                    node.toggleSelect();
+
+                    // Emit
+                    tree.emit('node.click', event, node);
+                }
+            });
+        });
+    }
+
+    /**
      * Creates a context menu unordered list.
      *
      * @private
@@ -225,7 +254,9 @@ module.exports = function InspireDOM(tree) {
         }, VStateCompare, function(previous, current) {
             var classNames = ['title', 'icon'];
 
-            classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
+            if (!tree.config.checkbox) {
+                classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
+            }
 
             return h('a.' + classNames.join('.'), {
                 oncontextmenu: function(event) {
@@ -237,7 +268,7 @@ module.exports = function InspireDOM(tree) {
                     }
                 },
                 onclick: function(event) {
-                    tree.preventDeselection = event.metaKey || event.ctrlKey;
+                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey;
                     node.toggleSelect();
 
                     // Emit
@@ -270,12 +301,18 @@ module.exports = function InspireDOM(tree) {
 
         return new VCache({
             hasVisibleChildren: hasVisibleChildren,
-            collapsed: node.collapsed()
+            collapsed: node.collapsed(),
+            selected: node.selected(),
+            indeterminate: node.itree.state.indeterminate
         }, VStateCompare, function() {
             var contents = [];
 
             if (hasVisibleChildren) {
                 contents.push(createToggleAnchor(node));
+            }
+
+            if (tree.config.checkbox) {
+                contents.push(createCheckbox(node));
             }
 
             contents.push(createTitleAnchor(node, hasVisibleChildren));

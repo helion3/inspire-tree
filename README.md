@@ -18,12 +18,13 @@ our need for one - the only existing solution which met our *feature* needs was 
 - No external dependencies.
 - Load data directly, via promises, callbacks, etc.
 - Load child nodes upfront or dynamically (or a mix of both).
+- Tri-state checkboxes (optional).
 - Multiselect (optional).
 - Search by plain string, RegExp, custom matcher, or external resources (optional).
 - Sorting (optional).
 - AMD and CommonJS support (RequireJS, Node/Webpack).
 - Supports multiple instances on a single page.
-- Includes functionality for moving nodes between instances.
+- API methods to simplify moving nodes between instances.
 - Solid coverage by automated tests.
 - Built for IE10+.
 
@@ -33,9 +34,10 @@ our need for one - the only existing solution which met our *feature* needs was 
 - Virtual DOM for blazing fast change rendering.
 - Valid HTML structure.
 - Clean and easy-to-override CSS.
+- Modular SASS for custom compilation.
 - Keyboard navigation.
 - Custom context menu (optional).
-- Drag and Drop (optional).
+- Drag and Drop between tree instances (optional).
 - ~20k minified, uncompressed.
 
 ### Installation
@@ -62,8 +64,9 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 ## Tree Configuration
 
-- **allowLoadEvents** - Array of events to fire for pre-set states.
+- **allowLoadEvents** - Array of state-change events to fire for pre-set states.
 - **allowSelection** - Dynamically determine `selectable` boolean for a node.
+- **checkbox** - Enable tri-state (unchecked, checked, partial) checkboxes for selection.
 - **data** - An array, promise, or callback function.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
 - **multiselect** - Allow multiple nodes to be selected at a time.
@@ -78,6 +81,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 - **text** - Text used in display.
 - **id** - Unique ID. If missing, one will be generated.
+- **children** - An array of child nodes.
 - **li.attributes** - Custom attributes for this node's root `li`.
 - **itree** - An object used to describe initial tree values:
 	+ **icon** - Custom icon for the anchor.
@@ -143,7 +147,7 @@ tree.getNode('a-unique-id').select();
 
 **TreeNodes**
 
-Arrays of `TreeNode`s are contained within an Array-like object.
+Multiple `TreeNode`s are contained within an Array-like object.
 
 `TreeNodes` maps several TreeNode methods so you can invoke them on all nodes in the collection, or recursively
 down the nodes and their children.
@@ -217,11 +221,13 @@ var tree = new InspireTree({
 Clone the repository, and get yourself setup:
 
 - `npm install` - Installs all project dependencies.
+- `bower install` - Install libs used only by included demos.
 - `npm run setup` - Copies git hooks and run workspace setup.
 
 Live-compile source changes as you develop:
 
 - `npm run watch`
+- or `EXCLUDE_DOM=1 npm run watch` for core-only builds.
 
 When needed, lint your code. Will happen automatically on commit.
 

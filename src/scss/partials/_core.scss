@@ -48,6 +48,15 @@
         }
     }
 
+    [type="checkbox"] {
+        left: 18px;
+        position: absolute;
+        top: 4px;
+        vertical-align: middle;
+        width: 20px;
+        z-index: 2;
+    }
+
     .title {
         overflow: hidden;
         padding-left: 30px;
