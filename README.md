@@ -105,7 +105,8 @@ tree.on('node.click', function(event, node) {
 - **node.contextmenu** - `(Event event, TreeNode node)` - User right-clicked node.
 - **node.dblclick** - `(Event event, TreeNode node)` - User double-clicked node.
 - **node.deselected** - `(TreeNode node)` - Node deselected.
-- **node.drop** - `(TreeNode node)` - Node dropped into a valid target.
+- **node.dropin** - `(TreeNode node)` - Tree has received a new node via drop.
+- **node.dropout** - `(TreeNode node, Element elem)` - Node dropped into a valid target.
 - **node.expanded** - `(TreeNode node)` - Node expanded.
 - **node.hidden** - `(TreeNode node)` - Node hidden.
 - **node.removed** - `(object node)` - Node removed.
