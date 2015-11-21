@@ -96,7 +96,7 @@ tree.on('node.click', function(event, node) {
 
 #### Event List
 
-- **data.loaded** - `(Array nodes)` - Data has been loaded successfully.
+- **data.loaded** - `(Array nodes)` - Data has been loaded successfully (only for data loaded via xhr/callbacks).
 - **data.loaderror** - `(Error err)` - Loading failed.
 - **model.loaded** - `(Array nodes)` - Data has been parsed into an internal model.
 - **node.added** - `(TreeNode node)` - Node added.
@@ -114,7 +114,6 @@ tree.on('node.click', function(event, node) {
 - **node.selected** - `(TreeNode node)` - Node selected.
 - **node.shown** - `(TreeNode node)` - Node shown.
 - **node.softremoved** - `(TreeNode node)` - Node soft removed.
-- **tree.ready** - `(InspireTree tree)` - Tree has attached target DOM element.
 
 ## API Basics
 
