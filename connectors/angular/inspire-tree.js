@@ -16,11 +16,11 @@
          *
          * <inspire-tree data="nodes" options="options"></inspire-tree>
          */
-        module.directive('inspireTree', [function() {
+        module.directive('inspireTree', function() {
             return {
                 restrict: 'E',
                 replace: true,
-                template: '<div class="inspire-tree">' +
+                template: '<div class="inspire-tree" tabindex="-1">' +
                     '<inspire-tree-nodes nodes="model"></inspire-tree-nodes>' +
                 '</div>',
                 scope: {
@@ -45,18 +45,42 @@
                             tree.load(scope.options.data);
                         }
                     });
+
+                    // Keyboard nav
+                    $element.on('keyup', function() {
+                        // Navigation
+                        var selected = tree.getSelectedNodes();
+                        if (selected.length === 1) {
+                            var focusedNode = selected[0];
+
+                            switch (event.which) {
+                                case 38:
+                                    var prev = focusedNode.previousVisibleNode();
+                                    if (prev) {
+                                        prev.select();
+                                        scope.$digest();
+                                    }
+                                    break;
+                                case 40:
+                                    var next = focusedNode.nextVisibleNode();
+                                    if (next) {
+                                        next.select();
+                                        scope.$digest();
+                                    }
+                                    break;
+                                case 13:
+                                    focusedNode.toggleCollapse();
+                                    scope.$digest();
+                                    break;
+                                default:
+                            }
+                        }
+                    });
                 }
             };
-        }]);
+        });
 
-        /**
-         * Builds a list of nodes.
-         *
-         * @private
-         * @param {array} nodes Array of node objects.
-         * @return {void}
-         */
-        module.directive('inspireTreeNodes', [function() {
+        module.directive('inspireTreeNodes', function() {
             return {
                 restrict: 'E',
                 replace: true,
@@ -76,15 +100,8 @@
                     nodes: '='
                 }
             };
-        }]);
+        });
 
-        /**
-         * Builds a node.
-         *
-         * @private
-         * @param {TreeNode} node Node object.
-         * @return {void}
-         */
         module.directive('inspireTreeNode', ['$compile', function($compile) {
             return {
                 restrict: 'E',
