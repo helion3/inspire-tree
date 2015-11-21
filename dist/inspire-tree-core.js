@@ -95,6 +95,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dragTargets: false,
 	        dynamic: false,
 	        multiselect: false,
+	        renderer: false,
 	        search: false,
 	        sort: false,
 	        tabindex: -1
@@ -365,7 +366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {boolean} If expanded.
 	     */
 	    TreeNode.prototype.expanded = function() {
-	        return !this.itree.state.collapsed;
+	        return !this.collapsed();
 	    };
 
 	    /**
@@ -1308,7 +1309,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Wrap
 	        object = assign(new TreeNode(), object);
 
-	        if (isArrayLike(object.children) && object.children.length) {
+	        if (object.hasChildren()) {
 	            object.children = collectionToModel(object.children, object);
 	        }
 
@@ -1410,7 +1411,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                node = item;
 	            }
 
-	            if (!node && isArrayLike(item.children) && !isEmpty(item.children)) {
+	            if (!node && item.hasChildren()) {
 	                node = tree.getNode(id, item.children);
 	            }
 
@@ -1683,7 +1684,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Connect to our target DOM element
 	    dom.attach(tree.config.target);
-	    tree.emit('tree.ready');
 
 	    // Load initial user data
 	    data.load(tree.config.data);
