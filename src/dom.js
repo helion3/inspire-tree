@@ -377,19 +377,25 @@ module.exports = function InspireDOM(tree) {
      */
     function keyboardListener(event) {
         // Navigation
-        var selected = tree.getSelectedNodes();
-        if (selected.length === 1) {
-            var focusedNode = selected[0];
-
+        var focusedNode = tree.getFocusedNode();
+        if (focusedNode) {
             switch (event.which) {
-                case keyCodes.UP:
-                    moveSelectionUpFrom(focusedNode);
-                    break;
                 case keyCodes.DOWN:
-                    moveSelectionDownFrom(focusedNode);
+                    moveFocusDownFrom(focusedNode);
                     break;
                 case keyCodes.ENTER:
-                    focusedNode.toggleCollapse();
+                    focusedNode.toggleSelect();
+                    break;
+                case keyCodes.LEFT:
+                    focusedNode.collapse();
+                    moveFocusUpFrom(focusedNode);
+                    break;
+                case keyCodes.RIGHT:
+                    focusedNode.expand();
+                    moveFocusDownFrom(focusedNode);
+                    break;
+                case keyCodes.UP:
+                    moveFocusUpFrom(focusedNode);
                     break;
                 default:
             }
@@ -472,10 +478,10 @@ module.exports = function InspireDOM(tree) {
      * @param {object} startingNode Node object.
      * @return {void}
      */
-    function moveSelectionDownFrom(startingNode) {
+    function moveFocusDownFrom(startingNode) {
         var next = startingNode.nextVisibleNode();
         if (next) {
-            next.select();
+            next.focus();
         }
     }
 
@@ -486,10 +492,10 @@ module.exports = function InspireDOM(tree) {
      * @param {object} startingNode Node object.
      * @return {void}
      */
-    function moveSelectionUpFrom(startingNode) {
+    function moveFocusUpFrom(startingNode) {
         var prev = startingNode.previousVisibleNode();
         if (prev) {
-            prev.select();
+            prev.focus();
         }
     }
 

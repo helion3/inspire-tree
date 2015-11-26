@@ -100,6 +100,7 @@ tree.on('node.click', function(event, node) {
 - **data.loaderror** - `(Error err)` - Loading failed.
 - **model.loaded** - `(Array nodes)` - Data has been parsed into an internal model.
 - **node.added** - `(TreeNode node)` - Node added.
+- **node.blurred** - `(TreeNode node)` - Node lost focus.
 - **node.click** - `(Event event, TreeNode node)` - User clicked node.
 - **node.collapsed** - `(TreeNode node)` - Node collapsed.
 - **node.contextmenu** - `(Event event, TreeNode node)` - User right-clicked node.
@@ -108,6 +109,7 @@ tree.on('node.click', function(event, node) {
 - **node.dropin** - `(TreeNode node)` - Tree has received a new node via drop.
 - **node.dropout** - `(TreeNode node, Element elem)` - Node dropped into a valid target.
 - **node.expanded** - `(TreeNode node)` - Node expanded.
+- **node.focused** - `(TreeNode node)` - Node focused.
 - **node.hidden** - `(TreeNode node)` - Node hidden.
 - **node.removed** - `(object node)` - Node removed.
 - **node.restored** - `(TreeNode node)` - Node restored.
@@ -154,6 +156,7 @@ tree.getNodes().expandDeep();
 
 **Mapped Method List**
 
+- blur
 - collapse
 - deselect
 - expand

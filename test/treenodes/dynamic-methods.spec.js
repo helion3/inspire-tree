@@ -20,6 +20,11 @@ describe('TreeNodes dynamic methods', function() {
         });
     });
 
+    it('"blur"', function() {
+        expect(tree.getNodes().blur).to.be.a('function');
+        expect(tree.getNodes().blurDeep).to.be.a('function');
+    });
+
     it('"collapse"', function() {
         expect(tree.getNodes().collapse).to.be.a('function');
         expect(tree.getNodes().collapseDeep).to.be.a('function');

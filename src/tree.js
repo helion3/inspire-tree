@@ -122,6 +122,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Blur focus from this node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.blur = function() {
+        return baseStateChange('focused', false, 'blurred', this);
+    };
+
+    /**
      * Clones this node.
      *
      * @category TreeNode
@@ -309,6 +319,42 @@ function InspireTree(opts) {
         });
 
         return nodeClone;
+    };
+
+    /**
+     * Focus a node without changing its selection.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.focus = function() {
+        var node = this;
+
+        if (!node.focused()) {
+            // Batch selection changes
+            dom.batch();
+            tree.getNodes().blurDeep();
+            node.itree.state.focused = true;
+
+            // Emit this event
+            tree.emit('node.focused', node);
+
+            // Mark hierarchy dirty and apply
+            node.markDirty();
+            dom.end();
+        }
+
+        return node;
+    };
+
+    /**
+     * Get whether node has focus or not.
+     *
+     * @category TreeNode
+     * @return {boolean} If focused.
+     */
+    TreeNode.prototype.focused = function() {
+        return this.itree.state.focused;
     };
 
     /**
@@ -680,6 +726,8 @@ function InspireTree(opts) {
         if (!node.selected()) {
             // Batch selection changes
             dom.batch();
+
+            node.focus();
 
             if (!tree.preventDeselection) {
                 tree.getNodes().deselectDeep();
@@ -1077,7 +1125,7 @@ function InspireTree(opts) {
     }
 
     // Methods can we map to each/deeply TreeNode
-    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
+    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
     each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
@@ -1206,6 +1254,7 @@ function InspireTree(opts) {
 
         var state = itree.state = itree.state || {};
         state.collapsed = state.collapsed || true;
+        state.focused = state.focused || false;
         state.hidden = state.hidden || false;
         state.loading = state.loading || false;
         state.removed = state.removed || false;
@@ -1359,6 +1408,23 @@ function InspireTree(opts) {
         }
 
         return nodes;
+    };
+
+    /**
+     * Get the currently focused node, if any.
+     *
+     * @category Tree
+     * @return {TreeNode} Node object.
+     */
+    tree.getFocusedNode = function() {
+        var node;
+
+        var focused = model.flatten('focused');
+        if (!isEmpty(focused)) {
+            node = focused[0];
+        }
+
+        return node;
     };
 
     /**
