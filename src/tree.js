@@ -144,17 +144,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.collapse = function() {
-        var node = this;
-        if (!node.collapsed()) {
-            node.itree.state.collapsed = true;
-
-            tree.emit('node.collapsed', node);
-
-            node.markDirty();
-            dom.applyChanges();
-        }
-
-        return node;
+        return baseStateChange('collapsed', true, 'collapsed', this);
     };
 
     /**
@@ -248,18 +238,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.deselect = function() {
-        var node = this;
-
-        if (node.selected()) {
-            node.itree.state.selected = false;
-
-            tree.emit('node.deselected', node);
-
-            node.markDirty();
-            dom.applyChanges();
-        }
-
-        return node;
+        return baseStateChange('selected', false, 'deselected', this);
     };
 
     /**
@@ -443,20 +422,11 @@ function InspireTree(opts) {
      * @return {object} Node object.
      */
     TreeNode.prototype.hide = function() {
-        var node = this;
+        var node = baseStateChange('hidden', true, 'hidden', this);
 
-        if (!node.hidden()) {
-            node.itree.state.hidden = true;
-
-            tree.emit('node.hidden', node);
-
-            // Update children
-            if (node.hasChildren()) {
-                node.children.hide();
-            }
-
-            node.markDirty();
-            dom.applyChanges();
+        // Update children
+        if (node.hasChildren()) {
+            node.children.hide();
         }
 
         return node;
@@ -695,17 +665,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.restore = function() {
-        var node = this;
-        if (node.removed()) {
-            node.itree.state.removed = false;
-
-            tree.emit('node.restored', node);
-
-            node.markDirty();
-            dom.applyChanges();
-        }
-
-        return node;
+        return baseStateChange('removed', false, 'restored', this);
     };
 
     /**
@@ -770,17 +730,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.show = function() {
-        var node = this;
-        if (node.hidden()) {
-            node.itree.state.hidden = false;
-
-            tree.emit('node.shown', node);
-
-            node.markDirty();
-            dom.applyChanges();
-        }
-
-        return node;
+        return baseStateChange('hidden', false, 'shown', this);
     };
 
     /**
@@ -792,17 +742,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.softRemove = function() {
-        var node = this;
-        if (!node.removed()) {
-            node.itree.state.removed = true;
-
-            tree.emit('node.softremoved', node);
-
-            node.markDirty();
-            dom.applyChanges();
-        }
-
-        return node;
+        return baseStateChange('removed', true, 'softremoved', this);
     };
 
     /**
@@ -1145,6 +1085,29 @@ function InspireTree(opts) {
 
     // Methods can we map to each TreeNode
     each(['expandParents'], mapToEach);
+
+    /**
+     * Stores repetitive state change logic for most state methods.
+     *
+     * @private
+     * @param {string} prop State property name.
+     * @param {boolean} value New state value.
+     * @param {string} verb Verb used for events.
+     * @param {TreeNode} node Node object.
+     * @return {TreeNode} Node object.
+     */
+    function baseStateChange(prop, value, verb, node) {
+        if (node.itree.state[prop] !== value) {
+            node.itree.state[prop] = value;
+
+            tree.emit('node.' + verb, node);
+
+            node.markDirty();
+            dom.applyChanges();
+        }
+
+        return node;
+    }
 
     /**
      * Parses a raw collection of objects into a model used
