@@ -32,6 +32,7 @@ function InspireTree(opts) {
 
     var noop = function() {};
     var tree = this;
+    tree.preventDeselection = false;
 
     // Assign defaults
     tree.config = defaultsDeep(opts, {
@@ -720,7 +721,7 @@ function InspireTree(opts) {
             // Batch selection changes
             dom.batch();
 
-            if (!tree.config.multiselect) {
+            if (!tree.preventDeselection) {
                 tree.getNodes().deselectDeep();
             }
 

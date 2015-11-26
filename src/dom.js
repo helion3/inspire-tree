@@ -236,6 +236,7 @@ module.exports = function InspireDOM(tree) {
                     }
                 },
                 onclick: function(event) {
+                    tree.preventDeselection = event.metaKey || event.ctrlKey;
                     node.toggleSelect();
 
                     // Emit

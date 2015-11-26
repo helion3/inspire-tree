@@ -54,7 +54,7 @@ describe('TreeNode.prototype.select', function() {
     });
 
     it('allows multiple select', function() {
-        tree.config.multiselect = true;
+        tree.preventDeselection = true;
 
         tree.getNode(1).select();
         tree.getNode(2).select();
