@@ -49,27 +49,35 @@
                     // Keyboard nav
                     $element.on('keyup', function() {
                         // Navigation
-                        var selected = tree.getSelectedNodes();
-                        if (selected.length === 1) {
-                            var focusedNode = selected[0];
-
+                        var focusedNode = tree.getFocusedNode();
+                        if (focusedNode) {
                             switch (event.which) {
+                                case 37:
+                                    focusedNode.collapse();
+                                    scope.$digest();
+                                    break;
                                 case 38:
                                     var prev = focusedNode.previousVisibleNode();
                                     if (prev) {
-                                        prev.select();
+                                        console.log('focusing prev', prev);
+                                        prev.focus();
                                         scope.$digest();
                                     }
+                                    break;
+                                case 39:
+                                    focusedNode.expand();
+                                    scope.$digest();
                                     break;
                                 case 40:
                                     var next = focusedNode.nextVisibleNode();
                                     if (next) {
-                                        next.select();
+                                        console.log('focusing next', next);
+                                        next.focus();
                                         scope.$digest();
                                     }
                                     break;
                                 case 13:
-                                    focusedNode.toggleCollapse();
+                                    focusedNode.toggleSelect();
                                     scope.$digest();
                                     break;
                                 default:
@@ -90,7 +98,8 @@
                         'ng-repeat="node in nodes track by node.id" ' +
                         'ng-class="{' +
                             'collapsed: node.collapsed(),' +
-                            'hidden: node.hidden(),' +
+                            'focused: node.focused(),' +
+                            'hidden: node.hidden() || node.removed(),' +
                             'selected: node.selected()' +
                         '}">' +
                         '<inspire-tree-node node="node"></inspire-tree-node>' +

@@ -19,10 +19,15 @@
             .selected > div > .wholerow {
                 background: #a4eaf5;
             }
+
+            .focused:not(.selected) > div > .wholerow {
+                background: #dafaff;
+            }
         </style>
     </head>
     <body ng-controller="TestController">
         <p>This demo replaces the default inspire-tree DOM renderer with an <a href="https://github.com/helion3/inspire-tree/blob/master/connectors/angular/inspire-tree.js">AngularJS-native directive</a>.</p>
+        <p>It supports renderering and keyboard navigation, but does not yet have drag and drop and context menu implementations.</p>
         <div>
             <inspire-tree options="sourceOptions"></inspire-tree>
             <div class="toolbar">
