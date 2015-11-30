@@ -21,7 +21,7 @@
                 restrict: 'E',
                 replace: true,
                 template: '<div class="inspire-tree" tabindex="-1">' +
-                    '<inspire-tree-nodes nodes="model"></inspire-tree-nodes>' +
+                    '<inspire-tree-nodes nodes="model" tree="tree"></inspire-tree-nodes>' +
                 '</div>',
                 scope: {
                     options: '='
@@ -31,6 +31,7 @@
                     scope.options.target = $element;
 
                     var tree = new InspireTree(scope.options);
+                    scope.tree = tree;
 
                     tree.on('model.loaded', function(model) {
                         scope.model = model;
@@ -102,11 +103,12 @@
                             'hidden: node.hidden() || node.removed(),' +
                             'selected: node.selected()' +
                         '}">' +
-                        '<inspire-tree-node node="node"></inspire-tree-node>' +
+                        '<inspire-tree-node node="node" tree="tree"></inspire-tree-node>' +
                     '</li>' +
                 '</ol>',
                 scope: {
-                    nodes: '='
+                    nodes: '=',
+                    tree: '='
                 }
             };
         });
@@ -115,6 +117,10 @@
             return {
                 restrict: 'E',
                 replace: true,
+                scope: {
+                    node: '=',
+                    tree: '='
+                },
                 template: '<div>' +
                     '<div class="wholerow"></div>' +
                     '<div class="title-wrap">' +
@@ -124,22 +130,27 @@
                         'ng-if="node.hasChildren()"></a> ' +
                         '<a class="title icon" ' +
                         'ng-class="getIcon()" ' +
-                        'ng-click="node.toggleSelect()" ' +
+                        'ng-click="onClick($event)" ' +
                         'ng-bind="node.text"></a>' +
                     '</div>' +
                 '</div>',
-                scope: {
-                    node: '='
-                },
                 link: function(scope, $element) {
                     if (scope.node.hasChildren()) {
-                        var tmpl = '<inspire-tree-nodes nodes="node.children"></inspire-tree-nodes>';
+                        var tmpl = '<inspire-tree-nodes nodes="node.children" tree="tree"></inspire-tree-nodes>';
                         $element.append($compile(tmpl)(scope));
                     }
                 },
                 controller: ['$scope', function($scope) {
                     $scope.getIcon = function() {
                         return $scope.node.itree.icon || $scope.node.hasChildren() ? 'icon-folder' : 'icon-file-empty';
+                    };
+
+                    $scope.onClick = function($event) {
+                        if ($scope.tree.config.multiselect) {
+                            $scope.tree.preventDeselection = $event.metaKey || $event.ctrlKey;
+                        }
+
+                        $scope.node.toggleSelect();
                     };
                 }]
             };
