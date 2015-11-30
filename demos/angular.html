@@ -67,6 +67,7 @@
                 var destTree;
 
                 $scope.sourceOptions = {
+                    multiselect: true,
                     data: function(node, resolve, reject) {
                         var res = $http.get('sample-data/full.json').then(function(response) {
                             resolve(response.data);

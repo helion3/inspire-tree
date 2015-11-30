@@ -88,6 +88,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var noop = function() {};
 	    var tree = this;
+	    tree.preventDeselection = false;
 
 	    // Assign defaults
 	    tree.config = defaultsDeep(opts, {
@@ -177,6 +178,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Blur focus from this node.
+	     *
+	     * @category TreeNode
+	     * @return {TreeNode} Node object.
+	     */
+	    TreeNode.prototype.blur = function() {
+	        return baseStateChange('focused', false, 'blurred', this);
+	    };
+
+	    /**
 	     * Clones this node.
 	     *
 	     * @category TreeNode
@@ -199,17 +210,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.collapse = function() {
-	        var node = this;
-	        if (!node.collapsed()) {
-	            node.itree.state.collapsed = true;
-
-	            tree.emit('node.collapsed', node);
-
-	            node.markDirty();
-	            dom.applyChanges();
-	        }
-
-	        return node;
+	        return baseStateChange('collapsed', true, 'collapsed', this);
 	    };
 
 	    /**
@@ -303,18 +304,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.deselect = function() {
-	        var node = this;
-
-	        if (node.selected()) {
-	            node.itree.state.selected = false;
-
-	            tree.emit('node.deselected', node);
-
-	            node.markDirty();
-	            dom.applyChanges();
-	        }
-
-	        return node;
+	        return baseStateChange('selected', false, 'deselected', this);
 	    };
 
 	    /**
@@ -385,6 +375,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        return nodeClone;
+	    };
+
+	    /**
+	     * Focus a node without changing its selection.
+	     *
+	     * @category TreeNode
+	     * @return {TreeNode} Node object.
+	     */
+	    TreeNode.prototype.focus = function() {
+	        var node = this;
+
+	        if (!node.focused()) {
+	            // Batch selection changes
+	            dom.batch();
+	            tree.getNodes().blurDeep();
+	            node.itree.state.focused = true;
+
+	            // Emit this event
+	            tree.emit('node.focused', node);
+
+	            // Mark hierarchy dirty and apply
+	            node.markDirty();
+	            dom.end();
+	        }
+
+	        return node;
+	    };
+
+	    /**
+	     * Get whether node has focus or not.
+	     *
+	     * @category TreeNode
+	     * @return {boolean} If focused.
+	     */
+	    TreeNode.prototype.focused = function() {
+	        return this.itree.state.focused;
 	    };
 
 	    /**
@@ -498,20 +524,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {object} Node object.
 	     */
 	    TreeNode.prototype.hide = function() {
-	        var node = this;
+	        var node = baseStateChange('hidden', true, 'hidden', this);
 
-	        if (!node.hidden()) {
-	            node.itree.state.hidden = true;
-
-	            tree.emit('node.hidden', node);
-
-	            // Update children
-	            if (node.hasChildren()) {
-	                node.children.hide();
-	            }
-
-	            node.markDirty();
-	            dom.applyChanges();
+	        // Update children
+	        if (node.hasChildren()) {
+	            node.children.hide();
 	        }
 
 	        return node;
@@ -750,17 +767,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.restore = function() {
-	        var node = this;
-	        if (node.removed()) {
-	            node.itree.state.removed = false;
-
-	            tree.emit('node.restored', node);
-
-	            node.markDirty();
-	            dom.applyChanges();
-	        }
-
-	        return node;
+	        return baseStateChange('removed', false, 'restored', this);
 	    };
 
 	    /**
@@ -776,7 +783,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // Batch selection changes
 	            dom.batch();
 
-	            if (!tree.config.multiselect) {
+	            node.focus();
+
+	            if (!tree.preventDeselection) {
 	                tree.getNodes().deselectDeep();
 	            }
 
@@ -825,17 +834,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.show = function() {
-	        var node = this;
-	        if (node.hidden()) {
-	            node.itree.state.hidden = false;
-
-	            tree.emit('node.shown', node);
-
-	            node.markDirty();
-	            dom.applyChanges();
-	        }
-
-	        return node;
+	        return baseStateChange('hidden', false, 'shown', this);
 	    };
 
 	    /**
@@ -847,17 +846,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.softRemove = function() {
-	        var node = this;
-	        if (!node.removed()) {
-	            node.itree.state.removed = true;
-
-	            tree.emit('node.softremoved', node);
-
-	            node.markDirty();
-	            dom.applyChanges();
-	        }
-
-	        return node;
+	        return baseStateChange('removed', true, 'softremoved', this);
 	    };
 
 	    /**
@@ -1192,7 +1181,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    // Methods can we map to each/deeply TreeNode
-	    var mapped = ['collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
+	    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
 	    each(mapped, function(method) {
 	        mapToEach(method);
 	        mapToEachDeeply(method);
@@ -1200,6 +1189,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Methods can we map to each TreeNode
 	    each(['expandParents'], mapToEach);
+
+	    /**
+	     * Stores repetitive state change logic for most state methods.
+	     *
+	     * @private
+	     * @param {string} prop State property name.
+	     * @param {boolean} value New state value.
+	     * @param {string} verb Verb used for events.
+	     * @param {TreeNode} node Node object.
+	     * @return {TreeNode} Node object.
+	     */
+	    function baseStateChange(prop, value, verb, node) {
+	        if (node.itree.state[prop] !== value) {
+	            node.itree.state[prop] = value;
+
+	            tree.emit('node.' + verb, node);
+
+	            node.markDirty();
+	            dom.applyChanges();
+	        }
+
+	        return node;
+	    }
 
 	    /**
 	     * Parses a raw collection of objects into a model used
@@ -1298,6 +1310,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var state = itree.state = itree.state || {};
 	        state.collapsed = state.collapsed || true;
+	        state.focused = state.focused || false;
 	        state.hidden = state.hidden || false;
 	        state.loading = state.loading || false;
 	        state.removed = state.removed || false;
@@ -1451,6 +1464,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return nodes;
+	    };
+
+	    /**
+	     * Get the currently focused node, if any.
+	     *
+	     * @category Tree
+	     * @return {TreeNode} Node object.
+	     */
+	    tree.getFocusedNode = function() {
+	        var node;
+
+	        var focused = model.flatten('focused');
+	        if (!isEmpty(focused)) {
+	            node = focused[0];
+	        }
+
+	        return node;
 	    };
 
 	    /**
