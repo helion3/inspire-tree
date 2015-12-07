@@ -14,7 +14,7 @@
     <script>
         require.config({
             paths: {
-                jquery: 'bower_components/jquery/dist/jquery.min',
+                jquery: '../bower_components/jquery/dist/jquery.min',
                 inspireTree: '../build/inspire-tree'
             }
         });
@@ -25,7 +25,7 @@
         ], function($, InspireTree) {
             var tree = new InspireTree({
                 target: '.tree',
-                data: $.getJSON('../sample-data/full.json'),
+                data: $.getJSON('sample-data/full.json'),
                 contextMenu: [{
                     text: 'Alert',
                     handler: function(event, node, closer) {
