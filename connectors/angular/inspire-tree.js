@@ -120,7 +120,6 @@
                     tree: '='
                 },
                 template: '<div>' +
-                    '<div class="wholerow"></div>' +
                     '<div class="title-wrap">' +
                         '<a class="toggle icon" ' +
                         'ng-click="node.toggleCollapse()" ' +
@@ -131,6 +130,7 @@
                         'ng-click="onClick($event)" ' +
                         'ng-bind="node.text"></a>' +
                     '</div>' +
+                    '<div class="wholerow"></div>' +
                 '</div>',
                 link: function(scope, $element) {
                     if (scope.node.hasChildren()) {
