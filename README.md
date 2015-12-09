@@ -62,6 +62,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 ## Tree Configuration
 
+- **allowSelection** - Dynamically determine `selectable` boolean for a node.
 - **data** - An array, promise, or callback function.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
 - **dynamic** - True if children will be loaded via `data` function.

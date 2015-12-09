@@ -36,6 +36,7 @@ function InspireTree(opts) {
 
     // Assign defaults
     tree.config = defaultsDeep(opts, {
+        allowSelection: noop,
         contextMenu: false,
         dragTargets: false,
         dynamic: false,
@@ -753,7 +754,8 @@ function InspireTree(opts) {
      * @return {boolean} If node selectable.
      */
     TreeNode.prototype.selectable = function() {
-        return this.itree.state.selectable;
+        var allow = tree.config.allowSelection(this);
+        return typeof allow === 'boolean' ? allow : this.itree.state.selectable;
     };
 
     /**

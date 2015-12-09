@@ -12,6 +12,11 @@ describe('TreeNode.prototype.selectable', function() {
 
         // Create tree
         tree = new InspireTree({
+            allowSelection: function(node) {
+                if (node.id === '3') {
+                    return false;
+                }
+            },
             target: $tree,
             data: [{
                 text: 'A',
@@ -24,6 +29,9 @@ describe('TreeNode.prototype.selectable', function() {
                         selectable: false
                     }
                 }
+            }, {
+                text: 'C',
+                id: 3
             }]
         });
     });
@@ -45,6 +53,14 @@ describe('TreeNode.prototype.selectable', function() {
         node.select();
 
         expect(node.selected()).to.be.false;
+    });
+
+    it('returns true for default node when using allowSelection', function() {
+        expect(tree.getNode(1).selectable()).to.be.true;
+    });
+
+    it('returns false for unselectable node when using allowSelection', function() {
+        expect(tree.getNode(3).selectable()).to.be.false;
     });
 
     after(helpers.clearDOM);
