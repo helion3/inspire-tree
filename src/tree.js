@@ -723,7 +723,7 @@ function InspireTree(opts) {
     TreeNode.prototype.select = function() {
         var node = this;
 
-        if (!node.selected()) {
+        if (!node.selected() && node.selectable()) {
             // Batch selection changes
             dom.batch();
 
@@ -744,6 +744,16 @@ function InspireTree(opts) {
         }
 
         return node;
+    };
+
+    /**
+     * Get if node selectable.
+     *
+     * @category TreeNode
+     * @return {boolean} If node selectable.
+     */
+    TreeNode.prototype.selectable = function() {
+        return this.itree.state.selectable;
     };
 
     /**
@@ -1253,7 +1263,12 @@ function InspireTree(opts) {
         li.attributes = li.attributes || {};
 
         var state = itree.state = itree.state || {};
-        state.collapsed = state.collapsed || true;
+
+        // Enabled by default
+        state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : true;
+        state.selectable = typeof state.selectable === 'boolean' ? state.selectable : true;
+
+        // Disabled by default
         state.focused = state.focused || false;
         state.hidden = state.hidden || false;
         state.loading = state.loading || false;

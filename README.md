@@ -80,8 +80,11 @@ Data objects must have at least a `text` property. Additional properties are lis
 - **itree** - An object used to describe initial tree values:
 	+ **icon** - Custom icon for the anchor.
 	+ **state.collasped** - Set initial collapsed state.
+    + **state.focused** - Node has UI focus.
 	+ **state.hidden** - Set initial visibility.
+    + **state.loading** - Dynamic load of children in progress.
     + **state.removed** - Soft removed. Never shown until restored.
+    + **state.selectable** - Allow selection.
 	+ **state.selected** - Set initial selection.
 
 ## Events
