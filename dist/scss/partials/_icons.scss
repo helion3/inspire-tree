@@ -40,7 +40,7 @@
 
     .icon-caret-down:before {
         @extend .icon-caret:before;
-        transform: rotate(90deg);
+        transform: translate(-50%, -50%) rotate(90deg);
     }
 
     .icon-file-empty:before {

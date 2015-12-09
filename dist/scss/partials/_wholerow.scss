@@ -4,7 +4,7 @@
     }
 
     .wholerow {
-        height: 25px;
+        height: $tree-node-height;
         left: 0;
         position: absolute;
         transform: translate(0, -100%);
