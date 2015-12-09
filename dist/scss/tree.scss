@@ -1,0 +1,8 @@
+$tree-row-hover-color: #dafaff !default;
+$tree-row-selected-color: #a4eaf5 !default;
+$tree-node-height: 25px !default;
+
+@import 'partials/_core';
+@import 'partials/_icons';
+@import 'partials/_drag';
+@import 'partials/_wholerow';

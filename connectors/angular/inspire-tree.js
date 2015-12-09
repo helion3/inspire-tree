@@ -60,7 +60,6 @@
                                 case 38:
                                     var prev = focusedNode.previousVisibleNode();
                                     if (prev) {
-                                        console.log('focusing prev', prev);
                                         prev.focus();
                                         scope.$digest();
                                     }
@@ -72,7 +71,6 @@
                                 case 40:
                                     var next = focusedNode.nextVisibleNode();
                                     if (next) {
-                                        console.log('focusing next', next);
                                         next.focus();
                                         scope.$digest();
                                     }

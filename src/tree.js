@@ -23,7 +23,7 @@ var slice = require('lodash.slice');
 var sortBy = require('lodash.sortby');
 
 // CSS
-require('./tree.scss');
+require('./scss/tree.scss');
 
 function InspireTree(opts) {
     if (!isObject(opts) || !opts.target) {

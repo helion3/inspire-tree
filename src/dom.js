@@ -138,8 +138,8 @@ module.exports = function InspireDOM(tree) {
             node.itree.dirty = false;
 
             var contents = [
-                h('div.wholerow'),
-                createTitleContainer(node)
+                createTitleContainer(node),
+                h('div.wholerow')
             ];
 
             if (node.hasChildren()) {

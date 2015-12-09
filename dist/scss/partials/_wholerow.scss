@@ -1,0 +1,24 @@
+.inspire-tree {
+    > ol {
+        position: relative;
+    }
+
+    .wholerow {
+        height: 25px;
+        left: 0;
+        position: absolute;
+        transform: translate(0, -100%);
+        width: 100%;
+        z-index: 1;
+    }
+
+    .focused:not(.selected) > .wholerow,
+    .title-wrap:hover + .wholerow {
+        background: $tree-row-hover-color;
+    }
+
+    .selected > .wholerow,
+    .selected > .title-wrap:hover + .wholerow {
+        background: $tree-row-selected-color;
+    }
+}

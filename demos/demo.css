@@ -57,6 +57,7 @@ body > div > div {
     background: #fff;
     border: 1px solid #bbb;
     border-radius: 2px;
+    font: 400 12px Helvetica Nueue, Verdana, sans-serif;
     margin-bottom: 20px;
     max-width: 500px;
     min-height: 400px;

@@ -11,21 +11,23 @@
 }
 
 .inspire-tree {
-    font: 400 12px Helvetica Nueue, Verdana, sans-serif;
-
-    &:focus {
-        outline: none;
-    }
-
-    /* ~~@@@~~~~~ Icons ~~~~~@@@~~ */
     .icon:before {
         background-position: 0 0;
         background-repeat: no-repeat;
         content: '';
         display: inline-block;
-        fill: currentColor;
         height: 14px;
         width: 14px;
+    }
+
+    .selected > .title-wrap {
+        .icon-folder:before {
+            @include icon-folder(2dadc5);
+        }
+
+        .icon-file-empty:before {
+            @include icon-file-empty(2dadc5);
+        }
     }
 
     .icon-folder:before {
@@ -45,132 +47,10 @@
         @include icon-file-empty;
     }
 
-    .selected > .title-wrap {
-        .icon-folder:before {
-            @include icon-folder(2dadc5);
-        }
-
-        .icon-file-empty:before {
-            @include icon-file-empty(2dadc5);
-        }
-    }
-
     .loading > .title-wrap .title:before {
-        background: url('../img/spinner.gif') 0 0 no-repeat;
+        background: url('../../img/spinner.gif') 0 0 no-repeat;
         content: '';
         height: 14px;
         width: 14px;
-    }
-
-    .focused:not(.selected) > .wholerow {
-        background: #dafaff;
-    }
-
-    /* ~~@@@~~~~~ Lists ~~~~~@@@~~ */
-    > ol {
-        position: relative;
-    }
-
-    ol {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-
-        ol {
-            margin-left: 20px;
-        }
-    }
-
-    .collapsed > ol, .hidden {
-        display: none;
-    }
-
-    a {
-        cursor: default;
-        display: block;
-        height: 25px;
-        line-height: 25px;
-    }
-
-    li > .title-wrap {
-        position: relative;
-        z-index: 2;
-    }
-
-    /* ~~@@@~~~~~ Node Content ~~~~~@@@~~ */
-    .toggle {
-        height: 25px;
-        left: 0;
-        position: absolute;
-        top: 0;
-        width: 25px;
-
-        &:before {
-            left: 3px;
-            position: relative;
-            top: 3px;
-        }
-    }
-
-    .title {
-        overflow: hidden;
-        padding-left: 30px;
-        text-overflow: ellipsis;
-        vertical-align: middle;
-        white-space: nowrap;
-
-        &:before {
-            left: -6px;
-            position: relative;
-            top: -2px;
-            vertical-align: middle;
-        }
-    }
-
-    /* ~~@@@~~~~~ Wholerow ~~~~~@@@~~ */
-    .wholerow {
-        height: 25px;
-        left: 0;
-        position: absolute;
-        width: 100%;
-        z-index: 1;
-    }
-
-    .selected > .wholerow {
-        background: #a4eaf5;
-    }
-
-    /* ~~@@@~~~~~ Drag/Drop ~~~~~@@@~~ */
-    .dragging {
-        position: fixed;
-        z-index: 5000;
-    }
-
-    &.drop-target {
-        border: 1px solid #2dadc5;
-    }
-}
-
-/* ~~@@@~~~~~ Context Menu ~~~~~@@@~~ */
-.itree-menu {
-    background: #ddd;
-    border: 1px solid darken(#ddd, 10%);
-    border-radius: 3px;
-    font-family: sans-serif;
-    list-style: none;
-    margin: 0;
-    min-width: 150px;
-    padding: 0;
-    position: absolute;
-    z-index: 10;
-
-    a {
-        display: block;
-        padding: 3px 8px;
-
-        &:hover {
-            background: #a4eaf5;
-            color: #2dadc5;
-        }
     }
 }

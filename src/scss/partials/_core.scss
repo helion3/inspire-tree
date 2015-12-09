@@ -1,0 +1,67 @@
+.inspire-tree {
+    &:focus {
+        outline: none;
+    }
+
+    /* ~~@@@~~~~~ Lists ~~~~~@@@~~ */
+    ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        ol {
+            margin-left: 20px;
+        }
+    }
+
+    .collapsed > ol, .hidden {
+        display: none;
+    }
+
+    a {
+        cursor: default;
+        display: block;
+        height: 100%;
+        line-height: $tree-node-height;
+    }
+
+    li > .title-wrap {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* ~~@@@~~~~~ Node Content ~~~~~@@@~~ */
+    .toggle {
+        height: $tree-node-height;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: $tree-node-height;
+        z-index: 2;
+
+        &:before {
+            display: block;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    .title {
+        overflow: hidden;
+        padding-left: 30px;
+        position: relative;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        white-space: nowrap;
+        z-index: 1;
+
+        &:before {
+            left: -6px;
+            position: relative;
+            top: -2px;
+            vertical-align: middle;
+        }
+    }
+}
