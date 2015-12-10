@@ -1136,14 +1136,14 @@ function InspireTree(opts) {
         };
     }
 
-    // Methods can we map to each/deeply TreeNode
+    // Methods we can map to each/deeply TreeNode
     var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
     each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
     });
 
-    // Methods can we map to each TreeNode
+    // Methods we can map to each TreeNode
     each(['expandParents'], mapToEach);
 
     /**
@@ -1290,7 +1290,6 @@ function InspireTree(opts) {
         return object;
     };
 
-    var data = this;
     var model = new TreeNodes();
 
     /**
@@ -1677,7 +1676,7 @@ function InspireTree(opts) {
     dom.attach(tree.config.target);
 
     // Load initial user data
-    data.load(tree.config.data);
+    tree.load(tree.config.data);
 
     return tree;
 };
