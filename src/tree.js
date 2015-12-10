@@ -506,7 +506,6 @@ function InspireTree(opts) {
         var node = this;
 
         if (isDynamic && node.children === true) {
-            console.log('loading children');
             node.itree.state.loading = true;
             node.markDirty();
             dom.applyChanges();
@@ -519,8 +518,6 @@ function InspireTree(opts) {
                     node.children = collectionToModel(results, node);
                     node.markDirty();
                     dom.end();
-
-                    console.log('emitting');
 
                     tree.emit('children.loaded', node);
                 },
