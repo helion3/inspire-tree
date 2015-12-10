@@ -562,7 +562,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var node = this;
 
 	        if (isDynamic && node.children === true) {
-	            console.log('loading children');
 	            node.itree.state.loading = true;
 	            node.markDirty();
 	            dom.applyChanges();
@@ -575,8 +574,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    node.children = collectionToModel(results, node);
 	                    node.markDirty();
 	                    dom.end();
-
-	                    console.log('emitting');
 
 	                    tree.emit('children.loaded', node);
 	                },
