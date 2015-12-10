@@ -21,7 +21,7 @@ describe('config.allowLoadEvents', function() {
     it('node.selected event fires for pre-selected node', function() {
         var callback = sinon.spy();
 
-        tree.on('node.selected', events.selected);
+        tree.on('node.selected', callback);
 
         tree.load([{
             text: 'A',

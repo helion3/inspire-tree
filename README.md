@@ -101,6 +101,7 @@ tree.on('node.click', function(event, node) {
 
 #### Event List
 
+- **children.loaded** - `(TreeNode node)` - Children were dynamically loaded for a node.
 - **data.loaded** - `(Array nodes)` - Data has been loaded successfully (only for data loaded via xhr/callbacks).
 - **data.loaderror** - `(Error err)` - Loading failed.
 - **model.loaded** - `(Array nodes)` - Data has been parsed into an internal model.

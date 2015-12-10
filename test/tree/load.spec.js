@@ -33,7 +33,7 @@ describe('Tree.load', function() {
     it('loads data via promise', function(done) {
         var tree = new InspireTree({
             target: '.tree',
-            data: $.getJSON('/base/sample-data/root.json')
+            data: $.getJSON('/base/demos/sample-data/root.json')
         });
 
         tree.on('data.loaded', function(nodes) {
@@ -49,12 +49,12 @@ describe('Tree.load', function() {
     it('loads child node data dynamically', function() {
         var tree = new InspireTree({
             target: '.tree',
-            dynamic: true,
             data: function(node, resolve) {
                 if (!node) {
                     resolve([{
                         text: 'A',
-                        id: 1
+                        id: 1,
+                        children: true
                     }]);
                 }
                 else {
@@ -68,10 +68,11 @@ describe('Tree.load', function() {
         expect(tree.getNodes()).to.have.length(1);
 
         var parent = tree.getNode(1);
-        expect(parent.children).to.be.undefined;
+        expect(parent.children).to.be.true;
 
         parent.expand();
-        expect(parent.children).to.not.be.undefined;
+
+        expect(parent.children).to.be.an('object');
         expect(parent.children).to.have.length(1);
     });
 

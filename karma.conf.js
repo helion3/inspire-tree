@@ -10,11 +10,7 @@ module.exports = function(config) {
             'bower_components/jquery/dist/jquery.js',
             'build/inspire-tree.js',
             'test/helpers.js',
-            'test/tree.spec.js',
-            'test/treenode/*.spec.js',
-            'test/treenodes/*.spec.js',
-            'test/dom/*.spec.js',
-            'test/data/*.js'
+            'test/**/*.spec.js'
         ],
         autoWatch: false,
         basePath: '',

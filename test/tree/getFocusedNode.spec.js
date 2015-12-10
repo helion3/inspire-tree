@@ -25,7 +25,7 @@ describe('Tree.getFocusedNode', function() {
     });
 
     it('returns null when nothing focused', function() {
-        expect(tree.getFocusedNode()).to.be.null;
+        expect(tree.getFocusedNode()).to.be.undefined;
     });
 
     it('returns select root node', function() {
