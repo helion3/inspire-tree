@@ -41,6 +41,7 @@ function InspireTree(opts) {
         dragTargets: false,
         multiselect: false,
         renderer: false,
+        requireSelection: false,
         search: false,
         sort: false,
         tabindex: -1
@@ -244,11 +245,18 @@ function InspireTree(opts) {
     /**
      * Deselect this node.
      *
+     * If requireSelection is true and this is the last selected
+     * node, the node will remain in a selected state.
+     *
      * @category TreeNode
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.deselect = function() {
-        return baseStateChange('selected', false, 'deselected', this);
+        if (!tree.config.requireSelection || tree.getSelectedNodes().length > 1) {
+            baseStateChange('selected', false, 'deselected', this);
+        }
+
+        return this;
     };
 
     /**
@@ -730,7 +738,10 @@ function InspireTree(opts) {
             node.focus();
 
             if (!tree.preventDeselection) {
+                var oldVal = tree.config.requireSelection;
+                tree.config.requireSelection = false;
                 tree.getNodes().deselectDeep();
+                tree.config.requireSelection = oldVal;
             }
 
             node.itree.state.selected = true;
@@ -1474,8 +1485,12 @@ function InspireTree(opts) {
             }
 
             model = collectionToModel(nodes);
-
             tree.emit('model.loaded', model);
+
+            if (tree.config.requireSelection && !tree.getSelectedNodes().length) {
+                tree.selectFirstVisibleNode();
+            }
+
             dom.applyChanges();
         };
 

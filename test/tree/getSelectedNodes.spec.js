@@ -34,5 +34,24 @@ describe('Tree.getSelectedNodes', function() {
         expect(tree.getSelectedNodes()).to.have.length(1);
     });
 
+    it('auto-selects a node when requireSelection=true', function() {
+        tree = new InspireTree({
+            target: $tree,
+            requireSelection: true,
+            data: [{
+                text: 'A',
+                id: 1
+            }]
+        });
+
+        expect(tree.getSelectedNodes()).to.have.length(1);
+    });
+
+    it('rejects deselect of only node when requireSelection=true', function() {
+        tree.getNode(1).deselect();
+
+        expect(tree.getSelectedNodes()).to.have.length(1);
+    });
+
     after(helpers.clearDOM);
 });

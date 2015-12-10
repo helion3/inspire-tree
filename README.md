@@ -67,6 +67,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 - **dragTargets** - Array of other tree elements which accept drag/drop.
 - **multiselect** - Allow multiple nodes to be selected at a time.
 - **renderer** - Function which returns a custom renderer (see below).
+- **requireSelection** - Require at least one selected node.
 - **search** - Custom search callback (for external handling of entire search).
 - **sort** - Property to sort by, or a custom sort function.
 - **tabindex** - Define a tab index for the tree container (used for key nav).
