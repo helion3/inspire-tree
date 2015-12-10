@@ -1485,11 +1485,12 @@ function InspireTree(opts) {
             }
 
             model = collectionToModel(nodes);
-            tree.emit('model.loaded', model);
 
             if (tree.config.requireSelection && !tree.getSelectedNodes().length) {
                 tree.selectFirstVisibleNode();
             }
+
+            tree.emit('model.loaded', model);
 
             dom.applyChanges();
         };
