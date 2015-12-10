@@ -25,7 +25,6 @@
         ], function($, InspireTree) {
             var tree = new InspireTree({
                 target: '.tree',
-                dynamic: true,
                 data: function(node, resolve, reject) {
                     if (!node) {
                         var promise = $.getJSON('sample-data/root.json');

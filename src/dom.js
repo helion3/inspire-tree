@@ -7,6 +7,7 @@ var diff = require('virtual-dom/diff');
 var h = require('virtual-dom/h');
 var isArrayLike = require('./lib/isArrayLike');
 var isEmpty = require('lodash.isempty');
+var isFunction = require('lodash.isfunction');
 var isObject = require('lodash.isobject');
 var isString = require('lodash.isstring');
 var keyCodes = require('key-codes');
@@ -28,7 +29,7 @@ module.exports = function InspireDOM(tree) {
     var isMouseHeld = false;
 
     // Cache because we use in loops
-    var isDynamic = tree.config.dynamic;
+    var isDynamic = isFunction(tree.config.data);
     var contextMenuChoices = tree.config.contextMenu;
 
     /**

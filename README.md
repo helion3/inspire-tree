@@ -17,7 +17,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 - ~40k minified, uncompressed.
 - No external dependencies.
 - Load data directly, via promises, callbacks, etc.
-- Load child nodes upfront or dynamically.
+- Load child nodes upfront or dynamically (or a mix of both).
 - Multiselect (optional).
 - Search by plain string, RegExp, custom matcher, or external resources (optional).
 - Sorting (optional).
@@ -65,7 +65,6 @@ Data objects must have at least a `text` property. Additional properties are lis
 - **allowSelection** - Dynamically determine `selectable` boolean for a node.
 - **data** - An array, promise, or callback function.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
-- **dynamic** - True if children will be loaded via `data` function.
 - **multiselect** - Allow multiple nodes to be selected at a time.
 - **renderer** - Function which returns a custom renderer (see below).
 - **search** - Custom search callback (for external handling of entire search).

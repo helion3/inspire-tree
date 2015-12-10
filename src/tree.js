@@ -39,7 +39,6 @@ function InspireTree(opts) {
         allowSelection: noop,
         contextMenu: false,
         dragTargets: false,
-        dynamic: false,
         multiselect: false,
         renderer: false,
         search: false,
@@ -48,7 +47,7 @@ function InspireTree(opts) {
     });
 
     // Cache some configs
-    var isDynamic = tree.config.dynamic;
+    var isDynamic = isFunction(tree.config.data);
 
     // Rendering
     var dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
@@ -260,7 +259,7 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.expand = function() {
         var node = this;
-        var allow = (node.hasChildren() || isDynamic);
+        var allow = (node.hasChildren() || (isDynamic && node.children === true));
 
         if (allow && (node.collapsed() || node.hidden())) {
             node.itree.state.collapsed = false;
@@ -268,7 +267,7 @@ function InspireTree(opts) {
 
             tree.emit('node.expanded', node);
 
-            if (isDynamic && !node.hasChildren()) {
+            if (isDynamic && node.children === true) {
                 node.loadChildren();
             }
             else {
@@ -496,7 +495,7 @@ function InspireTree(opts) {
     TreeNode.prototype.loadChildren = function() {
         var node = this;
 
-        if (isDynamic) {
+        if (isDynamic && node.children === true) {
             node.itree.state.loading = true;
             node.markDirty();
             dom.applyChanges();
