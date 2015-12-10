@@ -1548,6 +1548,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Reloads/re-executes the original data loader.
+     *
+     * @category Tree
+     * @return {void}
+     */
+    tree.reload = function() {
+        tree.load(tree.config.data);
+    };
+
+    /**
      * Removes all nodes.
      *
      * @category Tree
