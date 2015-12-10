@@ -49,8 +49,7 @@
         ], function($, _, InspireTree) {
             var tree = new InspireTree({
                 target: '.tree',
-                data: $.getJSON('demos/sample-data/full.json'),
-                requireSelection: true
+                data: $.getJSON('demos/sample-data/full.json')
             });
 
             console.log('api', tree);

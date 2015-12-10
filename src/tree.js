@@ -36,6 +36,7 @@ function InspireTree(opts) {
 
     // Assign defaults
     tree.config = defaultsDeep(opts, {
+        allowLoadEvents: [],
         allowSelection: noop,
         contextMenu: false,
         dragTargets: false,
@@ -48,6 +49,7 @@ function InspireTree(opts) {
     });
 
     // Cache some configs
+    var allowsLoadEvents = isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
     var isDynamic = isFunction(tree.config.data);
 
     // Rendering
@@ -1295,6 +1297,15 @@ function InspireTree(opts) {
 
         if (object.hasChildren()) {
             object.children = collectionToModel(object.children, object);
+        }
+
+        // Fire events for pre-set states, if enabled
+        if (allowsLoadEvents) {
+            each(tree.config.allowLoadEvents, function(eventName) {
+                if (state[eventName]) {
+                    tree.emit('node.' + eventName, object);
+                }
+            });
         }
 
         return object;
