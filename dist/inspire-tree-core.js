@@ -92,6 +92,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Assign defaults
 	    tree.config = defaultsDeep(opts, {
+	        allowLoadEvents: [],
 	        allowSelection: noop,
 	        contextMenu: false,
 	        dragTargets: false,
@@ -104,6 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    // Cache some configs
+	    var allowsLoadEvents = isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
 	    var isDynamic = isFunction(tree.config.data);
 
 	    // Rendering
@@ -560,6 +562,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var node = this;
 
 	        if (isDynamic && node.children === true) {
+	            console.log('loading children');
 	            node.itree.state.loading = true;
 	            node.markDirty();
 	            dom.applyChanges();
@@ -572,6 +575,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    node.children = collectionToModel(results, node);
 	                    node.markDirty();
 	                    dom.end();
+
+	                    console.log('emitting');
+
+	                    tree.emit('children.loaded', node);
 	                },
 	                function rejecter(err) {
 	                    tree.emit('tree.loaderror', err);
@@ -1353,6 +1360,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            object.children = collectionToModel(object.children, object);
 	        }
 
+	        // Fire events for pre-set states, if enabled
+	        if (allowsLoadEvents) {
+	            each(tree.config.allowLoadEvents, function(eventName) {
+	                if (state[eventName]) {
+	                    tree.emit('node.' + eventName, object);
+	                }
+	            });
+	        }
+
 	        return object;
 	    };
 
@@ -1541,11 +1557,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            model = collectionToModel(nodes);
-	            tree.emit('model.loaded', model);
 
 	            if (tree.config.requireSelection && !tree.getSelectedNodes().length) {
 	                tree.selectFirstVisibleNode();
 	            }
+
+	            tree.emit('model.loaded', model);
 
 	            dom.applyChanges();
 	        };
