@@ -95,16 +95,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        allowSelection: noop,
 	        contextMenu: false,
 	        dragTargets: false,
-	        dynamic: false,
 	        multiselect: false,
 	        renderer: false,
+	        requireSelection: false,
 	        search: false,
 	        sort: false,
 	        tabindex: -1
 	    });
 
 	    // Cache some configs
-	    var isDynamic = tree.config.dynamic;
+	    var isDynamic = isFunction(tree.config.data);
 
 	    // Rendering
 	    var dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
@@ -301,11 +301,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Deselect this node.
 	     *
+	     * If requireSelection is true and this is the last selected
+	     * node, the node will remain in a selected state.
+	     *
 	     * @category TreeNode
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.deselect = function() {
-	        return baseStateChange('selected', false, 'deselected', this);
+	        if (!tree.config.requireSelection || tree.getSelectedNodes().length > 1) {
+	            baseStateChange('selected', false, 'deselected', this);
+	        }
+
+	        return this;
 	    };
 
 	    /**
@@ -316,7 +323,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.expand = function() {
 	        var node = this;
-	        var allow = (node.hasChildren() || isDynamic);
+	        var allow = (node.hasChildren() || (isDynamic && node.children === true));
 
 	        if (allow && (node.collapsed() || node.hidden())) {
 	            node.itree.state.collapsed = false;
@@ -324,7 +331,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            tree.emit('node.expanded', node);
 
-	            if (isDynamic && !node.hasChildren()) {
+	            if (isDynamic && node.children === true) {
 	                node.loadChildren();
 	            }
 	            else {
@@ -552,7 +559,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TreeNode.prototype.loadChildren = function() {
 	        var node = this;
 
-	        if (isDynamic) {
+	        if (isDynamic && node.children === true) {
 	            node.itree.state.loading = true;
 	            node.markDirty();
 	            dom.applyChanges();
@@ -787,7 +794,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            node.focus();
 
 	            if (!tree.preventDeselection) {
+	                var oldVal = tree.config.requireSelection;
+	                tree.config.requireSelection = false;
 	                tree.getNodes().deselectDeep();
+	                tree.config.requireSelection = oldVal;
 	            }
 
 	            node.itree.state.selected = true;
@@ -1192,14 +1202,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	    }
 
-	    // Methods can we map to each/deeply TreeNode
+	    // Methods we can map to each/deeply TreeNode
 	    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
 	    each(mapped, function(method) {
 	        mapToEach(method);
 	        mapToEachDeeply(method);
 	    });
 
-	    // Methods can we map to each TreeNode
+	    // Methods we can map to each TreeNode
 	    each(['expandParents'], mapToEach);
 
 	    /**
@@ -1346,7 +1356,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return object;
 	    };
 
-	    var data = this;
 	    var model = new TreeNodes();
 
 	    /**
@@ -1532,8 +1541,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            model = collectionToModel(nodes);
-
 	            tree.emit('model.loaded', model);
+
+	            if (tree.config.requireSelection && !tree.getSelectedNodes().length) {
+	                tree.selectFirstVisibleNode();
+	            }
+
 	            dom.applyChanges();
 	        };
 
@@ -1603,6 +1616,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return collection;
+	    };
+
+	    /**
+	     * Reloads/re-executes the original data loader.
+	     *
+	     * @category Tree
+	     * @return {void}
+	     */
+	    tree.reload = function() {
+	        tree.load(tree.config.data);
 	    };
 
 	    /**
@@ -1733,7 +1756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    dom.attach(tree.config.target);
 
 	    // Load initial user data
-	    data.load(tree.config.data);
+	    tree.load(tree.config.data);
 
 	    return tree;
 	};
