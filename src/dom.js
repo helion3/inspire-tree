@@ -407,6 +407,23 @@ module.exports = function InspireDOM(tree) {
     }
 
     /**
+     * Helper method to find a scrollable ancestor element.
+     *
+     * @param  {HTMLElement} $element Starting element.
+     * @return {HTMLElement} Scrollable element.
+     */
+    function getScrollableAncestor($element) {
+        if ($element instanceof Element) {
+            var style = getComputedStyle($element);
+            if (style.overflow !== 'auto' && $element.parentNode) {
+                $element = getScrollableAncestor($element.parentNode);
+            }
+        }
+
+        return $element;
+    }
+
+    /**
      * Listen to keyboard event for navigation.
      *
      * @private
@@ -691,6 +708,26 @@ module.exports = function InspireDOM(tree) {
 
         if (batching === 0) {
             dom.applyChanges();
+        }
+    };
+
+    /**
+     * Scroll the first selected node into view.
+     *
+     * @category DOM
+     * @private
+     * @return {void}
+     */
+    dom.scrollSelectedIntoView = function() {
+        var $tree = document.querySelector('.inspire-tree');
+        var $selected = $tree.querySelector('.selected');
+
+        if ($selected) {
+            var $container = getScrollableAncestor($tree);
+
+            if ($container) {
+                $container.scrollTop = $selected.offsetTop;
+            }
         }
     };
 

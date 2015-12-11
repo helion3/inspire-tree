@@ -1625,6 +1625,10 @@ function InspireTree(opts) {
             tree.emit('model.loaded', model);
 
             dom.applyChanges();
+
+            if (isFunction(dom.scrollSelectedIntoView)) {
+                dom.scrollSelectedIntoView();
+            }
         };
 
         var reject = function(err) {
