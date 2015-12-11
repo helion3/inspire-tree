@@ -28,7 +28,6 @@
                 },
                 link: function(scope, $element) {
                     scope.options = scope.options || {};
-                    scope.options.target = $element;
 
                     var tree = new InspireTree(scope.options);
                     scope.tree = tree;

@@ -26,10 +26,6 @@ var sortBy = require('lodash.sortby');
 require('./scss/tree.scss');
 
 function InspireTree(opts) {
-    if (!isObject(opts) || !opts.target) {
-        throw new TypeError('Property "target" is required, either an element or a selector.');
-    }
-
     var noop = function() {};
     var tree = this;
     tree.preventDeselection = false;
@@ -59,18 +55,28 @@ function InspireTree(opts) {
     var isDynamic = isFunction(tree.config.data);
 
     // Rendering
-    var dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
-        applyChanges: noop,
-        attach: noop,
-        batch: noop,
-        end: noop
-    };
+    var dom;
 
     // Webpack has a DOM boolean that when false,
     // allows us to exclude this library from our build.
     // For those doing their own rendering, it's useless.
     if (DOM) {
         dom = new (require('./dom'))(tree);
+    }
+
+    // Validation
+    if (dom && (!isObject(opts) || !opts.target)) {
+        throw new TypeError('Property "target" is required, either an element or a selector.');
+    }
+
+    // Load custom/empty renderer
+    if (!dom) {
+        dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
+            applyChanges: noop,
+            attach: noop,
+            batch: noop,
+            end: noop
+        };
     }
 
     /**
