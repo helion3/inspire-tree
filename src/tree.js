@@ -793,7 +793,9 @@ function InspireTree(opts) {
         var context = (parent ? parent.children : model);
         remove(context, { id: node.id });
 
-        parent.refreshIndeterminateState();
+        if (parent) {
+            parent.refreshIndeterminateState();
+        }
 
         tree.emit('node.removed', node.export());
 
