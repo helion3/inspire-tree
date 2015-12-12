@@ -402,6 +402,17 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get children for this node. If no children exist, an empty TreeNodes
+     * collection is returned for safe chaining.
+     *
+     * @category TreeNode
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNode.prototype.getChildren = function() {
+        return this.hasChildren() ? this.children : new TreeNodes();
+    };
+
+    /**
      * Get the immediate parent, if any.
      *
      * @category TreeNode
