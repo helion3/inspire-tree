@@ -50,6 +50,18 @@ function InspireTree(opts) {
         tree.preventDeselection = true;
     }
 
+    // Default node state values
+    var defaultState = {
+        collapsed: true,
+        focused: false,
+        hidden: false,
+        indeterminate: false,
+        loading: false,
+        removed: false,
+        selectable: true,
+        selected: false
+    };
+
     // Cache some configs
     var allowsLoadEvents = isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
     var isDynamic = isFunction(tree.config.data);
@@ -936,7 +948,14 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.softRemove = function() {
-        return baseStateChange('removed', true, 'softremoved', this);
+        var node = this;
+
+        // Reset all state properties
+        each(defaultState, function(val, prop) {
+            node.itree.state[prop] = val;
+        });
+
+        return baseStateChange('removed', true, 'softremoved', node);
     };
 
     /**
@@ -1411,16 +1430,16 @@ function InspireTree(opts) {
         var state = itree.state = itree.state || {};
 
         // Enabled by default
-        state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : true;
-        state.selectable = typeof state.selectable === 'boolean' ? state.selectable : true;
+        state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : defaultState.collapsed;
+        state.selectable = typeof state.selectable === 'boolean' ? state.selectable : defaultState.selectable;
 
         // Disabled by default
-        state.focused = state.focused || false;
-        state.hidden = state.hidden || false;
-        state.indeterminate = state.indeterminate || false;
-        state.loading = state.loading || false;
-        state.removed = state.removed || false;
-        state.selected = state.selected || false;
+        state.focused = state.focused || defaultState.focused;
+        state.hidden = state.hidden || defaultState.hidden;
+        state.indeterminate = state.indeterminate || defaultState.indeterminate;
+        state.loading = state.loading || defaultState.loading;
+        state.removed = state.removed || defaultState.removed;
+        state.selected = state.selected || defaultState.selected;
 
         // Save parent, if any.
         object.itree.parent = parent;

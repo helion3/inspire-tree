@@ -39,5 +39,17 @@ describe('TreeNode.prototype.softRemove', function() {
         expect(node.removed()).to.be.true;
     });
 
+    it('resets state on soft remove', function() {
+        var node = tree.getNode(1);
+
+        node.restore();
+        node.select();
+
+        expect(node.selected()).to.be.true;
+
+        node.softRemove();
+        expect(node.selected()).to.be.false;
+    });
+
     after(helpers.clearDOM);
 });
