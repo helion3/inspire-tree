@@ -82,10 +82,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	__webpack_require__(52);
 
 	function InspireTree(opts) {
-	    if (!isObject(opts) || !opts.target) {
-	        throw new TypeError('Property "target" is required, either an element or a selector.');
-	    }
-
 	    var noop = function() {};
 	    var tree = this;
 	    tree.preventDeselection = false;
@@ -94,6 +90,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tree.config = defaultsDeep(opts, {
 	        allowLoadEvents: [],
 	        allowSelection: noop,
+	        checkbox: false,
 	        contextMenu: false,
 	        dragTargets: false,
 	        multiselect: false,
@@ -104,23 +101,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	        tabindex: -1
 	    });
 
+	    if (tree.config.checkbox) {
+	        tree.config.multiselect = true;
+	        tree.preventDeselection = true;
+	    }
+
 	    // Cache some configs
 	    var allowsLoadEvents = isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
 	    var isDynamic = isFunction(tree.config.data);
 
 	    // Rendering
-	    var dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
-	        applyChanges: noop,
-	        attach: noop,
-	        batch: noop,
-	        end: noop
-	    };
+	    var dom;
 
 	    // Webpack has a DOM boolean that when false,
 	    // allows us to exclude this library from our build.
 	    // For those doing their own rendering, it's useless.
 	    if (true) {
 	        dom = new (__webpack_require__(57))(tree);
+	    }
+
+	    // Validation
+	    if (dom && (!isObject(opts) || !opts.target)) {
+	        throw new TypeError('Property "target" is required, either an element or a selector.');
+	    }
+
+	    // Load custom/empty renderer
+	    if (!dom) {
+	        dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
+	            applyChanges: noop,
+	            attach: noop,
+	            batch: noop,
+	            end: noop
+	        };
 	    }
 
 	    /**
@@ -163,6 +175,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        child.itree.parent = this;
 	        this.children.push(child);
+	        this.refreshIndeterminateState();
 
 	        child.markDirty();
 	        dom.applyChanges();
@@ -307,11 +320,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * node, the node will remain in a selected state.
 	     *
 	     * @category TreeNode
+	     * @param {boolean} skipParentIndeterminate Skip refreshing parent indeterminate states.
 	     * @return {TreeNode} Node object.
 	     */
-	    TreeNode.prototype.deselect = function() {
+	    TreeNode.prototype.deselect = function(skipParentIndeterminate) {
 	        if (!tree.config.requireSelection || tree.getSelectedNodes().length > 1) {
+	            var node = this;
+	            dom.batch();
+
+	            node.itree.state.indeterminate = false;
 	            baseStateChange('selected', false, 'deselected', this);
+
+	            // If using checkbox model
+	            if (tree.config.checkbox) {
+	                // Deselect all children
+	                if (node.hasChildren()) {
+	                    node.children.recurseDown(function(child) {
+	                        return child.deselect(true);
+	                    });
+	                }
+
+	                if (!skipParentIndeterminate && node.hasParent()) {
+	                    node.getParent().refreshIndeterminateState();
+	                }
+	            }
+
+	            dom.end();
 	        }
 
 	        return this;
@@ -594,17 +628,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * and rerendering to the live DOM, next time applyChanges is called.
 	     *
 	     * @category TreeNode
-	     * @param {boolean} noRecursion Skip recursing up parent tree.
 	     * @return {TreeNode} Node object.
 	     */
-	    TreeNode.prototype.markDirty = function(noRecursion) {
-	        if (noRecursion) {
+	    TreeNode.prototype.markDirty = function() {
+	        if (!this.itree.dirty) {
 	            this.itree.dirty = true;
-	        }
-	        else {
-	            this.recurseUp(function(node) {
-	                return node.markDirty(true);
-	            });
+
+	            if (this.hasParent()) {
+	                this.getParent().markDirty();
+	            }
 	        }
 
 	        return this;
@@ -747,6 +779,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Updates the indeterminate state of this node.
+	     *
+	     * Only available when checkbox=true.
+	     * True if some, but not all children are selected.
+	     * False if no children are selected.
+	     *
+	     * @category TreeNode
+	     * @return {TreeNode} Node object.
+	     */
+	    TreeNode.prototype.refreshIndeterminateState = function() {
+	        var node = this;
+	        node.itree.state.indeterminate = false;
+
+	        if (tree.config.checkbox) {
+	            var childrenCount = node.children.length;
+	            var oldValue = node.itree.state.indeterminate;
+
+	            if (node.hasChildren()) {
+	                var selected = 0;
+
+	                each(node.children, function(child) {
+	                    if (child.itree.state.indeterminate) {
+	                        node.itree.state.indeterminate = true;
+	                        return false;
+	                    }
+	                    else if (child.selected()) {
+	                        selected++;
+	                    }
+	                });
+
+	                if (!selected) {
+	                    node.itree.state.selected = false;
+	                }
+	                else if (selected === childrenCount) {
+	                    node.itree.state.selected = true;
+	                }
+	                else if (!node.itree.state.indeterminate) {
+	                    node.itree.state.indeterminate = selected > 0 && selected < childrenCount;
+	                }
+	            }
+
+	            if (node.hasParent()) {
+	                node.getParent().refreshIndeterminateState();
+	            }
+
+	            if (oldValue !== node.itree.state.indeterminate) {
+	                node.markDirty();
+	            }
+	        }
+
+	        return node;
+	    };
+
+	    /**
 	     * Remove a node from the tree.
 	     *
 	     * @category TreeNode
@@ -754,8 +840,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.remove = function() {
 	        var node = this;
-	        var context = (node.parent ? node.parent.children : model);
+
+	        var parent;
+	        if (node.hasParent()) {
+	            parent = node.getParent();
+	        }
+
+	        var context = (parent ? parent.children : model);
 	        remove(context, { id: node.id });
+
+	        if (parent) {
+	            parent.refreshIndeterminateState();
+	        }
 
 	        tree.emit('node.removed', node.export());
 
@@ -805,6 +901,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            node.itree.state.selected = true;
+
+	            // If using checkbox model and we have children
+	            if (tree.config.checkbox) {
+	                if (node.hasChildren()) {
+	                    node.children.recurseDown(function(child) {
+	                        return child.select();
+	                    });
+	                }
+
+	                if (node.hasParent()) {
+	                    node.getParent().refreshIndeterminateState();
+	                }
+	            }
 
 	            // Emit this event
 	            tree.emit('node.selected', node);
@@ -1091,6 +1200,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Returns an array of selected nodes.
+	     *
+	     * @category TreeNodes
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    TreeNodes.prototype.getSelectedNodes = function() {
+	        return this.flatten('selected');
+	    };
+
+	    /**
 	     * Iterate down all nodes and any children.
 	     *
 	     * @category TreeNodes
@@ -1343,6 +1462,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Disabled by default
 	        state.focused = state.focused || false;
 	        state.hidden = state.hidden || false;
+	        state.indeterminate = state.indeterminate || false;
 	        state.loading = state.loading || false;
 	        state.removed = state.removed || false;
 	        state.selected = state.selected || false;
@@ -1526,11 +1646,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Returns a flat array of selected nodes.
 	     *
 	     * @category Tree
-	     * @param {TreeNodes} nodes Array of node objects to search within.
 	     * @return {TreeNodes} Selected nodes.
 	     */
-	    tree.getSelectedNodes = function(nodes) {
-	        return (nodes || model).flatten('selected');
+	    tree.getSelectedNodes = function() {
+	        return model.getSelectedNodes();
 	    };
 
 	    /**
@@ -1562,6 +1681,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            tree.emit('model.loaded', model);
 
 	            dom.applyChanges();
+
+	            if (isFunction(dom.scrollSelectedIntoView)) {
+	                dom.scrollSelectedIntoView();
+	            }
 	        };
 
 	        var reject = function(err) {
@@ -7731,6 +7854,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Creates a tri-state checkbox input.
+	     *
+	     * @param {TreeNode} node Node object.
+	     * @return {object} Input node element.
+	     */
+	    function createCheckbox(node) {
+	        return new VCache({
+	            selected: node.selected(),
+	            indeterminate: node.itree.state.indeterminate
+	        }, VStateCompare, function() {
+	            var attributes = {
+	                type: 'checkbox',
+	                checked: node.selected() ? 'checked' : undefined // eslint-disable-line no-undefined
+	            };
+
+	            return h('input', {
+	                attributes: attributes,
+	                indeterminate: node.itree.state.indeterminate,
+	                onclick: function(event) {
+	                    node.toggleSelect();
+
+	                    // Emit
+	                    tree.emit('node.click', event, node);
+	                }
+	            });
+	        });
+	    }
+
+	    /**
 	     * Creates a context menu unordered list.
 	     *
 	     * @private
@@ -7909,7 +8061,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, VStateCompare, function(previous, current) {
 	            var classNames = ['title', 'icon'];
 
-	            classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
+	            if (!tree.config.checkbox) {
+	                classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
+	            }
 
 	            return h('a.' + classNames.join('.'), {
 	                oncontextmenu: function(event) {
@@ -7921,7 +8075,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                },
 	                onclick: function(event) {
-	                    tree.preventDeselection = event.metaKey || event.ctrlKey;
+	                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey;
 	                    node.toggleSelect();
 
 	                    // Emit
@@ -7954,12 +8108,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return new VCache({
 	            hasVisibleChildren: hasVisibleChildren,
-	            collapsed: node.collapsed()
+	            collapsed: node.collapsed(),
+	            selected: node.selected(),
+	            indeterminate: node.itree.state.indeterminate
 	        }, VStateCompare, function() {
 	            var contents = [];
 
 	            if (hasVisibleChildren) {
 	                contents.push(createToggleAnchor(node));
+	            }
+
+	            if (tree.config.checkbox) {
+	                contents.push(createCheckbox(node));
 	            }
 
 	            contents.push(createTitleAnchor(node, hasVisibleChildren));
@@ -8051,6 +8211,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function getNodeFromTitleDOMElement(element) {
 	        var uid = element.parentNode.parentNode.getAttribute('data-uid');
 	        return tree.getNode(uid);
+	    }
+
+	    /**
+	     * Helper method to find a scrollable ancestor element.
+	     *
+	     * @param  {HTMLElement} $element Starting element.
+	     * @return {HTMLElement} Scrollable element.
+	     */
+	    function getScrollableAncestor($element) {
+	        if ($element instanceof Element) {
+	            var style = getComputedStyle($element);
+	            if (style.overflow !== 'auto' && $element.parentNode) {
+	                $element = getScrollableAncestor($element.parentNode);
+	            }
+	        }
+
+	        return $element;
 	    }
 
 	    /**
@@ -8338,6 +8515,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (batching === 0) {
 	            dom.applyChanges();
+	        }
+	    };
+
+	    /**
+	     * Scroll the first selected node into view.
+	     *
+	     * @category DOM
+	     * @private
+	     * @return {void}
+	     */
+	    dom.scrollSelectedIntoView = function() {
+	        var $tree = document.querySelector('.inspire-tree');
+	        var $selected = $tree.querySelector('.selected');
+
+	        if ($selected) {
+	            var $container = getScrollableAncestor($tree);
+
+	            if ($container) {
+	                $container.scrollTop = $selected.offsetTop;
+	            }
 	        }
 	    };
 
