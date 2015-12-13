@@ -1261,6 +1261,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Returns a native Array of nodes.
+     *
+     * @category TreeNodes
+     * @return {array} Array of node objects.
+     */
+    TreeNodes.prototype.toArray = function() {
+        return Array.prototype.slice.call(this);
+    };
+
+    /**
      * Map shallow to each TreeNode
      *
      * @private
