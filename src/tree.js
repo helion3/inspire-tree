@@ -1310,7 +1310,7 @@ function InspireTree(opts) {
     }
 
     // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
+    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show', 'softRemove'];
     each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
