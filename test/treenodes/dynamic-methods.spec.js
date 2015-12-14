@@ -25,6 +25,10 @@ describe('TreeNodes dynamic methods', function() {
         expect(tree.getNodes().blurDeep).to.be.a('function');
     });
 
+    it('"clean"', function() {
+        expect(tree.getNodes().clean).to.be.a('function');
+    });
+
     it('"collapse"', function() {
         expect(tree.getNodes().collapse).to.be.a('function');
         expect(tree.getNodes().collapseDeep).to.be.a('function');
@@ -52,6 +56,11 @@ describe('TreeNodes dynamic methods', function() {
     it('"restore"', function() {
         expect(tree.getNodes().restore).to.be.a('function');
         expect(tree.getNodes().restoreDeep).to.be.a('function');
+    });
+
+    it('"select"', function() {
+        expect(tree.getNodes().select).to.be.a('function');
+        expect(tree.getNodes().selectDeep).to.be.a('function');
     });
 
     it('"show"', function() {
