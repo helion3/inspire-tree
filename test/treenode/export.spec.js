@@ -11,7 +11,10 @@ describe('TreeNode.prototype.export', function() {
             target: '.tree',
             data: [{
                 text: 'A',
-                id: 1
+                id: 1,
+                children: [{
+                    text: 'B'
+                }]
             }]
         });
     });
@@ -25,10 +28,14 @@ describe('TreeNode.prototype.export', function() {
 
         expect(node.itree).to.be.an('object');
         expect(node.itree.state).to.be.an('object');
+        expect(node.hasChildren()).to.be.true;
+        expect(node.constructor.name).to.equal('TreeNode');
 
         var newNode = node.export();
 
-        expect(newNode.itree).to.be.null;
+        expect(newNode.itree).to.be.undefined;
+        expect(newNode.constructor.name).to.equal('Object');
+        expect(Array.isArray(newNode.children)).to.be.true;
     });
 
     after(helpers.clearDOM);

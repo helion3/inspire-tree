@@ -360,21 +360,21 @@ function InspireTree(opts) {
     };
 
     /**
-     * Clones a node object and removes any
-     * itree instance information/state.
+     * Clones a node, removes itree property, and returns it
+     * as a native object.
      *
      * @category TreeNode
-     * @return {TreeNode} Cloned/modified node object.
+     * @return {object} Cloned/modified node object.
      */
     TreeNode.prototype.export = function() {
         var nodeClone = this.clone();
+        delete nodeClone.itree;
 
-        tree.recurseDown(nodeClone, function(node) {
-            node.itree = null;
-            return node;
-        });
+        if (nodeClone.hasChildren()) {
+            nodeClone.children = nodeClone.children.export();
+        }
 
-        return nodeClone;
+        return nodeClone.toObject();
     };
 
     /**
@@ -979,6 +979,26 @@ function InspireTree(opts) {
     };
 
     /**
+     * Export this node as a native Object.
+     *
+     * @category TreeNode
+     * @return {object} Node object.
+     */
+    TreeNode.prototype.toObject = function() {
+        var object = {};
+
+        each(this, function(value, property) {
+            if (value && isFunction(value.export)) {
+                value = value.export();
+            }
+
+            object[property] = value;
+        });
+
+        return object;
+    };
+
+    /**
      * Checks whether a node is visible to a user. Returns false
      * if it's hidden, or if any ancestor is hidden or collapsed.
      *
@@ -1103,17 +1123,17 @@ function InspireTree(opts) {
      * itree instance information/state.
      *
      * @category TreeNodes
-     * @return {TreeNodes} Cloned/modified node objects.
+     * @return {array} Array of node objects.
      */
     TreeNodes.prototype.export = function() {
-        var nodeClones = this.clone();
+        var clones = [];
 
-        tree.recurseDown(nodeClones, function(node) {
-            node.itree = null;
+        this.recurseDown(function(node) {
+            clones.push(node.export());
             return node;
         });
 
-        return nodeClones;
+        return clones;
     };
 
     /**
