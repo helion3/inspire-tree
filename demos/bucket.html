@@ -63,23 +63,7 @@
             });
 
             $('.revert-one').on('click', function() {
-                var selected = destTree.getSelectedNodes();
-                selected.softRemoveDeep().copy(true).to(sourceTree);
-
-                // Hide all parents without visible children
-                _.each(selected, function(selectedNode) {
-                    selectedNode.recurseUp(function(node) {
-                        if (node.hasParent()) {
-                            var parent = node.getParent();
-
-                            if (!parent.hasVisibleChildren()) {
-                                parent.hide();
-                            }
-                        }
-
-                        return node;
-                    });
-                });
+                destTree.getSelectedNodes().softRemoveDeep().copy(true).to(sourceTree);
             });
 
             $('.move-all').on('click', function() {

@@ -160,6 +160,25 @@ function InspireTree(opts) {
     };
 
     /**
+     * Hides parents without any visible children.
+     *
+     * @category TreeNode
+     * @return {void}
+     */
+    TreeNode.prototype.clean = function() {
+        this.recurseUp(function(node) {
+            if (node.hasParent()) {
+                var parent = node.getParent();
+                if (!parent.hasVisibleChildren()) {
+                    parent.hide();
+                }
+            }
+
+            return node;
+        });
+    };
+
+    /**
      * Clones this node.
      *
      * @category TreeNode
@@ -1323,6 +1342,11 @@ function InspireTree(opts) {
                 node[method]();
                 return node;
             });
+
+            if (method === 'hide' || method === 'softRemove') {
+                this.clean();
+            }
+
             dom.end();
 
             return this;
@@ -1330,7 +1354,7 @@ function InspireTree(opts) {
     }
 
     // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show', 'softRemove'];
+    var mapped = ['blur', 'clean', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show', 'softRemove'];
     each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);

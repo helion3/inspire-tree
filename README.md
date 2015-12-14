@@ -166,7 +166,7 @@ tree.getNodes().expandDeep();
 
 **Mapped Methods**
 
-`blur`, `collapse`, `deselect`, `expand`, `hide`, `restore`, `select`, `show`, `softRemove`
+`blur`, `clean`, `collapse`, `deselect`, `expand`, `hide`, `restore`, `select`, `show`, `softRemove`
 
 Each method has `___Deep` variant to execute recursively. e.g. `softRemoveDeep`.
 
