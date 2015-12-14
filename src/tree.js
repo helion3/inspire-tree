@@ -1386,14 +1386,21 @@ function InspireTree(opts) {
                 existing.restore();
                 existing.show();
 
-                // Ensure existing accepts children
-                if (!isArrayLike(existing.children)) {
-                    existing.children = new TreeNodes();
+                // Merge children
+                if (node.hasChildren()) {
+                    if (!isArrayLike(existing.children)) {
+                        existing.children = new TreeNodes();
+                    }
+
+                    each(node.children, function(child) {
+                        newNodes.concat(mergeNode(existing, child));
+                    });
                 }
 
-                each(node.children, function(child) {
-                    newNodes.concat(mergeNode(existing, child));
-                });
+                // Merge truthy
+                else if (node.children) {
+                    existing.children = node.children;
+                }
             }
             else {
                 if (context instanceof TreeNode) {
