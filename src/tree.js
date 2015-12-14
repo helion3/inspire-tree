@@ -1354,14 +1354,14 @@ function InspireTree(opts) {
     }
 
     // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'clean', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show', 'softRemove'];
+    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show', 'softRemove'];
     each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
     });
 
     // Methods we can map to each TreeNode
-    each(['expandParents'], mapToEach);
+    each(['expandParents', 'clean'], mapToEach);
 
     /**
      * Stores repetitive state change logic for most state methods.
