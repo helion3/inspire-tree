@@ -988,7 +988,7 @@ function InspireTree(opts) {
     };
 
     /**
-     * Toggles collapsed state.
+     * Toggles selected state.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
