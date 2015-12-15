@@ -173,8 +173,6 @@ function InspireTree(opts) {
                     parent.hide();
                 }
             }
-
-            return node;
         });
     };
 
@@ -311,7 +309,7 @@ function InspireTree(opts) {
                 // Deselect all children
                 if (node.hasChildren()) {
                     node.children.recurseDown(function(child) {
-                        return child.deselect(true);
+                        child.deselect(true);
                     });
                 }
 
@@ -363,7 +361,7 @@ function InspireTree(opts) {
     TreeNode.prototype.expandParents = function() {
         if (this.hasParent()) {
             this.getParent().recurseUp(function(node) {
-                return node.expand();
+                node.expand();
             });
         }
     };
@@ -740,10 +738,10 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.recurseUp = function(iteratee) {
         var node = this;
-        node = iteratee(node);
+        var result = iteratee(node);
 
-        if (!node) {
-            throw new TypeError('Invalid recurseUp return value. Did you forget "return"?');
+        if (result) {
+            node = result;
         }
 
         if (node.hasParent()) {
@@ -892,7 +890,7 @@ function InspireTree(opts) {
             if (tree.config.checkbox) {
                 if (node.hasChildren()) {
                     node.children.recurseDown(function(child) {
-                        return child.select();
+                        child.select();
                     });
                 }
 
@@ -1149,8 +1147,6 @@ function InspireTree(opts) {
             if (!node.hasChildren()) {
                 matches.push(node);
             }
-
-            return node;
         });
 
         return matches;
@@ -1213,8 +1209,6 @@ function InspireTree(opts) {
             if (fn(node)) {
                 flat.push(node);
             }
-
-            return node;
         });
 
         return flat;
@@ -1264,8 +1258,6 @@ function InspireTree(opts) {
             if (predicate(node)) {
                 reduced.push(node);
             }
-
-            return node;
         });
 
         return reduced;
@@ -1344,7 +1336,6 @@ function InspireTree(opts) {
             dom.batch();
             tree.recurseDown(this, function(node) {
                 node[method]();
-                return node;
             });
 
             if (method === 'hide' || method === 'softRemove') {
@@ -1777,15 +1768,19 @@ function InspireTree(opts) {
         // Recurse each element in this array
         if (isArrayLike(collection)) {
             each(collection, function(element, i) {
-                collection[i] = tree.recurseDown(element, iteratee);
+                var res = tree.recurseDown(element, iteratee);
+
+                if (res) {
+                    collection[i] = res;
+                }
             });
         }
 
         else if (isObject(collection)) {
-            collection = iteratee(collection);
+            var result = iteratee(collection);
 
-            if (!collection) {
-                throw new Error('Iteratee returned invalid object. Did you forget "return"?');
+            if (result) {
+                collection = result;
             }
 
             // Recurse children
@@ -1887,8 +1882,6 @@ function InspireTree(opts) {
                 matches.push(node);
                 node.expandParents();
             }
-
-            return node;
         });
 
         dom.end();

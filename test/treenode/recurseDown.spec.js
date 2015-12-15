@@ -35,9 +35,8 @@ describe('TreeNode.prototype.recurseDown', function() {
     it('recurse down node and children', function() {
         var count = 0;
 
-        tree.getNode(1).recurseDown(function(node) {
+        tree.getNode(1).recurseDown(function() {
             count++;
-            return node;
         });
 
         expect(count).to.equal(3);
