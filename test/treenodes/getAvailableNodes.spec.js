@@ -1,18 +1,14 @@
 'use strict';
 
 describe('TreeNodes.prototype.getAvailableNodes', function() {
-    var $tree;
     var tree;
 
     before(function() {
         helpers.createTreeContainer();
 
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
+            target: $('.tree'),
             data: [{
                 text: 'A',
                 id: 1
@@ -29,6 +25,7 @@ describe('TreeNodes.prototype.getAvailableNodes', function() {
 
     it('exists', function() {
         expect(tree.getNodes().getAvailableNodes).to.be.a('function');
+        expect(tree.getAvailableNodes).to.be.a('function');
     });
 
     it('returns only available nodes', function() {

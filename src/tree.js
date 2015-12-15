@@ -1138,6 +1138,25 @@ function InspireTree(opts) {
     };
 
     /**
+     * Returns deepest nodes from this array.
+     *
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.deepest = function() {
+        var matches = new TreeNodes();
+
+        this.recurseDown(function(node) {
+            if (!node.hasChildren()) {
+                matches.push(node);
+            }
+
+            return node;
+        });
+
+        return matches;
+    };
+
+    /**
      * Clones an array of node objects and removes any
      * itree instance information/state.
      *
@@ -1155,70 +1174,50 @@ function InspireTree(opts) {
     };
 
     /**
-     * Flattens a hierarchy, returning only node(s) with the
-     * expected state, for operations which must exclude parents.
+     * Returns a new array of nodes which match a predicate.
      *
      * @category TreeNodes
-     * @param {string} flag Which state flag to filter by.
+     * @param {string|function} predicate State flag or custom function.
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.filter = function(predicate) {
+        var flat = this.flatten(predicate);
+        var matches = [];
+
+        each(flat, function(node) {
+            matches.push(node.copyHierarchy());
+        });
+
+        return matches;
+    };
+
+    /**
+     * Flattens a hierarchy, returning only node(s) matching the
+     * expected state or predicate function.
+     *
+     * @category TreeNodes
+     * @param {string|function} predicate State property or custom function.
      * @return {TreeNodes} Flat array of matching nodes.
      */
-    TreeNodes.prototype.flatten = function(flag) {
-        var nodes = this;
+    TreeNodes.prototype.flatten = function(predicate) {
         var flat = new TreeNodes();
-        flag = flag || 'selected';
 
-        if (isArrayLike(nodes) && !isEmpty(nodes)) {
-            each(nodes, function(node) {
-                if (node.itree.state[flag]) {
-                    flat.push(node);
-                }
-
-                if (node.hasChildren()) {
-                    flat = flat.concat(node.children.flatten(flag));
-                }
-            });
+        var fn = predicate;
+        if (typeof predicate === 'string') {
+            fn = function(node) {
+                return node[predicate]();
+            };
         }
 
+        this.recurseDown(function(node) {
+            if (fn(node)) {
+                flat.push(node);
+            }
+
+            return node;
+        });
+
         return flat;
-    };
-
-    /**
-     * Returns a new TreeNodes array of available nodes.
-     *
-     * See README.md for terminology.
-     *
-     * @category TreeNodes
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.getAvailableNodes = function() {
-        return this.reduce(function(node) {
-            return node.available();
-        });
-    };
-
-    /**
-     * Returns a new TreeNodes array of all available nodes
-     * at the deepest level (having no children).
-     *
-     * See README.md for terminology.
-     *
-     * @category TreeNodes
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.getDeepestAvailableNodes = function() {
-        return this.reduceDeep(function(node) {
-            return (!node.hasChildren() && node.available());
-        });
-    };
-
-    /**
-     * Returns an array of selected nodes.
-     *
-     * @category TreeNodes
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.getSelectedNodes = function() {
-        return this.flatten('selected');
     };
 
     /**
@@ -1368,6 +1367,17 @@ function InspireTree(opts) {
     // Methods we can map to each TreeNode
     each(['expandParents', 'clean'], mapToEach);
 
+    // Filter methods we can map
+    each(['available', 'collapsed', 'hidden', 'removed', 'selected'], function(state) {
+        TreeNodes.prototype['get' + capitalize(state) + 'Nodes'] = function(full) {
+            if (full) {
+                return this.filter(state);
+            }
+
+            return this.flatten(state);
+        };
+    });
+
     /**
      * Stores repetitive state change logic for most state methods.
      *
@@ -1389,6 +1399,17 @@ function InspireTree(opts) {
         }
 
         return node;
+    }
+
+    /**
+     * Capitalize the first letting in a string.
+     *
+     * @private
+     * @param {string} string Source string.
+     * @return {string} Resulting string.
+     */
+    function capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     /**
@@ -1531,6 +1552,17 @@ function InspireTree(opts) {
 
     var model = new TreeNodes();
 
+    // Map some model.TreeNodes method to the tree to make life easier for users
+    for (var method in TreeNodes.prototype) {
+        if (method !== 'constructor' && !tree[method] && isFunction(TreeNodes.prototype[method])) {
+            (function(methodName) {
+                tree[methodName] = function() {
+                    return model[methodName].apply(model, arguments);
+                };
+            }(method));
+        }
+    }
+
     /**
      * Add a node.
      *
@@ -1581,26 +1613,6 @@ function InspireTree(opts) {
     tree.clearSearch = function() {
         tree.getNodes().showDeep();
         tree.getNodes().collapseDeep();
-    };
-
-    /**
-     * Get all available nodes.
-     *
-     *  @category Tree
-     * @return {TreeNodes} Array of node objects.
-     */
-    tree.getAvailableNodes = function() {
-        return model.getAvailableNodes();
-    };
-
-    /**
-     * Get all deepest available nodes.
-     *
-     * @category Tree
-     * @return {TreeNodes} Array of node objects.
-     */
-    tree.getDeepestAvailableNodes = function() {
-        return model.getDeepestAvailableNodes();
     };
 
     /**
@@ -1680,16 +1692,6 @@ function InspireTree(opts) {
         }
 
         return node;
-    };
-
-    /**
-     * Returns a flat array of selected nodes.
-     *
-     * @category Tree
-     * @return {TreeNodes} Selected nodes.
-     */
-    tree.getSelectedNodes = function() {
-        return model.getSelectedNodes();
     };
 
     /**

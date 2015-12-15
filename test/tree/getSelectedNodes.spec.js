@@ -28,7 +28,7 @@ describe('Tree.getSelectedNodes', function() {
         expect(tree.getSelectedNodes()).to.have.length(0);
     });
 
-    it('returns select root node', function() {
+    it('returns selected root node', function() {
         tree.getNode(1).select();
 
         expect(tree.getSelectedNodes()).to.have.length(1);
