@@ -1007,12 +1007,12 @@ function InspireTree(opts) {
         var object = {};
 
         each(this, function(value, property) {
-            if (value && isFunction(value.export)) {
-                value = value.export();
-            }
-
             object[property] = value;
         });
+
+        if (this.hasChildren() && isFunction(this.children.toArray)) {
+            object.children = this.children.toArray();
+        }
 
         return object;
     };
@@ -1147,9 +1147,8 @@ function InspireTree(opts) {
     TreeNodes.prototype.export = function() {
         var clones = [];
 
-        this.recurseDown(function(node) {
+        each(this, function(node) {
             clones.push(node.export());
-            return node;
         });
 
         return clones;
