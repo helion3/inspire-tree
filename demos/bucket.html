@@ -34,13 +34,13 @@
             'lodash',
             'inspireTree'
         ], function($, _, InspireTree) {
-            window.sourceTree = new InspireTree({
+            var sourceTree = new InspireTree({
                 target: '.source-tree',
                 data: $.getJSON('sample-data/full.json'),
                 sort: 'text'
             });
 
-            window.destTree = new InspireTree({
+            var destTree = new InspireTree({
                 target: '.dest-tree',
                 data: [],
                 sort: 'text'
