@@ -170,6 +170,11 @@ tree.getNodes().expandDeep();
 
 Each method has `___Deep` variant to execute recursively. e.g. `softRemoveDeep`.
 
+**Methods for All Nodes**
+
+Many methods are mapped to the `tree` instance, so instead of always using `tree.getNodes().someMethod()` you can
+use `tree.someMethod()`.
+
 ## Custom Rendering
 
 [AngularJS Demo](http://helion3.com/inspire-tree/demos/angular.html)

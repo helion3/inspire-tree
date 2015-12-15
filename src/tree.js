@@ -1917,20 +1917,6 @@ function InspireTree(opts) {
         return select;
     };
 
-    /**
-     * Shows all nodes.
-     *
-     * @category Tree
-     * @return {void}
-     */
-    tree.showAll = function() {
-        dom.batch();
-        tree.recurseDown(tree.getNodes(), function(node) {
-            return node.show();
-        });
-        dom.end();
-    };
-
     // Connect to our target DOM element
     dom.attach(tree.config.target);
 
