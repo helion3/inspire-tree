@@ -106,6 +106,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        tree.preventDeselection = true;
 	    }
 
+	    // Default node state values
+	    var defaultState = {
+	        collapsed: true,
+	        focused: false,
+	        hidden: false,
+	        indeterminate: false,
+	        loading: false,
+	        removed: false,
+	        selectable: true,
+	        selected: false
+	    };
+
 	    // Cache some configs
 	    var allowsLoadEvents = isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
 	    var isDynamic = isFunction(tree.config.data);
@@ -201,6 +213,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.blur = function() {
 	        return baseStateChange('focused', false, 'blurred', this);
+	    };
+
+	    /**
+	     * Hides parents without any visible children.
+	     *
+	     * @category TreeNode
+	     * @return {void}
+	     */
+	    TreeNode.prototype.clean = function() {
+	        this.recurseUp(function(node) {
+	            if (node.hasParent()) {
+	                var parent = node.getParent();
+	                if (!parent.hasVisibleChildren()) {
+	                    parent.hide();
+	                }
+	            }
+	        });
 	    };
 
 	    /**
@@ -336,7 +365,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // Deselect all children
 	                if (node.hasChildren()) {
 	                    node.children.recurseDown(function(child) {
-	                        return child.deselect(true);
+	                        child.deselect(true);
 	                    });
 	                }
 
@@ -388,7 +417,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TreeNode.prototype.expandParents = function() {
 	        if (this.hasParent()) {
 	            this.getParent().recurseUp(function(node) {
-	                return node.expand();
+	                node.expand();
 	            });
 	        }
 	    };
@@ -404,21 +433,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Clones a node object and removes any
-	     * itree instance information/state.
+	     * Clones a node, removes itree property, and returns it
+	     * as a native object.
 	     *
 	     * @category TreeNode
-	     * @return {TreeNode} Cloned/modified node object.
+	     * @return {object} Cloned/modified node object.
 	     */
 	    TreeNode.prototype.export = function() {
 	        var nodeClone = this.clone();
+	        delete nodeClone.itree;
 
-	        tree.recurseDown(nodeClone, function(node) {
-	            node.itree = null;
-	            return node;
-	        });
+	        if (nodeClone.hasChildren()) {
+	            nodeClone.children = nodeClone.children.export();
+	        }
 
-	        return nodeClone;
+	        return nodeClone.toObject();
 	    };
 
 	    /**
@@ -455,6 +484,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.focused = function() {
 	        return this.itree.state.focused;
+	    };
+
+	    /**
+	     * Get children for this node. If no children exist, an empty TreeNodes
+	     * collection is returned for safe chaining.
+	     *
+	     * @category TreeNode
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    TreeNode.prototype.getChildren = function() {
+	        return this.hasChildren() ? this.children : new TreeNodes();
 	    };
 
 	    /**
@@ -754,10 +794,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.recurseUp = function(iteratee) {
 	        var node = this;
-	        node = iteratee(node);
+	        var result = iteratee(node);
 
-	        if (!node) {
-	            throw new TypeError('Invalid recurseUp return value. Did you forget "return"?');
+	        if (result) {
+	            node = result;
 	        }
 
 	        if (node.hasParent()) {
@@ -906,7 +946,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (tree.config.checkbox) {
 	                if (node.hasChildren()) {
 	                    node.children.recurseDown(function(child) {
-	                        return child.select();
+	                        child.select();
 	                    });
 	                }
 
@@ -981,7 +1021,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.softRemove = function() {
-	        return baseStateChange('removed', true, 'softremoved', this);
+	        return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
 	    };
 
 	    /**
@@ -995,13 +1035,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Toggles collapsed state.
+	     * Toggles selected state.
 	     *
 	     * @category TreeNode
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.toggleSelect = function() {
 	        return (this.selected() ? this.deselect() : this.select());
+	    };
+
+	    /**
+	     * Export this node as a native Object.
+	     *
+	     * @category TreeNode
+	     * @return {object} Node object.
+	     */
+	    TreeNode.prototype.toObject = function() {
+	        var object = {};
+
+	        each(this, function(value, property) {
+	            object[property] = value;
+	        });
+
+	        if (this.hasChildren() && isFunction(this.children.toArray)) {
+	            object.children = this.children.toArray();
+	        }
+
+	        return object;
 	    };
 
 	    /**
@@ -1125,88 +1185,82 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Returns deepest nodes from this array.
+	     *
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    TreeNodes.prototype.deepest = function() {
+	        var matches = new TreeNodes();
+
+	        this.recurseDown(function(node) {
+	            if (!node.hasChildren()) {
+	                matches.push(node);
+	            }
+	        });
+
+	        return matches;
+	    };
+
+	    /**
 	     * Clones an array of node objects and removes any
 	     * itree instance information/state.
 	     *
 	     * @category TreeNodes
-	     * @return {TreeNodes} Cloned/modified node objects.
+	     * @return {array} Array of node objects.
 	     */
 	    TreeNodes.prototype.export = function() {
-	        var nodeClones = this.clone();
+	        var clones = [];
 
-	        tree.recurseDown(nodeClones, function(node) {
-	            node.itree = null;
-	            return node;
+	        each(this, function(node) {
+	            clones.push(node.export());
 	        });
 
-	        return nodeClones;
+	        return clones;
 	    };
 
 	    /**
-	     * Flattens a hierarchy, returning only node(s) with the
-	     * expected state, for operations which must exclude parents.
+	     * Returns a new array of nodes which match a predicate.
 	     *
 	     * @category TreeNodes
-	     * @param {string} flag Which state flag to filter by.
+	     * @param {string|function} predicate State flag or custom function.
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    TreeNodes.prototype.filter = function(predicate) {
+	        var flat = this.flatten(predicate);
+	        var matches = [];
+
+	        each(flat, function(node) {
+	            matches.push(node.copyHierarchy());
+	        });
+
+	        return matches;
+	    };
+
+	    /**
+	     * Flattens a hierarchy, returning only node(s) matching the
+	     * expected state or predicate function.
+	     *
+	     * @category TreeNodes
+	     * @param {string|function} predicate State property or custom function.
 	     * @return {TreeNodes} Flat array of matching nodes.
 	     */
-	    TreeNodes.prototype.flatten = function(flag) {
-	        var nodes = this;
+	    TreeNodes.prototype.flatten = function(predicate) {
 	        var flat = new TreeNodes();
-	        flag = flag || 'selected';
 
-	        if (isArrayLike(nodes) && !isEmpty(nodes)) {
-	            each(nodes, function(node) {
-	                if (node.itree.state[flag]) {
-	                    flat.push(node);
-	                }
-
-	                if (node.hasChildren()) {
-	                    flat = flat.concat(node.children.flatten(flag));
-	                }
-	            });
+	        var fn = predicate;
+	        if (typeof predicate === 'string') {
+	            fn = function(node) {
+	                return node[predicate]();
+	            };
 	        }
 
+	        this.recurseDown(function(node) {
+	            if (fn(node)) {
+	                flat.push(node);
+	            }
+	        });
+
 	        return flat;
-	    };
-
-	    /**
-	     * Returns a new TreeNodes array of available nodes.
-	     *
-	     * See README.md for terminology.
-	     *
-	     * @category TreeNodes
-	     * @return {TreeNodes} Array of node objects.
-	     */
-	    TreeNodes.prototype.getAvailableNodes = function() {
-	        return this.reduce(function(node) {
-	            return node.available();
-	        });
-	    };
-
-	    /**
-	     * Returns a new TreeNodes array of all available nodes
-	     * at the deepest level (having no children).
-	     *
-	     * See README.md for terminology.
-	     *
-	     * @category TreeNodes
-	     * @return {TreeNodes} Array of node objects.
-	     */
-	    TreeNodes.prototype.getDeepestAvailableNodes = function() {
-	        return this.reduceDeep(function(node) {
-	            return (!node.hasChildren() && node.available());
-	        });
-	    };
-
-	    /**
-	     * Returns an array of selected nodes.
-	     *
-	     * @category TreeNodes
-	     * @return {TreeNodes} Array of node objects.
-	     */
-	    TreeNodes.prototype.getSelectedNodes = function() {
-	        return this.flatten('selected');
 	    };
 
 	    /**
@@ -1253,8 +1307,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (predicate(node)) {
 	                reduced.push(node);
 	            }
-
-	            return node;
 	        });
 
 	        return reduced;
@@ -1284,6 +1336,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        return nodes;
+	    };
+
+	    /**
+	     * Returns a native Array of nodes.
+	     *
+	     * @category TreeNodes
+	     * @return {array} Array of node objects.
+	     */
+	    TreeNodes.prototype.toArray = function() {
+	        var array = [];
+
+	        each(this, function(node) {
+	            array.push(node.toObject());
+	        });
+
+	        return array;
 	    };
 
 	    /**
@@ -1317,8 +1385,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            dom.batch();
 	            tree.recurseDown(this, function(node) {
 	                node[method]();
-	                return node;
 	            });
+
+	            if (method === 'hide' || method === 'softRemove') {
+	                this.clean();
+	            }
+
 	            dom.end();
 
 	            return this;
@@ -1326,14 +1398,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    // Methods we can map to each/deeply TreeNode
-	    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'show', 'softRemove'];
+	    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show'];
 	    each(mapped, function(method) {
 	        mapToEach(method);
 	        mapToEachDeeply(method);
 	    });
 
 	    // Methods we can map to each TreeNode
-	    each(['expandParents'], mapToEach);
+	    each(['expandParents', 'clean', 'softRemove'], mapToEach);
+
+	    // Filter methods we can map
+	    each(['available', 'collapsed', 'hidden', 'removed', 'selected'], function(state) {
+	        TreeNodes.prototype['get' + capitalize(state) + 'Nodes'] = function(full) {
+	            if (full) {
+	                return this.filter(state);
+	            }
+
+	            return this.flatten(state);
+	        };
+	    });
 
 	    /**
 	     * Stores repetitive state change logic for most state methods.
@@ -1343,19 +1426,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {boolean} value New state value.
 	     * @param {string} verb Verb used for events.
 	     * @param {TreeNode} node Node object.
+	     * @param {string} deep Optional name of state method to call recursively.
 	     * @return {TreeNode} Node object.
 	     */
-	    function baseStateChange(prop, value, verb, node) {
+	    function baseStateChange(prop, value, verb, node, deep) {
 	        if (node.itree.state[prop] !== value) {
+	            if (prop === 'removed') {
+	                resetState(node);
+	            }
+
 	            node.itree.state[prop] = value;
 
 	            tree.emit('node.' + verb, node);
+
+	            if (deep && node.hasChildren()) {
+	                node.getChildren().recurseDown(function(child) {
+	                    child[deep]();
+	                });
+	            }
 
 	            node.markDirty();
 	            dom.applyChanges();
 	        }
 
 	        return node;
+	    }
+
+	    /**
+	     * Capitalize the first letting in a string.
+	     *
+	     * @private
+	     * @param {string} string Source string.
+	     * @return {string} Resulting string.
+	     */
+	    function capitalize(string) {
+	        return string.charAt(0).toUpperCase() + string.slice(1);
 	    }
 
 	    /**
@@ -1402,14 +1507,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                existing.restore();
 	                existing.show();
 
-	                // Ensure existing accepts children
-	                if (!isArrayLike(existing.children)) {
-	                    existing.children = new TreeNodes();
+	                // Merge children
+	                if (node.hasChildren()) {
+	                    if (!isArrayLike(existing.children)) {
+	                        existing.children = new TreeNodes();
+	                    }
+
+	                    each(node.children, function(child) {
+	                        newNodes.concat(mergeNode(existing, child));
+	                    });
 	                }
 
-	                each(node.children, function(child) {
-	                    newNodes.concat(mergeNode(existing, child));
-	                });
+	                // Merge truthy
+	                else if (node.children) {
+	                    existing.children = node.children;
+	                }
 	            }
 	            else {
 	                if (context instanceof TreeNode) {
@@ -1456,16 +1568,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var state = itree.state = itree.state || {};
 
 	        // Enabled by default
-	        state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : true;
-	        state.selectable = typeof state.selectable === 'boolean' ? state.selectable : true;
+	        state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : defaultState.collapsed;
+	        state.selectable = typeof state.selectable === 'boolean' ? state.selectable : defaultState.selectable;
 
 	        // Disabled by default
-	        state.focused = state.focused || false;
-	        state.hidden = state.hidden || false;
-	        state.indeterminate = state.indeterminate || false;
-	        state.loading = state.loading || false;
-	        state.removed = state.removed || false;
-	        state.selected = state.selected || false;
+	        state.focused = state.focused || defaultState.focused;
+	        state.hidden = state.hidden || defaultState.hidden;
+	        state.indeterminate = state.indeterminate || defaultState.indeterminate;
+	        state.loading = state.loading || defaultState.loading;
+	        state.removed = state.removed || defaultState.removed;
+	        state.selected = state.selected || defaultState.selected;
 
 	        // Save parent, if any.
 	        object.itree.parent = parent;
@@ -1489,7 +1601,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return object;
 	    };
 
+	    /**
+	     * Reset a node's state to the tree default.
+	     *
+	     * @private
+	     * @param {TreeNode} node Node object.
+	     * @returns {TreeNode} Node object.
+	     */
+	    function resetState(node) {
+	        each(defaultState, function(val, prop) {
+	            node.itree.state[prop] = val;
+	        });
+
+	        return node;
+	    }
+
 	    var model = new TreeNodes();
+
+	    // Map some model.TreeNodes method to the tree to make life easier for users
+	    for (var method in TreeNodes.prototype) {
+	        if (method !== 'constructor' && !tree[method] && isFunction(TreeNodes.prototype[method])) {
+	            (function(methodName) {
+	                tree[methodName] = function() {
+	                    return model[methodName].apply(model, arguments);
+	                };
+	            }(method));
+	        }
+	    }
 
 	    /**
 	     * Add a node.
@@ -1541,26 +1679,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tree.clearSearch = function() {
 	        tree.getNodes().showDeep();
 	        tree.getNodes().collapseDeep();
-	    };
-
-	    /**
-	     * Get all available nodes.
-	     *
-	     *  @category Tree
-	     * @return {TreeNodes} Array of node objects.
-	     */
-	    tree.getAvailableNodes = function() {
-	        return model.getAvailableNodes();
-	    };
-
-	    /**
-	     * Get all deepest available nodes.
-	     *
-	     * @category Tree
-	     * @return {TreeNodes} Array of node objects.
-	     */
-	    tree.getDeepestAvailableNodes = function() {
-	        return model.getDeepestAvailableNodes();
 	    };
 
 	    /**
@@ -1640,16 +1758,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return node;
-	    };
-
-	    /**
-	     * Returns a flat array of selected nodes.
-	     *
-	     * @category Tree
-	     * @return {TreeNodes} Selected nodes.
-	     */
-	    tree.getSelectedNodes = function() {
-	        return model.getSelectedNodes();
 	    };
 
 	    /**
@@ -1735,15 +1843,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Recurse each element in this array
 	        if (isArrayLike(collection)) {
 	            each(collection, function(element, i) {
-	                collection[i] = tree.recurseDown(element, iteratee);
+	                var res = tree.recurseDown(element, iteratee);
+
+	                if (res) {
+	                    collection[i] = res;
+	                }
 	            });
 	        }
 
 	        else if (isObject(collection)) {
-	            collection = iteratee(collection);
+	            var result = iteratee(collection);
 
-	            if (!collection) {
-	                throw new Error('Iteratee returned invalid object. Did you forget "return"?');
+	            if (result) {
+	                collection = result;
 	            }
 
 	            // Recurse children
@@ -1845,8 +1957,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                matches.push(node);
 	                node.expandParents();
 	            }
-
-	            return node;
 	        });
 
 	        dom.end();
@@ -1873,20 +1983,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        return select;
-	    };
-
-	    /**
-	     * Shows all nodes.
-	     *
-	     * @category Tree
-	     * @return {void}
-	     */
-	    tree.showAll = function() {
-	        dom.batch();
-	        tree.recurseDown(tree.getNodes(), function(node) {
-	            return node.show();
-	        });
-	        dom.end();
 	    };
 
 	    // Connect to our target DOM element
