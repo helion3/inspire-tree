@@ -965,14 +965,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.softRemove = function() {
-        var node = this;
-
-        // Reset all state properties
-        each(defaultState, function(val, prop) {
-            node.itree.state[prop] = val;
-        });
-
-        return baseStateChange('removed', true, 'softremoved', node);
+        return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
     };
 
     /**
@@ -1349,14 +1342,14 @@ function InspireTree(opts) {
     }
 
     // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show', 'softRemove'];
+    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show'];
     each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
     });
 
     // Methods we can map to each TreeNode
-    each(['expandParents', 'clean'], mapToEach);
+    each(['expandParents', 'clean', 'softRemove'], mapToEach);
 
     // Filter methods we can map
     each(['available', 'collapsed', 'hidden', 'removed', 'selected'], function(state) {
@@ -1377,13 +1370,24 @@ function InspireTree(opts) {
      * @param {boolean} value New state value.
      * @param {string} verb Verb used for events.
      * @param {TreeNode} node Node object.
+     * @param {string} deep Optional name of state method to call recursively.
      * @return {TreeNode} Node object.
      */
-    function baseStateChange(prop, value, verb, node) {
+    function baseStateChange(prop, value, verb, node, deep) {
         if (node.itree.state[prop] !== value) {
+            if (prop === 'removed') {
+                resetState(node);
+            }
+
             node.itree.state[prop] = value;
 
             tree.emit('node.' + verb, node);
+
+            if (deep && node.hasChildren()) {
+                node.getChildren().recurseDown(function(child) {
+                    child[deep]();
+                });
+            }
 
             node.markDirty();
             dom.applyChanges();
@@ -1540,6 +1544,21 @@ function InspireTree(opts) {
 
         return object;
     };
+
+    /**
+     * Reset a node's state to the tree default.
+     *
+     * @private
+     * @param {TreeNode} node Node object.
+     * @returns {TreeNode} Node object.
+     */
+    function resetState(node) {
+        each(defaultState, function(val, prop) {
+            node.itree.state[prop] = val;
+        });
+
+        return node;
+    }
 
     var model = new TreeNodes();
 

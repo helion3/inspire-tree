@@ -55,7 +55,6 @@ describe('TreeNodes dynamic methods', function() {
 
     it('"restore"', function() {
         expect(tree.getNodes().restore).to.be.a('function');
-        expect(tree.getNodes().restoreDeep).to.be.a('function');
     });
 
     it('"select"', function() {
@@ -70,7 +69,6 @@ describe('TreeNodes dynamic methods', function() {
 
     it('"softRemove"', function() {
         expect(tree.getNodes().softRemove).to.be.a('function');
-        expect(tree.getNodes().softRemoveDeep).to.be.a('function');
     });
 
     after(helpers.clearDOM);

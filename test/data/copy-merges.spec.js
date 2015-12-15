@@ -179,7 +179,7 @@ describe('Modification', function() {
     it('only shows nodes merged back in', function() {
         // Move all to one tree
         tree1.getNodes().copy().to(tree2);
-        tree1.getNodes().softRemoveDeep();
+        tree1.getNodes().softRemove();
 
         var node = tree2.getNode(20);
         node.copy(true).to(tree1);

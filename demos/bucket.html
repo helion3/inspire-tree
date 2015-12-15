@@ -34,13 +34,13 @@
             'lodash',
             'inspireTree'
         ], function($, _, InspireTree) {
-            var sourceTree = new InspireTree({
+            window.sourceTree = new InspireTree({
                 target: '.source-tree',
                 data: $.getJSON('sample-data/full.json'),
                 sort: 'text'
             });
 
-            var destTree = new InspireTree({
+            window.destTree = new InspireTree({
                 target: '.dest-tree',
                 data: [],
                 sort: 'text'
@@ -52,7 +52,7 @@
 
             $('.move-one').on('click', function() {
                 var selected = sourceTree.getSelectedNodes();
-                selected.softRemoveDeep().copy(true).to(destTree);
+                selected.softRemove().copy(true).to(destTree);
 
                 // If we moved a child node, expand nodes down to it
                 destTree.getNodes(_.pluck(selected, 'id')).expandParents();
@@ -63,15 +63,15 @@
             });
 
             $('.revert-one').on('click', function() {
-                destTree.getSelectedNodes().softRemoveDeep().copy(true).to(sourceTree);
+                destTree.getSelectedNodes().softRemove().copy(true).to(sourceTree);
             });
 
             $('.move-all').on('click', function() {
-                sourceTree.getNodes().softRemoveDeep().copy().to(destTree);
+                sourceTree.getNodes().softRemove().copy().to(destTree);
             });
 
             $('.revert-all').on('click', function() {
-                destTree.getNodes().softRemoveDeep().copy().to(sourceTree);
+                destTree.getNodes().softRemove().copy().to(sourceTree);
             });
         });
     </script>
