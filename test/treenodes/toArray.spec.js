@@ -27,5 +27,11 @@ describe('TreeNodes.prototype.toArray', function() {
         expect(nodes).to.have.length(1);
     });
 
+    it('returns array of native objects', function() {
+        var nodes = tree.getNodes().toArray();
+
+        expect(nodes[0].constructor.name).to.equal('Object');
+    });
+
     after(helpers.clearDOM);
 });

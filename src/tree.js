@@ -1305,7 +1305,13 @@ function InspireTree(opts) {
      * @return {array} Array of node objects.
      */
     TreeNodes.prototype.toArray = function() {
-        return Array.prototype.slice.call(this);
+        var array = [];
+
+        each(this, function(node) {
+            array.push(node.toObject());
+        });
+
+        return array;
     };
 
     /**
