@@ -1177,7 +1177,7 @@ function InspireTree(opts) {
      */
     TreeNodes.prototype.filter = function(predicate) {
         var flat = this.flatten(predicate);
-        var matches = [];
+        var matches = new TreeNodes();
 
         each(flat, function(node) {
             matches.push(node.copyHierarchy());
