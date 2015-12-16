@@ -1231,6 +1231,17 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get a specific node in the collection, or undefined if it doesn't exist.
+     *
+     * @category TreeNodes
+     * @param {int} index Numeric index of requested node.
+     * @return {TreeNode} Node object. Undefined if invalid index.
+     */
+    TreeNodes.prototype.get = function(index) {
+        return this[index];
+    };
+
+    /**
      * Iterate down all nodes and any children.
      *
      * @category TreeNodes
