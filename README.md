@@ -216,6 +216,27 @@ var tree = new InspireTree({
 - **deepest** - Nodes without any children.
 - **visible** - Node is visible to the user. It's ancestors are not hidden/collapsed/removed.
 
+## Troubleshooting
+
+**Recursing Flattened Arrays**
+
+Methods which return flattened arrays intentionally leave their hierarchy pointers intact. This means that while
+you have a flat array, you also have reference to parent/child elements. This can interfere with recursive
+methods because they'll iterate *both* the array elements and their children.
+
+This will only impact a small number of methods. For example:
+
+```js
+tree.getAvailableNodes().deepest();
+```
+
+... will duplicate nodes because `deepest` iterates the array *and* recurses through children.
+
+Possible solutions:
+
+- Reverse the order: `tree.deepest().getAvailableNodes()`
+- Avoid flattened arrays: `tree.getAvailableNodes(true).deepest()`
+
 ## Development
 
 Clone the repository, and get yourself setup:
