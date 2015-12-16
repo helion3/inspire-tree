@@ -26,12 +26,12 @@ describe('Tree.addNode', function() {
     });
 
     it('adds a new node', function() {
-        expect(tree.getNodes()).to.have.length(1);
+        expect(tree.nodes()).to.have.length(1);
         expect($tree.find('li')).to.have.length(1);
 
         tree.addNode({ text: 'New' });
 
-        expect(tree.getNodes()).to.have.length(2);
+        expect(tree.nodes()).to.have.length(2);
         expect($tree.find('li')).to.have.length(2);
     });
 

@@ -26,7 +26,7 @@ describe('Tree.addNodes', function() {
     });
 
     it('adds new nodes', function() {
-        expect(tree.getNodes()).to.have.length(1);
+        expect(tree.nodes()).to.have.length(1);
         expect($tree.find('li')).to.have.length(1);
 
         tree.addNodes([{
@@ -35,7 +35,7 @@ describe('Tree.addNodes', function() {
             text: 'C'
         }]);
 
-        expect(tree.getNodes()).to.have.length(3);
+        expect(tree.nodes()).to.have.length(3);
         expect($tree.find('li')).to.have.length(3);
     });
 

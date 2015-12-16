@@ -32,7 +32,7 @@ describe('TreeNodes.prototype.removed', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().removed).to.be.a('function');
+        expect(tree.nodes().removed).to.be.a('function');
         expect(tree.removed).to.be.a('function');
     });
 

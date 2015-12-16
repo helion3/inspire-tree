@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Tree.getNodes', function() {
+describe('Tree.nodes', function() {
     var $tree;
     var tree;
 
@@ -27,15 +27,15 @@ describe('Tree.getNodes', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes).to.be.a('function');
+        expect(tree.nodes).to.be.a('function');
     });
 
     it('returns all nodes', function() {
-        expect(tree.getNodes()).to.have.length(3);
+        expect(tree.nodes()).to.have.length(3);
     });
 
     it('returns nodes matching IDs', function() {
-        expect(tree.getNodes([1, 3])).to.have.length(2);
+        expect(tree.nodes([1, 3])).to.have.length(2);
     });
 
     after(helpers.clearDOM);

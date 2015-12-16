@@ -28,11 +28,11 @@ describe('TreeNodes.prototype.reduce', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().reduce).to.be.a('function');
+        expect(tree.nodes().reduce).to.be.a('function');
     });
 
     it('returns only reduced nodes', function() {
-        expect(tree.getNodes().reduce(function(node) {
+        expect(tree.nodes().reduce(function(node) {
             return (node.company === 'Test');
         })).to.have.length(1);
     });

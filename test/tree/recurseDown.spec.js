@@ -48,7 +48,7 @@ describe('Tree.recurseDown', function() {
     it('recurse down treenodes and children', function() {
         var count = 0;
 
-        tree.recurseDown(tree.getNodes(), function(node) {
+        tree.recurseDown(tree.nodes(), function(node) {
             count++;
             return node;
         });

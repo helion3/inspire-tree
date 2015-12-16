@@ -21,54 +21,54 @@ describe('TreeNodes dynamic methods', function() {
     });
 
     it('"blur"', function() {
-        expect(tree.getNodes().blur).to.be.a('function');
-        expect(tree.getNodes().blurDeep).to.be.a('function');
+        expect(tree.nodes().blur).to.be.a('function');
+        expect(tree.nodes().blurDeep).to.be.a('function');
     });
 
     it('"clean"', function() {
-        expect(tree.getNodes().clean).to.be.a('function');
+        expect(tree.nodes().clean).to.be.a('function');
     });
 
     it('"collapse"', function() {
-        expect(tree.getNodes().collapse).to.be.a('function');
-        expect(tree.getNodes().collapseDeep).to.be.a('function');
+        expect(tree.nodes().collapse).to.be.a('function');
+        expect(tree.nodes().collapseDeep).to.be.a('function');
     });
 
     it('"deselect"', function() {
-        expect(tree.getNodes().deselect).to.be.a('function');
-        expect(tree.getNodes().deselectDeep).to.be.a('function');
+        expect(tree.nodes().deselect).to.be.a('function');
+        expect(tree.nodes().deselectDeep).to.be.a('function');
     });
 
     it('"expand"', function() {
-        expect(tree.getNodes().expand).to.be.a('function');
-        expect(tree.getNodes().expandDeep).to.be.a('function');
+        expect(tree.nodes().expand).to.be.a('function');
+        expect(tree.nodes().expandDeep).to.be.a('function');
     });
 
     it('"expandParents"', function() {
-        expect(tree.getNodes().expandParents).to.be.a('function');
+        expect(tree.nodes().expandParents).to.be.a('function');
     });
 
     it('"hide"', function() {
-        expect(tree.getNodes().hide).to.be.a('function');
-        expect(tree.getNodes().hideDeep).to.be.a('function');
+        expect(tree.nodes().hide).to.be.a('function');
+        expect(tree.nodes().hideDeep).to.be.a('function');
     });
 
     it('"restore"', function() {
-        expect(tree.getNodes().restore).to.be.a('function');
+        expect(tree.nodes().restore).to.be.a('function');
     });
 
     it('"select"', function() {
-        expect(tree.getNodes().select).to.be.a('function');
-        expect(tree.getNodes().selectDeep).to.be.a('function');
+        expect(tree.nodes().select).to.be.a('function');
+        expect(tree.nodes().selectDeep).to.be.a('function');
     });
 
     it('"show"', function() {
-        expect(tree.getNodes().show).to.be.a('function');
-        expect(tree.getNodes().showDeep).to.be.a('function');
+        expect(tree.nodes().show).to.be.a('function');
+        expect(tree.nodes().showDeep).to.be.a('function');
     });
 
     it('"softRemove"', function() {
-        expect(tree.getNodes().softRemove).to.be.a('function');
+        expect(tree.nodes().softRemove).to.be.a('function');
     });
 
     after(helpers.clearDOM);

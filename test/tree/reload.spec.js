@@ -23,7 +23,7 @@ describe('Tree.reload', function() {
 
         tree.reload();
 
-        expect(tree.getNodes()).to.have.length(2);
+        expect(tree.nodes()).to.have.length(2);
     });
 
     after(helpers.clearDOM);

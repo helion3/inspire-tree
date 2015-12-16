@@ -155,13 +155,13 @@ down the nodes and their children.
 *Expands only root nodes inside this collection:*
 
 ```js
-tree.getNodes().expand();
+tree.nodes().expand();
 ```
 
 *Expands root nodes and their children inside this collection:*
 
 ```js
-tree.getNodes().expandDeep();
+tree.nodes().expandDeep();
 ```
 
 **Mapped Methods**
@@ -172,7 +172,7 @@ Most methods have a `___Deep` variant to execute recursively. e.g. `expandDeep`.
 
 **Methods for All Nodes**
 
-Many methods are mapped to the `tree` instance, so instead of always using `tree.getNodes().someMethod()` you can
+Many methods are mapped to the `tree` instance, so instead of always using `tree.nodes().someMethod()` you can
 use `tree.someMethod()`.
 
 ## Custom Rendering

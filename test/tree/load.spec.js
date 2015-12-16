@@ -14,7 +14,7 @@ describe('Tree.load', function() {
             }]
         });
 
-        expect(tree.getNodes()).to.have.length(1);
+        expect(tree.nodes()).to.have.length(1);
     });
 
     it('loads data via callback', function() {
@@ -27,7 +27,7 @@ describe('Tree.load', function() {
             }
         });
 
-        expect(tree.getNodes()).to.have.length(1);
+        expect(tree.nodes()).to.have.length(1);
     });
 
     it('loads data via promise', function(done) {
@@ -65,7 +65,7 @@ describe('Tree.load', function() {
             }
         });
 
-        expect(tree.getNodes()).to.have.length(1);
+        expect(tree.nodes()).to.have.length(1);
 
         var parent = tree.getNode(1);
         expect(parent.children).to.be.true;
@@ -89,7 +89,7 @@ describe('Tree.load', function() {
             sort: 'text'
         });
 
-        var nodes = tree.getNodes();
+        var nodes = tree.nodes();
         expect(nodes[0].text).to.equal('A');
         expect(nodes[1].text).to.equal('B');
         expect(nodes[2].text).to.equal('C');

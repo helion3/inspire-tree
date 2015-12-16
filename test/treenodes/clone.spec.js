@@ -24,11 +24,11 @@ describe('TreeNodes.prototype.clone', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().clone).to.be.a('function');
+        expect(tree.nodes().clone).to.be.a('function');
     });
 
     it('returns a complete clone', function() {
-        var original = tree.getNodes();
+        var original = tree.nodes();
         var clone = original.clone();
 
         expect(clone.constructor.name).to.equal('TreeNodes');
@@ -37,7 +37,7 @@ describe('TreeNodes.prototype.clone', function() {
     });
 
     it('changes to clone do not impact original', function() {
-        var original = tree.getNodes();
+        var original = tree.nodes();
         var clone = original.clone();
 
         clone[0].id = 'brand-new';

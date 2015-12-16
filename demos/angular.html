@@ -88,7 +88,7 @@
                 $scope.moveOne = function() {
                     var selected = sourceTree.selected();
                     selected.softRemoveDeep().copy(true).to(destTree);
-                    destTree.getNodes(_.pluck(selected, 'id')).expandParents();
+                    destTree.nodes(_.pluck(selected, 'id')).expandParents();
                 };
 
                 $scope.revertOne = function() {
@@ -112,11 +112,11 @@
                 };
 
                 $scope.moveAll = function() {
-                    sourceTree.getNodes().softRemoveDeep().copy().to(destTree);
+                    sourceTree.nodes().softRemoveDeep().copy().to(destTree);
                 };
 
                 $scope.revertAll = function() {
-                    destTree.getNodes().softRemoveDeep().copy().to(sourceTree);
+                    destTree.nodes().softRemoveDeep().copy().to(sourceTree);
                 };
             }]);
 

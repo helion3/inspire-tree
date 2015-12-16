@@ -28,11 +28,11 @@ describe('TreeNodes.prototype.deepest', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().deepest).to.be.a('function');
+        expect(tree.nodes().deepest).to.be.a('function');
     });
 
     it('returns only deepest nodes', function() {
-        var deepest = tree.getNodes().deepest();
+        var deepest = tree.nodes().deepest();
 
         expect(deepest).to.have.length(2);
         expect(deepest[0].text).to.equal('B');

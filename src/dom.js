@@ -594,7 +594,7 @@ module.exports = function InspireDOM(tree) {
      * @return {void}
      */
     function renderNodes(nodes) {
-        var newOl = createOrderedList(nodes || tree.getNodes(), true);
+        var newOl = createOrderedList(nodes || tree.nodes(), true);
 
         if (!rootNode) {
             rootNode = createElement(newOl);

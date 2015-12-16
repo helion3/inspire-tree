@@ -410,7 +410,7 @@ function InspireTree(opts) {
         if (!node.focused()) {
             // Batch selection changes
             dom.batch();
-            tree.getNodes().blurDeep();
+            tree.nodes().blurDeep();
             node.itree.state.focused = true;
 
             // Emit this event
@@ -685,7 +685,7 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.nextVisibleSiblingNode = function() {
         var startingNode = this;
-        var context = (startingNode.hasParent() ? startingNode.getParent().children : tree.getNodes());
+        var context = (startingNode.hasParent() ? startingNode.getParent().children : tree.nodes());
         var i = findIndex(context, { id: startingNode.id });
 
         return find(slice(context, i + 1), function(node) {
@@ -728,7 +728,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object, if any.
      */
     TreeNode.prototype.previousVisibleSiblingNode = function() {
-        var context = (this.hasParent() ? this.getParent().children : tree.getNodes());
+        var context = (this.hasParent() ? this.getParent().children : tree.nodes());
         var i = findIndex(context, { id: this.id });
         return findLast(slice(context, 0, i), function(node) {
             return node.visible();
@@ -886,7 +886,7 @@ function InspireTree(opts) {
             if (!tree.preventDeselection) {
                 var oldVal = tree.config.requireSelection;
                 tree.config.requireSelection = false;
-                tree.getNodes().deselectDeep();
+                tree.nodes().deselectDeep();
                 tree.config.requireSelection = oldVal;
             }
 
@@ -1612,8 +1612,8 @@ function InspireTree(opts) {
      * @return {void}
      */
     tree.clearSearch = function() {
-        tree.getNodes().showDeep();
-        tree.getNodes().collapseDeep();
+        tree.nodes().showDeep();
+        tree.nodes().collapseDeep();
     };
 
     /**
@@ -1656,10 +1656,10 @@ function InspireTree(opts) {
      * @return {TreeNodes} Array of node objects.
      * @example
      *
-     * var all = tree.getNodes()
-     * var some = tree.getNodes([1, 2, 3])
+     * var all = tree.nodes()
+     * var some = tree.nodes([1, 2, 3])
      */
-    tree.getNodes = function(refs) {
+    tree.nodes = function(refs) {
         var nodes = model;
 
         if (isArray(refs)) {
@@ -1840,7 +1840,7 @@ function InspireTree(opts) {
                 function resolver(nodes) {
                     dom.batch();
 
-                    tree.getNodes().hideDeep();
+                    tree.nodes().hideDeep();
                     each(nodes, function(node) {
                         mergeNode(model, node);
                     });

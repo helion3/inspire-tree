@@ -25,14 +25,14 @@ describe('TreeNodes.prototype.flatten', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().flatten).to.be.a('function');
+        expect(tree.nodes().flatten).to.be.a('function');
     });
 
     it('returns flat array of hidden nodes', function() {
         tree.getNode(1).hide();
         tree.getNode(2).hide();
 
-        var flattened = tree.getNodes().flatten('hidden');
+        var flattened = tree.nodes().flatten('hidden');
         expect(flattened).to.have.length(2);
     });
 

@@ -24,12 +24,12 @@ describe('TreeNodes.prototype.available', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().available).to.be.a('function');
+        expect(tree.nodes().available).to.be.a('function');
         expect(tree.available).to.be.a('function');
     });
 
     it('returns only available nodes', function() {
-        expect(tree.getNodes().available()).to.have.length(1);
+        expect(tree.nodes().available()).to.have.length(1);
     });
 
     after(helpers.clearDOM);

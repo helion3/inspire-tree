@@ -30,79 +30,79 @@ describe('Modification', function() {
     });
 
     it('throws error if destination tree isn\'t recognized', function() {
-        expect(tree1.getNodes().copy().to).to.throw(Error);
+        expect(tree1.nodes().copy().to).to.throw(Error);
     });
 
     it('copies all nodes to a new tree', function() {
-        expect(tree2.getNodes()).to.have.length(0);
+        expect(tree2.nodes()).to.have.length(0);
 
-        tree1.getNodes().copy().to(tree2);
-        expect(tree2.getNodes()).to.have.length(2);
+        tree1.nodes().copy().to(tree2);
+        expect(tree2.nodes()).to.have.length(2);
 
         tree2.removeAll();
     });
 
     it('copies given nodes to a new tree', function() {
-        expect(tree2.getNodes()).to.have.length(0);
+        expect(tree2.nodes()).to.have.length(0);
 
-        tree1.getNodes().copy().to(tree2);
-        expect(tree2.getNodes()).to.have.length(2);
+        tree1.nodes().copy().to(tree2);
+        expect(tree2.nodes()).to.have.length(2);
 
         tree2.removeAll();
     });
 
     it('copies selected node to a new tree', function() {
-        expect(tree2.getNodes()).to.have.length(0);
+        expect(tree2.nodes()).to.have.length(0);
 
         var node = tree1.getNode(1);
         node.select();
         tree1.selected().copy().to(tree2);
 
-        expect(tree2.getNodes()).to.have.length(1);
-        expect(tree2.getNodes()[0].id).to.equal('1');
+        expect(tree2.nodes()).to.have.length(1);
+        expect(tree2.nodes()[0].id).to.equal('1');
 
         tree2.removeAll();
     });
 
     it('copies specific node to a new tree', function() {
-        expect(tree2.getNodes()).to.have.length(0);
+        expect(tree2.nodes()).to.have.length(0);
 
         var node = tree1.getNode(1);
         node.copy().to(tree2);
 
-        expect(tree2.getNodes()).to.have.length(1);
-        expect(tree2.getNodes()[0].id).to.equal('1');
+        expect(tree2.nodes()).to.have.length(1);
+        expect(tree2.nodes()[0].id).to.equal('1');
 
         tree2.removeAll();
     });
 
     it('copies child node to a new tree', function() {
-        expect(tree2.getNodes()).to.have.length(0);
+        expect(tree2.nodes()).to.have.length(0);
 
         var node = tree1.getNode(20);
         node.copy().to(tree2);
 
-        expect(tree2.getNodes()).to.have.length(1);
-        expect(tree2.getNodes()[0].id).to.equal('20');
+        expect(tree2.nodes()).to.have.length(1);
+        expect(tree2.nodes()[0].id).to.equal('20');
 
         tree2.removeAll();
     });
 
     it('copies child node and its hierarchy to a new tree', function() {
-        expect(tree2.getNodes()).to.have.length(0);
+        expect(tree2.nodes()).to.have.length(0);
 
         var node = tree1.getNode(20);
         node.copy(true).to(tree2);
 
-        expect(tree2.getNodes()).to.have.length(1);
-        expect(tree2.getNodes()[0].id).to.equal('2');
+        expect(tree2.nodes()).to.have.length(1);
+        expect(tree2.nodes()[0].id).to.equal('2');
 
         tree2.removeAll();
     });
 
     it('merges new nodes on copy', function() {
         // Move all nodes over
-        tree1.getNodes().copy().to(tree2);
+        tree1.nodes().copy().to(tree2);
 
         // Check original child count
         expect(tree1.getNode(2).children).to.have.length(1);
@@ -178,16 +178,16 @@ describe('Modification', function() {
 
     it('only shows nodes merged back in', function() {
         // Move all to one tree
-        tree1.getNodes().copy().to(tree2);
-        tree1.getNodes().softRemove();
+        tree1.nodes().copy().to(tree2);
+        tree1.nodes().softRemove();
 
         var node = tree2.getNode(20);
         node.copy(true).to(tree1);
 
-        expect(tree1.getNodes()[0].removed()).to.be.true;
-        expect(tree1.getNodes()[1].removed()).to.be.false;
-        expect(tree1.getNodes()[1].children[0].removed()).to.be.false;
-        expect(tree1.getNodes()[1].children[1].removed()).to.be.true;
+        expect(tree1.nodes()[0].removed()).to.be.true;
+        expect(tree1.nodes()[1].removed()).to.be.false;
+        expect(tree1.nodes()[1].children[0].removed()).to.be.false;
+        expect(tree1.nodes()[1].children[1].removed()).to.be.true;
 
         tree2.removeAll();
     });

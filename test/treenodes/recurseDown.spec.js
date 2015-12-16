@@ -31,13 +31,13 @@ describe('TreeNodes.prototype.recurseDown', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().recurseDown).to.be.a('function');
+        expect(tree.nodes().recurseDown).to.be.a('function');
     });
 
     it('recurse down treenodes and children', function() {
         var count = 0;
 
-        tree.getNodes().recurseDown(function(node) {
+        tree.nodes().recurseDown(function(node) {
             count++;
             return node;
         });

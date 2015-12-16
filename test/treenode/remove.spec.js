@@ -27,7 +27,7 @@ describe('TreeNode.prototype.remove', function() {
     it('removes a node', function() {
         tree.getNode(1).remove();
 
-        expect(tree.getNodes()).to.have.length(0);
+        expect(tree.nodes()).to.have.length(0);
     });
 
     after(helpers.clearDOM);

@@ -25,20 +25,20 @@ describe('TreeNodes.prototype.sort', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().sort).to.be.a('function');
+        expect(tree.nodes().sort).to.be.a('function');
     });
 
     it('sorts alphabetically', function() {
-        var nodes = tree.getNodes();
+        var nodes = tree.nodes();
         expect(nodes[0].text).to.equal('D');
         expect(nodes[1].text).to.equal('C');
         expect(nodes[2].text).to.equal('a');
 
         // Sort
-        tree.getNodes().sort('text');
+        tree.nodes().sort('text');
 
         // Check original model
-        nodes = tree.getNodes();
+        nodes = tree.nodes();
         expect(nodes[0].text).to.equal('C');
         expect(nodes[1].text).to.equal('D');
         expect(nodes[2].text).to.equal('a');

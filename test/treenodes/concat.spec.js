@@ -21,11 +21,11 @@ describe('TreeNodes.prototype.concat', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().concat).to.be.a('function');
+        expect(tree.nodes().concat).to.be.a('function');
     });
 
     it('combines two tree nodes arrays into one', function() {
-        var original = tree.getNodes();
+        var original = tree.nodes();
         var clone = original.clone();
         var combined = clone.concat(original);
 

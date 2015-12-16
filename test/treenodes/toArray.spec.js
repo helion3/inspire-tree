@@ -17,18 +17,18 @@ describe('TreeNodes.prototype.toArray', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().toArray).to.be.a('function');
+        expect(tree.nodes().toArray).to.be.a('function');
     });
 
     it('returns nodes as a native array', function() {
-        var nodes = tree.getNodes().toArray();
+        var nodes = tree.nodes().toArray();
 
         expect(Array.isArray(nodes)).to.be.true;
         expect(nodes).to.have.length(1);
     });
 
     it('returns array of native objects', function() {
-        var nodes = tree.getNodes().toArray();
+        var nodes = tree.nodes().toArray();
 
         expect(nodes[0].constructor.name).to.equal('Object');
     });

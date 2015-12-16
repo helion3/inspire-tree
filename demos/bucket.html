@@ -55,7 +55,7 @@
                 selected.softRemove().copy(true).to(destTree);
 
                 // If we moved a child node, expand nodes down to it
-                destTree.getNodes(_.pluck(selected, 'id')).expandParents();
+                destTree.nodes(_.pluck(selected, 'id')).expandParents();
             });
 
             sourceTree.on('node.dblclick', function(event, node) {
@@ -67,11 +67,11 @@
             });
 
             $('.move-all').on('click', function() {
-                sourceTree.getNodes().softRemove().copy().to(destTree);
+                sourceTree.nodes().softRemove().copy().to(destTree);
             });
 
             $('.revert-all').on('click', function() {
-                destTree.getNodes().softRemove().copy().to(sourceTree);
+                destTree.nodes().softRemove().copy().to(sourceTree);
             });
         });
     </script>
