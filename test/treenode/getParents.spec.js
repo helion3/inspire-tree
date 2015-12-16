@@ -29,15 +29,15 @@ describe('TreeNode.prototype.getParents', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).getParents).to.be.a('function');
+        expect(tree.node(1).getParents).to.be.a('function');
     });
 
     it('returns empty array for root node', function() {
-        expect(tree.getNode(1).getParents()).to.have.length(0);
+        expect(tree.node(1).getParents()).to.have.length(0);
     });
 
     it('returns both parents for child node', function() {
-        var parents = tree.getNode(3).getParents();
+        var parents = tree.node(3).getParents();
 
         expect(parents).to.have.length(2);
         expect(parents[0].id).to.equal('2');

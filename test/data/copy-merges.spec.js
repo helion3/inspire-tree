@@ -54,7 +54,7 @@ describe('Modification', function() {
     it('copies selected node to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.getNode(1);
+        var node = tree1.node(1);
         node.select();
         tree1.selected().copy().to(tree2);
 
@@ -67,7 +67,7 @@ describe('Modification', function() {
     it('copies specific node to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.getNode(1);
+        var node = tree1.node(1);
         node.copy().to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
@@ -79,7 +79,7 @@ describe('Modification', function() {
     it('copies child node to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.getNode(20);
+        var node = tree1.node(20);
         node.copy().to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
@@ -91,7 +91,7 @@ describe('Modification', function() {
     it('copies child node and its hierarchy to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.getNode(20);
+        var node = tree1.node(20);
         node.copy(true).to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
@@ -105,29 +105,29 @@ describe('Modification', function() {
         tree1.nodes().copy().to(tree2);
 
         // Check original child count
-        expect(tree1.getNode(2).children).to.have.length(1);
+        expect(tree1.node(2).children).to.have.length(1);
 
         // Push a new child to the copied data
-        var parent = tree2.getNode(2);
+        var parent = tree2.node(2);
         parent.addChild({
             text: 'New'
         });
 
         // Check new child count
-        expect(tree2.getNode(2).children).to.have.length(2);
+        expect(tree2.node(2).children).to.have.length(2);
 
         // Re-copy the node to the original tree
         parent.copy(true).to(tree1);
-        expect(tree1.getNode(2).children).to.have.length(2);
+        expect(tree1.node(2).children).to.have.length(2);
 
         // Ensure children property doesn't exist when it never did
-        expect(tree1.getNode(20).children).to.be.undefined;
+        expect(tree1.node(20).children).to.be.undefined;
 
         tree2.removeAll();
     });
 
     it('shows child node when merged back into source via api', function() {
-        var node = tree1.getNode(20);
+        var node = tree1.node(20);
 
         // Remove source copy
         node.softRemove();
@@ -137,7 +137,7 @@ describe('Modification', function() {
         node.copy(true).to(tree2);
 
         // Check new copy
-        var clone = tree2.getNode(20);
+        var clone = tree2.node(20);
         expect(clone.removed()).to.be.false;
 
         // Move back
@@ -150,7 +150,7 @@ describe('Modification', function() {
     });
 
     it('shows child node when merged back into source by selection', function() {
-        var node = tree1.getNode(20);
+        var node = tree1.node(20);
 
         // Remove source copy
         node.softRemove();
@@ -160,7 +160,7 @@ describe('Modification', function() {
         node.copy(true).to(tree2);
 
         // Check new copy
-        var clone = tree2.getNode(20);
+        var clone = tree2.node(20);
         expect(clone.removed()).to.be.false;
 
         // Re-select in destination
@@ -181,7 +181,7 @@ describe('Modification', function() {
         tree1.nodes().copy().to(tree2);
         tree1.nodes().softRemove();
 
-        var node = tree2.getNode(20);
+        var node = tree2.node(20);
         node.copy(true).to(tree1);
 
         expect(tree1.nodes()[0].removed()).to.be.true;

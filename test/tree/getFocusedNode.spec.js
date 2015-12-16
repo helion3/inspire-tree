@@ -29,7 +29,7 @@ describe('Tree.getFocusedNode', function() {
     });
 
     it('returns select root node', function() {
-        tree.getNode(1).select();
+        tree.node(1).select();
 
         expect(tree.focused()[0].id).to.equal('1');
     });

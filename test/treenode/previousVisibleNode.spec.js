@@ -28,19 +28,19 @@ describe('TreeNode.prototype.previousVisibleNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).previousVisibleNode).to.be.a('function');
+        expect(tree.node(1).previousVisibleNode).to.be.a('function');
     });
 
     it('finds previous sibling node', function() {
-        tree.getNode(1).expand();
+        tree.node(1).expand();
 
-        expect(tree.getNode(3).previousVisibleNode().id).to.equal('2');
+        expect(tree.node(3).previousVisibleNode().id).to.equal('2');
     });
 
     it('finds parent when sibling hidden', function() {
-        tree.getNode(2).hide();
+        tree.node(2).hide();
 
-        expect(tree.getNode(3).previousVisibleNode().id).to.equal('1');
+        expect(tree.node(3).previousVisibleNode().id).to.equal('1');
     });
 
     after(helpers.clearDOM);

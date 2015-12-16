@@ -25,11 +25,11 @@ describe('TreeNode.prototype.addChild', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).addChild).to.be.a('function');
+        expect(tree.node(1).addChild).to.be.a('function');
     });
 
     it('adds a new child', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         var $node = $('[data-uid="' + node.id + '"]');
 
         // Make sure nothing exists yet
@@ -45,7 +45,7 @@ describe('TreeNode.prototype.addChild', function() {
     });
 
     it('returns a TreeNode with a parent', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         var child = node.addChild({
             text: 'New'

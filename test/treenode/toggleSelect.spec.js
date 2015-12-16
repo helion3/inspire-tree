@@ -23,7 +23,7 @@ describe('TreeNode.prototype.toggleSelect', function() {
     var node;
 
     it('exists', function() {
-        node = tree.getNode(1);
+        node = tree.node(1);
         expect(node.toggleSelect).to.be.a('function');
     });
 

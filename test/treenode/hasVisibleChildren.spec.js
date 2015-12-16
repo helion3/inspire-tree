@@ -28,29 +28,29 @@ describe('TreeNode.prototype.hasVisibleChildren', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).hasVisibleChildren).to.be.a('function');
+        expect(tree.node(1).hasVisibleChildren).to.be.a('function');
     });
 
     it('returns true for parent with visible children', function() {
-        expect(tree.getNode(1).hasVisibleChildren()).to.be.true;
+        expect(tree.node(1).hasVisibleChildren()).to.be.true;
     });
 
     it('returns false for parent without children', function() {
-        expect(tree.getNode(2).hasVisibleChildren()).to.be.false;
+        expect(tree.node(2).hasVisibleChildren()).to.be.false;
     });
 
     it('returns false for parent with one hidden child', function() {
-        tree.getNode(11).hide();
+        tree.node(11).hide();
 
-        expect(tree.getNode(1).hasVisibleChildren()).to.be.false;
+        expect(tree.node(1).hasVisibleChildren()).to.be.false;
     });
 
     it('returns true for parent with one visible, one hidden child', function() {
-        tree.getNode(1).addChild({
+        tree.node(1).addChild({
             text: 'New'
         });
 
-        expect(tree.getNode(1).hasVisibleChildren()).to.be.true;
+        expect(tree.node(1).hasVisibleChildren()).to.be.true;
     });
 
     after(helpers.clearDOM);

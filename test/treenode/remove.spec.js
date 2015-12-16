@@ -21,11 +21,11 @@ describe('TreeNode.prototype.remove', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).remove).to.be.a('function');
+        expect(tree.node(1).remove).to.be.a('function');
     });
 
     it('removes a node', function() {
-        tree.getNode(1).remove();
+        tree.node(1).remove();
 
         expect(tree.nodes()).to.have.length(0);
     });

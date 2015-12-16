@@ -67,7 +67,7 @@ describe('Tree.load', function() {
 
         expect(tree.nodes()).to.have.length(1);
 
-        var parent = tree.getNode(1);
+        var parent = tree.node(1);
         expect(parent.children).to.be.true;
 
         parent.expand();

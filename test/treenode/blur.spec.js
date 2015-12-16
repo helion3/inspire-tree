@@ -24,11 +24,11 @@ describe('TreeNode.prototype.blur', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).blur).to.be.a('function');
+        expect(tree.node(1).blur).to.be.a('function');
     });
 
     it('blurs via api', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.focus();
         expect(node.focused()).to.be.true;
 

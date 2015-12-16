@@ -37,30 +37,30 @@ describe('TreeNode.prototype.selectable', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).selectable).to.be.a('function');
+        expect(tree.node(1).selectable).to.be.a('function');
     });
 
     it('returns true for default nodes', function() {
-        expect(tree.getNode(1).selectable()).to.be.true;
+        expect(tree.node(1).selectable()).to.be.true;
     });
 
     it('returns false for unselectable node', function() {
-        expect(tree.getNode(2).selectable()).to.be.false;
+        expect(tree.node(2).selectable()).to.be.false;
     });
 
     it('does not select unselectable node', function() {
-        var node = tree.getNode(2);
+        var node = tree.node(2);
         node.select();
 
         expect(node.selected()).to.be.false;
     });
 
     it('returns true for default node when using allowSelection', function() {
-        expect(tree.getNode(1).selectable()).to.be.true;
+        expect(tree.node(1).selectable()).to.be.true;
     });
 
     it('returns false for unselectable node when using allowSelection', function() {
-        expect(tree.getNode(3).selectable()).to.be.false;
+        expect(tree.node(3).selectable()).to.be.false;
     });
 
     after(helpers.clearDOM);

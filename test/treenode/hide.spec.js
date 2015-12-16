@@ -24,11 +24,11 @@ describe('TreeNode.prototype.hide', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).hide).to.be.a('function');
+        expect(tree.node(1).hide).to.be.a('function');
     });
 
     it('hides node', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         var $node = $('[data-uid="' + node.id + '"]');
         expect($node.hasClass('hidden')).to.be.false;

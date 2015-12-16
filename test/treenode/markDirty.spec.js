@@ -25,11 +25,11 @@ describe('TreeNode.prototype.markDirty', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).markDirty).to.be.a('function');
+        expect(tree.node(1).markDirty).to.be.a('function');
     });
 
     it('marks node dirty', function() {
-        var node = tree.getNode(2);
+        var node = tree.node(2);
         expect(node.itree.dirty).to.be.false;
 
         node.markDirty();
@@ -37,7 +37,7 @@ describe('TreeNode.prototype.markDirty', function() {
     });
 
     it('marks parent nodes dirty', function() {
-        expect(tree.getNode(2).getParent().itree.dirty).to.be.true;
+        expect(tree.node(2).getParent().itree.dirty).to.be.true;
     });
 
     after(helpers.clearDOM);

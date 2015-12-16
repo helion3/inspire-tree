@@ -24,11 +24,11 @@ describe('TreeNode.prototype.removed', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).removed).to.be.a('function');
+        expect(tree.node(1).removed).to.be.a('function');
     });
 
     it('soft removes node', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.softRemove();
 
         expect(node.removed()).to.be.true;

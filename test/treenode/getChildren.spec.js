@@ -25,15 +25,15 @@ describe('TreeNode.prototype.getChildren', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).getChildren).to.be.a('function');
+        expect(tree.node(1).getChildren).to.be.a('function');
     });
 
     it('returns children for parent node', function() {
-        expect(tree.getNode(1).getChildren()).to.have.length(1);
+        expect(tree.node(1).getChildren()).to.have.length(1);
     });
 
     it('returns empty collection for child node', function() {
-        expect(tree.getNode(2).getChildren()).to.have.length(0);
+        expect(tree.node(2).getChildren()).to.have.length(0);
     });
 
     after(helpers.clearDOM);

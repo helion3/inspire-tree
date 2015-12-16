@@ -29,8 +29,8 @@ describe('TreeNodes.prototype.flatten', function() {
     });
 
     it('returns flat array of hidden nodes', function() {
-        tree.getNode(1).hide();
-        tree.getNode(2).hide();
+        tree.node(1).hide();
+        tree.node(2).hide();
 
         var flattened = tree.nodes().flatten('hidden');
         expect(flattened).to.have.length(2);

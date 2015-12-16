@@ -21,11 +21,11 @@ describe('TreeNode.prototype.show', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).show).to.be.a('function');
+        expect(tree.node(1).show).to.be.a('function');
     });
 
     it('shows node', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.hide();
 
         var $node = $('[data-uid="' + node.id + '"]');

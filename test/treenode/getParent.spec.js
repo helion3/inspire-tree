@@ -25,15 +25,15 @@ describe('TreeNode.prototype.getParent', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).getParent).to.be.a('function');
+        expect(tree.node(1).getParent).to.be.a('function');
     });
 
     it('returns undefined for root node', function() {
-        expect(tree.getNode(1).getParent()).to.be.undefined;
+        expect(tree.node(1).getParent()).to.be.undefined;
     });
 
     it('returns parent for child node', function() {
-        expect(tree.getNode(2).getParent().id).to.equal('1');
+        expect(tree.node(2).getParent().id).to.equal('1');
     });
 
     after(helpers.clearDOM);

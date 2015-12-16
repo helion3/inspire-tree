@@ -25,28 +25,28 @@ describe('checkboxes', function() {
     });
 
     it('selects parent and children when node selected', function() {
-        tree.getNode(2).select();
+        tree.node(2).select();
 
-        expect(tree.getNode(1).selected()).to.be.true;
-        expect(tree.getNode(3).selected()).to.be.true;
+        expect(tree.node(1).selected()).to.be.true;
+        expect(tree.node(3).selected()).to.be.true;
     });
 
     it('parent becomes indeterminate when unselected child added', function() {
-        tree.getNode(2).addChild({
+        tree.node(2).addChild({
             text: 'D',
             id: 4
         });
 
-        expect(tree.getNode(1).selected()).to.be.false;
-        expect(tree.getNode(1).itree.state.indeterminate).to.be.true;
+        expect(tree.node(1).selected()).to.be.false;
+        expect(tree.node(1).itree.state.indeterminate).to.be.true;
     });
 
     it('parent deselects when no children selected', function() {
-        tree.getNode(2).deselect();
+        tree.node(2).deselect();
 
-        expect(tree.getNode(1).selected()).to.be.false;
-        expect(tree.getNode(1).itree.state.indeterminate).to.be.false;
-        expect(tree.getNode(3).selected()).to.be.false;
+        expect(tree.node(1).selected()).to.be.false;
+        expect(tree.node(1).itree.state.indeterminate).to.be.false;
+        expect(tree.node(3).selected()).to.be.false;
     });
 
     after(helpers.clearDOM);

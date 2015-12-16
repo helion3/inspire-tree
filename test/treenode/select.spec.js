@@ -24,11 +24,11 @@ describe('TreeNode.prototype.select', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).select).to.be.a('function');
+        expect(tree.node(1).select).to.be.a('function');
     });
 
     it('select via click', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         var $node = $('[data-uid="' + node.id + '"]');
         expect($node.hasClass('selected')).to.be.false;
@@ -38,13 +38,13 @@ describe('TreeNode.prototype.select', function() {
     });
 
     it('deselects other nodes on node change', function() {
-        tree.getNode(2).select();
+        tree.node(2).select();
 
-        expect(tree.getNode(1).selected()).to.be.false;
+        expect(tree.node(1).selected()).to.be.false;
     });
 
     it('select via api', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         var $node = $('[data-uid="' + node.id + '"]');
         expect($node.hasClass('selected')).to.be.false;
@@ -56,8 +56,8 @@ describe('TreeNode.prototype.select', function() {
     it('allows multiple select', function() {
         tree.preventDeselection = true;
 
-        tree.getNode(1).select();
-        tree.getNode(2).select();
+        tree.node(1).select();
+        tree.node(2).select();
 
         expect(tree.selected()).to.have.length(2);
     });

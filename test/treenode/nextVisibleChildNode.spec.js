@@ -28,21 +28,21 @@ describe('TreeNode.prototype.nextVisibleChildNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).nextVisibleChildNode).to.be.a('function');
+        expect(tree.node(1).nextVisibleChildNode).to.be.a('function');
     });
 
     it('returns undefined when node collapsed', function() {
-        expect(tree.getNode(1).nextVisibleChildNode()).to.be.undefined;
-        tree.getNode(1).expand();
+        expect(tree.node(1).nextVisibleChildNode()).to.be.undefined;
+        tree.node(1).expand();
     });
 
     it('returns first node', function() {
-        expect(tree.getNode(1).nextVisibleChildNode().id).to.equal('2');
+        expect(tree.node(1).nextVisibleChildNode().id).to.equal('2');
     });
 
     it('returns second node when first hidden', function() {
-        tree.getNode(2).hide();
-        expect(tree.getNode(1).nextVisibleChildNode().id).to.equal('3');
+        tree.node(2).hide();
+        expect(tree.node(1).nextVisibleChildNode().id).to.equal('3');
     });
 
     after(helpers.clearDOM);

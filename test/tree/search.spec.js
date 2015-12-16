@@ -48,25 +48,25 @@ describe('Tree.search', function() {
     it('hides non-matches', function() {
         tree.search('fox');
 
-        expect(tree.getNode(1).hidden()).to.be.false;
-        expect(tree.getNode(2).hidden()).to.be.true;
+        expect(tree.node(1).hidden()).to.be.false;
+        expect(tree.node(2).hidden()).to.be.true;
     });
 
     it('clears the search', function() {
         tree.clearSearch();
 
-        expect(tree.getNode(1).hidden()).to.be.false;
-        expect(tree.getNode(2).hidden()).to.be.false;
+        expect(tree.node(1).hidden()).to.be.false;
+        expect(tree.node(2).hidden()).to.be.false;
     });
 
     it('shows hierarchy when child matches', function() {
         tree.search('bob');
 
-        expect(tree.getNode(1).hidden()).to.be.true;
-        expect(tree.getNode(2).hidden()).to.be.false;
-        expect(tree.getNode(2).collapsed()).to.be.false;
-        expect(tree.getNode(2).children[0].hidden()).to.be.false;
-        expect(tree.getNode(2).children[1].hidden()).to.be.true;
+        expect(tree.node(1).hidden()).to.be.true;
+        expect(tree.node(2).hidden()).to.be.false;
+        expect(tree.node(2).collapsed()).to.be.false;
+        expect(tree.node(2).children[0].hidden()).to.be.false;
+        expect(tree.node(2).children[1].hidden()).to.be.true;
     });
 
     after(helpers.clearDOM);

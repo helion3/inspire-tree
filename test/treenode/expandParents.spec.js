@@ -29,19 +29,19 @@ describe('TreeNode.prototype.expandParents', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).expandParents).to.be.a('function');
+        expect(tree.node(1).expandParents).to.be.a('function');
     });
 
     it('expands parents', function() {
-        var node = tree.getNode(3);
+        var node = tree.node(3);
         node.expandParents();
 
-        expect(tree.getNode(1).collapsed()).to.be.false;
-        expect(tree.getNode(2).collapsed()).to.be.false;
+        expect(tree.node(1).collapsed()).to.be.false;
+        expect(tree.node(2).collapsed()).to.be.false;
     });
 
     it('does not expand self', function() {
-        expect(tree.getNode(3).collapsed()).to.be.true;
+        expect(tree.node(3).collapsed()).to.be.true;
     });
 
     after(helpers.clearDOM);

@@ -31,13 +31,13 @@ describe('TreeNode.prototype.nextVisibleNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).nextVisibleNode).to.be.a('function');
+        expect(tree.node(1).nextVisibleNode).to.be.a('function');
     });
 
     it('finds sibling of parent when visible child/sibling nodes unavailable', function() {
-        tree.getNode(3).hide();
+        tree.node(3).hide();
 
-        expect(tree.getNode(2).nextVisibleNode().id).to.equal('4');
+        expect(tree.node(2).nextVisibleNode().id).to.equal('4');
     });
 
     after(helpers.clearDOM);

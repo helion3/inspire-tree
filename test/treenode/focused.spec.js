@@ -21,15 +21,15 @@ describe('TreeNode.prototype.focused', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).focused).to.be.a('function');
+        expect(tree.node(1).focused).to.be.a('function');
     });
 
     it('returns false when not focused', function() {
-        expect(tree.getNode(1).focused()).to.be.false;
+        expect(tree.node(1).focused()).to.be.false;
     });
 
     it('returns true when focused', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         node.focus();
         expect(node.focused()).to.be.true;

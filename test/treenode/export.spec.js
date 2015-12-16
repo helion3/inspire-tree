@@ -20,11 +20,11 @@ describe('TreeNode.prototype.export', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).export).to.be.a('function');
+        expect(tree.node(1).export).to.be.a('function');
     });
 
     it('remove itree data when exporting node', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         expect(node.itree).to.be.an('object');
         expect(node.itree.state).to.be.an('object');

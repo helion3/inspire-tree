@@ -24,15 +24,15 @@ describe('TreeNode.prototype.collapsed', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).collapsed).to.be.a('function');
+        expect(tree.node(1).collapsed).to.be.a('function');
     });
 
     it('returns true when collapsed', function() {
-        expect(tree.getNode(1).collapsed()).to.be.true;
+        expect(tree.node(1).collapsed()).to.be.true;
     });
 
     it('returns false when expanded', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.expand();
 
         expect(node.collapsed()).to.be.false;

@@ -29,15 +29,15 @@ describe('TreeNode.prototype.getTextualHierarchy', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).getTextualHierarchy).to.be.a('function');
+        expect(tree.node(1).getTextualHierarchy).to.be.a('function');
     });
 
     it('returns only text for root node', function() {
-        expect(tree.getNode(1).getTextualHierarchy()).to.have.length(1);
+        expect(tree.node(1).getTextualHierarchy()).to.have.length(1);
     });
 
     it('returns both parent texts for child node', function() {
-        var parents = tree.getNode(3).getTextualHierarchy();
+        var parents = tree.node(3).getTextualHierarchy();
 
         expect(parents).to.have.length(3);
         expect(parents[0]).to.equal('A');

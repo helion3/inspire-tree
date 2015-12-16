@@ -121,7 +121,7 @@ module.exports = function InspireDOM(tree) {
      * @return {void}
      */
     function createDraggableElement(element, event) {
-        $dragNode = getNodeFromTitleDOMElement(element);
+        $dragNode = nodeFromTitleDOMElement(element);
 
         var offset = getAbsoluteOffset(element);
         var diffX = event.clientX - offset.left;
@@ -401,9 +401,9 @@ module.exports = function InspireDOM(tree) {
      * @param {HTMLElement} element HTML Element.
      * @return {object} Node object
      */
-    function getNodeFromTitleDOMElement(element) {
+    function nodeFromTitleDOMElement(element) {
         var uid = element.parentNode.parentNode.getAttribute('data-uid');
-        return tree.getNode(uid);
+        return tree.node(uid);
     }
 
     /**

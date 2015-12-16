@@ -21,11 +21,11 @@ describe('TreeNode.prototype.restore', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).restore).to.be.a('function');
+        expect(tree.node(1).restore).to.be.a('function');
     });
 
     it('soft removes node', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         var $node = $('[data-uid="' + node.id + '"]');
 
         node.softRemove();

@@ -24,11 +24,11 @@ describe('TreeNode.prototype.expand', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).expand).to.be.a('function');
+        expect(tree.node(1).expand).to.be.a('function');
     });
 
     it('expands children via click', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.collapse();
 
         var $node = $('[data-uid="' + node.id + '"]');
@@ -39,7 +39,7 @@ describe('TreeNode.prototype.expand', function() {
     });
 
     it('expands children via api', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.collapse();
 
         var $node = $('[data-uid="' + node.id + '"]');

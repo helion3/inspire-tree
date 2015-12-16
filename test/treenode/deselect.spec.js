@@ -21,11 +21,11 @@ describe('TreeNode.prototype.deselect', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).deselect).to.be.a('function');
+        expect(tree.node(1).deselect).to.be.a('function');
     });
 
     it('deselects via click', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.select();
 
         var $node = $('[data-uid="' + node.id + '"]');
@@ -36,7 +36,7 @@ describe('TreeNode.prototype.deselect', function() {
     });
 
     it('deselects via api', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.select();
 
         var $node = $('[data-uid="' + node.id + '"]');

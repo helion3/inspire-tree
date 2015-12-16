@@ -62,7 +62,7 @@ describe('TreeNodes.prototype.sort', function() {
             }]
         });
 
-        var nodes = tree.getNode(1).children;
+        var nodes = tree.node(1).children;
         expect(nodes[0].text).to.equal('A');
         expect(nodes[1].text).to.equal('B');
         expect(nodes[2].text).to.equal('Z');

@@ -26,7 +26,7 @@ describe('TreeNode.prototype.toggleCollapse', function() {
     var node;
 
     it('exists', function() {
-        node = tree.getNode(1);
+        node = tree.node(1);
         expect(node.toggleCollapse).to.be.a('function');
     });
 

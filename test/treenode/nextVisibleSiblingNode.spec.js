@@ -27,16 +27,16 @@ describe('TreeNode.prototype.nextVisibleSiblingNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).nextVisibleSiblingNode).to.be.a('function');
+        expect(tree.node(1).nextVisibleSiblingNode).to.be.a('function');
     });
 
     it('returns second node', function() {
-        expect(tree.getNode(1).nextVisibleSiblingNode().id).to.equal('2');
+        expect(tree.node(1).nextVisibleSiblingNode().id).to.equal('2');
     });
 
     it('returns undefined when last node hidden', function() {
-        tree.getNode(3).hide();
-        expect(tree.getNode(2).nextVisibleSiblingNode()).to.be.undefined;
+        tree.node(3).hide();
+        expect(tree.node(2).nextVisibleSiblingNode()).to.be.undefined;
     });
 
     after(helpers.clearDOM);

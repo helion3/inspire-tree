@@ -1437,7 +1437,7 @@ function InspireTree(opts) {
 
         if (node.id) {
             // Does node already exist
-            var existing = tree.getNode(node.id);
+            var existing = tree.node(node.id);
             if (existing) {
                 existing.restore();
                 existing.show();
@@ -1624,7 +1624,7 @@ function InspireTree(opts) {
      * @param {TreeNodes} nodes Base collection to search in.
      * @return {TreeNode} Node object.
      */
-    tree.getNode = function(id, nodes) {
+    tree.node = function(id, nodes) {
         var node;
 
         if (!isString(id)) {
@@ -1637,7 +1637,7 @@ function InspireTree(opts) {
             }
 
             if (!node && item.hasChildren()) {
-                node = tree.getNode(id, item.children);
+                node = tree.node(id, item.children);
             }
 
             if (node) {
@@ -1666,7 +1666,7 @@ function InspireTree(opts) {
             var found = new TreeNodes();
 
             each(refs, function(ref) {
-                var node = tree.getNode(ref);
+                var node = tree.node(ref);
                 if (node) {
                     found.push(node);
                 }

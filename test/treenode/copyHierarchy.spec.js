@@ -27,11 +27,11 @@ describe('TreeNode.prototype.copyHierarchy', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).copyHierarchy).to.be.a('function');
+        expect(tree.node(1).copyHierarchy).to.be.a('function');
     });
 
     it('returns copy of parent with node as only child', function() {
-        var hierarchy = tree.getNode(2).copyHierarchy();
+        var hierarchy = tree.node(2).copyHierarchy();
 
         expect(hierarchy.constructor.name).to.equal('TreeNode');
         expect(hierarchy.id).to.equal('1');
@@ -39,7 +39,7 @@ describe('TreeNode.prototype.copyHierarchy', function() {
     });
 
     it('returns only hierarchy with excludeNode=true', function() {
-        var hierarchy = tree.getNode(2).copyHierarchy(true);
+        var hierarchy = tree.node(2).copyHierarchy(true);
 
         expect(hierarchy.constructor.name).to.equal('TreeNode');
         expect(hierarchy.id).to.equal('1');

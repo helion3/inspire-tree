@@ -28,10 +28,10 @@ describe('Tree.selectFirstVisibleNode', function() {
     });
 
     it('selects the first visible node', function() {
-        tree.getNode(1).hide();
+        tree.node(1).hide();
         tree.selectFirstVisibleNode();
 
-        expect(tree.getNode(2).selected()).to.be.true;
+        expect(tree.node(2).selected()).to.be.true;
     });
 
     after(helpers.clearDOM);

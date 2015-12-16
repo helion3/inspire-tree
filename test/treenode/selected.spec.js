@@ -21,15 +21,15 @@ describe('TreeNode.prototype.selected', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).selected).to.be.a('function');
+        expect(tree.node(1).selected).to.be.a('function');
     });
 
     it('returns false when not selected', function() {
-        expect(tree.getNode(1).selected()).to.be.false;
+        expect(tree.node(1).selected()).to.be.false;
     });
 
     it('returns true when selected', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         node.select();
 
         expect(node.selected()).to.be.true;

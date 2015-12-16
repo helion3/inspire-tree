@@ -29,7 +29,7 @@ describe('Tree.selected', function() {
     });
 
     it('returns selected root node', function() {
-        tree.getNode(1).select();
+        tree.node(1).select();
 
         expect(tree.selected()).to.have.length(1);
     });
@@ -48,7 +48,7 @@ describe('Tree.selected', function() {
     });
 
     it('rejects deselect of only node when requireSelection=true', function() {
-        tree.getNode(1).deselect();
+        tree.node(1).deselect();
 
         expect(tree.selected()).to.have.length(1);
     });

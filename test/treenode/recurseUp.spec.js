@@ -29,13 +29,13 @@ describe('TreeNode.prototype.recurseUp', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).recurseUp).to.be.a('function');
+        expect(tree.node(1).recurseUp).to.be.a('function');
     });
 
     it('recurse up self and all parents', function() {
         var count = 0;
 
-        tree.getNode(3).recurseUp(function() {
+        tree.node(3).recurseUp(function() {
             count++;
         });
 

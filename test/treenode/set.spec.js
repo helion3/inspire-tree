@@ -21,11 +21,11 @@ describe('TreeNode.prototype.set', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).set).to.be.a('function');
+        expect(tree.node(1).set).to.be.a('function');
     });
 
     it('updates node property', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
         expect(node.itree.dirty).to.be.false;
         expect(node.text).to.equal('A');
 

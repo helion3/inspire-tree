@@ -24,11 +24,11 @@ describe('TreeNode.prototype.focus', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).focus).to.be.a('function');
+        expect(tree.node(1).focus).to.be.a('function');
     });
 
     it('focus via click', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         var $node = $('[data-uid="' + node.id + '"]');
         expect($node.hasClass('focused')).to.be.false;
@@ -38,13 +38,13 @@ describe('TreeNode.prototype.focus', function() {
     });
 
     it('blurs other nodes on node change', function() {
-        tree.getNode(2).select();
+        tree.node(2).select();
 
-        expect(tree.getNode(1).focused()).to.be.false;
+        expect(tree.node(1).focused()).to.be.false;
     });
 
     it('focus via api', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         var $node = $('[data-uid="' + node.id + '"]');
         expect($node.hasClass('focused')).to.be.false;

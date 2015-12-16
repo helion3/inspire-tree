@@ -24,11 +24,11 @@ describe('TreeNode.prototype.softRemove', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNode(1).softRemove).to.be.a('function');
+        expect(tree.node(1).softRemove).to.be.a('function');
     });
 
     it('soft removes node', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         var $node = $('[data-uid="' + node.id + '"]');
         expect($node.hasClass('hidden')).to.be.false;
@@ -40,7 +40,7 @@ describe('TreeNode.prototype.softRemove', function() {
     });
 
     it('resets state on soft remove', function() {
-        var node = tree.getNode(1);
+        var node = tree.node(1);
 
         node.restore();
         node.select();
