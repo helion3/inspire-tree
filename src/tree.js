@@ -1200,7 +1200,7 @@ function InspireTree(opts) {
         var fn = predicate;
         if (typeof predicate === 'string') {
             fn = function(node) {
-                return node[predicate]();
+                return isFunction(node[predicate]) ? node[predicate]() : node[predicate];
             };
         }
 

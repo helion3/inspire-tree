@@ -16,6 +16,7 @@ describe('TreeNodes.prototype.flatten', function() {
             data: [{
                 text: 'A',
                 id: 1,
+                customBool: true,
                 children: [{
                     text: 'B',
                     id: 2
@@ -34,6 +35,10 @@ describe('TreeNodes.prototype.flatten', function() {
 
         var flattened = tree.nodes().flatten('hidden');
         expect(flattened).to.have.length(2);
+    });
+
+    it('returns matches for custom booleans', function() {
+        expect(tree.nodes().flatten('customBool')).to.have.length(1);
     });
 
     after(helpers.clearDOM);
