@@ -34,7 +34,7 @@ describe('TreeNodes.prototype.deepest', function() {
     it('returns only deepest nodes', function() {
         var deepest = tree.getNodes().deepest();
 
-        expect(deepest).to.have.length(3);
+        expect(deepest).to.have.length(2);
         expect(deepest[0].text).to.equal('B');
     });
 
