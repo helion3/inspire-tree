@@ -219,7 +219,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Hides parents without any visible children.
 	     *
 	     * @category TreeNode
-	     * @return {void}
+	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.clean = function() {
 	        this.recurseUp(function(node) {
@@ -230,6 +230,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	        });
+
+	        return this;
 	    };
 
 	    /**
@@ -412,7 +414,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Expand parent nodes.
 	     *
 	     * @category TreeNode
-	     * @return {void}
+	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.expandParents = function() {
 	        if (this.hasParent()) {
@@ -420,6 +422,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                node.expand();
 	            });
 	        }
+
+	        return this;
 	    };
 
 	    /**
@@ -630,7 +634,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * On error, pass the Error to `reject`.
 	     *
 	     * @category TreeNode
-	     * @return {void}
+	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.loadChildren = function() {
 	        var node = this;
@@ -661,6 +665,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            );
 	        }
+
+	        return node;
 	    };
 
 	    /**
@@ -1193,7 +1199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var matches = new TreeNodes();
 
 	        this.recurseDown(function(node) {
-	            if (!node.hasChildren()) {
+	            if (!node.children) {
 	                matches.push(node);
 	            }
 	        });
@@ -1386,10 +1392,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            tree.recurseDown(this, function(node) {
 	                node[method]();
 	            });
-
-	            if (method === 'hide' || method === 'softRemove') {
-	                this.clean();
-	            }
 
 	            dom.end();
 
