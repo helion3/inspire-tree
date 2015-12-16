@@ -1137,7 +1137,7 @@ function InspireTree(opts) {
         var matches = new TreeNodes();
 
         this.recurseDown(function(node) {
-            if (!node.hasChildren()) {
+            if (!node.children) {
                 matches.push(node);
             }
         });

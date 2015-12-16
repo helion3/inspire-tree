@@ -19,6 +19,10 @@ describe('TreeNodes.prototype.deepest', function() {
             }, {
                 text: 'C',
                 company: 'Test'
+            }, {
+                text: 'D',
+                company: 'Test',
+                children: true
             }]
         });
     });
@@ -27,10 +31,10 @@ describe('TreeNodes.prototype.deepest', function() {
         expect(tree.getNodes().deepest).to.be.a('function');
     });
 
-    it('returns only reduced nodes', function() {
+    it('returns only deepest nodes', function() {
         var deepest = tree.getNodes().deepest();
 
-        expect(deepest).to.have.length(2);
+        expect(deepest).to.have.length(3);
         expect(deepest[0].text).to.equal('B');
     });
 
