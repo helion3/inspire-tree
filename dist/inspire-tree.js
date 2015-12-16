@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.2.1
+ * Inspire Tree v1.2.2
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -1232,18 +1232,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Returns a new array of nodes which match a predicate.
+	     * Returns a cloned hierarchy of all nodes matching a predicate.
+	     *
+	     * Because it filters deeply, we must clone all nodes so that we
+	     * don't affect the actual node array.
+	     *
+	     * @category TreeNodes
+	     * @param {string|function} predicate State flag or custom function.
+	     * @return {TreeNodes} Array of node objects.
+	     */
+	    TreeNodes.prototype.extract = function(predicate) {
+	        var flat = this.flatten(predicate);
+	        var matches = new TreeNodes();
+
+	        each(flat, function(node) {
+	            matches.push(node.copyHierarchy());
+	        });
+
+	        return matches;
+	    };
+
+	    /**
+	     * Returns nodes which match a predicate.
 	     *
 	     * @category TreeNodes
 	     * @param {string|function} predicate State flag or custom function.
 	     * @return {TreeNodes} Array of node objects.
 	     */
 	    TreeNodes.prototype.filter = function(predicate) {
-	        var flat = this.flatten(predicate);
+	        var fn = getPredicateFunction(predicate);
 	        var matches = new TreeNodes();
 
-	        each(flat, function(node) {
-	            matches.push(node.copyHierarchy());
+	        each(this, function(node) {
+	            if (fn(node)) {
+	                matches.push(node);
+	            }
 	        });
 
 	        return matches;
@@ -1260,13 +1283,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TreeNodes.prototype.flatten = function(predicate) {
 	        var flat = new TreeNodes();
 
-	        var fn = predicate;
-	        if (typeof predicate === 'string') {
-	            fn = function(node) {
-	                return node[predicate]();
-	            };
-	        }
-
+	        var fn = getPredicateFunction(predicate);
 	        this.recurseDown(function(node) {
 	            if (fn(node)) {
 	                flat.push(node);
@@ -1378,11 +1395,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Methods we can map to each TreeNode
 	    each(['expandParents', 'clean', 'softRemove'], mapToEach);
 
-	    // Filter methods we can map
+	    // Predicate methods we can map
 	    each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected'], function(state) {
 	        TreeNodes.prototype[state] = function(full) {
 	            if (full) {
-	                return this.filter(state);
+	                return this.extract(state);
 	            }
 
 	            return this.flatten(state);
@@ -1446,6 +1463,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return collection;
 	    };
+
+	    /**
+	     * Creates a predicate function.
+	     *
+	     * @private
+	     * @param {string|function} predicate Property name or custom function.
+	     * @return {function} Predicate function.
+	     */
+	    function getPredicateFunction(predicate) {
+	        var fn = predicate;
+	        if (typeof predicate === 'string') {
+	            fn = function(node) {
+	                return isFunction(node[predicate]) ? node[predicate]() : node[predicate];
+	            };
+	        }
+
+	        return fn;
+	    }
 
 	    /**
 	     * Merge a node into an existing context - a model
