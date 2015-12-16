@@ -163,7 +163,7 @@ function InspireTree(opts) {
      * Hides parents without any visible children.
      *
      * @category TreeNode
-     * @return {void}
+     * @return {TreeNode} Node object.
      */
     TreeNode.prototype.clean = function() {
         this.recurseUp(function(node) {
@@ -174,6 +174,8 @@ function InspireTree(opts) {
                 }
             }
         });
+
+        return this;
     };
 
     /**
@@ -356,7 +358,7 @@ function InspireTree(opts) {
      * Expand parent nodes.
      *
      * @category TreeNode
-     * @return {void}
+     * @return {TreeNode} Node object.
      */
     TreeNode.prototype.expandParents = function() {
         if (this.hasParent()) {
@@ -364,6 +366,8 @@ function InspireTree(opts) {
                 node.expand();
             });
         }
+
+        return this;
     };
 
     /**
@@ -574,7 +578,7 @@ function InspireTree(opts) {
      * On error, pass the Error to `reject`.
      *
      * @category TreeNode
-     * @return {void}
+     * @return {TreeNode} Node object.
      */
     TreeNode.prototype.loadChildren = function() {
         var node = this;
@@ -605,6 +609,8 @@ function InspireTree(opts) {
                 }
             );
         }
+
+        return node;
     };
 
     /**
