@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.2.0
+ * Inspire Tree v1.2.1
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -1240,7 +1240,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNodes.prototype.filter = function(predicate) {
 	        var flat = this.flatten(predicate);
-	        var matches = [];
+	        var matches = new TreeNodes();
 
 	        each(flat, function(node) {
 	            matches.push(node.copyHierarchy());
@@ -1285,44 +1285,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNodes.prototype.recurseDown = function(iteratee) {
 	        return tree.recurseDown(this, iteratee);
-	    };
-
-	    /**
-	     * Get a subset of nodes based on how they match the predicate function.
-	     *
-	     * @category TreeNodes
-	     * @param {function} predicate Predicate function.
-	     * @return {TreeNodes} Array of matching node objects.
-	     */
-	    TreeNodes.prototype.reduce = function(predicate) {
-	        var reduced = new TreeNodes();
-
-	        each(this, function(node) {
-	            if (predicate(node)) {
-	                reduced.push(node);
-	            }
-	        });
-
-	        return reduced;
-	    };
-
-	    /**
-	     * Get a subset of all descendant nodes based on how they match the predicate function.
-	     *
-	     * @category TreeNodes
-	     * @param {function} predicate Predicate function.
-	     * @return {TreeNodes} Array of matching node objects.
-	     */
-	    TreeNodes.prototype.reduceDeep = function(predicate) {
-	        var reduced = new TreeNodes();
-
-	        this.recurseDown(function(node) {
-	            if (predicate(node)) {
-	                reduced.push(node);
-	            }
-	        });
-
-	        return reduced;
 	    };
 
 	    /**
