@@ -1337,10 +1337,6 @@ function InspireTree(opts) {
                 node[method]();
             });
 
-            if (method === 'hide' || method === 'softRemove') {
-                this.clean();
-            }
-
             dom.end();
 
             return this;
