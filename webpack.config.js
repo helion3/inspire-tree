@@ -1,6 +1,7 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var path = require('path');
 var webpack = require('webpack');
+var package = require('./package.json');
 
 // Are we minifying for prod?
 var PROD = process.env.PROD || '';
@@ -10,6 +11,12 @@ var DIR = process.env.DIR || 'build';
 
 // Include DOM package?
 var EXCLUDE_DOM = process.env.EXCLUDE_DOM || '';
+
+var banner = 'Inspire Tree v' + package.version + '\n\
+' + package.repository + '\n\
+\n\
+Copyright 2015 Helion3, and other contributors\n\
+Licensed under MIT. ' + package.repository + '/blob/master/LICENSE';
 
 var sassLoaders = [
     'css-loader',
@@ -21,7 +28,8 @@ var plugins = [
     new ExtractTextPlugin('[name].css'),
     new webpack.DefinePlugin({
         DOM: !Boolean(EXCLUDE_DOM)
-    })
+    }),
+    new webpack.BannerPlugin(banner)
 ];
 
 if (PROD) {
