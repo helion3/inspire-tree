@@ -765,7 +765,14 @@ function InspireTree(opts) {
      * @return {TreeNode} Resulting node.
      */
     TreeNode.prototype.recurseDown = function(iteratee) {
-        return tree.recurseDown(this, iteratee);
+        iteratee(this);
+
+        // Recurse children
+        if (this.hasChildren()) {
+            this.children.recurseDown(iteratee);
+        }
+
+        return this;
     };
 
     /**
@@ -1249,7 +1256,15 @@ function InspireTree(opts) {
      * @return {TreeNodes} Resulting nodes.
      */
     TreeNodes.prototype.recurseDown = function(iteratee) {
-        return tree.recurseDown(this, iteratee);
+        each(this, function(node, i) {
+            var res = node.recurseDown(iteratee);
+
+            if (res) {
+                this[i] = res;
+            }
+        });
+
+        return this;
     };
 
     /**
@@ -1323,10 +1338,9 @@ function InspireTree(opts) {
     function mapToEachDeeply(method) {
         TreeNodes.prototype[method + 'Deep'] = function() {
             dom.batch();
-            tree.recurseDown(this, function(node) {
+            this.recurseDown(function(node) {
                 node[method]();
             });
-
             dom.end();
 
             return this;
@@ -1758,42 +1772,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Iterate down node/children recursively.
-     *
-     * @category Tree
-     * @param {TreeNodes|TreeNode} collection Array of nodes or node object.
-     * @param {function} iteratee Iteratee function.
-     * @return {TreeNodes} Resulting node array.
-     */
-    tree.recurseDown = function(collection, iteratee) {
-        // Recurse each element in this array
-        if (isArrayLike(collection)) {
-            each(collection, function(element, i) {
-                var res = tree.recurseDown(element, iteratee);
-
-                if (res) {
-                    collection[i] = res;
-                }
-            });
-        }
-
-        else if (isObject(collection)) {
-            var result = iteratee(collection);
-
-            if (result) {
-                collection = result;
-            }
-
-            // Recurse children
-            if (isArrayLike(collection.children) && !isEmpty(collection.children)) {
-                collection.children = tree.recurseDown(collection.children, iteratee);
-            }
-        }
-
-        return collection;
-    };
-
-    /**
      * Reloads/re-executes the original data loader.
      *
      * @category Tree
@@ -1869,7 +1847,7 @@ function InspireTree(opts) {
 
         dom.batch();
 
-        tree.recurseDown(model, function(node) {
+        model.recurseDown(function(node) {
             var match = predicate(node);
             var wasHidden = node.hidden();
             node.itree.state.hidden = !match;
