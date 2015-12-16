@@ -1,3 +1,10 @@
+/*!
+ * Inspire Tree v1.2.0
+ * https://github.com/helion3/inspire-tree
+ * 
+ * Copyright 2015 Helion3, and other contributors
+ * Licensed under MIT. https://github.com/helion3/inspire-tree/blob/master/LICENSE
+ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -355,7 +362,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object.
 	     */
 	    TreeNode.prototype.deselect = function(skipParentIndeterminate) {
-	        if (!tree.config.requireSelection || tree.getSelectedNodes().length > 1) {
+	        if (!tree.config.requireSelection || tree.selected().length > 1) {
 	            var node = this;
 	            dom.batch();
 
@@ -466,7 +473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!node.focused()) {
 	            // Batch selection changes
 	            dom.batch();
-	            tree.getNodes().blurDeep();
+	            tree.nodes().blurDeep();
 	            node.itree.state.focused = true;
 
 	            // Emit this event
@@ -741,7 +748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.nextVisibleSiblingNode = function() {
 	        var startingNode = this;
-	        var context = (startingNode.hasParent() ? startingNode.getParent().children : tree.getNodes());
+	        var context = (startingNode.hasParent() ? startingNode.getParent().children : tree.nodes());
 	        var i = findIndex(context, { id: startingNode.id });
 
 	        return find(slice(context, i + 1), function(node) {
@@ -784,7 +791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Node object, if any.
 	     */
 	    TreeNode.prototype.previousVisibleSiblingNode = function() {
-	        var context = (this.hasParent() ? this.getParent().children : tree.getNodes());
+	        var context = (this.hasParent() ? this.getParent().children : tree.nodes());
 	        var i = findIndex(context, { id: this.id });
 	        return findLast(slice(context, 0, i), function(node) {
 	            return node.visible();
@@ -942,7 +949,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!tree.preventDeselection) {
 	                var oldVal = tree.config.requireSelection;
 	                tree.config.requireSelection = false;
-	                tree.getNodes().deselectDeep();
+	                tree.nodes().deselectDeep();
 	                tree.config.requireSelection = oldVal;
 	            }
 
@@ -1410,8 +1417,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    each(['expandParents', 'clean', 'softRemove'], mapToEach);
 
 	    // Filter methods we can map
-	    each(['available', 'collapsed', 'hidden', 'removed', 'selected'], function(state) {
-	        TreeNodes.prototype['get' + capitalize(state) + 'Nodes'] = function(full) {
+	    each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected'], function(state) {
+	        TreeNodes.prototype[state] = function(full) {
 	            if (full) {
 	                return this.filter(state);
 	            }
@@ -1455,17 +1462,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
-	     * Capitalize the first letting in a string.
-	     *
-	     * @private
-	     * @param {string} string Source string.
-	     * @return {string} Resulting string.
-	     */
-	    function capitalize(string) {
-	        return string.charAt(0).toUpperCase() + string.slice(1);
-	    }
-
-	    /**
 	     * Parses a raw collection of objects into a model used
 	     * within a tree. Adds state and other internal properties.
 	     *
@@ -1504,7 +1500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (node.id) {
 	            // Does node already exist
-	            var existing = tree.getNode(node.id);
+	            var existing = tree.node(node.id);
 	            if (existing) {
 	                existing.restore();
 	                existing.show();
@@ -1679,8 +1675,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {void}
 	     */
 	    tree.clearSearch = function() {
-	        tree.getNodes().showDeep();
-	        tree.getNodes().collapseDeep();
+	        tree.nodes().showDeep();
+	        tree.nodes().collapseDeep();
 	    };
 
 	    /**
@@ -1691,7 +1687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {TreeNodes} nodes Base collection to search in.
 	     * @return {TreeNode} Node object.
 	     */
-	    tree.getNode = function(id, nodes) {
+	    tree.node = function(id, nodes) {
 	        var node;
 
 	        if (!isString(id)) {
@@ -1704,7 +1700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            if (!node && item.hasChildren()) {
-	                node = tree.getNode(id, item.children);
+	                node = tree.node(id, item.children);
 	            }
 
 	            if (node) {
@@ -1723,17 +1719,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNodes} Array of node objects.
 	     * @example
 	     *
-	     * var all = tree.getNodes()
-	     * var some = tree.getNodes([1, 2, 3])
+	     * var all = tree.nodes()
+	     * var some = tree.nodes([1, 2, 3])
 	     */
-	    tree.getNodes = function(refs) {
+	    tree.nodes = function(refs) {
 	        var nodes = model;
 
 	        if (isArray(refs)) {
 	            var found = new TreeNodes();
 
 	            each(refs, function(ref) {
-	                var node = tree.getNode(ref);
+	                var node = tree.node(ref);
 	                if (node) {
 	                    found.push(node);
 	                }
@@ -1743,23 +1739,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return nodes;
-	    };
-
-	    /**
-	     * Get the currently focused node, if any.
-	     *
-	     * @category Tree
-	     * @return {TreeNode} Node object.
-	     */
-	    tree.getFocusedNode = function() {
-	        var node;
-
-	        var focused = model.flatten('focused');
-	        if (!isEmpty(focused)) {
-	            node = focused[0];
-	        }
-
-	        return node;
 	    };
 
 	    /**
@@ -1784,7 +1763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            model = collectionToModel(nodes);
 
-	            if (tree.config.requireSelection && !tree.getSelectedNodes().length) {
+	            if (tree.config.requireSelection && !tree.selected().length) {
 	                tree.selectFirstVisibleNode();
 	            }
 
@@ -1907,7 +1886,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                function resolver(nodes) {
 	                    dom.batch();
 
-	                    tree.getNodes().hideDeep();
+	                    tree.nodes().hideDeep();
 	                    each(nodes, function(node) {
 	                        mergeNode(model, node);
 	                    });
@@ -8026,7 +8005,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {void}
 	     */
 	    function createDraggableElement(element, event) {
-	        $dragNode = getNodeFromTitleDOMElement(element);
+	        $dragNode = nodeFromTitleDOMElement(element);
 
 	        var offset = getAbsoluteOffset(element);
 	        var diffX = event.clientX - offset.left;
@@ -8306,9 +8285,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {HTMLElement} element HTML Element.
 	     * @return {object} Node object
 	     */
-	    function getNodeFromTitleDOMElement(element) {
+	    function nodeFromTitleDOMElement(element) {
 	        var uid = element.parentNode.parentNode.getAttribute('data-uid');
-	        return tree.getNode(uid);
+	        return tree.node(uid);
 	    }
 
 	    /**
@@ -8337,8 +8316,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function keyboardListener(event) {
 	        // Navigation
-	        var focusedNode = tree.getFocusedNode();
+	        var focusedNode = tree.focused();
 	        if (focusedNode) {
+	            focusedNode = focusedNode[0];
 	            switch (event.which) {
 	                case keyCodes.DOWN:
 	                    moveFocusDownFrom(focusedNode);
@@ -8499,7 +8479,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {void}
 	     */
 	    function renderNodes(nodes) {
-	        var newOl = createOrderedList(nodes || tree.getNodes(), true);
+	        var newOl = createOrderedList(nodes || tree.nodes(), true);
 
 	        if (!rootNode) {
 	            rootNode = createElement(newOl);

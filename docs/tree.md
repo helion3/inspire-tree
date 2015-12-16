@@ -16,10 +16,9 @@
 * <a href="#addNode">`addNode`</a>
 * <a href="#addNodes">`addNodes`</a>
 * <a href="#clearSearch">`clearSearch`</a>
-* <a href="#getFocusedNode">`getFocusedNode`</a>
-* <a href="#getNode">`getNode`</a>
-* <a href="#getNodes">`getNodes`</a>
 * <a href="#load">`load`</a>
+* <a href="#node">`node`</a>
+* <a href="#nodes">`nodes`</a>
 * <a href="#recurseDown">`recurseDown`</a>
 * <a href="#reload">`reload`</a>
 * <a href="#removeAll">`removeAll`</a>
@@ -159,7 +158,7 @@ Sets a destination.
 <!-- div -->
 
 ### <a id="addNode"></a>`addNode(node)`
-<a href="#addNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1585 "View in source") [&#x24C9;][1]
+<a href="#addNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1574 "View in source") [&#x24C9;][1]
 
 Add a node.
 
@@ -173,7 +172,7 @@ Add a node.
 <!-- div -->
 
 ### <a id="addNodes"></a>`addNodes(nodes)`
-<a href="#addNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1606 "View in source") [&#x24C9;][1]
+<a href="#addNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1595 "View in source") [&#x24C9;][1]
 
 Add nodes.
 
@@ -187,7 +186,7 @@ Add nodes.
 <!-- div -->
 
 ### <a id="clearSearch"></a>`clearSearch`
-<a href="#clearSearch">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1625 "View in source") [&#x24C9;][1]
+<a href="#clearSearch">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1614 "View in source") [&#x24C9;][1]
 
 Shows all nodes and collapses parents.
 
@@ -197,53 +196,8 @@ Shows all nodes and collapses parents.
 
 <!-- div -->
 
-### <a id="getFocusedNode"></a>`getFocusedNode`
-<a href="#getFocusedNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1698 "View in source") [&#x24C9;][1]
-
-Get the currently focused node, if any.
-
-* * *
-
-<!-- /div -->
-
-<!-- div -->
-
-### <a id="getNode"></a>`getNode(id, nodes)`
-<a href="#getNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1638 "View in source") [&#x24C9;][1]
-
-Get a node.
-
-#### Arguments
-1. `id` *(string|number)*: ID of node.
-2. `nodes` *(TreeNodes)*: Base collection to search in.
-
-* * *
-
-<!-- /div -->
-
-<!-- div -->
-
-### <a id="getNodes"></a>`getNodes(refs)`
-<a href="#getNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1673 "View in source") [&#x24C9;][1]
-
-Get all nodes in a tree, or nodes for an array of IDs.
-
-#### Arguments
-1. `refs` *(array)*: Array of ID references.
-
-#### Example
-```js
-var all = tree.getNodes()
-var some = tree.getNodes([1, 2, 3])
-```
-* * *
-
-<!-- /div -->
-
-<!-- div -->
-
 ### <a id="load"></a>`load(loader)`
-<a href="#load">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1719 "View in source") [&#x24C9;][1]
+<a href="#load">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1691 "View in source") [&#x24C9;][1]
 
 Loads tree. Accepts an array or a promise.
 
@@ -260,8 +214,42 @@ tree.load($.getJSON('nodes.json'));
 
 <!-- div -->
 
+### <a id="node"></a>`node(id, nodes)`
+<a href="#node">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1627 "View in source") [&#x24C9;][1]
+
+Get a node.
+
+#### Arguments
+1. `id` *(string|number)*: ID of node.
+2. `nodes` *(TreeNodes)*: Base collection to search in.
+
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
+### <a id="nodes"></a>`nodes(refs)`
+<a href="#nodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1662 "View in source") [&#x24C9;][1]
+
+Get all nodes in a tree, or nodes for an array of IDs.
+
+#### Arguments
+1. `refs` *(array)*: Array of ID references.
+
+#### Example
+```js
+var all = tree.nodes()
+var some = tree.nodes([1, 2, 3])
+```
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
 ### <a id="recurseDown"></a>`recurseDown(collection, iteratee)`
-<a href="#recurseDown">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1788 "View in source") [&#x24C9;][1]
+<a href="#recurseDown">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1760 "View in source") [&#x24C9;][1]
 
 Iterate down node/children recursively.
 
@@ -276,7 +264,7 @@ Iterate down node/children recursively.
 <!-- div -->
 
 ### <a id="reload"></a>`reload`
-<a href="#reload">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1822 "View in source") [&#x24C9;][1]
+<a href="#reload">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1794 "View in source") [&#x24C9;][1]
 
 Reloads/re-executes the original data loader.
 
@@ -287,7 +275,7 @@ Reloads/re-executes the original data loader.
 <!-- div -->
 
 ### <a id="removeAll"></a>`removeAll`
-<a href="#removeAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1832 "View in source") [&#x24C9;][1]
+<a href="#removeAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1804 "View in source") [&#x24C9;][1]
 
 Removes all nodes.
 
@@ -298,7 +286,7 @@ Removes all nodes.
 <!-- div -->
 
 ### <a id="search"></a>`search(query)`
-<a href="#search">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1844 "View in source") [&#x24C9;][1]
+<a href="#search">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1816 "View in source") [&#x24C9;][1]
 
 Search nodes, showing only those that match and the necessary hierarchy.
 
@@ -312,7 +300,7 @@ Search nodes, showing only those that match and the necessary hierarchy.
 <!-- div -->
 
 ### <a id="selectFirstVisibleNode"></a>`selectFirstVisibleNode`
-<a href="#selectFirstVisibleNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1919 "View in source") [&#x24C9;][1]
+<a href="#selectFirstVisibleNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1891 "View in source") [&#x24C9;][1]
 
 Select the first visible node at the root level.
 
