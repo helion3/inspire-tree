@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNodes.prototype.getRemovedNodes', function() {
+describe('TreeNodes.prototype.removed', function() {
     var tree;
 
     before(function() {
@@ -32,19 +32,19 @@ describe('TreeNodes.prototype.getRemovedNodes', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().getRemovedNodes).to.be.a('function');
-        expect(tree.getRemovedNodes).to.be.a('function');
+        expect(tree.getNodes().removed).to.be.a('function');
+        expect(tree.removed).to.be.a('function');
     });
 
     it('returns only removed nodes', function() {
-        var removed = tree.getRemovedNodes();
+        var removed = tree.removed();
 
         expect(removed).to.have.length(2);
         expect(removed[0].hasChildren()).to.be.false;
     });
 
     it('returns hierarchy of removed nodes', function() {
-        var removed = tree.getRemovedNodes(true);
+        var removed = tree.removed(true);
 
         expect(removed).to.have.length(2);
         expect(removed[0].hasChildren()).to.be.true;

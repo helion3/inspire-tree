@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNodes.prototype.getAvailableNodes', function() {
+describe('TreeNodes.prototype.available', function() {
     var tree;
 
     before(function() {
@@ -24,12 +24,12 @@ describe('TreeNodes.prototype.getAvailableNodes', function() {
     });
 
     it('exists', function() {
-        expect(tree.getNodes().getAvailableNodes).to.be.a('function');
-        expect(tree.getAvailableNodes).to.be.a('function');
+        expect(tree.getNodes().available).to.be.a('function');
+        expect(tree.available).to.be.a('function');
     });
 
     it('returns only available nodes', function() {
-        expect(tree.getNodes().getAvailableNodes()).to.have.length(1);
+        expect(tree.getNodes().available()).to.have.length(1);
     });
 
     after(helpers.clearDOM);

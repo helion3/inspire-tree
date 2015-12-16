@@ -227,15 +227,15 @@ methods because they'll iterate *both* the array elements and their children.
 This will only impact a small number of methods. For example:
 
 ```js
-tree.getAvailableNodes().deepest();
+tree.available().deepest();
 ```
 
 ... will duplicate nodes because `deepest` iterates the array *and* recurses through children.
 
 Possible solutions:
 
-- Reverse the order: `tree.deepest().getAvailableNodes()`
-- Avoid flattened arrays: `tree.getAvailableNodes(true).deepest()`
+- Reverse the order: `tree.deepest().available()`
+- Avoid flattened arrays: `tree.available(true).deepest()`
 
 ## Development
 

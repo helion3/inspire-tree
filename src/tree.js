@@ -299,7 +299,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.deselect = function(skipParentIndeterminate) {
-        if (!tree.config.requireSelection || tree.getSelectedNodes().length > 1) {
+        if (!tree.config.requireSelection || tree.selected().length > 1) {
             var node = this;
             dom.batch();
 
@@ -1355,7 +1355,7 @@ function InspireTree(opts) {
 
     // Filter methods we can map
     each(['available', 'collapsed', 'hidden', 'removed', 'selected'], function(state) {
-        TreeNodes.prototype['get' + capitalize(state) + 'Nodes'] = function(full) {
+        TreeNodes.prototype[state] = function(full) {
             if (full) {
                 return this.filter(state);
             }
@@ -1396,17 +1396,6 @@ function InspireTree(opts) {
         }
 
         return node;
-    }
-
-    /**
-     * Capitalize the first letting in a string.
-     *
-     * @private
-     * @param {string} string Source string.
-     * @return {string} Resulting string.
-     */
-    function capitalize(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     /**
@@ -1728,7 +1717,7 @@ function InspireTree(opts) {
 
             model = collectionToModel(nodes);
 
-            if (tree.config.requireSelection && !tree.getSelectedNodes().length) {
+            if (tree.config.requireSelection && !tree.selected().length) {
                 tree.selectFirstVisibleNode();
             }
 

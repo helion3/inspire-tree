@@ -63,11 +63,11 @@
             });
 
             $('.log-selected').on('click', function() {
-                console.log(tree.getSelectedNodes());
+                console.log(tree.selected());
             });
 
             $('.clear-selected').on('click', function() {
-                tree.deselectAll();
+                tree.deselectDeep();
             });
         });
     </script>

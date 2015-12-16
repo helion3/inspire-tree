@@ -51,7 +51,7 @@
             }, 500));
 
             $('.move-one').on('click', function() {
-                var selected = sourceTree.getSelectedNodes();
+                var selected = sourceTree.selected();
                 selected.softRemove().copy(true).to(destTree);
 
                 // If we moved a child node, expand nodes down to it
@@ -63,7 +63,7 @@
             });
 
             $('.revert-one').on('click', function() {
-                destTree.getSelectedNodes().softRemove().copy(true).to(sourceTree);
+                destTree.selected().softRemove().copy(true).to(sourceTree);
             });
 
             $('.move-all').on('click', function() {

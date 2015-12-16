@@ -56,7 +56,7 @@ describe('Modification', function() {
 
         var node = tree1.getNode(1);
         node.select();
-        tree1.getSelectedNodes().copy().to(tree2);
+        tree1.selected().copy().to(tree2);
 
         expect(tree2.getNodes()).to.have.length(1);
         expect(tree2.getNodes()[0].id).to.equal('1');
@@ -165,7 +165,7 @@ describe('Modification', function() {
 
         // Re-select in destination
         clone.select();
-        var selected = tree2.getSelectedNodes();
+        var selected = tree2.selected();
 
         // Move back
         selected.copy(true).to(tree1);

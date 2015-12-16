@@ -59,7 +59,7 @@ describe('TreeNode.prototype.select', function() {
         tree.getNode(1).select();
         tree.getNode(2).select();
 
-        expect(tree.getSelectedNodes()).to.have.length(2);
+        expect(tree.selected()).to.have.length(2);
     });
 
     after(helpers.clearDOM);

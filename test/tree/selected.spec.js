@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Tree.getSelectedNodes', function() {
+describe('Tree.selected', function() {
     var $tree;
     var tree;
 
@@ -21,17 +21,17 @@ describe('Tree.getSelectedNodes', function() {
     });
 
     it('exists', function() {
-        expect(tree.getSelectedNodes).to.be.a('function');
+        expect(tree.selected).to.be.a('function');
     });
 
     it('returns an empty array when none selected', function() {
-        expect(tree.getSelectedNodes()).to.have.length(0);
+        expect(tree.selected()).to.have.length(0);
     });
 
     it('returns selected root node', function() {
         tree.getNode(1).select();
 
-        expect(tree.getSelectedNodes()).to.have.length(1);
+        expect(tree.selected()).to.have.length(1);
     });
 
     it('auto-selects a node when requireSelection=true', function() {
@@ -44,13 +44,13 @@ describe('Tree.getSelectedNodes', function() {
             }]
         });
 
-        expect(tree.getSelectedNodes()).to.have.length(1);
+        expect(tree.selected()).to.have.length(1);
     });
 
     it('rejects deselect of only node when requireSelection=true', function() {
         tree.getNode(1).deselect();
 
-        expect(tree.getSelectedNodes()).to.have.length(1);
+        expect(tree.selected()).to.have.length(1);
     });
 
     after(helpers.clearDOM);

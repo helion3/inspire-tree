@@ -86,13 +86,13 @@
                 }
 
                 $scope.moveOne = function() {
-                    var selected = sourceTree.getSelectedNodes();
+                    var selected = sourceTree.selected();
                     selected.softRemoveDeep().copy(true).to(destTree);
                     destTree.getNodes(_.pluck(selected, 'id')).expandParents();
                 };
 
                 $scope.revertOne = function() {
-                    var selected = destTree.getSelectedNodes();
+                    var selected = destTree.selected();
                     selected.softRemoveDeep().copy(true).to(sourceTree);
 
                     // Hide all parents without visible children
