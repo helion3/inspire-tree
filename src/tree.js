@@ -4,7 +4,7 @@
 var assign = require('lodash.assign');
 var cloneDeep = require('lodash.clonedeep');
 var cuid = require('cuid');
-var defaultsDeep = require('lodash.defaultsdeep');
+var defaults = require('lodash.defaults');
 var each = require('lodash.foreach');
 var EventEmitter = require('eventemitter2');
 var find = require('lodash.find');
@@ -31,7 +31,7 @@ function InspireTree(opts) {
     tree.preventDeselection = false;
 
     // Assign defaults
-    tree.config = defaultsDeep(opts, {
+    tree.config = defaults(opts, {
         allowLoadEvents: [],
         allowSelection: noop,
         checkbox: false,

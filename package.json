@@ -25,7 +25,7 @@
     "key-codes": "0.0.1",
     "lodash.assign": "^3.2.0",
     "lodash.clonedeep": "^3.0.2",
-    "lodash.defaultsdeep": "^3.10.0",
+    "lodash.defaults": "^3.1.2",
     "lodash.find": "^3.2.1",
     "lodash.findindex": "^3.2.1",
     "lodash.findlast": "^3.2.1",
