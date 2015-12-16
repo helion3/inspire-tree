@@ -49,8 +49,9 @@
                     // Keyboard nav
                     $element.on('keyup', function() {
                         // Navigation
-                        var focusedNode = tree.getFocusedNode();
+                        var focusedNode = tree.focused();
                         if (focusedNode) {
+                            focusedNode = focusedNode[0];
                             switch (event.which) {
                                 case 37:
                                     focusedNode.collapse();

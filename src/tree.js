@@ -1354,7 +1354,7 @@ function InspireTree(opts) {
     each(['expandParents', 'clean', 'softRemove'], mapToEach);
 
     // Filter methods we can map
-    each(['available', 'collapsed', 'hidden', 'removed', 'selected'], function(state) {
+    each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected'], function(state) {
         TreeNodes.prototype[state] = function(full) {
             if (full) {
                 return this.filter(state);
@@ -1676,23 +1676,6 @@ function InspireTree(opts) {
         }
 
         return nodes;
-    };
-
-    /**
-     * Get the currently focused node, if any.
-     *
-     * @category Tree
-     * @return {TreeNode} Node object.
-     */
-    tree.getFocusedNode = function() {
-        var node;
-
-        var focused = model.flatten('focused');
-        if (!isEmpty(focused)) {
-            node = focused[0];
-        }
-
-        return node;
     };
 
     /**

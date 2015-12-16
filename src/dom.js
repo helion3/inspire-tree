@@ -432,8 +432,9 @@ module.exports = function InspireDOM(tree) {
      */
     function keyboardListener(event) {
         // Navigation
-        var focusedNode = tree.getFocusedNode();
+        var focusedNode = tree.focused();
         if (focusedNode) {
+            focusedNode = focusedNode[0];
             switch (event.which) {
                 case keyCodes.DOWN:
                     moveFocusDownFrom(focusedNode);

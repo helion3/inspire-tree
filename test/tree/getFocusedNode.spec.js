@@ -21,17 +21,17 @@ describe('Tree.getFocusedNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.getFocusedNode).to.be.a('function');
+        expect(tree.focused).to.be.a('function');
     });
 
     it('returns null when nothing focused', function() {
-        expect(tree.getFocusedNode()).to.be.undefined;
+        expect(tree.focused()).to.have.length(0);
     });
 
     it('returns select root node', function() {
         tree.getNode(1).select();
 
-        expect(tree.getFocusedNode().id).to.equal('1');
+        expect(tree.focused()[0].id).to.equal('1');
     });
 
     after(helpers.clearDOM);
