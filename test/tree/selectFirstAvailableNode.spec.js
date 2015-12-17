@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Tree.selectFirstVisibleNode', function() {
+describe('Tree.selectFirstAvailableNode', function() {
     var $tree;
     var tree;
 
@@ -24,12 +24,12 @@ describe('Tree.selectFirstVisibleNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.selectFirstVisibleNode).to.be.a('function');
+        expect(tree.selectFirstAvailableNode).to.be.a('function');
     });
 
     it('selects the first visible node', function() {
         tree.node(1).hide();
-        tree.selectFirstVisibleNode();
+        tree.selectFirstAvailableNode();
 
         expect(tree.node(2).selected()).to.be.true;
     });

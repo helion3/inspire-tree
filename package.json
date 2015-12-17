@@ -36,7 +36,6 @@
     "lodash.isobject": "^3.0.2",
     "lodash.isregexp": "^3.0.3",
     "lodash.isstring": "^3.0.1",
-    "lodash.map": "^3.1.4",
     "lodash.remove": "^3.1.0",
     "lodash.slice": "^3.0.0",
     "lodash.sortby": "^3.1.5",

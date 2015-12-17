@@ -17,7 +17,6 @@ var isFunction = require('lodash.isfunction');
 var isObject = require('lodash.isobject');
 var isRegExp = require('lodash.isregexp');
 var isString = require('lodash.isstring');
-var map = require('lodash.map');
 var remove = require('lodash.remove');
 var slice = require('lodash.slice');
 var sortBy = require('lodash.sortby');
@@ -125,7 +124,7 @@ function InspireTree(opts) {
     TreeNode.prototype.addChild = function(child) {
         child = objectToModel(child);
 
-        if (!isArrayLike(this.children)) {
+        if (Array.isArray(this.children) || !isArrayLike(this.children)) {
             this.children = new TreeNodes();
         }
 
@@ -259,10 +258,9 @@ function InspireTree(opts) {
         var parents = node.getParents().clone();
 
         // Remove old hierarchy data
-        map(parents, function(node) {
+        each(parents, function(node) {
             delete node.itree.parent;
             delete node.children;
-            return node;
         });
 
         parents = parents.reverse();
@@ -1112,7 +1110,7 @@ function InspireTree(opts) {
 
                 var newNodes = new TreeNodes();
 
-                each((nodes || model), function(node) {
+                each(nodes, function(node) {
                     newNodes.push(node.copy(hierarchy).to(dest));
                 });
 
@@ -1256,12 +1254,8 @@ function InspireTree(opts) {
      * @return {TreeNodes} Resulting nodes.
      */
     TreeNodes.prototype.recurseDown = function(iteratee) {
-        each(this, function(node, i) {
-            var res = node.recurseDown(iteratee);
-
-            if (res) {
-                this[i] = res;
-            }
+        each(this, function(node) {
+            node.recurseDown(iteratee);
         });
 
         return this;
@@ -1599,10 +1593,9 @@ function InspireTree(opts) {
 
         if (newNodes.length) {
             tree.emit('node.added', node);
+            node.markDirty();
+            dom.applyChanges();
         }
-
-        node.markDirty();
-        dom.applyChanges();
 
         return node;
     };
@@ -1647,27 +1640,19 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     tree.node = function(id, nodes) {
-        var node;
+        var match;
 
         if (!isString(id)) {
             id = id.toString();
         }
 
-        each((nodes || model), function(item) {
-            if (item.id === id) {
-                node = item;
-            }
-
-            if (!node && item.hasChildren()) {
-                node = tree.node(id, item.children);
-            }
-
-            if (node) {
-                return false;
+        (nodes || model).recurseDown(function(node) {
+            if (node.id === id) {
+                match = node;
             }
         });
 
-        return node;
+        return match;
     };
 
     /**
@@ -1685,16 +1670,14 @@ function InspireTree(opts) {
         var nodes = model;
 
         if (isArray(refs)) {
-            var found = new TreeNodes();
+            nodes = new TreeNodes();
 
             each(refs, function(ref) {
                 var node = tree.node(ref);
                 if (node) {
-                    found.push(node);
+                    nodes.push(node);
                 }
             });
-
-            nodes = found;
         }
 
         return nodes;
@@ -1723,7 +1706,7 @@ function InspireTree(opts) {
             model = collectionToModel(nodes);
 
             if (tree.config.requireSelection && !tree.selected().length) {
-                tree.selectFirstVisibleNode();
+                tree.selectFirstAvailableNode();
             }
 
             tree.emit('model.loaded', model);
@@ -1869,24 +1852,18 @@ function InspireTree(opts) {
     };
 
     /**
-     * Select the first visible node at the root level.
+     * Select the first available node at the root level.
      *
      * @category Tree
      * @return {TreeNode} Selected node object.
      */
-    tree.selectFirstVisibleNode = function() {
-        var select;
+    tree.selectFirstAvailableNode = function() {
+        var node = model.filter('available').get(0);
+        if (node) {
+            node.select();
+        }
 
-        each(model, function(node) {
-            if (!node.hidden()) {
-                node.select();
-
-                select = node;
-                return false;
-            }
-        });
-
-        return select;
+        return node;
     };
 
     // Connect to our target DOM element
