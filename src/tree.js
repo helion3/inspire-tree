@@ -565,6 +565,29 @@ function InspireTree(opts) {
     };
 
     /**
+     * Find the last + deepest visible child of the previous sibling.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.lastDeepestVisibleChild = function() {
+        var found;
+
+        if (this.hasChildren() && !this.collapsed()) {
+            found = findLast(this.children, function(node) {
+                return node.visible();
+            });
+
+            var res = found.lastDeepestVisibleChild();
+            if (res) {
+                found = res;
+            }
+        }
+
+        return found;
+    };
+
+    /**
      * Initiate a dynamic load of children for a given node.
      *
      * This requires `tree.config.data` to be a function which accepts
@@ -668,8 +691,31 @@ function InspireTree(opts) {
         }
 
         // 3. Find sibling of ancestor(s)
-        if (!next && startingNode.hasParent()) {
-            next = startingNode.getParent().nextVisibleSiblingNode();
+        if (!next) {
+            next = startingNode.nextVisibleAncestralSiblingNode();
+        }
+
+        return next;
+    };
+
+    /**
+     * Find the next visible sibling of our ancestor. Continues
+     * seeking up the tree until a valid node is found or we
+     * reach the root node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.nextVisibleAncestralSiblingNode = function() {
+        var next;
+
+        if (this.hasParent()) {
+            var parent = this.getParent();
+            next = parent.nextVisibleSiblingNode();
+
+            if (!next) {
+                next = parent.nextVisibleAncestralSiblingNode();
+            }
         }
 
         return next;
@@ -706,9 +752,7 @@ function InspireTree(opts) {
 
         // 2. If that sibling has children though, go there
         if (prev && prev.hasChildren() && !prev.collapsed()) {
-            prev = findLast(prev.children, function(node) {
-                return node.visible();
-            });
+            prev = prev.lastDeepestVisibleChild();
         }
 
         // 3. Parent
