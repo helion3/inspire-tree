@@ -785,18 +785,13 @@ function InspireTree(opts) {
      * @return {TreeNode} Resulting node.
      */
     TreeNode.prototype.recurseUp = function(iteratee) {
-        var node = this;
-        var result = iteratee(node);
+        var result = iteratee(this);
 
-        if (result) {
-            node = result;
+        if (result !== false && this.hasParent()) {
+            this.getParent().recurseUp(iteratee);
         }
 
-        if (node.hasParent()) {
-            node.getParent().recurseUp(iteratee);
-        }
-
-        return node;
+        return this;
     };
 
     /**
@@ -807,12 +802,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Resulting node.
      */
     TreeNode.prototype.recurseDown = function(iteratee) {
-        iteratee(this);
-
-        // Recurse children
-        if (this.hasChildren()) {
-            this.children.recurseDown(iteratee);
-        }
+        recurseDown(this, iteratee);
 
         return this;
     };
@@ -1298,9 +1288,7 @@ function InspireTree(opts) {
      * @return {TreeNodes} Resulting nodes.
      */
     TreeNodes.prototype.recurseDown = function(iteratee) {
-        each(this, function(node) {
-            node.recurseDown(iteratee);
-        });
+        recurseDown(this, iteratee);
 
         return this;
     };
@@ -1597,6 +1585,38 @@ function InspireTree(opts) {
     };
 
     /**
+     * Base recursion function for a collection or node.
+     *
+     * Returns false if execution should cease.
+     *
+     * @private
+     * @param {TreeNode|TreeNodes} obj Node or collection.
+     * @param {function} iteratee Iteratee function
+     * @return {boolean} Cease iteration.
+     */
+    function recurseDown(obj, iteratee) {
+        var res;
+
+        if (isArrayLike(obj)) {
+            each(obj, function(node) {
+                res = recurseDown(node, iteratee);
+
+                return res;
+            });
+        }
+        else {
+            res = iteratee(obj);
+
+            // Recurse children
+            if (res !== false && obj.hasChildren()) {
+                res = recurseDown(obj.children, iteratee);
+            }
+        }
+
+        return res;
+    }
+
+    /**
      * Reset a node's state to the tree default.
      *
      * @private
@@ -1693,6 +1713,8 @@ function InspireTree(opts) {
         (nodes || model).recurseDown(function(node) {
             if (node.id === id) {
                 match = node;
+
+                return false;
             }
         });
 

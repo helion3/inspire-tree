@@ -42,5 +42,17 @@ describe('TreeNode.prototype.recurseDown', function() {
         expect(count).to.equal(3);
     });
 
+    it('stops recursion when returning false', function() {
+        var count = 0;
+
+        tree.nodes().recurseDown(function() {
+            count++;
+
+            return !(count === 2);
+        });
+
+        expect(count).to.equal(2);
+    });
+
     after(helpers.clearDOM);
 });

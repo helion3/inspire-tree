@@ -42,5 +42,17 @@ describe('TreeNode.prototype.recurseUp', function() {
         expect(count).to.equal(3);
     });
 
+    it('stops recursion when returning false', function() {
+        var count = 0;
+
+        tree.node(3).recurseUp(function() {
+            count++;
+
+            return !(count === 1);
+        });
+
+        expect(count).to.equal(1);
+    });
+
     after(helpers.clearDOM);
 });

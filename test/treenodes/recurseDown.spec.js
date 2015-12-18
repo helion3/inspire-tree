@@ -37,12 +37,23 @@ describe('TreeNodes.prototype.recurseDown', function() {
     it('recurse down treenodes and children', function() {
         var count = 0;
 
-        tree.nodes().recurseDown(function(node) {
+        tree.nodes().recurseDown(function() {
             count++;
-            return node;
         });
 
         expect(count).to.equal(4);
+    });
+
+    it('stops recursion when returning false', function() {
+        var count = 0;
+
+        tree.nodes().recurseDown(function() {
+            count++;
+
+            return !(count === 2);
+        });
+
+        expect(count).to.equal(2);
     });
 
     after(helpers.clearDOM);
