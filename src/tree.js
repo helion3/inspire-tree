@@ -480,15 +480,11 @@ function InspireTree(opts) {
      * @return {array} Array of node texts.
      */
     TreeNode.prototype.getTextualHierarchy = function() {
-        var node = this;
         var paths = [];
 
-        var parents = node.getParents().reverse();
-        each(parents, function(parent) {
-            paths.push(parent.text);
+        this.recurseUp(function(node) {
+            paths.unshift(node.text);
         });
-
-        paths.push(node.text);
 
         return paths;
     };

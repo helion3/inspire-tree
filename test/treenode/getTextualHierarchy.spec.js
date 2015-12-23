@@ -42,6 +42,7 @@ describe('TreeNode.prototype.getTextualHierarchy', function() {
         expect(parents).to.have.length(3);
         expect(parents[0]).to.equal('A');
         expect(parents[1]).to.equal('AA');
+        expect(parents[2]).to.equal('AAA');
     });
 
     after(helpers.clearDOM);
