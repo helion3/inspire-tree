@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.2.3
+ * Inspire Tree v1.2.4
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -88,6 +88,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	__webpack_require__(46);
 
 	function InspireTree(opts) {
+	    var initialized = false;
 	    var noop = function() {};
 	    var tree = this;
 	    tree.preventDeselection = false;
@@ -848,18 +849,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Resulting node.
 	     */
 	    TreeNode.prototype.recurseUp = function(iteratee) {
-	        var node = this;
-	        var result = iteratee(node);
+	        var result = iteratee(this);
 
-	        if (result) {
-	            node = result;
+	        if (result !== false && this.hasParent()) {
+	            this.getParent().recurseUp(iteratee);
 	        }
 
-	        if (node.hasParent()) {
-	            node.getParent().recurseUp(iteratee);
-	        }
-
-	        return node;
+	        return this;
 	    };
 
 	    /**
@@ -870,12 +866,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNode} Resulting node.
 	     */
 	    TreeNode.prototype.recurseDown = function(iteratee) {
-	        iteratee(this);
-
-	        // Recurse children
-	        if (this.hasChildren()) {
-	            this.children.recurseDown(iteratee);
-	        }
+	        recurseDown(this, iteratee);
 
 	        return this;
 	    };
@@ -1361,9 +1352,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {TreeNodes} Resulting nodes.
 	     */
 	    TreeNodes.prototype.recurseDown = function(iteratee) {
-	        each(this, function(node) {
-	            node.recurseDown(iteratee);
-	        });
+	        recurseDown(this, iteratee);
 
 	        return this;
 	    };
@@ -1660,6 +1649,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Base recursion function for a collection or node.
+	     *
+	     * Returns false if execution should cease.
+	     *
+	     * @private
+	     * @param {TreeNode|TreeNodes} obj Node or collection.
+	     * @param {function} iteratee Iteratee function
+	     * @return {boolean} Cease iteration.
+	     */
+	    function recurseDown(obj, iteratee) {
+	        var res;
+
+	        if (isArrayLike(obj)) {
+	            each(obj, function(node) {
+	                res = recurseDown(node, iteratee);
+
+	                return res;
+	            });
+	        }
+	        else {
+	            res = iteratee(obj);
+
+	            // Recurse children
+	            if (res !== false && obj.hasChildren()) {
+	                res = recurseDown(obj.children, iteratee);
+	            }
+	        }
+
+	        return res;
+	    }
+
+	    /**
 	     * Reset a node's state to the tree default.
 	     *
 	     * @private
@@ -1756,6 +1777,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        (nodes || model).recurseDown(function(node) {
 	            if (node.id === id) {
 	                match = node;
+
+	                return false;
 	            }
 	        });
 
@@ -1802,8 +1825,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    tree.load = function(loader) {
 	        var resolve = function(nodes) {
-	            // Emit raw data
-	            tree.emit('data.loaded', nodes);
+	            // Delay event for synchronous loader. Otherwise it fires
+	            // before the user has a chance to listen.
+	            if (!initialized && isArray(nodes)) {
+	                setTimeout(function() {
+	                    tree.emit('data.loaded', nodes);
+	                });
+	            }
+	            else {
+	                tree.emit('data.loaded', nodes);
+	            }
 
 	            // Clear and call rendering on existing data
 	            if (model.length > 0) {
@@ -1816,7 +1847,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                tree.selectFirstAvailableNode();
 	            }
 
-	            tree.emit('model.loaded', model);
+	            // Delay event for synchronous loader
+	            if (!initialized && isArray(nodes)) {
+	                setTimeout(function() {
+	                    tree.emit('model.loaded', model);
+	                });
+	            }
+	            else {
+	                tree.emit('model.loaded', model);
+	            }
 
 	            dom.applyChanges();
 
@@ -1978,6 +2017,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Load initial user data
 	    tree.load(tree.config.data);
+
+	    initialized = true;
 
 	    return tree;
 	};
