@@ -463,10 +463,10 @@ function InspireTree(opts) {
     TreeNode.prototype.getParents = function() {
         var parents = new TreeNodes();
 
-        var parent = this.getParent();
-        if (parent) {
-            parents.push(parent);
-            parents = parents.concat(parent.getParents());
+        if (this.hasParent()) {
+            this.getParent().recurseUp(function(node) {
+                parents.push(node);
+            });
         }
 
         return parents;
