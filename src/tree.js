@@ -25,6 +25,7 @@ var sortBy = require('lodash.sortby');
 require('./scss/tree.scss');
 
 function InspireTree(opts) {
+    var initialized = false;
     var noop = function() {};
     var tree = this;
     tree.preventDeselection = false;
@@ -1761,8 +1762,16 @@ function InspireTree(opts) {
      */
     tree.load = function(loader) {
         var resolve = function(nodes) {
-            // Emit raw data
-            tree.emit('data.loaded', nodes);
+            // Delay event for synchronous loader. Otherwise it fires
+            // before the user has a chance to listen.
+            if (!initialized && isArray(nodes)) {
+                setTimeout(function() {
+                    tree.emit('data.loaded', nodes);
+                });
+            }
+            else {
+                tree.emit('data.loaded', nodes);
+            }
 
             // Clear and call rendering on existing data
             if (model.length > 0) {
@@ -1775,7 +1784,15 @@ function InspireTree(opts) {
                 tree.selectFirstAvailableNode();
             }
 
-            tree.emit('model.loaded', model);
+            // Delay event for synchronous loader
+            if (!initialized && isArray(nodes)) {
+                setTimeout(function() {
+                    tree.emit('model.loaded', model);
+                });
+            }
+            else {
+                tree.emit('model.loaded', model);
+            }
 
             dom.applyChanges();
 
@@ -1937,6 +1954,8 @@ function InspireTree(opts) {
 
     // Load initial user data
     tree.load(tree.config.data);
+
+    initialized = true;
 
     return tree;
 };

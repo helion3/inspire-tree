@@ -95,5 +95,23 @@ describe('Tree.load', function() {
         expect(nodes[2].text).to.equal('C');
     });
 
+    it('delays event for synchronous loader', function(done) {
+        var callback = sinon.spy();
+
+        var tree = new InspireTree({
+            target: '.tree',
+            data: [{
+                text: 'A'
+            }]
+        });
+
+        tree.on('model.loaded', callback);
+
+        setTimeout(function() {
+            callback.should.have.been.called;
+            done();
+        });
+    });
+
     after(helpers.clearDOM);
 });
