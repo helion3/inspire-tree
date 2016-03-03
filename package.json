@@ -33,6 +33,7 @@
     "lodash.isarray": "^4.0.0",
     "lodash.isempty": "^4.1.1",
     "lodash.isfunction": "^3.0.6",
+    "lodash.isnumber": "^3.0.3",
     "lodash.isobject": "^3.0.2",
     "lodash.isregexp": "^3.0.3",
     "lodash.isstring": "^4.0.1",

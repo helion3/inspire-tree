@@ -14,6 +14,7 @@ var isArray = require('lodash.isarray');
 var isArrayLike = require('./lib/isArrayLike');
 var isEmpty = require('lodash.isempty');
 var isFunction = require('lodash.isfunction');
+var isNumber = require('lodash.isnumber');
 var isObject = require('lodash.isobject');
 var isRegExp = require('lodash.isregexp');
 var isString = require('lodash.isstring');
@@ -1703,7 +1704,7 @@ function InspireTree(opts) {
     tree.node = function(id, nodes) {
         var match;
 
-        if (!isString(id)) {
+        if (isNumber(id)) {
             id = id.toString();
         }
 
