@@ -22,7 +22,6 @@
         cursor: default;
         display: block;
         height: 100%;
-        line-height: $tree-node-height;
     }
 
     li > .title-wrap {
@@ -58,6 +57,7 @@
     }
 
     .title {
+        line-height: $tree-node-height;
         overflow: hidden;
         padding-left: 30px;
         position: relative;
