@@ -8,6 +8,7 @@ module.exports = function(config) {
                 included: false
             },
             'bower_components/jquery/dist/jquery.js',
+            'bower_components/lodash/lodash.js',
             'build/inspire-tree.js',
             'test/helpers.js',
             'test/**/*.spec.js'

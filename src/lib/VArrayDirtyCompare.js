@@ -1,6 +1,6 @@
 'use strict';
 
-var find = require('lodash.find');
+var _ = require('lodash');
 
 /**
  * Returns whether or not a state is marked as dirty in
@@ -19,7 +19,7 @@ module.exports = function VDirtyCompare(previousState, currentState) {
         diff = true;
     }
     else {
-        diff = find(currentState.nodes, 'itree.dirty', true);
+        diff = _.find(currentState.nodes, 'itree.dirty', true);
     }
 
     return diff;

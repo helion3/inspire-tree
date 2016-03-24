@@ -4,13 +4,16 @@ var webpack = require('webpack');
 var package = require('./package.json');
 
 // Are we minifying for prod?
-var PROD = process.env.PROD || '';
+var PROD = process.env.PROD || false;
 
 // Which dir are we building to?
 var DIR = process.env.DIR || 'build';
 
+// Should we bundle lodash?
+var BUNDLE = process.env.BUNDLE || false;
+
 // Include DOM package?
-var EXCLUDE_DOM = process.env.EXCLUDE_DOM || '';
+var EXCLUDE_DOM = process.env.EXCLUDE_DOM || false;
 
 var banner = 'Inspire Tree v' + package.version + '\n\
 ' + package.repository + '\n\
@@ -36,28 +39,43 @@ if (PROD) {
     plugins.push(new webpack.optimize.UglifyJsPlugin({ minimize: true }));
 }
 
-function getFileName() {
-    var base = '[name]';
-
-    if (EXCLUDE_DOM) {
-        base += '-core';
-    }
-
-    if (PROD) {
-        base += '.min';
-    }
-
-    base += '.js';
-
-    return base;
+var externals = {};
+if (!BUNDLE) {
+    externals = {
+        lodash: {
+            commonjs: 'lodash',
+            commonjs2: 'lodash',
+            amd: 'lodash',
+            root: '_'
+        }
+    };
 }
 
 module.exports = {
     entry: {
         'inspire-tree': './src/tree.js'
     },
+    externals: externals,
     output: {
-        filename: getFileName(),
+        filename: (function() {
+            var base = '[name]';
+
+            if (EXCLUDE_DOM) {
+                base += '-core';
+            }
+
+            if (BUNDLE) {
+                base += '-bundled';
+            }
+
+            if (PROD) {
+                base += '.min';
+            }
+
+            base += '.js';
+
+            return base;
+        }()),
         path: DIR,
         library: 'InspireTree',
         libraryTarget: 'umd'

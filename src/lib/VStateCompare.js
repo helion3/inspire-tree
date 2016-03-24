@@ -1,6 +1,6 @@
 'use strict';
 
-var each = require('lodash.foreach');
+var _ = require('lodash');
 
 /**
  * Compares all keys on the given state. Returns true if any difference exists.
@@ -14,7 +14,7 @@ var each = require('lodash.foreach');
 module.exports = function VStateCompare(previousState, currentState) {
     var isDirty = false;
 
-    each(currentState, function(val, key) {
+    _.each(currentState, function(val, key) {
         if (val !== previousState[key]) {
             isDirty = true;
             return false;

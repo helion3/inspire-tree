@@ -1,18 +1,13 @@
 'use strict';
 
 // Libs
+var _ = require('lodash');
 var createElement = require('virtual-dom/create-element');
-var each = require('lodash.foreach');
 var diff = require('virtual-dom/diff');
 var h = require('virtual-dom/h');
 var isArrayLike = require('./lib/isArrayLike');
-var isEmpty = require('lodash.isempty');
-var isFunction = require('lodash.isfunction');
-var isObject = require('lodash.isobject');
-var isString = require('lodash.isstring');
 var keyCodes = require('key-codes');
 var patch = require('virtual-dom/patch');
-var transform = require('lodash.transform');
 var VCache = require('./lib/VCache');
 var VArrayDirtyCompare = require('./lib/VArrayDirtyCompare');
 var VDirtyCompare = require('./lib/VDirtyCompare');
@@ -29,7 +24,7 @@ module.exports = function InspireDOM(tree) {
     var isMouseHeld = false;
 
     // Cache because we use in loops
-    var isDynamic = isFunction(tree.config.data);
+    var isDynamic = _.isFunction(tree.config.data);
     var contextMenuChoices = tree.config.contextMenu;
 
     /**
@@ -88,7 +83,7 @@ module.exports = function InspireDOM(tree) {
             onclick: function(event) {
                 event.stopPropagation();
             }
-        }, transform(choices, function(contents, choice) {
+        }, _.transform(choices, function(contents, choice) {
             contents.push(createContextMenuListItem(choice, node));
         }));
     }
@@ -183,7 +178,7 @@ module.exports = function InspireDOM(tree) {
             // http://jsperf.com/object-keys-to-classnames
             var classNames = '.';
             var state = node.itree.state;
-            each(Object.keys(state), function(key) {
+            _.each(Object.keys(state), function(key) {
                 if (state[key]) {
                     classNames += '.' + key;
                 }
@@ -212,7 +207,7 @@ module.exports = function InspireDOM(tree) {
     function createListItemNodes(nodes) {
         var domNodes = [];
 
-        each(nodes, function(node) {
+        _.each(nodes, function(node) {
             // We can't just remove the node if soft-removed
             // https://github.com/Matt-Esch/virtual-dom/issues/333
             domNodes.push(createListItemNode(node));
@@ -381,10 +376,10 @@ module.exports = function InspireDOM(tree) {
         if (target instanceof HTMLElement) {
             $element = target;
         }
-        else if (isObject(target) && isObject(target[0])) {
+        else if (_.isObject(target) && _.isObject(target[0])) {
             $element = target[0];
         }
-        else if (isString(target)) {
+        else if (_.isString(target)) {
             var match = document.querySelector(target);
             if (match) {
                 $element = match;
@@ -481,7 +476,7 @@ module.exports = function InspireDOM(tree) {
             $dragElement.style.top = y + 'px';
 
             var validTarget;
-            each(dropTargets, function(target) {
+            _.each(dropTargets, function(target) {
                 var rect = target.getBoundingClientRect();
 
                 if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
@@ -659,8 +654,8 @@ module.exports = function InspireDOM(tree) {
         }
 
         var dragTargetSelectors = tree.config.dragTargets;
-        if (!isEmpty(dragTargetSelectors)) {
-            each(dragTargetSelectors, function(selector) {
+        if (!_.isEmpty(dragTargetSelectors)) {
+            _.each(dragTargetSelectors, function(selector) {
                 var dropTarget = getElement(selector);
 
                 if (dropTarget) {

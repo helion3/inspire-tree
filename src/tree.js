@@ -1,27 +1,11 @@
 'use strict';
 
 // Libs
-var assign = require('lodash.assign');
-var cloneDeep = require('lodash.clonedeep');
+var _ = require('lodash');
 var cuid = require('cuid');
-var defaults = require('lodash.defaults');
-var each = require('lodash.foreach');
 var EventEmitter = require('eventemitter2');
-var find = require('lodash.find');
-var findIndex = require('lodash.findindex');
-var findLast = require('lodash.findlast');
-var isArray = require('lodash.isarray');
 var isArrayLike = require('./lib/isArrayLike');
-var isEmpty = require('lodash.isempty');
-var isFunction = require('lodash.isfunction');
-var isNumber = require('lodash.isnumber');
-var isObject = require('lodash.isobject');
-var isRegExp = require('lodash.isregexp');
-var isString = require('lodash.isstring');
 var Promise = require('es6-promise').Promise;
-var remove = require('lodash.remove');
-var slice = require('lodash.slice');
-var sortBy = require('lodash.sortby');
 
 // CSS
 require('./scss/tree.scss');
@@ -37,7 +21,7 @@ function InspireTree(opts) {
     }
 
     // Assign defaults
-    tree.config = defaults(opts, {
+    tree.config = _.defaults(opts, {
         allowLoadEvents: [],
         allowSelection: noop,
         checkbox: false,
@@ -69,8 +53,8 @@ function InspireTree(opts) {
     };
 
     // Cache some configs
-    var allowsLoadEvents = isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
-    var isDynamic = isFunction(tree.config.data);
+    var allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
+    var isDynamic = _.isFunction(tree.config.data);
 
     // Rendering
     var dom;
@@ -83,13 +67,13 @@ function InspireTree(opts) {
     }
 
     // Validation
-    if (dom && (!isObject(opts) || !opts.target)) {
+    if (dom && (!_.isObject(opts) || !opts.target)) {
         throw new TypeError('Property "target" is required, either an element or a selector.');
     }
 
     // Load custom/empty renderer
     if (!dom) {
-        dom = isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
+        dom = _.isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
             applyChanges: noop,
             attach: noop,
             batch: noop,
@@ -106,13 +90,13 @@ function InspireTree(opts) {
     function TreeNode(source) {
         var node = this;
 
-        each(source, function(value, key) {
-            if (isObject(value)) {
-                if (isFunction(value.clone)) {
+        _.each(source, function(value, key) {
+            if (_.isObject(value)) {
+                if (_.isFunction(value.clone)) {
                     node[key] = value.clone();
                 }
                 else {
-                    node[key] = cloneDeep(value);
+                    node[key] = _.cloneDeep(value);
                 }
             }
             else {
@@ -131,7 +115,7 @@ function InspireTree(opts) {
     TreeNode.prototype.addChild = function(child) {
         child = objectToModel(child);
 
-        if (Array.isArray(this.children) || !isArrayLike(this.children)) {
+        if (_.isArray(this.children) || !isArrayLike(this.children)) {
             this.children = new TreeNodes();
         }
 
@@ -244,7 +228,7 @@ function InspireTree(opts) {
              * @return {object} New node object.
              */
             to: function(dest) {
-                if (!isFunction(dest.addNode)) {
+                if (!_.isFunction(dest.addNode)) {
                     throw new Error('Destination must be an Inspire Tree instance.');
                 }
 
@@ -265,7 +249,7 @@ function InspireTree(opts) {
         var parents = node.getParents().clone();
 
         // Remove old hierarchy data
-        each(parents, function(node) {
+        _.each(parents, function(node) {
             delete node.itree.parent;
             delete node.children;
         });
@@ -279,7 +263,7 @@ function InspireTree(opts) {
         var hierarchy = parents[0];
         var pointer = hierarchy;
         var l = parents.length;
-        each(parents, function(parent, key) {
+        _.each(parents, function(parent, key) {
             var children = new TreeNodes();
 
             if (key + 1 < l) {
@@ -530,7 +514,7 @@ function InspireTree(opts) {
             // Count visible children
             // http://jsperf.com/count-subdoc-state/2
             var visibleCount = 0;
-            each(this.children, function(child) {
+            _.each(this.children, function(child) {
                 if (!child.hidden() && !child.removed()) {
                     visibleCount++;
                 }
@@ -579,7 +563,7 @@ function InspireTree(opts) {
         var found;
 
         if (this.hasChildren() && !this.collapsed()) {
-            found = findLast(this.children, function(node) {
+            found = _.findLast(this.children, function(node) {
                 return node.visible();
             });
 
@@ -675,7 +659,7 @@ function InspireTree(opts) {
         var next;
 
         if (startingNode.hasChildren()) {
-            next = find(startingNode.children, function(child) {
+            next = _.find(startingNode.children, function(child) {
                 return child.visible();
             });
         }
@@ -741,9 +725,9 @@ function InspireTree(opts) {
     TreeNode.prototype.nextVisibleSiblingNode = function() {
         var startingNode = this;
         var context = (startingNode.hasParent() ? startingNode.getParent().children : tree.nodes());
-        var i = findIndex(context, { id: startingNode.id });
+        var i = _.findIndex(context, { id: startingNode.id });
 
-        return find(slice(context, i + 1), function(node) {
+        return _.find(_.slice(context, i + 1), function(node) {
             return node.visible();
         });
     };
@@ -782,8 +766,8 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.previousVisibleSiblingNode = function() {
         var context = (this.hasParent() ? this.getParent().children : tree.nodes());
-        var i = findIndex(context, { id: this.id });
-        return findLast(slice(context, 0, i), function(node) {
+        var i = _.findIndex(context, { id: this.id });
+        return _.findLast(_.slice(context, 0, i), function(node) {
             return node.visible();
         });
     };
@@ -839,7 +823,7 @@ function InspireTree(opts) {
             if (node.hasChildren()) {
                 var selected = 0;
 
-                each(node.children, function(child) {
+                _.each(node.children, function(child) {
                     if (child.itree.state.indeterminate) {
                         node.itree.state.indeterminate = true;
                         return false;
@@ -887,7 +871,7 @@ function InspireTree(opts) {
         }
 
         var context = (parent ? parent.children : model);
-        remove(context, { id: node.id });
+        _.remove(context, { id: node.id });
 
         if (parent) {
             parent.refreshIndeterminateState();
@@ -1064,11 +1048,11 @@ function InspireTree(opts) {
     TreeNode.prototype.toObject = function() {
         var object = {};
 
-        each(this, function(value, property) {
+        _.each(this, function(value, property) {
             object[property] = value;
         });
 
-        if (this.hasChildren() && isFunction(this.children.toArray)) {
+        if (this.hasChildren() && _.isFunction(this.children.toArray)) {
             object.children = this.children.toArray();
         }
 
@@ -1115,8 +1099,8 @@ function InspireTree(opts) {
     function TreeNodes(array) {
         var treeNodes = this;
 
-        if (isArray(array)) {
-            each(array, function(node) {
+        if (_.isArray(array)) {
+            _.each(array, function(node) {
                 treeNodes.push(node);
             });
         }
@@ -1133,7 +1117,7 @@ function InspireTree(opts) {
     TreeNodes.prototype.clone = function() {
         var newArray = new TreeNodes();
 
-        each(this, function(node) {
+        _.each(this, function(node) {
             newArray.push(node.clone());
         });
 
@@ -1160,13 +1144,13 @@ function InspireTree(opts) {
              * @return {array} Array of new nodes.
              */
             to: function(dest) {
-                if (!isFunction(dest.addNodes)) {
+                if (!_.isFunction(dest.addNodes)) {
                     throw new Error('Destination must be an Inspire Tree instance.');
                 }
 
                 var newNodes = new TreeNodes();
 
-                each(nodes, function(node) {
+                _.each(nodes, function(node) {
                     newNodes.push(node.copy(hierarchy).to(dest));
                 });
 
@@ -1189,8 +1173,8 @@ function InspireTree(opts) {
             newNodes.push(node);
         };
 
-        each(this, pusher);
-        each(nodes, pusher);
+        _.each(this, pusher);
+        _.each(nodes, pusher);
 
         return newNodes;
     };
@@ -1257,7 +1241,7 @@ function InspireTree(opts) {
     TreeNodes.prototype.export = function() {
         var clones = [];
 
-        each(this, function(node) {
+        _.each(this, function(node) {
             clones.push(node.export());
         });
 
@@ -1278,7 +1262,7 @@ function InspireTree(opts) {
         var flat = this.flatten(predicate);
         var matches = new TreeNodes();
 
-        each(flat, function(node) {
+        _.each(flat, function(node) {
             matches.push(node.copyHierarchy());
         });
 
@@ -1296,7 +1280,7 @@ function InspireTree(opts) {
         var fn = getPredicateFunction(predicate);
         var matches = new TreeNodes();
 
-        each(this, function(node) {
+        _.each(this, function(node) {
             if (fn(node)) {
                 matches.push(node);
             }
@@ -1366,10 +1350,10 @@ function InspireTree(opts) {
             sorter = tree.config.sort;
         }
 
-        var sorted = sortBy(nodes, sorter);
+        var sorted = _.sortBy(nodes, sorter);
 
         nodes.length = 0;
-        each(sorted, function(node) {
+        _.each(sorted, function(node) {
             nodes.push(node);
         });
 
@@ -1385,7 +1369,7 @@ function InspireTree(opts) {
     TreeNodes.prototype.toArray = function() {
         var array = [];
 
-        each(this, function(node) {
+        _.each(this, function(node) {
             array.push(node.toObject());
         });
 
@@ -1402,7 +1386,7 @@ function InspireTree(opts) {
     function mapToEach(method) {
         TreeNodes.prototype[method] = function() {
             dom.batch();
-            each(this, function(node) {
+            _.each(this, function(node) {
                 node[method]();
             });
             dom.end();
@@ -1432,16 +1416,16 @@ function InspireTree(opts) {
 
     // Methods we can map to each/deeply TreeNode
     var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'show'];
-    each(mapped, function(method) {
+    _.each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
     });
 
     // Methods we can map to each TreeNode
-    each(['expand', 'expandParents', 'clean', 'softRemove'], mapToEach);
+    _.each(['expand', 'expandParents', 'clean', 'softRemove'], mapToEach);
 
     // Predicate methods we can map
-    each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected'], function(state) {
+    _.each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected'], function(state) {
         TreeNodes.prototype[state] = function(full) {
             if (full) {
                 return this.extract(state);
@@ -1499,10 +1483,10 @@ function InspireTree(opts) {
 
         // Sort
         if (tree.config.sort) {
-            array = sortBy(array, tree.config.sort);
+            array = _.sortBy(array, tree.config.sort);
         }
 
-        each(array, function(node) {
+        _.each(array, function(node) {
             collection.push(objectToModel(node, parent));
         });
 
@@ -1520,7 +1504,7 @@ function InspireTree(opts) {
         var fn = predicate;
         if (typeof predicate === 'string') {
             fn = function(node) {
-                return isFunction(node[predicate]) ? node[predicate]() : node[predicate];
+                return _.isFunction(node[predicate]) ? node[predicate]() : node[predicate];
             };
         }
 
@@ -1553,7 +1537,7 @@ function InspireTree(opts) {
                         existing.children = new TreeNodes();
                     }
 
-                    each(node.children, function(child) {
+                    _.each(node.children, function(child) {
                         newNodes.concat(mergeNode(existing, child));
                     });
                 }
@@ -1623,7 +1607,7 @@ function InspireTree(opts) {
         object.itree.parent = parent;
 
         // Wrap
-        object = assign(new TreeNode(), object);
+        object = _.assign(new TreeNode(), object);
 
         if (object.hasChildren()) {
             object.children = collectionToModel(object.children, object);
@@ -1631,7 +1615,7 @@ function InspireTree(opts) {
 
         // Fire events for pre-set states, if enabled
         if (allowsLoadEvents) {
-            each(tree.config.allowLoadEvents, function(eventName) {
+            _.each(tree.config.allowLoadEvents, function(eventName) {
                 if (state[eventName]) {
                     tree.emit('node.' + eventName, object);
                 }
@@ -1655,7 +1639,7 @@ function InspireTree(opts) {
         var res;
 
         if (isArrayLike(obj)) {
-            each(obj, function(node) {
+            _.each(obj, function(node) {
                 res = recurseDown(node, iteratee);
 
                 return res;
@@ -1681,7 +1665,7 @@ function InspireTree(opts) {
      * @returns {TreeNode} Node object.
      */
     function resetState(node) {
-        each(defaultState, function(val, prop) {
+        _.each(defaultState, function(val, prop) {
             node.itree.state[prop] = val;
         });
 
@@ -1692,7 +1676,7 @@ function InspireTree(opts) {
 
     // Map some model.TreeNodes method to the tree to make life easier for users
     for (var method in TreeNodes.prototype) {
-        if (method !== 'constructor' && !tree[method] && isFunction(TreeNodes.prototype[method])) {
+        if (method !== 'constructor' && !tree[method] && _.isFunction(TreeNodes.prototype[method])) {
             (function(methodName) {
                 tree[methodName] = function() {
                     return model[methodName].apply(model, arguments);
@@ -1732,7 +1716,7 @@ function InspireTree(opts) {
         dom.batch();
 
         var newNodes = new TreeNodes();
-        each(nodes, function(node) {
+        _.each(nodes, function(node) {
             newNodes.push(tree.addNode(node));
         });
 
@@ -1763,7 +1747,7 @@ function InspireTree(opts) {
     tree.node = function(id, nodes) {
         var match;
 
-        if (isNumber(id)) {
+        if (_.isNumber(id)) {
             id = id.toString();
         }
 
@@ -1792,10 +1776,10 @@ function InspireTree(opts) {
     tree.nodes = function(refs) {
         var nodes = model;
 
-        if (isArray(refs)) {
+        if (_.isArray(refs)) {
             nodes = new TreeNodes();
 
-            each(refs, function(ref) {
+            _.each(refs, function(ref) {
                 var node = tree.node(ref);
                 if (node) {
                     nodes.push(node);
@@ -1821,7 +1805,7 @@ function InspireTree(opts) {
             var complete = function(nodes) {
                 // Delay event for synchronous loader. Otherwise it fires
                 // before the user has a chance to listen.
-                if (!initialized && isArray(nodes)) {
+                if (!initialized && _.isArray(nodes)) {
                     setTimeout(function() {
                         tree.emit('data.loaded', nodes);
                     });
@@ -1842,7 +1826,7 @@ function InspireTree(opts) {
                 }
 
                 // Delay event for synchronous loader
-                if (!initialized && isArray(nodes)) {
+                if (!initialized && _.isArray(nodes)) {
                     setTimeout(function() {
                         tree.emit('model.loaded', model);
                     });
@@ -1855,7 +1839,7 @@ function InspireTree(opts) {
 
                 dom.applyChanges();
 
-                if (isFunction(dom.scrollSelectedIntoView)) {
+                if (_.isFunction(dom.scrollSelectedIntoView)) {
                     dom.scrollSelectedIntoView();
                 }
             };
@@ -1871,22 +1855,22 @@ function InspireTree(opts) {
             }
 
             // Data loader requires a caller/callback
-            else if (isFunction(loader)) {
+            else if (_.isFunction(loader)) {
                 loader(null, complete, error);
             }
 
             // Data loader is likely a promise
-            else if (isObject(loader)) {
+            else if (_.isObject(loader)) {
                 // Promise
-                if (isFunction(loader.then)) {
+                if (_.isFunction(loader.then)) {
                     loader.then(complete);
                 }
 
                 // jQuery promises use "error".
-                if (isFunction(loader.error)) {
+                if (_.isFunction(loader.error)) {
                     loader.error(error);
                 }
-                else if (isFunction(loader.catch)) {
+                else if (_.isFunction(loader.catch)) {
                     loader.catch(error);
                 }
             }
@@ -1929,14 +1913,14 @@ function InspireTree(opts) {
         var matches = new TreeNodes();
 
         var custom = tree.config.search;
-        if (isFunction(custom)) {
+        if (_.isFunction(custom)) {
             return custom(
                 query,
                 function resolver(nodes) {
                     dom.batch();
 
                     tree.nodes().hideDeep();
-                    each(nodes, function(node) {
+                    _.each(nodes, function(node) {
                         mergeNode(model, node);
                     });
 
@@ -1949,16 +1933,16 @@ function InspireTree(opts) {
         }
 
         // Don't search if query empty
-        if (isString(query) && isEmpty(query)) {
+        if (_.isString(query) && _.isEmpty(query)) {
             return tree.clearSearch();
         }
 
-        if (isString(query)) {
+        if (_.isString(query)) {
             query = new RegExp(query, 'i');
         }
 
         var predicate;
-        if (isRegExp(query)) {
+        if (_.isRegExp(query)) {
             predicate = function(node) {
                 return query.test(node.text);
             };
@@ -1967,7 +1951,7 @@ function InspireTree(opts) {
             predicate = query;
         }
 
-        if (!isFunction(predicate)) {
+        if (!_.isFunction(predicate)) {
             throw new TypeError('Search predicate must be a string, RegExp, or function.');
         }
 

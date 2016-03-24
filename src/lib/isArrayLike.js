@@ -1,9 +1,9 @@
 'use strict';
 
-var isArray = require('lodash.isarray');
+var _ = require('lodash');
 
 module.exports = function isArrayLike(array) {
-    return Boolean(isArray(array) || (
+    return Boolean(_.isArray(array) || (
         array &&
         typeof array !== 'function' &&
         typeof array !== 'string' &&
