@@ -27,6 +27,10 @@ describe('TreeNode.prototype.expand', function() {
         expect(tree.node(1).expand).to.be.a('function');
     });
 
+    it('returns a promise', function() {
+        expect(tree.node(1).expand().then).to.be.a('function');
+    });
+
     it('expands children via click', function() {
         var node = tree.node(1);
         node.collapse();

@@ -46,6 +46,15 @@ describe('Tree.load', function() {
         });
     });
 
+    it('returns a promise', function() {
+        var tree = new InspireTree({
+            target: '.tree',
+            data: []
+        });
+
+        expect(tree.load([]).then).to.be.a('function');
+    });
+
     it('loads child node data dynamically', function() {
         var tree = new InspireTree({
             target: '.tree',

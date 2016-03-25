@@ -1,10 +1,7 @@
 [{
-    "text": "Administrative",
-    "id": "administrative"
+    "text": "Departments",
+    "id": "departments",
+    "children": true
 }, {
-    "text": "Development",
-    "id": "development"
-}, {
-    "text": "Accounting",
-    "id": "accounting"
+    "text": "Employees"
 }]

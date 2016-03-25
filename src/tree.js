@@ -18,6 +18,7 @@ var isNumber = require('lodash.isnumber');
 var isObject = require('lodash.isobject');
 var isRegExp = require('lodash.isregexp');
 var isString = require('lodash.isstring');
+var Promise = require('es6-promise').Promise;
 var remove = require('lodash.remove');
 var slice = require('lodash.slice');
 var sortBy = require('lodash.sortby');
@@ -30,6 +31,10 @@ function InspireTree(opts) {
     var noop = function() {};
     var tree = this;
     tree.preventDeselection = false;
+
+    if (!opts.data) {
+        throw new TypeError('Invalid data loader.');
+    }
 
     // Assign defaults
     tree.config = defaults(opts, {
@@ -330,28 +335,30 @@ function InspireTree(opts) {
      * Expand this node.
      *
      * @category TreeNode
-     * @return {TreeNode} Node object.
+     * @return {Promise} Promise resolved on successful load and expand of children.
      */
     TreeNode.prototype.expand = function() {
         var node = this;
-        var allow = (node.hasChildren() || (isDynamic && node.children === true));
 
-        if (allow && (node.collapsed() || node.hidden())) {
-            node.itree.state.collapsed = false;
-            node.itree.state.hidden = false;
+        return new Promise(function(resolve, reject) {
+            var allow = (node.hasChildren() || (isDynamic && node.children === true));
 
-            tree.emit('node.expanded', node);
+            if (allow && (node.collapsed() || node.hidden())) {
+                node.itree.state.collapsed = false;
+                node.itree.state.hidden = false;
 
-            if (isDynamic && node.children === true) {
-                node.loadChildren();
+                tree.emit('node.expanded', node);
+
+                if (isDynamic && node.children === true) {
+                    node.loadChildren().then(resolve).catch(reject);
+                }
+                else {
+                    node.markDirty();
+                    dom.applyChanges();
+                    resolve(node);
+                }
             }
-            else {
-                node.markDirty();
-                dom.applyChanges();
-            }
-        }
-
-        return node;
+        });
     };
 
     /**
@@ -602,7 +609,11 @@ function InspireTree(opts) {
     TreeNode.prototype.loadChildren = function() {
         var node = this;
 
-        if (isDynamic && node.children === true) {
+        return new Promise(function(resolve, reject) {
+            if (!isDynamic || node.children !== true) {
+                reject(new Error('Node does not have or support dynamic children.'));
+            }
+
             node.itree.state.loading = true;
             node.markDirty();
             dom.applyChanges();
@@ -616,20 +627,22 @@ function InspireTree(opts) {
                     node.markDirty();
                     dom.end();
 
+                    resolve(node.children);
+
                     tree.emit('children.loaded', node);
                 },
                 function rejecter(err) {
-                    tree.emit('tree.loaderror', err);
-
                     node.itree.state.loading = false;
                     node.children = new TreeNodes();
                     node.markDirty();
                     dom.applyChanges();
+
+                    reject(err);
+
+                    tree.emit('tree.loaderror', err);
                 }
             );
-        }
-
-        return node;
+        });
     };
 
     /**
@@ -1200,6 +1213,41 @@ function InspireTree(opts) {
     };
 
     /**
+     * Recursively expands all nodes, loading all dynamic calls.
+     *
+     * @category TreeNodes
+     * @return {Promise} Promise resolved only when all children have loaded and expanded.
+     */
+    TreeNodes.prototype.expandDeep = function() {
+        var nodes = this;
+
+        return new Promise(function(resolve) {
+            var waitCount = 0;
+
+            var done = function() {
+                if (--waitCount === 0) {
+                    resolve(nodes);
+                }
+            };
+
+            nodes.recurseDown(function(node) {
+                waitCount++;
+
+                // Ignore nodes without children
+                if (node.children) {
+                    node.expand().catch(done).then(function() {
+                        // Manually trigger expansion on newly loaded children
+                        node.children.expandDeep().catch(done).then(done);
+                    });
+                }
+                else {
+                    done();
+                }
+            });
+        });
+    };
+
+    /**
      * Clones an array of node objects and removes any
      * itree instance information/state.
      *
@@ -1383,14 +1431,14 @@ function InspireTree(opts) {
     }
 
     // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'collapse', 'deselect', 'expand', 'hide', 'restore', 'select', 'show'];
+    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'show'];
     each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
     });
 
     // Methods we can map to each TreeNode
-    each(['expandParents', 'clean', 'softRemove'], mapToEach);
+    each(['expand', 'expandParents', 'clean', 'softRemove'], mapToEach);
 
     // Predicate methods we can map
     each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected'], function(state) {
@@ -1763,86 +1811,90 @@ function InspireTree(opts) {
      *
      * @category Tree
      * @param {array|function} loader Array of nodes, or promise resolving an array of nodes.
-     * @return {void}
+     * @return {Promise} Promise resolved upon successful load, rejected on error.
      * @example
      *
      * tree.load($.getJSON('nodes.json'));
      */
     tree.load = function(loader) {
-        var resolve = function(nodes) {
-            // Delay event for synchronous loader. Otherwise it fires
-            // before the user has a chance to listen.
-            if (!initialized && isArray(nodes)) {
-                setTimeout(function() {
+        return new Promise(function(resolve, reject) {
+            var complete = function(nodes) {
+                // Delay event for synchronous loader. Otherwise it fires
+                // before the user has a chance to listen.
+                if (!initialized && isArray(nodes)) {
+                    setTimeout(function() {
+                        tree.emit('data.loaded', nodes);
+                    });
+                }
+                else {
                     tree.emit('data.loaded', nodes);
-                });
-            }
-            else {
-                tree.emit('data.loaded', nodes);
-            }
+                }
 
-            // Clear and call rendering on existing data
-            if (model.length > 0) {
-                tree.removeAll();
-            }
+                // Clear and call rendering on existing data
+                if (model.length > 0) {
+                    tree.removeAll();
+                }
 
-            model = collectionToModel(nodes);
+                model = collectionToModel(nodes);
 
-            if (tree.config.requireSelection && !tree.selected().length) {
-                tree.selectFirstAvailableNode();
-            }
+                if (tree.config.requireSelection && !tree.selected().length) {
+                    tree.selectFirstAvailableNode();
+                }
 
-            // Delay event for synchronous loader
-            if (!initialized && isArray(nodes)) {
-                setTimeout(function() {
+                // Delay event for synchronous loader
+                if (!initialized && isArray(nodes)) {
+                    setTimeout(function() {
+                        tree.emit('model.loaded', model);
+                    });
+                }
+                else {
                     tree.emit('model.loaded', model);
-                });
+                }
+
+                resolve(model);
+
+                dom.applyChanges();
+
+                if (isFunction(dom.scrollSelectedIntoView)) {
+                    dom.scrollSelectedIntoView();
+                }
+            };
+
+            var error = function(err) {
+                tree.emit('data.loaderror', err);
+                reject(err);
+            };
+
+            // Data given already as an array
+            if (isArrayLike(loader)) {
+                complete(loader);
             }
+
+            // Data loader requires a caller/callback
+            else if (isFunction(loader)) {
+                loader(null, complete, error);
+            }
+
+            // Data loader is likely a promise
+            else if (isObject(loader)) {
+                // Promise
+                if (isFunction(loader.then)) {
+                    loader.then(complete);
+                }
+
+                // jQuery promises use "error".
+                if (isFunction(loader.error)) {
+                    loader.error(error);
+                }
+                else if (isFunction(loader.catch)) {
+                    loader.catch(error);
+                }
+            }
+
             else {
-                tree.emit('model.loaded', model);
+                throw new Error('Invalid data loader.');
             }
-
-            dom.applyChanges();
-
-            if (isFunction(dom.scrollSelectedIntoView)) {
-                dom.scrollSelectedIntoView();
-            }
-        };
-
-        var reject = function(err) {
-            tree.emit('data.loaderror', err);
-            throw err;
-        };
-
-        // Data given already as an array
-        if (isArrayLike(loader)) {
-            resolve(loader);
-        }
-
-        // Data loader requires a caller/callback
-        else if (isFunction(loader)) {
-            loader(null, resolve, reject);
-        }
-
-        // Data loader is likely a promise
-        else if (isObject(loader)) {
-            // Promise
-            if (isFunction(loader.then)) {
-                loader.then(resolve);
-            }
-
-            // jQuery promises use "error".
-            if (isFunction(loader.error)) {
-                loader.error(reject);
-            }
-            else if (isFunction(loader.catch)) {
-                loader.catch(reject);
-            }
-        }
-
-        else {
-            throw new Error('Invalid data loader.');
-        }
+        });
     };
 
     /**
