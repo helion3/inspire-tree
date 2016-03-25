@@ -102,13 +102,13 @@ function InspireTree(opts) {
         var node = this;
 
         each(source, function(value, key) {
-            if (isObject(value) && isFunction(value.clone)) {
-                if (value.clone) {
+            if (isObject(value)) {
+                if (isFunction(value.clone)) {
                     node[key] = value.clone();
                 }
-            }
-            else if (isObject(value)) {
-                node[key] = cloneDeep(value);
+                else {
+                    node[key] = cloneDeep(value);
+                }
             }
             else {
                 node[key] = value;
