@@ -975,7 +975,7 @@ function InspireTree(opts) {
     };
 
     /**
-     * Select this node.
+     * Set a root property on this node.
      *
      * @category TreeNode
      * @param {string|number} property Property name.
@@ -987,6 +987,17 @@ function InspireTree(opts) {
         this.markDirty();
 
         return this;
+    };
+
+    /**
+     * Show this node.
+     *
+     * @category TreeNode
+     * @param {boolean} selectable Selectable state.
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.setSelectable = function(selectable) {
+        return baseStateChange('selectable', selectable, 'selectability-changed', this);
     };
 
     /**
