@@ -14,7 +14,6 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Robust API.
 - Events everywhere.
-- ~40k minified, uncompressed.
 - No external dependencies.
 - Load data directly, via promises, callbacks, etc.
 - Load child nodes upfront or dynamically (or a mix of both).
@@ -38,7 +37,6 @@ our need for one - the only existing solution which met our *feature* needs was 
 - Keyboard navigation.
 - Custom context menu (optional).
 - Drag and Drop between tree instances (optional).
-- ~20k minified, uncompressed.
 
 ### Installation
 
