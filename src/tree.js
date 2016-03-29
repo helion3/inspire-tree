@@ -1,10 +1,10 @@
 'use strict';
 
 // Libs
-var _ = require('lodash');
-var cuid = require('cuid');
-var EventEmitter = require('eventemitter2');
-var Promise = require('es6-promise').Promise;
+import _ from 'lodash';
+import cuid from 'cuid';
+import EventEmitter from 'eventemitter2';
+import { Promise } from 'es6-promise';
 
 // CSS
 require('./scss/tree.scss');

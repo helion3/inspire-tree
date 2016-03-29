@@ -1,6 +1,6 @@
 'use strict';
 
-var _ = require('lodash');
+import _ from 'lodash';
 
 /**
  * Compares all keys on the given state. Returns true if any difference exists.

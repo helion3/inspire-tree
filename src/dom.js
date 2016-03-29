@@ -1,16 +1,16 @@
 'use strict';
 
 // Libs
-var _ = require('lodash');
-var createElement = require('virtual-dom/create-element');
-var diff = require('virtual-dom/diff');
-var h = require('virtual-dom/h');
-var keyCodes = require('key-codes');
-var patch = require('virtual-dom/patch');
-var VCache = require('./lib/VCache');
-var VArrayDirtyCompare = require('./lib/VArrayDirtyCompare');
-var VDirtyCompare = require('./lib/VDirtyCompare');
-var VStateCompare = require('./lib/VStateCompare');
+import _ from 'lodash';
+import createElement from 'virtual-dom/create-element';
+import diff from 'virtual-dom/diff';
+import h from 'virtual-dom/h';
+import keyCodes from 'key-codes';
+import patch from 'virtual-dom/patch';
+import VCache from './lib/VCache';
+import VArrayDirtyCompare from './lib/VArrayDirtyCompare';
+import VDirtyCompare from './lib/VDirtyCompare';
+import VStateCompare from './lib/VStateCompare';
 
 module.exports = function InspireDOM(tree) {
     var $activeDropTarget;

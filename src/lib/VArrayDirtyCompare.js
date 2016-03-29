@@ -1,6 +1,6 @@
 'use strict';
 
-var _ = require('lodash');
+import _ from 'lodash';
 
 /**
  * Returns whether or not a state is marked as dirty in
