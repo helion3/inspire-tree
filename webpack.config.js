@@ -88,24 +88,6 @@ module.exports = {
             test: /\.css$/,
             loader: 'style-loader!css-loader'
         }, {
-            test: /\.woff/,
-            loader: 'file'
-        }, {
-            test: /\.woff2/,
-            loader: 'file'
-        }, {
-            test: /\.ttf/,
-            loader: 'file'
-        }, {
-            test: /\.eot/,
-            loader: 'file'
-        }, {
-            test: /\.png/,
-            loader: 'file'
-        }, {
-            test: /\.jpg/,
-            loader: 'file'
-        }, {
             test: /\.gif/,
             loader: 'file'
         }]
