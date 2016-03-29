@@ -5,7 +5,6 @@ var _ = require('lodash');
 var createElement = require('virtual-dom/create-element');
 var diff = require('virtual-dom/diff');
 var h = require('virtual-dom/h');
-var isArrayLike = require('./lib/isArrayLike');
 var keyCodes = require('key-codes');
 var patch = require('virtual-dom/patch');
 var VCache = require('./lib/VCache');
@@ -563,7 +562,7 @@ module.exports = function InspireDOM(tree) {
     function renderContextMenu(event, node) {
         var choices = contextMenuChoices;
 
-        if (isArrayLike(choices)) {
+        if (_.isArrayLike(choices)) {
             event.preventDefault();
 
             if (!contextMenuNode) {

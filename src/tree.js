@@ -4,7 +4,6 @@
 var _ = require('lodash');
 var cuid = require('cuid');
 var EventEmitter = require('eventemitter2');
-var isArrayLike = require('./lib/isArrayLike');
 var Promise = require('es6-promise').Promise;
 
 // CSS
@@ -115,7 +114,7 @@ function InspireTree(opts) {
     TreeNode.prototype.addChild = function(child) {
         child = objectToModel(child);
 
-        if (_.isArray(this.children) || !isArrayLike(this.children)) {
+        if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
             this.children = new TreeNodes();
         }
 
@@ -488,7 +487,7 @@ function InspireTree(opts) {
      * @return {boolean} If children.
      */
     TreeNode.prototype.hasChildren = function() {
-        return (isArrayLike(this.children) && this.children.length > 0);
+        return (_.isArrayLike(this.children) && this.children.length > 0);
     };
 
     /**
@@ -1533,7 +1532,7 @@ function InspireTree(opts) {
 
                 // Merge children
                 if (node.hasChildren()) {
-                    if (!isArrayLike(existing.children)) {
+                    if (!_.isArrayLike(existing.children)) {
                         existing.children = new TreeNodes();
                     }
 
@@ -1638,7 +1637,7 @@ function InspireTree(opts) {
     function recurseDown(obj, iteratee) {
         var res;
 
-        if (isArrayLike(obj)) {
+        if (_.isArrayLike(obj)) {
             _.each(obj, function(node) {
                 res = recurseDown(node, iteratee);
 
@@ -1850,7 +1849,7 @@ function InspireTree(opts) {
             };
 
             // Data given already as an array
-            if (isArrayLike(loader)) {
+            if (_.isArrayLike(loader)) {
                 complete(loader);
             }
 
