@@ -43,6 +43,12 @@ our need for one - the only existing solution which met our *feature* needs was 
 - Node: `npm install -save inspire-tree` or
 - Bower `bower install --save inspire-tree`
 
+The `dist` directory contains several versions:
+
+- `bundled` - Includes stripped-down version of lodash, has no external dependencies.
+- `core` - Excludes DOM rendering logic, for those using a custom renderer.
+- `min` - Minified source for production use.
+
 ## Using
 
 At a minimum you must provide a target DOM element and data / data loader.

@@ -1,5 +1,13 @@
 # Changes to Inspire Tree
 
+# 1.4.0
+
+- Internal and repo cleanup.
+
+**Breaking Changes**
+
+- Moves bundled lodash to a `-bundled` distribution file. `inspire-tree.js` and its variants require lodash as an external dependency.
+
 # 1.3.0
 
 - Added `setSelectable`.
