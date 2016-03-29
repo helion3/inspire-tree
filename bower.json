@@ -21,7 +21,6 @@
   ],
   "private": false,
   "devDependencies": {
-    "requirejs": "~2.1.20",
     "angular": "~1.4.7"
   }
 }

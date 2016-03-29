@@ -7,8 +7,8 @@ module.exports = function(config) {
                 pattern: 'demos/sample-data/*.json',
                 included: false
             },
-            'bower_components/jquery/dist/jquery.js',
-            'bower_components/lodash/lodash.js',
+            'node_modules/jquery/dist/jquery.js',
+            'node_modules/lodash/lodash.js',
             'build/inspire-tree.js',
             'test/helpers.js',
             'test/**/*.spec.js'

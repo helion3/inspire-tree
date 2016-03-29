@@ -39,14 +39,15 @@
             <inspire-tree options="destOptions"></inspire-tree>
         </div>
     </body>
-    <script src="../bower_components/requirejs/require.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
+    <script>
     <script>
         require.config({
             paths: {
-                angular: '../bower_components/angular/angular.min',
+                angular: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min',
                 inspireTree: '../build/inspire-tree-core',
                 ngInspireTree: '../connectors/angular/inspire-tree',
-                lodash: '../bower_components/lodash/lodash.min'
+                lodash: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.1/lodash'
             },
             shim: {
                 angular: {
