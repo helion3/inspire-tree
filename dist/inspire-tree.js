@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.3.0
+ * Inspire Tree v1.4.0
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -267,6 +267,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Get the containing context. If no parent present, the root context is returned.
+	     *
+	     * @category TreeNode
+	     * @return {TreeNodes} Node array object.
+	     */
+	    TreeNode.prototype.context = function() {
+	        return this.hasParent() ? this.getParent().children : model;
+	    };
+
+	    /**
 	     * Copies node to a new tree instance.
 	     *
 	     * @category TreeNode
@@ -308,28 +318,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    TreeNode.prototype.copyHierarchy = function(excludeNode) {
 	        var node = this;
-	        var parents = node.getParents().clone();
+	        var parents = node.getParents();
+
+	        var nodes = [];
 
 	        // Remove old hierarchy data
 	        _.each(parents, function(node) {
-	            delete node.itree.parent;
-	            delete node.children;
+	            var clone = _.clone(node);
+	            delete clone.itree.parent;
+	            delete clone.children;
+
+	            nodes.push(clone);
 	        });
 
-	        parents = parents.reverse();
+	        parents = nodes.reverse();
 
 	        if (!excludeNode) {
-	            parents.push(node);
+	            nodes.push(node);
 	        }
 
-	        var hierarchy = parents[0];
+	        var hierarchy = nodes[0];
 	        var pointer = hierarchy;
-	        var l = parents.length;
-	        _.each(parents, function(parent, key) {
+	        var l = nodes.length;
+	        _.each(nodes, function(parent, key) {
 	            var children = new TreeNodes();
 
 	            if (key + 1 < l) {
-	                children.push(parents[key + 1]);
+	                children.push(nodes[key + 1]);
 	                pointer.children = children;
 
 	                pointer = pointer.children[0];
@@ -404,6 +419,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    resolve(node);
 	                }
 	            }
+	            else {
+	                // Resolve immediately
+	                resolve(node);
+	            }
 	        });
 	    };
 
@@ -437,18 +456,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Clones a node, removes itree property, and returns it
 	     * as a native object.
 	     *
+	     * Note: does not use node.clone() because we don't want a
+	     * TreeNode and we need to avoid redundant cloning children.
+	     *
 	     * @category TreeNode
 	     * @return {object} Cloned/modified node object.
 	     */
 	    TreeNode.prototype.export = function() {
-	        var nodeClone = this.clone();
-	        delete nodeClone.itree;
+	        var clone = _.clone(this);
+	        delete clone.itree;
 
-	        if (nodeClone.hasChildren()) {
-	            nodeClone.children = nodeClone.children.export();
+	        if (clone.hasChildren()) {
+	            clone.children = clone.children.export();
 	        }
 
-	        return nodeClone.toObject();
+	        return clone.toObject();
 	    };
 
 	    /**
@@ -613,6 +635,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        return node;
+	    };
+
+	    /**
+	     * Returns a "path" of indices, values which map this node's location within all parent contexts.
+	     *
+	     * @return {string} [description]
+	     */
+	    TreeNode.prototype.indexPath = function() {
+	        var indices = [];
+
+	        this.recurseUp(function(node) {
+	            indices.push(_.indexOf(node.context(), node));
+	        });
+
+	        return indices.reverse().join('.');
 	    };
 
 	    /**
@@ -1477,7 +1514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    // Methods we can map to each/deeply TreeNode
-	    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'show'];
+	    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'setSelectable', 'show'];
 	    _.each(mapped, function(method) {
 	        mapToEach(method);
 	        mapToEachDeeply(method);
@@ -2038,6 +2075,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dom.end();
 
 	        return matches;
+	    };
+
+	    /**
+	     * Select all nodes between a start and end node.
+	     * Starting node must have a higher index path so we can work down to endNode.
+	     *
+	     * @category Tree
+	     * @param {TreeNode} startNode Starting node
+	     * @param {TreeNode} endNode Ending node
+	     * @return {void}
+	     */
+	    tree.selectBetween = function(startNode, endNode) {
+	        dom.batch();
+
+	        var node = startNode.nextVisibleNode();
+	        while (node) {
+	            node.select();
+
+	            if (node && node.id === endNode.id) {
+	                break;
+	            }
+
+	            node = node.nextVisibleNode();
+	        }
+
+	        dom.end();
 	    };
 
 	    /**
@@ -4022,6 +4085,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var contextMenuChoices = tree.config.contextMenu;
 
 	    /**
+	     * Clear page text selection, primarily after a click event which
+	     * nativelt selects a range of text.
+	     *
+	     * @category DOM
+	     * @private
+	     * @return {void}
+	     */
+	    function clearSelection() {
+	        if (document.selection && document.selection.empty) {
+	            document.selection.empty();
+	        }
+	        else if (window.getSelection) {
+	            window.getSelection().removeAllRanges();
+	        }
+	    }
+
+	    /**
 	     * Closes any open context menu.
 	     *
 	     * @category DOM
@@ -4257,13 +4337,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                },
 	                onclick: function(event) {
-	                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey;
+	                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey || event.shiftKey;
+
+	                    if (event.shiftKey) {
+	                        clearSelection();
+
+	                        var selected = tree.selected();
+	                        if (selected.length >= 1) {
+	                            var firstSelected = _.first(selected);
+	                            if (firstSelected) {
+	                                var current = _.parseInt(node.indexPath().replace(/\./g, ''));
+	                                var prev = _.parseInt(firstSelected.indexPath().replace(/\./g, ''));
+	                                var startNode = (current < prev) ? node : firstSelected;
+	                                var endNode = (current < prev) ? firstSelected : node;
+
+	                                tree.selectBetween(startNode, endNode);
+	                            }
+	                        }
+	                    }
+
 	                    node.toggleSelect();
 
 	                    // Emit
 	                    tree.emit('node.click', event, node);
 	                },
 	                ondblclick: function(event) {
+	                    // // Clear text selection which occurs on double click
+	                    clearSelection();
+
 	                    node.toggleCollapse();
 
 	                    // Emit

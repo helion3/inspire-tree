@@ -1,5 +1,17 @@
 # Changes to Inspire Tree
 
+# 1.4.1
+
+- Added `TreeNode.context` method to get it's immediate `TreeNodes` context.
+- Added `TreeNode.indexPath` method to get a key of all parent context indices.
+- Added `tree.selectBetween` method for selecting all nodes between a start and end node.
+- Added ranged selection via shift key.
+- Added logic to clear text selection after a double or shift-click.
+- Mapped `setSelectable` to TreeNodes (shallow and deep copies).
+- Fixed performance problems with `export` and `copyHierarchy`.
+- `expand` resolves promise immediately if already expanded.
+- Minor repo cleanup.
+
 # 1.4.0
 
 - Internal and repo cleanup.
