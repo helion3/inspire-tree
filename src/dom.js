@@ -27,6 +27,23 @@ module.exports = function InspireDOM(tree) {
     var contextMenuChoices = tree.config.contextMenu;
 
     /**
+     * Clear page text selection, primarily after a click event which
+     * nativelt selects a range of text.
+     *
+     * @category DOM
+     * @private
+     * @return {void}
+     */
+    function clearSelection() {
+        if (document.selection && document.selection.empty) {
+            document.selection.empty();
+        }
+        else if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        }
+    }
+
+    /**
      * Closes any open context menu.
      *
      * @category DOM
@@ -262,13 +279,20 @@ module.exports = function InspireDOM(tree) {
                     }
                 },
                 onclick: function(event) {
-                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey;
+                    if (event.shiftKey) {
+                        clearSelection();
+                    }
+
+                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey || event.shiftKey;
                     node.toggleSelect();
 
                     // Emit
                     tree.emit('node.click', event, node);
                 },
                 ondblclick: function(event) {
+                    // // Clear text selection which occurs on double click
+                    clearSelection();
+
                     node.toggleCollapse();
 
                     // Emit
