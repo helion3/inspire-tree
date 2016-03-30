@@ -255,28 +255,33 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.copyHierarchy = function(excludeNode) {
         var node = this;
-        var parents = node.getParents().clone();
+        var parents = node.getParents();
+
+        var nodes = [];
 
         // Remove old hierarchy data
         _.each(parents, function(node) {
-            delete node.itree.parent;
-            delete node.children;
+            var clone = _.clone(node);
+            delete clone.itree.parent;
+            delete clone.children;
+
+            nodes.push(clone);
         });
 
-        parents = parents.reverse();
+        parents = nodes.reverse();
 
         if (!excludeNode) {
-            parents.push(node);
+            nodes.push(node);
         }
 
-        var hierarchy = parents[0];
+        var hierarchy = nodes[0];
         var pointer = hierarchy;
-        var l = parents.length;
-        _.each(parents, function(parent, key) {
+        var l = nodes.length;
+        _.each(nodes, function(parent, key) {
             var children = new TreeNodes();
 
             if (key + 1 < l) {
-                children.push(parents[key + 1]);
+                children.push(nodes[key + 1]);
                 pointer.children = children;
 
                 pointer = pointer.children[0];
@@ -388,18 +393,21 @@ function InspireTree(opts) {
      * Clones a node, removes itree property, and returns it
      * as a native object.
      *
+     * Note: does not use node.clone() because we don't want a
+     * TreeNode and we need to avoid redundant cloning children.
+     *
      * @category TreeNode
      * @return {object} Cloned/modified node object.
      */
     TreeNode.prototype.export = function() {
-        var nodeClone = this.clone();
-        delete nodeClone.itree;
+        var clone = _.clone(this);
+        delete clone.itree;
 
-        if (nodeClone.hasChildren()) {
-            nodeClone.children = nodeClone.children.export();
+        if (clone.hasChildren()) {
+            clone.children = clone.children.export();
         }
 
-        return nodeClone.toObject();
+        return clone.toObject();
     };
 
     /**

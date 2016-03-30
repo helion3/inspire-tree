@@ -48,7 +48,7 @@
                 selected.softRemove().copy(true).to(destTree);
 
                 // If we moved a child node, expand nodes down to it
-                destTree.nodes(_.pluck(selected, 'id')).expandParents();
+                destTree.nodes(_.map(selected, 'id')).expandParents();
             });
 
             sourceTree.on('node.dblclick', function(event, node) {
