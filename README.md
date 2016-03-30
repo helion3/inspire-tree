@@ -146,7 +146,7 @@ tree.addNode({ text: 'Example' });
 Each incoming javascript object is wrapped as a `TreeNode`, which aliases methods useful on a single node.
 
 ```js
-tree.getNode('a-unique-id').select();
+tree.node('a-unique-id').select();
 ```
 
 **TreeNodes**
