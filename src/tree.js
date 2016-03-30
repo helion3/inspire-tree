@@ -204,6 +204,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get the containing context. If no parent present, the root context is returned.
+     *
+     * @category TreeNode
+     * @return {TreeNodes} Node array object.
+     */
+    TreeNode.prototype.context = function() {
+        return this.hasParent() ? this.getParent().children : model;
+    };
+
+    /**
      * Copies node to a new tree instance.
      *
      * @category TreeNode
@@ -550,6 +560,21 @@ function InspireTree(opts) {
         }
 
         return node;
+    };
+
+    /**
+     * Returns a "path" of indices, values which map this node's location within all parent contexts.
+     *
+     * @return {string} [description]
+     */
+    TreeNode.prototype.indexPath = function() {
+        var indices = [];
+
+        this.recurseUp(function(node) {
+            indices.push(_.indexOf(node.context(), node));
+        });
+
+        return indices.reverse().join('.');
     };
 
     /**
@@ -1975,6 +2000,32 @@ function InspireTree(opts) {
         dom.end();
 
         return matches;
+    };
+
+    /**
+     * Select all nodes between a start and end node.
+     * Starting node must have a higher index path so we can work down to endNode.
+     *
+     * @category Tree
+     * @param {TreeNode} startNode Starting node
+     * @param {TreeNode} endNode Ending node
+     * @return {void}
+     */
+    tree.selectBetween = function(startNode, endNode) {
+        dom.batch();
+
+        var node = startNode.nextVisibleNode();
+        while (node) {
+            node.select();
+
+            if (node && node.id === endNode.id) {
+                break;
+            }
+
+            node = node.nextVisibleNode();
+        }
+
+        dom.end();
     };
 
     /**

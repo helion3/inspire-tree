@@ -279,11 +279,25 @@ module.exports = function InspireDOM(tree) {
                     }
                 },
                 onclick: function(event) {
+                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey || event.shiftKey;
+
                     if (event.shiftKey) {
                         clearSelection();
+
+                        var selected = tree.selected();
+                        if (selected.length >= 1) {
+                            var firstSelected = _.first(selected);
+                            if (firstSelected) {
+                                var current = _.parseInt(node.indexPath().replace(/\./g, ''));
+                                var prev = _.parseInt(firstSelected.indexPath().replace(/\./g, ''));
+                                var startNode = (current < prev) ? node : firstSelected;
+                                var endNode = (current < prev) ? firstSelected : node;
+
+                                tree.selectBetween(startNode, endNode);
+                            }
+                        }
                     }
 
-                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey || event.shiftKey;
                     node.toggleSelect();
 
                     // Emit
