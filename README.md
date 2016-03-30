@@ -14,8 +14,8 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Robust API.
 - Events everywhere.
-- No external dependencies.
-- Load data directly, via promises, callbacks, etc.
+- No required external dependencies.
+- Load data directly, via promises, or callbacks.
 - Load child nodes upfront or dynamically (or a mix of both).
 - Tri-state checkboxes (optional).
 - Multiselect (optional).
@@ -170,7 +170,7 @@ tree.nodes().expandDeep();
 
 **Mapped Methods**
 
-`blur`, `clean`, `collapse`, `deselect`, `expand`, `hide`, `restore`, `select`, `show`, `softRemove`
+`blur`, `clean`, `collapse`, `deselect`, `expand`, `hide`, `restore`, `select`, `setSelectable`, `show`, `softRemove`
 
 Most methods have a `___Deep` variant to execute recursively. e.g. `expandDeep`.
 
