@@ -62,6 +62,11 @@ describe('TreeNodes dynamic methods', function() {
         expect(tree.nodes().selectDeep).to.be.a('function');
     });
 
+    it('"setSelectable"', function() {
+        expect(tree.nodes().setSelectable).to.be.a('function');
+        expect(tree.nodes().setSelectableDeep).to.be.a('function');
+    });
+
     it('"show"', function() {
         expect(tree.nodes().show).to.be.a('function');
         expect(tree.nodes().showDeep).to.be.a('function');

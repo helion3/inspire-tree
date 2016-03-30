@@ -1439,7 +1439,7 @@ function InspireTree(opts) {
     }
 
     // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'show'];
+    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'setSelectable', 'show'];
     _.each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
