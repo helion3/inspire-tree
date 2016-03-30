@@ -351,6 +351,10 @@ function InspireTree(opts) {
                     resolve(node);
                 }
             }
+            else {
+                // Resolve immediately
+                resolve(node);
+            }
         });
     };
 
