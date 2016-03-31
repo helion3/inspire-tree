@@ -1969,7 +1969,7 @@ function InspireTree(opts) {
         }
 
         // Don't search if query empty
-        if (_.isString(query) && _.isEmpty(query)) {
+        if (!query || (_.isString(query) && _.isEmpty(query))) {
             return tree.clearSearch();
         }
 
@@ -1985,10 +1985,6 @@ function InspireTree(opts) {
         }
         else {
             predicate = query;
-        }
-
-        if (!_.isFunction(predicate)) {
-            throw new TypeError('Search predicate must be a string, RegExp, or function.');
         }
 
         dom.batch();

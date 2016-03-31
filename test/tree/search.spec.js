@@ -23,10 +23,6 @@ describe('Tree.search', function() {
         });
     });
 
-    it('throws error for invalid search argument', function() {
-        expect(tree.search).to.throw(TypeError);
-    });
-
     it('returns matches for a string query', function() {
         expect(tree.search('fox')).to.have.length(1);
         expect(tree.search('o')).to.have.length(2);
@@ -56,6 +52,14 @@ describe('Tree.search', function() {
         tree.clearSearch();
 
         expect(tree.node(1).hidden()).to.be.false;
+        expect(tree.node(2).hidden()).to.be.false;
+    });
+
+    it('clears the search when given an invalid query argument', function() {
+        tree.search('fox');
+        expect(tree.node(2).hidden()).to.be.true;
+
+        tree.search();
         expect(tree.node(2).hidden()).to.be.false;
     });
 
