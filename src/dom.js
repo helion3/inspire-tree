@@ -284,9 +284,9 @@ module.exports = function InspireDOM(tree) {
                     if (event.shiftKey) {
                         clearSelection();
 
-                        var selected = tree.selected();
-                        if (selected.length) {
-                            tree.selectBetween.apply(tree, tree.boundingNodes(_.first(selected), node));
+                        var selected = tree.lastSelectedNode();
+                        if (selected) {
+                            tree.selectBetween.apply(tree, tree.boundingNodes(selected, node));
                         }
                     }
 

@@ -54,6 +54,7 @@ function InspireTree(opts) {
     // Cache some configs
     var allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
     var isDynamic = _.isFunction(tree.config.data);
+    var lastSelectedNode;
 
     // Rendering
     var dom;
@@ -975,6 +976,9 @@ function InspireTree(opts) {
                 }
             }
 
+            // Cache as the last selected node
+            lastSelectedNode = node;
+
             // Emit this event
             tree.emit('node.selected', node);
 
@@ -1843,6 +1847,16 @@ function InspireTree(opts) {
         }
 
         return nodes;
+    };
+
+    /**
+     * Get the most recently selected node, if any.
+     *
+     * @category Tree
+     * @return {TreeNode} Last selected node, or undefined.
+     */
+    tree.lastSelectedNode = function() {
+        return lastSelectedNode;
     };
 
     /**
