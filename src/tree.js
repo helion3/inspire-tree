@@ -2045,11 +2045,10 @@ function InspireTree(opts) {
         while (node) {
             node.select();
 
+            node = node.nextVisibleNode();
             if (node && node.id === endNode.id) {
                 break;
             }
-
-            node = node.nextVisibleNode();
         }
 
         dom.end();
