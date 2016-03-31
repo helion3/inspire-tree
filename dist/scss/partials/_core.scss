@@ -1,4 +1,9 @@
 .inspire-tree {
+    // Clearing selection after click events typically flashes
+    // because the selection must complete first.
+    // Disabling selection here so that it's easy to override...
+    user-select: none;
+
     &:focus {
         outline: none;
     }
@@ -38,7 +43,7 @@
         width: $tree-node-height;
         z-index: 2;
 
-        &:before {
+        &::before {
             display: block;
             left: 50%;
             position: absolute;
@@ -66,7 +71,7 @@
         white-space: nowrap;
         z-index: 1;
 
-        &:before {
+        &::before {
             left: -6px;
             position: relative;
             top: -2px;

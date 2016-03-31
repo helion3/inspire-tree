@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 1.4.2
+
+- Disabled text selection via css for a cleaner experience.
+- Added `boundingNodes` methods to return min/max nodes.
+- `search` now treats undefined arguments as empty queries.
+- Minor cleanup.
+
 # 1.4.1
 
 - Added `TreeNode.context` method to get it's immediate `TreeNodes` context.

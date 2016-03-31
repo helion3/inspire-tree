@@ -15,6 +15,7 @@
 ## `Tree`
 * <a href="#addNode">`addNode`</a>
 * <a href="#addNodes">`addNodes`</a>
+* <a href="#boundingNodes">`boundingNodes`</a>
 * <a href="#clearSearch">`clearSearch`</a>
 * <a href="#load">`load`</a>
 * <a href="#node">`node`</a>
@@ -191,8 +192,20 @@ Add nodes.
 
 <!-- div -->
 
+### <a id="boundingNodes"></a>`boundingNodes`
+<a href="#boundingNodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1771 "View in source") [&#x24C9;][1]
+
+Compares any number of TreeNode objects and returns
+the minimum and maximum *(starting/ending)* nodes.
+
+* * *
+
+<!-- /div -->
+
+<!-- div -->
+
 ### <a id="clearSearch"></a>`clearSearch`
-<a href="#clearSearch">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1770 "View in source") [&#x24C9;][1]
+<a href="#clearSearch">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1789 "View in source") [&#x24C9;][1]
 
 Shows all nodes and collapses parents.
 
@@ -203,7 +216,7 @@ Shows all nodes and collapses parents.
 <!-- div -->
 
 ### <a id="load"></a>`load(loader)`
-<a href="#load">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1839 "View in source") [&#x24C9;][1]
+<a href="#load">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1858 "View in source") [&#x24C9;][1]
 
 Loads tree. Accepts an array or a promise.
 
@@ -221,7 +234,7 @@ tree.load($.getJSON('nodes.json'));
 <!-- div -->
 
 ### <a id="node"></a>`node(id, nodes)`
-<a href="#node">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1783 "View in source") [&#x24C9;][1]
+<a href="#node">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1802 "View in source") [&#x24C9;][1]
 
 Get a node.
 
@@ -236,7 +249,7 @@ Get a node.
 <!-- div -->
 
 ### <a id="nodes"></a>`nodes(refs)`
-<a href="#nodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1812 "View in source") [&#x24C9;][1]
+<a href="#nodes">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1831 "View in source") [&#x24C9;][1]
 
 Get all nodes in a tree, or nodes for an array of IDs.
 
@@ -255,7 +268,7 @@ var some = tree.nodes([1, 2, 3])
 <!-- div -->
 
 ### <a id="reload"></a>`reload`
-<a href="#reload">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1926 "View in source") [&#x24C9;][1]
+<a href="#reload">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1945 "View in source") [&#x24C9;][1]
 
 Reloads/re-executes the original data loader.
 
@@ -266,7 +279,7 @@ Reloads/re-executes the original data loader.
 <!-- div -->
 
 ### <a id="removeAll"></a>`removeAll`
-<a href="#removeAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1936 "View in source") [&#x24C9;][1]
+<a href="#removeAll">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1955 "View in source") [&#x24C9;][1]
 
 Removes all nodes.
 
@@ -277,7 +290,7 @@ Removes all nodes.
 <!-- div -->
 
 ### <a id="search"></a>`search(query)`
-<a href="#search">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1948 "View in source") [&#x24C9;][1]
+<a href="#search">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1967 "View in source") [&#x24C9;][1]
 
 Search nodes, showing only those that match and the necessary hierarchy.
 
@@ -291,7 +304,7 @@ Search nodes, showing only those that match and the necessary hierarchy.
 <!-- div -->
 
 ### <a id="selectBetween"></a>`selectBetween(startNode, endNode)`
-<a href="#selectBetween">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L2026 "View in source") [&#x24C9;][1]
+<a href="#selectBetween">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L2041 "View in source") [&#x24C9;][1]
 
 Select all nodes between a start and end node.
 Starting node must have a higher index path so we can work down to endNode.
@@ -307,7 +320,7 @@ Starting node must have a higher index path so we can work down to endNode.
 <!-- div -->
 
 ### <a id="selectFirstAvailableNode"></a>`selectFirstAvailableNode`
-<a href="#selectFirstAvailableNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L2049 "View in source") [&#x24C9;][1]
+<a href="#selectFirstAvailableNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L2064 "View in source") [&#x24C9;][1]
 
 Select the first available node at the root level.
 
