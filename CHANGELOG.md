@@ -1,5 +1,11 @@
 # Changes to Inspire Tree
 
+# 1.4.3
+
+- Added `tree.lastSelectedNode()`.
+- Updated shift+select logic to use last selected node, to allow for separate ranges.
+- Fixed bug with `selectBetween` including the end node.
+
 # 1.4.2
 
 - Disabled text selection via css for a cleaner experience.

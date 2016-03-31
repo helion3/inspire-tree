@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.4.2
+ * Inspire Tree v1.4.3
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -221,6 +221,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Cache some configs
 	    var allowsLoadEvents = (0, _isArray3.default)(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
 	    var isDynamic = (0, _isFunction3.default)(tree.config.data);
+	    var lastSelectedNode;
 
 	    // Rendering
 	    var dom;
@@ -1131,6 +1132,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 
+	            // Cache as the last selected node
+	            lastSelectedNode = node;
+
 	            // Emit this event
 	            tree.emit('node.selected', node);
 
@@ -1992,6 +1996,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Get the most recently selected node, if any.
+	     *
+	     * @category Tree
+	     * @return {TreeNode} Last selected node, or undefined.
+	     */
+	    tree.lastSelectedNode = function () {
+	        return lastSelectedNode;
+	    };
+
+	    /**
 	     * Loads tree. Accepts an array or a promise.
 	     *
 	     * @category Tree
@@ -2181,11 +2195,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        while (node) {
 	            node.select();
 
+	            node = node.nextVisibleNode();
 	            if (node && node.id === endNode.id) {
 	                break;
 	            }
-
-	            node = node.nextVisibleNode();
 	        }
 
 	        dom.end();
