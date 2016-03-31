@@ -285,16 +285,8 @@ module.exports = function InspireDOM(tree) {
                         clearSelection();
 
                         var selected = tree.selected();
-                        if (selected.length >= 1) {
-                            var firstSelected = _.first(selected);
-                            if (firstSelected) {
-                                var current = _.parseInt(node.indexPath().replace(/\./g, ''));
-                                var prev = _.parseInt(firstSelected.indexPath().replace(/\./g, ''));
-                                var startNode = (current < prev) ? node : firstSelected;
-                                var endNode = (current < prev) ? firstSelected : node;
-
-                                tree.selectBetween(startNode, endNode);
-                            }
+                        if (selected.length) {
+                            tree.selectBetween.apply(tree, tree.boundingNodes(_.first(selected), node));
                         }
                     }
 

@@ -1762,6 +1762,25 @@ function InspireTree(opts) {
     };
 
     /**
+     * Compares any number of TreeNode objects and returns
+     * the minimum and maximum (starting/ending) nodes.
+     *
+     * @category Tree
+     * @return {array} Array with two TreeNode objects.
+     */
+    tree.boundingNodes = function() {
+        var pathMap = _.transform(arguments, function(map, node) {
+            map[node.indexPath().replace(/\./g, '')] = node;
+        }, {});
+
+        var paths = _.sortBy(Object.keys(pathMap));
+        return [
+            _.get(pathMap, _.head(paths)),
+            _.get(pathMap, _.tail(paths))
+        ];
+    };
+
+    /**
      * Shows all nodes and collapses parents.
      *
      * @category Tree
