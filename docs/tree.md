@@ -332,7 +332,7 @@ Starting node must have a higher index path so we can work down to endNode.
 <!-- div -->
 
 ### <a id="selectFirstAvailableNode"></a>`selectFirstAvailableNode`
-<a href="#selectFirstAvailableNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L2077 "View in source") [&#x24C9;][1]
+<a href="#selectFirstAvailableNode">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L2078 "View in source") [&#x24C9;][1]
 
 Select the first available node at the root level.
 

@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.4.3
+ * Inspire Tree v1.4.4
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -2193,12 +2193,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var node = startNode.nextVisibleNode();
 	        while (node) {
+	            if (node.id === endNode.id) {
+	                break;
+	            }
+
 	            node.select();
 
 	            node = node.nextVisibleNode();
-	            if (node && node.id === endNode.id) {
-	                break;
-	            }
 	        }
 
 	        dom.end();

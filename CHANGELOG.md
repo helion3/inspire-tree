@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 1.4.4
+
+- Fixed `selectBetween` failing when a range of two nodes was selected.
+
 # 1.4.3
 
 - Added `tree.lastSelectedNode()`.
