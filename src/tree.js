@@ -2057,12 +2057,13 @@ function InspireTree(opts) {
 
         var node = startNode.nextVisibleNode();
         while (node) {
+            if (node.id === endNode.id) {
+                break;
+            }
+
             node.select();
 
             node = node.nextVisibleNode();
-            if (node && node.id === endNode.id) {
-                break;
-            }
         }
 
         dom.end();
