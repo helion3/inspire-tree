@@ -270,6 +270,9 @@ module.exports = function InspireDOM(tree) {
             }
 
             return h('a.' + classNames.join('.'), {
+                attributes: {
+                    unselectable: 'on'
+                },
                 oncontextmenu: function(event) {
                     if (contextMenuChoices) {
                         renderContextMenu(event, node);
@@ -279,6 +282,8 @@ module.exports = function InspireDOM(tree) {
                     }
                 },
                 onclick: function(event) {
+                    event.preventDefault();
+
                     tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey || event.shiftKey;
 
                     if (event.shiftKey) {
