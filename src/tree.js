@@ -55,9 +55,18 @@ function InspireTree(opts) {
     var allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
     var isDynamic = _.isFunction(tree.config.data);
     var lastSelectedNode;
+    var muted = false;
 
     // Rendering
     var dom;
+
+    // Override emitter so we can better control flow
+    var emit = tree.emit;
+    tree.emit = function() {
+        if (!muted) {
+            emit.apply(tree, arguments);
+        }
+    };
 
     // Webpack has a DOM boolean that when false,
     // allows us to exclude this library from our build.
@@ -1901,6 +1910,37 @@ function InspireTree(opts) {
         });
     };
 
+    /*
+     * Pause events.
+     *
+     * @category Tree
+     * @param {array} events Event names to mute.
+     * @return {Tree} Tree instance.
+     */
+    tree.mute = function(events) {
+        if (_.isString(events)) {
+            muted = _.castArray(events);
+        }
+        else if (_.isArray(events)) {
+            muted = events;
+        }
+        else {
+            muted = true;
+        }
+
+        return tree;
+    };
+
+    /**
+     * Get current mute settings.
+     *
+     * @category Tree
+     * @return {boolean|array} Muted events. If all, true.
+     */
+    tree.muted = function() {
+        return muted;
+    };
+
     /**
      * Get a node.
      *
@@ -2094,6 +2134,34 @@ function InspireTree(opts) {
 
         return node;
     };
+
+    /**
+     * Resume events.
+     *
+     * @category Tree
+     * @param {array} events Events to unmute.
+     * @return {Tree} Tree instance.
+     */
+    tree.unmute = function(events) {
+        // Cast as array if string given
+        if (_.isString(events)) {
+            events = _.castArray(events);
+        }
+
+        // Diff array and set to false if we're now empty
+        if (_.isArray(events)) {
+            muted = _.difference(muted, events);
+            if (!muted.length) {
+                muted = false;
+            }
+        }
+        else {
+            muted = false;
+        }
+
+        return tree;
+    };
+
 
     // Connect to our target DOM element
     dom.attach(tree.config.target);
