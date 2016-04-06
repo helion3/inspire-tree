@@ -2154,7 +2154,6 @@ function InspireTree(opts) {
         return tree;
     };
 
-
     // Connect to our target DOM element
     dom.attach(tree.config.target);
 
