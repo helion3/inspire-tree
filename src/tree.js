@@ -365,6 +365,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get if node expanded.
+     *
+     * @category TreeNode
+     * @return {boolean} If expanded.
+     */
+    TreeNode.prototype.expanded = function() {
+        return !this.collapsed();
+    };
+
+    /**
      * Expand parent nodes.
      *
      * @category TreeNode
@@ -378,16 +388,6 @@ function InspireTree(opts) {
         }
 
         return this;
-    };
-
-    /**
-     * Get if node expanded.
-     *
-     * @category TreeNode
-     * @return {boolean} If expanded.
-     */
-    TreeNode.prototype.expanded = function() {
-        return !this.collapsed();
     };
 
     /**
@@ -686,6 +686,29 @@ function InspireTree(opts) {
     };
 
     /**
+     * Find the next visible sibling of our ancestor. Continues
+     * seeking up the tree until a valid node is found or we
+     * reach the root node.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.nextVisibleAncestralSiblingNode = function() {
+        var next;
+
+        if (this.hasParent()) {
+            var parent = this.getParent();
+            next = parent.nextVisibleSiblingNode();
+
+            if (!next) {
+                next = parent.nextVisibleAncestralSiblingNode();
+            }
+        }
+
+        return next;
+    };
+
+    /**
      * Find next visible child node.
      *
      * @category TreeNode
@@ -725,29 +748,6 @@ function InspireTree(opts) {
         // 3. Find sibling of ancestor(s)
         if (!next) {
             next = startingNode.nextVisibleAncestralSiblingNode();
-        }
-
-        return next;
-    };
-
-    /**
-     * Find the next visible sibling of our ancestor. Continues
-     * seeking up the tree until a valid node is found or we
-     * reach the root node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.nextVisibleAncestralSiblingNode = function() {
-        var next;
-
-        if (this.hasParent()) {
-            var parent = this.getParent();
-            next = parent.nextVisibleSiblingNode();
-
-            if (!next) {
-                next = parent.nextVisibleAncestralSiblingNode();
-            }
         }
 
         return next;
@@ -810,6 +810,19 @@ function InspireTree(opts) {
     };
 
     /**
+     * Iterate down node and any children.
+     *
+     * @category TreeNode
+     * @param {function} iteratee Iteratee function.
+     * @return {TreeNode} Resulting node.
+     */
+    TreeNode.prototype.recurseDown = function(iteratee) {
+        recurseDown(this, iteratee);
+
+        return this;
+    };
+
+    /**
      * Iterate up a node and its parents.
      *
      * @category TreeNode
@@ -822,19 +835,6 @@ function InspireTree(opts) {
         if (result !== false && this.hasParent()) {
             this.getParent().recurseUp(iteratee);
         }
-
-        return this;
-    };
-
-    /**
-     * Iterate down node and any children.
-     *
-     * @category TreeNode
-     * @param {function} iteratee Iteratee function.
-     * @return {TreeNode} Resulting node.
-     */
-    TreeNode.prototype.recurseDown = function(iteratee) {
-        recurseDown(this, iteratee);
 
         return this;
     };
@@ -1165,6 +1165,26 @@ function InspireTree(opts) {
     };
 
     /**
+     * Concat nodes like an Array would.
+     *
+     * @category TreeNodes
+     * @param {TreeNodes} nodes Array of nodes.
+     * @return {TreeNodes} Resulting node array.
+     */
+    TreeNodes.prototype.concat = function(nodes) {
+        var newNodes = new TreeNodes();
+
+        var pusher = function(node) {
+            newNodes.push(node);
+        };
+
+        _.each(this, pusher);
+        _.each(nodes, pusher);
+
+        return newNodes;
+    };
+
+    /**
      * Copies nodes to a new tree instance.
      *
      * @category TreeNodes
@@ -1197,26 +1217,6 @@ function InspireTree(opts) {
                 return newNodes;
             }
         };
-    };
-
-    /**
-     * Concat nodes like an Array would.
-     *
-     * @category TreeNodes
-     * @param {TreeNodes} nodes Array of nodes.
-     * @return {TreeNodes} Resulting node array.
-     */
-    TreeNodes.prototype.concat = function(nodes) {
-        var newNodes = new TreeNodes();
-
-        var pusher = function(node) {
-            newNodes.push(node);
-        };
-
-        _.each(this, pusher);
-        _.each(nodes, pusher);
-
-        return newNodes;
     };
 
     /**
@@ -1462,7 +1462,7 @@ function InspireTree(opts) {
     });
 
     // Methods we can map to each TreeNode
-    _.each(['expand', 'expandParents', 'clean', 'softRemove'], mapToEach);
+    _.each(['clean', 'expand', 'expandParents', 'softRemove'], mapToEach);
 
     // Predicate methods we can map
     _.each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected'], function(state) {
@@ -1561,7 +1561,7 @@ function InspireTree(opts) {
      * @param {object} node Node object.
      * @return {array} Array of new nodes.
      */
-    var mergeNode = function(context, node) {
+    function mergeNode(context, node) {
         var newNodes = new TreeNodes();
 
         if (node.id) {
@@ -1796,60 +1796,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get a node.
-     *
-     * @category Tree
-     * @param {string|number} id ID of node.
-     * @param {TreeNodes} nodes Base collection to search in.
-     * @return {TreeNode} Node object.
-     */
-    tree.node = function(id, nodes) {
-        var match;
-
-        if (_.isNumber(id)) {
-            id = id.toString();
-        }
-
-        (nodes || model).recurseDown(function(node) {
-            if (node.id === id) {
-                match = node;
-
-                return false;
-            }
-        });
-
-        return match;
-    };
-
-    /**
-     * Get all nodes in a tree, or nodes for an array of IDs.
-     *
-     * @category Tree
-     * @param {array} refs Array of ID references.
-     * @return {TreeNodes} Array of node objects.
-     * @example
-     *
-     * var all = tree.nodes()
-     * var some = tree.nodes([1, 2, 3])
-     */
-    tree.nodes = function(refs) {
-        var nodes = model;
-
-        if (_.isArray(refs)) {
-            nodes = new TreeNodes();
-
-            _.each(refs, function(ref) {
-                var node = tree.node(ref);
-                if (node) {
-                    nodes.push(node);
-                }
-            });
-        }
-
-        return nodes;
-    };
-
-    /**
      * Get the most recently selected node, if any.
      *
      * @category Tree
@@ -1948,6 +1894,60 @@ function InspireTree(opts) {
                 throw new Error('Invalid data loader.');
             }
         });
+    };
+
+    /**
+     * Get a node.
+     *
+     * @category Tree
+     * @param {string|number} id ID of node.
+     * @param {TreeNodes} nodes Base collection to search in.
+     * @return {TreeNode} Node object.
+     */
+    tree.node = function(id, nodes) {
+        var match;
+
+        if (_.isNumber(id)) {
+            id = id.toString();
+        }
+
+        (nodes || model).recurseDown(function(node) {
+            if (node.id === id) {
+                match = node;
+
+                return false;
+            }
+        });
+
+        return match;
+    };
+
+    /**
+     * Get all nodes in a tree, or nodes for an array of IDs.
+     *
+     * @category Tree
+     * @param {array} refs Array of ID references.
+     * @return {TreeNodes} Array of node objects.
+     * @example
+     *
+     * var all = tree.nodes()
+     * var some = tree.nodes([1, 2, 3])
+     */
+    tree.nodes = function(refs) {
+        var nodes = model;
+
+        if (_.isArray(refs)) {
+            nodes = new TreeNodes();
+
+            _.each(refs, function(ref) {
+                var node = tree.node(ref);
+                if (node) {
+                    nodes.push(node);
+                }
+            });
+        }
+
+        return nodes;
     };
 
     /**
