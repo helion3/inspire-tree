@@ -1918,11 +1918,8 @@ function InspireTree(opts) {
      * @return {Tree} Tree instance.
      */
     tree.mute = function(events) {
-        if (_.isString(events)) {
+        if (_.isString(events) || _.isArray(events)) {
             muted = _.castArray(events);
-        }
-        else if (_.isArray(events)) {
-            muted = events;
         }
         else {
             muted = true;
@@ -2143,14 +2140,9 @@ function InspireTree(opts) {
      * @return {Tree} Tree instance.
      */
     tree.unmute = function(events) {
-        // Cast as array if string given
-        if (_.isString(events)) {
-            events = _.castArray(events);
-        }
-
         // Diff array and set to false if we're now empty
-        if (_.isArray(events)) {
-            muted = _.difference(muted, events);
+        if (_.isString(events) || _.isArray(events)) {
+            muted = _.difference(muted, _.castArray(events));
             if (!muted.length) {
                 muted = false;
             }
