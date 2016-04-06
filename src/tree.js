@@ -897,7 +897,7 @@ function InspireTree(opts) {
      * Remove a node from the tree.
      *
      * @category TreeNode
-     * @return {void}
+     * @return {object} Removed tree node object.
      */
     TreeNode.prototype.remove = function() {
         var node = this;
@@ -914,9 +914,12 @@ function InspireTree(opts) {
             parent.refreshIndeterminateState();
         }
 
-        tree.emit('node.removed', node.export());
+        var exported = node.export();
+        tree.emit('node.removed', exported);
 
         dom.applyChanges();
+
+        return exported;
     };
 
     /**
@@ -1189,7 +1192,7 @@ function InspireTree(opts) {
      *
      * @category TreeNodes
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
-     * @return {void}
+     * @return {object} Methods to perform action on copied nodes.
      */
     TreeNodes.prototype.copy = function(hierarchy) {
         var nodes = this;
@@ -1788,11 +1791,13 @@ function InspireTree(opts) {
      * Shows all nodes and collapses parents.
      *
      * @category Tree
-     * @return {void}
+     * @return {Tree} Tree instance.
      */
     tree.clearSearch = function() {
         tree.nodes().showDeep();
         tree.nodes().collapseDeep();
+
+        return tree;
     };
 
     /**
@@ -1954,21 +1959,25 @@ function InspireTree(opts) {
      * Reloads/re-executes the original data loader.
      *
      * @category Tree
-     * @return {void}
+     * @return {Tree} Tree instance.
      */
     tree.reload = function() {
         tree.load(tree.config.data);
+
+        return tree;
     };
 
     /**
      * Removes all nodes.
      *
      * @category Tree
-     * @return {void}
+     * @return {Tree} Tree instance.
      */
     tree.removeAll = function() {
         model = new TreeNodes();
         dom.applyChanges();
+
+        return tree;
     };
 
     /**
@@ -2050,7 +2059,7 @@ function InspireTree(opts) {
      * @category Tree
      * @param {TreeNode} startNode Starting node
      * @param {TreeNode} endNode Ending node
-     * @return {void}
+     * @return {Tree} Tree instance.
      */
     tree.selectBetween = function(startNode, endNode) {
         dom.batch();
@@ -2067,6 +2076,8 @@ function InspireTree(opts) {
         }
 
         dom.end();
+
+        return tree;
     };
 
     /**
