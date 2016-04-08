@@ -648,30 +648,35 @@ function InspireTree(opts) {
             node.markDirty();
             dom.applyChanges();
 
-            tree.config.data(
-                node,
-                function resolver(results) {
-                    dom.batch();
-                    node.itree.state.loading = false;
-                    node.children = collectionToModel(results, node);
-                    node.markDirty();
-                    dom.end();
+            var complete = function(results) {
+                dom.batch();
+                node.itree.state.loading = false;
+                node.children = collectionToModel(results, node);
+                node.markDirty();
+                dom.end();
 
-                    resolve(node.children);
+                resolve(node.children);
 
-                    tree.emit('children.loaded', node);
-                },
-                function rejecter(err) {
-                    node.itree.state.loading = false;
-                    node.children = new TreeNodes();
-                    node.markDirty();
-                    dom.applyChanges();
+                tree.emit('children.loaded', node);
+            };
 
-                    reject(err);
+            var error = function(err) {
+                node.itree.state.loading = false;
+                node.children = new TreeNodes();
+                node.markDirty();
+                dom.applyChanges();
 
-                    tree.emit('tree.loaderror', err);
-                }
-            );
+                reject(err);
+
+                tree.emit('tree.loaderror', err);
+            };
+
+            var loader = tree.config.data(node, complete, error);
+
+            // Data loader is likely a promise
+            if (_.isObject(loader)) {
+                standardizePromise(loader).then(complete).catch(error);
+            }
         });
     };
 
@@ -1738,6 +1743,33 @@ function InspireTree(opts) {
     }
 
     /**
+     * Resolve promise-like objects consistently.
+     *
+     * @private
+     * @param {object} promise Promise-like object.
+     * @returns {Promise} Promise
+     */
+    function standardizePromise(promise) {
+        return new Promise(function(resolve, reject) {
+            if (!_.isObject(promise)) {
+                return reject(new Error('Invalid Promise'));
+            }
+
+            if (_.isFunction(promise.then)) {
+                promise.then(resolve);
+            }
+
+            // jQuery promises use "error"
+            if (_.isFunction(promise.error)) {
+                promise.error(reject);
+            }
+            else if (_.isFunction(promise.catch)) {
+                promise.catch(reject);
+            }
+        });
+    };
+
+    /**
      * Add a node.
      *
      * @category Tree
@@ -1885,23 +1917,17 @@ function InspireTree(opts) {
 
             // Data loader requires a caller/callback
             else if (_.isFunction(loader)) {
-                loader(null, complete, error);
+                var resp = loader(null, complete, error);
+
+                // Loader returned its own object
+                if (resp) {
+                    loader = resp;
+                }
             }
 
             // Data loader is likely a promise
-            else if (_.isObject(loader)) {
-                // Promise
-                if (_.isFunction(loader.then)) {
-                    loader.then(complete);
-                }
-
-                // jQuery promises use "error".
-                if (_.isFunction(loader.error)) {
-                    loader.error(error);
-                }
-                else if (_.isFunction(loader.catch)) {
-                    loader.catch(error);
-                }
+            if (_.isObject(loader)) {
+                standardizePromise(loader).then(complete).catch(error);
             }
 
             else {
