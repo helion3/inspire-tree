@@ -708,6 +708,10 @@ module.exports = function InspireDOM(tree) {
             document.addEventListener('mousemove', mouseMoveListener);
         }
 
+        $target.addEventListener('blur', function() {
+            tree.focused().blur();
+        });
+
         $target.inspireTree = tree;
     };
 
