@@ -7,8 +7,7 @@
 Inspire Tree is a performance-driven javascript-based UI tree component, built for the modern web. Inspired by
 our need for one - the only existing solution which met our *feature* needs was a nightmare to *develop* for.
 
-[Website](http://www.inspire-tree.com/)
-[Demos](http://helion3.com/inspire-tree/)
+[Website & Demos](http://www.inspire-tree.com/)
 
 ### Features:
 
