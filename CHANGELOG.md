@@ -1,5 +1,14 @@
 # Changes to Inspire Tree
 
+# 1.4.5
+
+- Updated data loader to accept a returned promise as an alternative to resolve/reject arguments.
+- Updated all tree methods without a return value to return the tree instance.
+- Added `mute` and `unmute` methods to surpress events.
+- Added `unselectable` attribute for IE, cancel on click event to prevent text selection.
+- Fixed nodes remaining focused when tree itself is blurred.
+- Changed focus styling to use dotted outline instead of hover color.
+
 # 1.4.4
 
 - Fixed `selectBetween` failing when a range of two nodes was selected.

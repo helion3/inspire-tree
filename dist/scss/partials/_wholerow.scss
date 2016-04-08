@@ -12,7 +12,10 @@
         z-index: 1;
     }
 
-    .focused:not(.selected) > .wholerow,
+    .focused:not(.selected) > .wholerow {
+        outline: 1px dotted #000;
+    }
+
     .title-wrap:hover + .wholerow {
         background: $tree-row-hover-color;
     }
