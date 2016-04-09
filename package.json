@@ -49,6 +49,7 @@
   "main": "dist/inspire-tree.js",
   "files": [
     "dist",
+    "img",
     "*.json",
     "LICENSE",
     "README.md"
