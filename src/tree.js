@@ -13,7 +13,9 @@ function InspireTree(opts) {
     var initialized = false;
     var noop = function() {};
     var tree = this;
-    tree.preventDeselection = false;
+    var lastSelectedNode;
+    var muted = false;
+    var preventDeselection = false;
 
     if (!opts.data) {
         throw new TypeError('Invalid data loader.');
@@ -23,6 +25,7 @@ function InspireTree(opts) {
     tree.config = _.defaults(opts, {
         allowLoadEvents: [],
         allowSelection: noop,
+        autoDeselect: true,
         checkbox: false,
         contextMenu: false,
         dragTargets: false,
@@ -36,7 +39,7 @@ function InspireTree(opts) {
 
     if (tree.config.checkbox) {
         tree.config.multiselect = true;
-        tree.preventDeselection = true;
+        tree.config.autoDeselect = false;
     }
 
     // Default node state values
@@ -54,8 +57,6 @@ function InspireTree(opts) {
     // Cache some configs
     var allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
     var isDynamic = _.isFunction(tree.config.data);
-    var lastSelectedNode;
-    var muted = false;
 
     // Rendering
     var dom;
@@ -972,7 +973,7 @@ function InspireTree(opts) {
 
             node.focus();
 
-            if (!tree.preventDeselection) {
+            if (tree.canAutoDeselect()) {
                 var oldVal = tree.config.requireSelection;
                 tree.config.requireSelection = false;
                 tree.deselectDeep();
@@ -1840,6 +1841,17 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get if the tree will auto-deselect currently selected nodes
+     * when a new selection is made.
+     *
+     * @category Tree
+     * @return {boolean} If tree will auto-deselect nodes.
+     */
+    tree.canAutoDeselect = function() {
+        return tree.config.autoDeselect && !preventDeselection;
+    };
+
+    /**
      * Shows all nodes and collapses parents.
      *
      * @category Tree
@@ -1847,6 +1859,32 @@ function InspireTree(opts) {
      */
     tree.clearSearch = function() {
         return tree.showDeep().collapseDeep().tree();
+    };
+
+    /**
+     * Disable auto-deselection of currently selected nodes.
+     *
+     * @category Tree
+     * @return {Tree} Tree instance.
+     */
+    tree.disableDeselection = function() {
+        if (tree.config.multiselect) {
+            preventDeselection = true;
+        }
+
+        return tree;
+    };
+
+    /**
+     * Enable auto-deselection of currently selected nodes.
+     *
+     * @category Tree
+     * @return {Tree} Tree instance.
+     */
+    tree.enableDeselection = function() {
+        preventDeselection = false;
+
+        return tree;
     };
 
     /**

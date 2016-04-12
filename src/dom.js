@@ -284,7 +284,9 @@ module.exports = function InspireDOM(tree) {
                 onclick: function(event) {
                     event.preventDefault();
 
-                    tree.preventDeselection = tree.config.checkbox || event.metaKey || event.ctrlKey || event.shiftKey;
+                    if (event.metaKey || event.ctrlKey || event.shiftKey) {
+                        tree.disableDeselection();
+                    }
 
                     if (event.shiftKey) {
                         clearSelection();
@@ -296,6 +298,7 @@ module.exports = function InspireDOM(tree) {
                     }
 
                     node.toggleSelect();
+                    tree.enableDeselection();
 
                     // Emit
                     tree.emit('node.click', event, node);
