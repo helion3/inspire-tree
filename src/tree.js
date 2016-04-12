@@ -433,7 +433,7 @@ function InspireTree(opts) {
         if (!node.focused()) {
             // Batch selection changes
             dom.batch();
-            tree.nodes().blurDeep();
+            tree.blurDeep();
             node.itree.state.focused = true;
 
             // Emit this event
@@ -975,7 +975,7 @@ function InspireTree(opts) {
             if (!tree.preventDeselection) {
                 var oldVal = tree.config.requireSelection;
                 tree.config.requireSelection = false;
-                tree.nodes().deselectDeep();
+                tree.deselectDeep();
                 tree.config.requireSelection = oldVal;
             }
 
@@ -2068,7 +2068,7 @@ function InspireTree(opts) {
                 function resolver(nodes) {
                     dom.batch();
 
-                    tree.nodes().hideDeep();
+                    tree.hideDeep();
                     _.each(nodes, function(node) {
                         mergeNode(model, node);
                     });
