@@ -2074,12 +2074,10 @@ function InspireTree(opts) {
      * Reloads/re-executes the original data loader.
      *
      * @category Tree
-     * @return {Tree} Tree instance.
+     * @return {Promise} Load method promise.
      */
     tree.reload = function() {
-        tree.load(tree.config.data);
-
-        return tree;
+        return tree.load(tree.config.data);
     };
 
     /**
