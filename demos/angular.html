@@ -69,7 +69,7 @@
                 $scope.sourceOptions = {
                     multiselect: true,
                     data: function(node, resolve, reject) {
-                        var res = $http.get('sample-data/full.json').then(function(response) {
+                        $http.get('sample-data/full.json').then(function(response) {
                             resolve(response.data);
                         }).catch(reject);
                     },
@@ -87,13 +87,13 @@
 
                 $scope.moveOne = function() {
                     var selected = sourceTree.selected();
-                    selected.softRemoveDeep().copy(true).to(destTree);
-                    destTree.nodes(_.pluck(selected, 'id')).expandParents();
+                    selected.softRemove().copy(true).to(destTree);
+                    destTree.nodes(_.map(selected, 'id')).expandParents();
                 };
 
                 $scope.revertOne = function() {
                     var selected = destTree.selected();
-                    selected.softRemoveDeep().copy(true).to(sourceTree);
+                    selected.softRemove().copy(true).to(sourceTree);
 
                     // Hide all parents without visible children
                     _.each(selected, function(selectedNode) {
@@ -112,11 +112,11 @@
                 };
 
                 $scope.moveAll = function() {
-                    sourceTree.nodes().softRemoveDeep().copy().to(destTree);
+                    sourceTree.nodes().softRemove().copy().to(destTree);
                 };
 
                 $scope.revertAll = function() {
-                    destTree.nodes().softRemoveDeep().copy().to(sourceTree);
+                    destTree.nodes().softRemove().copy().to(sourceTree);
                 };
             }]);
 
