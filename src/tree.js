@@ -26,6 +26,7 @@ function InspireTree(opts) {
         allowLoadEvents: [],
         allowSelection: noop,
         autoDeselect: true,
+        autoSelectChildren: false,
         checkbox: false,
         contextMenu: false,
         dragTargets: false,
@@ -37,7 +38,13 @@ function InspireTree(opts) {
         tabindex: -1
     });
 
+    // If checkbox mode, we must force auto-selecting children
     if (tree.config.checkbox) {
+        tree.config.autoSelectChildren = true;
+    }
+
+    // If auto-selecting children, we must force multiselect
+    if (tree.config.autoSelectChildren) {
         tree.config.multiselect = true;
         tree.config.autoDeselect = false;
     }
@@ -321,8 +328,8 @@ function InspireTree(opts) {
             node.itree.state.indeterminate = false;
             baseStateChange('selected', false, 'deselected', this);
 
-            // If using checkbox model
-            if (tree.config.checkbox) {
+            // If children were auto-selected
+            if (tree.config.autoSelectChildren) {
                 // Deselect all children
                 if (node.hasChildren()) {
                     node.children.recurseDown(function(child) {
@@ -330,7 +337,7 @@ function InspireTree(opts) {
                     });
                 }
 
-                if (!skipParentIndeterminate && node.hasParent()) {
+                if (tree.config.checkbox && !skipParentIndeterminate && node.hasParent()) {
                     node.getParent().refreshIndeterminateState();
                 }
             }
@@ -982,15 +989,14 @@ function InspireTree(opts) {
 
             node.itree.state.selected = true;
 
-            // If using checkbox model and we have children
-            if (tree.config.checkbox) {
+            if (tree.config.autoSelectChildren) {
                 if (node.hasChildren()) {
                     node.children.recurseDown(function(child) {
                         child.select();
                     });
                 }
 
-                if (node.hasParent()) {
+                if (tree.config.checkbox && node.hasParent()) {
                     node.getParent().refreshIndeterminateState();
                 }
             }

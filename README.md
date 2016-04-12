@@ -69,6 +69,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 
 - **allowLoadEvents** - Array of state-change events to fire for pre-set states.
 - **allowSelection** - Dynamically determine `selectable` boolean for a node.
+- **autoSelectChildren** - Auto-select children when a parent node is selected, regardless of their visibility.
 - **checkbox** - Enable tri-state (unchecked, checked, partial) checkboxes for selection.
 - **data** - An array, promise, or callback function.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
