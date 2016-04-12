@@ -82,12 +82,13 @@ function InspireTree(opts) {
 
     // Load custom/empty renderer
     if (!dom) {
-        dom = _.isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {
+        var renderer = _.isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {};
+        dom = _.defaults(renderer, {
             applyChanges: noop,
             attach: noop,
             batch: noop,
             end: noop
-        };
+        });
     }
 
     /**
