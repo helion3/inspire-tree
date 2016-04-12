@@ -1419,6 +1419,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Chained method for returning a chain to the tree context.
+     *
+     * @category TreeNodes
+     * @return {[type]} [description]
+     */
+    TreeNodes.prototype.tree = function() {
+        return tree;
+    };
+
+    /**
      * Returns a native Array of nodes.
      *
      * @category TreeNodes
@@ -1836,10 +1846,7 @@ function InspireTree(opts) {
      * @return {Tree} Tree instance.
      */
     tree.clearSearch = function() {
-        tree.nodes().showDeep();
-        tree.nodes().collapseDeep();
-
-        return tree;
+        return tree.showDeep().collapseDeep().tree();
     };
 
     /**
