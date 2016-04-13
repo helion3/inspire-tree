@@ -10,13 +10,13 @@
   "main": "dist/inspire-tree.min.js",
   "ignore": [
     "demos",
-    "fonts",
     "hooks",
-    "sample-data",
-    "src",
+    "scripts",
     "test",
     ".*",
+    "index.html",
     "karma*",
+    "package.json",
     "webpack*"
   ],
   "private": false,

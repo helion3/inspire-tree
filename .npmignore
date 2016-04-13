@@ -1,9 +1,9 @@
 demos
 hooks
-img
 scripts
 test
 .*
+index.html
 bower.json
 karma*
 webpack*
