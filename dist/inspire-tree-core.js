@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.4.4
+ * Inspire Tree v1.5.0
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -188,7 +188,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var initialized = false;
 	    var noop = function noop() {};
 	    var tree = this;
-	    tree.preventDeselection = false;
+	    var lastSelectedNode;
+	    var muted = false;
+	    var preventDeselection = false;
 
 	    if (!opts.data) {
 	        throw new TypeError('Invalid data loader.');
@@ -198,6 +200,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    tree.config = (0, _defaults3.default)(opts, {
 	        allowLoadEvents: [],
 	        allowSelection: noop,
+	        autoDeselect: true,
+	        autoSelectChildren: false,
 	        checkbox: false,
 	        contextMenu: false,
 	        dragTargets: false,
@@ -209,9 +213,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        tabindex: -1
 	    });
 
+	    // If checkbox mode, we must force auto-selecting children
 	    if (tree.config.checkbox) {
+	        tree.config.autoSelectChildren = true;
+	    }
+
+	    // If auto-selecting children, we must force multiselect
+	    if (tree.config.autoSelectChildren) {
 	        tree.config.multiselect = true;
-	        tree.preventDeselection = true;
+	        tree.config.autoDeselect = false;
 	    }
 
 	    // Default node state values
@@ -229,8 +239,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Cache some configs
 	    var allowsLoadEvents = (0, _isArray3.default)(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
 	    var isDynamic = (0, _isFunction3.default)(tree.config.data);
-	    var lastSelectedNode;
-	    var muted = false;
 
 	    // Rendering
 	    var dom;
@@ -257,12 +265,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Load custom/empty renderer
 	    if (!dom) {
-	        dom = (0, _isFunction3.default)(tree.config.renderer) ? tree.config.renderer(tree) : {
+	        var renderer = (0, _isFunction3.default)(tree.config.renderer) ? tree.config.renderer(tree) : {};
+	        dom = (0, _defaults3.default)(renderer, {
 	            applyChanges: noop,
 	            attach: noop,
 	            batch: noop,
 	            end: noop
-	        };
+	        });
 	    }
 
 	    /**
@@ -492,8 +501,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            node.itree.state.indeterminate = false;
 	            baseStateChange('selected', false, 'deselected', this);
 
-	            // If using checkbox model
-	            if (tree.config.checkbox) {
+	            // If children were auto-selected
+	            if (tree.config.autoSelectChildren) {
 	                // Deselect all children
 	                if (node.hasChildren()) {
 	                    node.children.recurseDown(function (child) {
@@ -501,7 +510,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    });
 	                }
 
-	                if (!skipParentIndeterminate && node.hasParent()) {
+	                if (tree.config.checkbox && !skipParentIndeterminate && node.hasParent()) {
 	                    node.getParent().refreshIndeterminateState();
 	                }
 	            }
@@ -603,7 +612,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!node.focused()) {
 	            // Batch selection changes
 	            dom.batch();
-	            tree.nodes().blurDeep();
+	            tree.blurDeep();
 	            node.itree.state.focused = true;
 
 	            // Emit this event
@@ -1139,24 +1148,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            node.focus();
 
-	            if (!tree.preventDeselection) {
+	            if (tree.canAutoDeselect()) {
 	                var oldVal = tree.config.requireSelection;
 	                tree.config.requireSelection = false;
-	                tree.nodes().deselectDeep();
+	                tree.deselectDeep();
 	                tree.config.requireSelection = oldVal;
 	            }
 
 	            node.itree.state.selected = true;
 
-	            // If using checkbox model and we have children
-	            if (tree.config.checkbox) {
+	            if (tree.config.autoSelectChildren) {
 	                if (node.hasChildren()) {
 	                    node.children.recurseDown(function (child) {
 	                        child.select();
 	                    });
 	                }
 
-	                if (node.hasParent()) {
+	                if (tree.config.checkbox && node.hasParent()) {
 	                    node.getParent().refreshIndeterminateState();
 	                }
 	            }
@@ -1582,6 +1590,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Chained method for returning a chain to the tree context.
+	     *
+	     * @category TreeNodes
+	     * @return {[type]} [description]
+	     */
+	    TreeNodes.prototype.tree = function () {
+	        return tree;
+	    };
+
+	    /**
 	     * Returns a native Array of nodes.
 	     *
 	     * @category TreeNodes
@@ -1986,14 +2004,48 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
+	     * Get if the tree will auto-deselect currently selected nodes
+	     * when a new selection is made.
+	     *
+	     * @category Tree
+	     * @return {boolean} If tree will auto-deselect nodes.
+	     */
+	    tree.canAutoDeselect = function () {
+	        return tree.config.autoDeselect && !preventDeselection;
+	    };
+
+	    /**
 	     * Shows all nodes and collapses parents.
 	     *
 	     * @category Tree
 	     * @return {Tree} Tree instance.
 	     */
 	    tree.clearSearch = function () {
-	        tree.nodes().showDeep();
-	        tree.nodes().collapseDeep();
+	        return tree.showDeep().collapseDeep().tree();
+	    };
+
+	    /**
+	     * Disable auto-deselection of currently selected nodes.
+	     *
+	     * @category Tree
+	     * @return {Tree} Tree instance.
+	     */
+	    tree.disableDeselection = function () {
+	        if (tree.config.multiselect) {
+	            preventDeselection = true;
+	        }
+
+	        return tree;
+	    };
+
+	    /**
+	     * Enable auto-deselection of currently selected nodes.
+	     *
+	     * @category Tree
+	     * @return {Tree} Tree instance.
+	     */
+	    tree.enableDeselection = function () {
+	        preventDeselection = false;
 
 	        return tree;
 	    };
@@ -2174,12 +2226,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Reloads/re-executes the original data loader.
 	     *
 	     * @category Tree
-	     * @return {Tree} Tree instance.
+	     * @return {Promise} Load method promise.
 	     */
 	    tree.reload = function () {
-	        tree.load(tree.config.data);
-
-	        return tree;
+	        return tree.load(tree.config.data);
 	    };
 
 	    /**
@@ -2210,7 +2260,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return custom(query, function resolver(nodes) {
 	                dom.batch();
 
-	                tree.nodes().hideDeep();
+	                tree.hideDeep();
 	                (0, _each3.default)(nodes, function (node) {
 	                    mergeNode(model, node);
 	                });

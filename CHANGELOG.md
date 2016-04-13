@@ -1,5 +1,18 @@
 # Changes to Inspire Tree
 
+# 1.5
+
+- Adds `autoSelectChildren` option for checkbox-like selection functionality.
+- Added `tree.canAutoDeselect` method.
+- Added `TreeNodes.tree()` method to allow cleaner chain context changes.
+- Custom renderers may now leave out unused methods.
+- Added `img` directory to NPM distribution.
+
+**Breaking Changes**
+
+- Replaces `tree.preventDeselection` boolean with `tree.enableDeselection` and `tree.disableDeselection` methods.
+- `reload()` method now returns the `load` promise.
+
 # 1.4.5
 
 - Updated data loader to accept a returned promise as an alternative to resolve/reject arguments.
