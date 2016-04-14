@@ -51,10 +51,6 @@
                 destTree.nodes(_.map(selected, 'id')).expandParents();
             });
 
-            sourceTree.on('node.dblclick', function(event, node) {
-                node.copy(true).to(destTree);
-            });
-
             $('.revert-one').on('click', function() {
                 destTree.selected().softRemove().copy(true).to(sourceTree);
             });
