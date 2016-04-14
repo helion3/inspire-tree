@@ -1476,6 +1476,9 @@ function InspireTree(opts) {
                     existingNode.children = object.children;
                 }
 
+                existingNode.markDirty();
+                dom.applyChanges();
+
                 // Node merged, return it.
                 return existingNode;
             }
