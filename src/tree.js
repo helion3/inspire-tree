@@ -41,12 +41,12 @@ function InspireTree(opts) {
     // If checkbox mode, we must force auto-selecting children
     if (tree.config.checkbox) {
         tree.config.autoSelectChildren = true;
+        tree.config.autoDeselect = false;
     }
 
     // If auto-selecting children, we must force multiselect
     if (tree.config.autoSelectChildren) {
         tree.config.multiselect = true;
-        tree.config.autoDeselect = false;
     }
 
     // Default node state values
@@ -337,8 +337,15 @@ function InspireTree(opts) {
                     });
                 }
 
-                if (tree.config.checkbox && !skipParentIndeterminate && node.hasParent()) {
-                    node.getParent().refreshIndeterminateState();
+                if (node.hasParent()) {
+                    // Set indeterminate state for parent
+                    if (tree.config.checkbox && !skipParentIndeterminate) {
+                        node.getParent().refreshIndeterminateState();
+                    }
+                    else {
+                        // Deselect parent node
+                        baseStateChange('selected', false, 'deselected', node.getParent());
+                    }
                 }
             }
 
@@ -992,7 +999,7 @@ function InspireTree(opts) {
             if (tree.config.autoSelectChildren) {
                 if (node.hasChildren()) {
                     node.children.recurseDown(function(child) {
-                        child.select();
+                        baseStateChange('selected', true, 'selected', child);
                     });
                 }
 
