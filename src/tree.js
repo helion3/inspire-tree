@@ -1931,6 +1931,21 @@ function InspireTree(opts) {
     };
 
     /**
+     * Check if an object is a TreeNode.
+     *
+     * @category Tree
+     * @param {object} object Object
+     * @return {boolean} If object is a TreeNode.
+     */
+    tree.isNode = function(object) {
+        if (object.constructor) {
+            return object.constructor.name === 'TreeNode';
+        }
+
+        return false;
+    };
+
+    /**
      * Get the most recently selected node, if any.
      *
      * @category Tree
