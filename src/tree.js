@@ -557,16 +557,7 @@ function InspireTree(opts) {
         var hasVisibleChildren = false;
 
         if (this.hasChildren()) {
-            // Count visible children
-            // http://jsperf.com/count-subdoc-state/2
-            var visibleCount = 0;
-            _.each(this.children, function(child) {
-                if (!child.hidden() && !child.removed()) {
-                    visibleCount++;
-                }
-            });
-
-            hasVisibleChildren = (visibleCount > 0);
+            hasVisibleChildren = (this.children.filter('available').length > 0);
         }
 
         return hasVisibleChildren;
