@@ -44,7 +44,7 @@ function InspireTree(opts) {
     // If checkbox mode, we must force auto-selecting children
     if (tree.config.selection.mode === 'checkbox') {
         tree.config.selection.autoSelectChildren = true;
-        tree.config.autoDeselect = false;
+        tree.config.selection.autoDeselect = false;
 
         if (!_.isBoolean(opts.showCheckboxes)) {
             tree.config.showCheckboxes = true;
@@ -591,6 +591,16 @@ function InspireTree(opts) {
     };
 
     /**
+     * Get if node is indeterminately selected.
+     *
+     * @category TreeNode
+     * @return {boolean} If indeterminately selected.
+     */
+    TreeNode.prototype.indeterminate = function() {
+        return this.itree.state.indeterminate;
+    };
+
+    /**
      * Returns a "path" of indices, values which map this node's location within all parent contexts.
      *
      * @return {string} [description]
@@ -872,33 +882,31 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.refreshIndeterminateState = function() {
         var node = this;
+        var oldValue = node.itree.state.indeterminate;
         node.itree.state.indeterminate = false;
 
         if (tree.config.showCheckboxes) {
-            var childrenCount = node.children.length;
-            var oldValue = node.itree.state.indeterminate;
-
             if (node.hasChildren()) {
+                var childrenCount = node.children.length;
+                var indeterminate = 0;
                 var selected = 0;
 
-                _.each(node.children, function(child) {
-                    if (child.itree.state.indeterminate) {
-                        node.itree.state.indeterminate = true;
-                        return false;
-                    }
-                    else if (child.selected()) {
+                node.children.each(function(n) {
+                    if (n.selected()) {
                         selected++;
+                    }
+
+                    if (n.indeterminate()) {
+                        indeterminate++;
                     }
                 });
 
-                if (!selected) {
-                    node.itree.state.selected = false;
-                }
-                else if (selected === childrenCount) {
-                    node.itree.state.selected = true;
-                }
-                else if (!node.itree.state.indeterminate) {
-                    node.itree.state.indeterminate = selected > 0 && selected < childrenCount;
+                // Set selected if all children are
+                node.itree.state.selected = (selected === childrenCount);
+
+                // Set indeterminate if any children are, or some children are selected
+                if (!node.selected()) {
+                    node.itree.state.indeterminate = indeterminate > 0 || (childrenCount > 0 && selected > 0 && selected < childrenCount);
                 }
             }
 
@@ -1478,16 +1486,12 @@ function InspireTree(opts) {
         // Node is new, insert at given location.
         var node = tree.isNode(object) ? object : objectToModel(object);
 
-        // Set node parent
-        if (this._context) {
-            node.itree.parent = this._context;
-        }
-
         // Insert
         this.splice(index, 0, node);
 
         // Refresh parent state and mark dirty
         if (this._context) {
+            node.itree.parent = this._context;
             this._context.refreshIndeterminateState().markDirty();
         }
 

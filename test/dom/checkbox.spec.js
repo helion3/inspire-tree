@@ -39,6 +39,9 @@ describe('checkboxes', function() {
             id: 4
         });
 
+        expect(tree.node(2).selected()).to.be.false;
+        expect(tree.node(2).itree.state.indeterminate).to.be.true;
+
         expect(tree.node(1).selected()).to.be.false;
         expect(tree.node(1).itree.state.indeterminate).to.be.true;
     });
