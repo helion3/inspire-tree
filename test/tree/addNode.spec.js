@@ -13,8 +13,9 @@ describe('Tree.addNode', function() {
         // Create tree
         tree = new InspireTree({
             target: $tree,
+            sort: 'text',
             data: [{
-                text: 'A',
+                text: 'B',
                 id: 1,
                 children: []
             }]
@@ -29,10 +30,17 @@ describe('Tree.addNode', function() {
         expect(tree.nodes()).to.have.length(1);
         expect($tree.find('li')).to.have.length(1);
 
-        tree.addNode({ text: 'New' });
+        tree.addNode({ text: 'C' });
 
         expect(tree.nodes()).to.have.length(2);
         expect($tree.find('li')).to.have.length(2);
+    });
+
+    it('sorts new nodes', function() {
+        tree.addNode({ text: 'A' });
+
+        expect(tree.get(0).text).to.equal('A');
+        expect(tree.get(2).text).to.equal('C');
     });
 
     after(helpers.clearDOM);

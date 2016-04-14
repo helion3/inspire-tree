@@ -138,21 +138,12 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.addChild = function(child) {
-        child = objectToModel(child);
-
         if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
             this.children = new TreeNodes();
             this.children._context = this;
         }
 
-        child.itree.parent = this;
-        this.children.push(child);
-        this.refreshIndeterminateState();
-
-        child.markDirty();
-        dom.applyChanges();
-
-        return child;
+        return this.children.addNode(child);
     };
 
     /**
@@ -1190,6 +1181,27 @@ function InspireTree(opts) {
     TreeNodes.prototype.constructor = TreeNodes;
 
     /**
+     * Adds a new node to this collection. If a sort
+     * method is configured, the node will be added
+     * in the appropriate order.
+     *
+     * @category TreeNodes
+     * @param {object} object Node
+     * @return {TreeNode} Node object.
+     */
+    TreeNodes.prototype.addNode = function(object) {
+        // Base insertion index
+        var index = this.length;
+
+        // If tree is sorted, insert in correct position
+        if (tree.config.sort) {
+            index = _.sortedIndexBy(this, object, tree.config.sort);
+        }
+
+        return this.insertAt(index, object);
+    };
+
+    /**
      * Clones (deep) the array of nodes.
      *
      * Note: Cloning will *not* clone the context pointer.
@@ -1431,6 +1443,70 @@ function InspireTree(opts) {
     };
 
     /**
+     * Insert a new node at a given position.
+     *
+     * @param {integer} index Index at which to insert the node.
+     * @param {object} object Raw node object or TreeNode.
+     * @return {TreeNode} Node object.
+     */
+    TreeNodes.prototype.insertAt = function(index, object) {
+        // If node has a pre-existing ID
+        if (object.id) {
+            // Is it already in the tree?
+            var existingNode = tree.node(object.id);
+            if (existingNode) {
+                existingNode.restore().show();
+
+                // Merge children
+                if (_.isArrayLike(object.children)) {
+                    // Setup existing node's children property if needed
+                    if (!_.isArrayLike(existingNode.children)) {
+                        existingNode.children = new TreeNodes();
+                        existingNode.children._context = existing;
+                    }
+
+                    // Copy each child (using addNode, which uses insertAt)
+                    _.each(object.children, function(child) {
+                        existingNode.children.addNode(child);
+                    });
+                }
+
+                // Merge truthy children
+                else if (object.children) {
+                    existingNode.children = object.children;
+                }
+
+                // Node merged, return it.
+                return existingNode;
+            }
+        }
+
+        // Node is new, insert at given location.
+        var node = tree.isNode(object) ? object : objectToModel(object);
+
+        // Set node parent
+        if (this._context) {
+            node.itree.parent = this._context;
+        }
+
+        // Insert
+        this.splice(index, 0, node);
+
+        // Refresh parent state and mark dirty
+        if (this._context) {
+            this._context.refreshIndeterminateState().markDirty();
+        }
+
+        // Event
+        tree.emit('node.added', node);
+
+        node.markDirty();
+        dom.applyChanges();
+
+        return node;
+    };
+
+    /**
      * Iterate down all nodes and any children.
      *
      * @category TreeNodes
@@ -1454,17 +1530,17 @@ function InspireTree(opts) {
      */
     TreeNodes.prototype.sort = function(sorter) {
         var nodes = this;
+        sorter = sorter || tree.config.sort;
 
-        if (tree.config.sort && !sorter) {
-            sorter = tree.config.sort;
+        // Only apply sort if one provided
+        if (sorter) {
+            var sorted = _.sortBy(nodes, sorter);
+
+            nodes.length = 0;
+            _.each(sorted, function(node) {
+                nodes.push(node);
+            });
         }
-
-        var sorted = _.sortBy(nodes, sorter);
-
-        nodes.length = 0;
-        _.each(sorted, function(node) {
-            nodes.push(node);
-        });
 
         return nodes;
     };
@@ -1636,60 +1712,6 @@ function InspireTree(opts) {
     }
 
     /**
-     * Merge a node into an existing context - a model
-     * or another node's children. If the ID exists
-     * the node is skipped and we try its children.
-     *
-     * @private
-     * @param {array} context Array of node objects.
-     * @param {object} node Node object.
-     * @return {array} Array of new nodes.
-     */
-    function mergeNode(context, node) {
-        var newNodes = new TreeNodes();
-
-        if (node.id) {
-            // Does node already exist
-            var existing = tree.node(node.id);
-            if (existing) {
-                existing.restore();
-                existing.show();
-
-                // Merge children
-                if (node.hasChildren()) {
-                    if (!_.isArrayLike(existing.children)) {
-                        existing.children = new TreeNodes();
-                        existing.children._context = existing;
-                    }
-
-                    _.each(node.children, function(child) {
-                        newNodes.concat(mergeNode(existing, child));
-                    });
-                }
-
-                // Merge truthy
-                else if (node.children) {
-                    existing.children = node.children;
-                }
-            }
-            else {
-                if (context instanceof TreeNode) {
-                    node.itree.parent = context;
-                    context.children.push(node);
-                }
-                else {
-                    context.push(node);
-                }
-
-                node.markDirty();
-                newNodes.push(node);
-            }
-        }
-
-        return newNodes;
-    };
-
-    /**
      * Parse a raw object into a model used within a tree.
      *
      * Note: Uses native js over lodash where performance
@@ -1835,26 +1857,6 @@ function InspireTree(opts) {
                 promise.catch(reject);
             }
         });
-    };
-
-    /**
-     * Add a node.
-     *
-     * @category Tree
-     * @param {object} node Node object.
-     * @return {object} Node object.
-     */
-    tree.addNode = function(node) {
-        node = objectToModel(node);
-        var newNodes = mergeNode(model, node);
-
-        if (newNodes.length) {
-            tree.emit('node.added', node);
-            node.markDirty();
-            dom.applyChanges();
-        }
-
-        return node;
     };
 
     /**
@@ -2177,7 +2179,7 @@ function InspireTree(opts) {
 
                     tree.hideDeep();
                     _.each(nodes, function(node) {
-                        mergeNode(model, node);
+                        tree.addNode(node);
                     });
 
                     dom.end();

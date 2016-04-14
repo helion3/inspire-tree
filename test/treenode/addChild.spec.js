@@ -17,10 +17,8 @@ describe('TreeNode.prototype.addChild', function() {
                 text: 'A',
                 id: 1,
                 children: []
-            }, {
-                text: 'B',
-                id: 2
-            }]
+            }],
+            sort: 'text'
         });
     });
 
@@ -37,7 +35,7 @@ describe('TreeNode.prototype.addChild', function() {
         expect($node.find('li')).to.have.length(0);
 
         node.addChild({
-            text: 'New'
+            text: 'C'
         });
 
         expect(node.hasChildren()).to.be.true;
@@ -48,11 +46,23 @@ describe('TreeNode.prototype.addChild', function() {
         var node = tree.node(1);
 
         var child = node.addChild({
-            text: 'New'
+            text: 'A'
         });
 
         expect(child.constructor.name).to.equal('TreeNode');
         expect(child.hasParent()).to.be.true;
+    });
+
+    it('applies sort correctly to new children', function() {
+        var node = tree.node(1);
+
+        node.addChild({
+            text: 'B'
+        });
+
+        expect(node.children[0].text).to.equal('A');
+        expect(node.children[1].text).to.equal('B');
+        expect(node.children[2].text).to.equal('C');
     });
 
     after(helpers.clearDOM);
