@@ -4,7 +4,8 @@ node_js:
   - "4"
   - "0.12"
 before_script:
-  - npm install -g bower webpack
+  - npm install -g webpack
+  - webpack
 script:
   - npm test
   - npm run lint
