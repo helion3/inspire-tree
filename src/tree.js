@@ -1507,7 +1507,10 @@ function InspireTree(opts) {
     _.each(['clean', 'expand', 'expandParents', 'softRemove'], mapToEach);
 
     // Predicate methods we can map
-    _.each(['available', 'collapsed', 'focused', 'hidden', 'removed', 'selected', 'visible'], function(state) {
+    _.each([
+        'available', 'collapsed', 'expanded', 'focused',
+        'hidden', 'removed', 'selectable', 'selected', 'visible'
+    ], function(state) {
         TreeNodes.prototype[state] = function(full) {
             if (full) {
                 return this.extract(state);
