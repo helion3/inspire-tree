@@ -245,7 +245,7 @@ function InspireTree(opts) {
         var node = this;
 
         if (hierarchy) {
-            node = node.copyHierarchy();
+            node = node.copyHierarchy(false);
         }
 
         return {
@@ -292,7 +292,18 @@ function InspireTree(opts) {
         parents = nodes.reverse();
 
         if (!excludeNode) {
-            nodes.push(node);
+            var clone = _.clone(node);
+
+            // Filter out hidden children
+            if (node.hasChildren()) {
+                clone.children = node.children.filter(function(n) {
+                    return !n.itree.state.hidden;
+                }).clone();
+
+                clone.children._context = clone;
+            }
+
+            nodes.push(clone);
         }
 
         var hierarchy = nodes[0];
