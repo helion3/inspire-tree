@@ -26,6 +26,9 @@ function InspireTree(opts) {
         allowLoadEvents: [],
         contextMenu: false,
         dragTargets: false,
+        nodes: {
+            resetStateOnRestore: false
+        },
         renderer: false,
         search: false,
         selection: {
@@ -1627,7 +1630,17 @@ function InspireTree(opts) {
                 return this.extract(state);
             }
 
-            return this.flatten(state);
+            // Cache a state predicate function
+            var fn = getPredicateFunction(state);
+
+            return this.flatten(function(node) {
+                // Never include removed nodes unless specifically requested
+                if (state !== 'removed' && node.removed()) {
+                    return false;
+                }
+
+                return fn(node);
+            });
         };
     });
 
@@ -1644,7 +1657,7 @@ function InspireTree(opts) {
      */
     function baseStateChange(prop, value, verb, node, deep) {
         if (node.itree.state[prop] !== value) {
-            if (prop === 'removed') {
+            if (tree.config.nodes.resetStateOnRestore && verb === 'restored') {
                 resetState(node);
             }
 

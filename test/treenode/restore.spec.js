@@ -37,5 +37,29 @@ describe('TreeNode.prototype.restore', function() {
         expect(node.removed()).to.be.false;
     });
 
+    it('resets state on restore when configured', function() {
+        tree = new InspireTree({
+            target: $tree,
+            nodes: {
+                resetStateOnRestore: true
+            },
+            data: [{
+                text: 'A',
+                id: 1
+            }]
+        });
+
+        var node = tree.node(1);
+
+        node.select();
+        expect(node.selected()).to.be.true;
+
+        node.softRemove();
+        expect(node.selected()).to.be.true;
+
+        node.restore();
+        expect(node.selected()).to.be.false;
+    });
+
     after(helpers.clearDOM);
 });
