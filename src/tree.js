@@ -245,7 +245,7 @@ function InspireTree(opts) {
         var node = this;
 
         if (hierarchy) {
-            node = node.copyHierarchy(false);
+            node = node.copyHierarchy();
         }
 
         return {
