@@ -34,10 +34,12 @@ describe('Tree.selected', function() {
         expect(tree.selected()).to.have.length(1);
     });
 
-    it('auto-selects a node when requireSelection=true', function() {
+    it('auto-selects a node when selection.require=true', function() {
         tree = new InspireTree({
             target: $tree,
-            requireSelection: true,
+            selection: {
+                require: true
+            },
             data: [{
                 text: 'A',
                 id: 1
@@ -47,7 +49,7 @@ describe('Tree.selected', function() {
         expect(tree.selected()).to.have.length(1);
     });
 
-    it('rejects deselect of only node when requireSelection=true', function() {
+    it('rejects deselect of only node when selection.require=true', function() {
         tree.node(1).deselect();
 
         expect(tree.selected()).to.have.length(1);

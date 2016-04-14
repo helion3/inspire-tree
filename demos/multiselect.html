@@ -22,7 +22,9 @@
             var tree = new InspireTree({
                 target: '.tree',
                 data: $.getJSON('sample-data/full.json'),
-                multiselect: true
+                selection: {
+                    multiple: true
+                }
             });
 
             $('.log-selected').on('click', function() {

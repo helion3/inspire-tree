@@ -265,7 +265,7 @@ module.exports = function InspireDOM(tree) {
         }, VStateCompare, function(previous, current) {
             var classNames = ['title', 'icon'];
 
-            if (!tree.config.checkbox) {
+            if (!tree.config.showCheckboxes) {
                 classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
             }
 
@@ -343,7 +343,7 @@ module.exports = function InspireDOM(tree) {
                 contents.push(createToggleAnchor(node));
             }
 
-            if (tree.config.checkbox) {
+            if (tree.config.showCheckboxes) {
                 contents.push(createCheckbox(node));
             }
 

@@ -12,9 +12,11 @@ describe('TreeNode.prototype.selectable', function() {
 
         // Create tree
         tree = new InspireTree({
-            allowSelection: function(node) {
-                if (node.id === '3') {
-                    return false;
+            selection: {
+                allow: function(node) {
+                    if (node.id === '3') {
+                        return false;
+                    }
                 }
             },
             target: $tree,
@@ -55,11 +57,11 @@ describe('TreeNode.prototype.selectable', function() {
         expect(node.selected()).to.be.false;
     });
 
-    it('returns true for default node when using allowSelection', function() {
+    it('returns true for default node when using selection.allow', function() {
         expect(tree.node(1).selectable()).to.be.true;
     });
 
-    it('returns false for unselectable node when using allowSelection', function() {
+    it('returns false for unselectable node when using selection.allow', function() {
         expect(tree.node(3).selectable()).to.be.false;
     });
 

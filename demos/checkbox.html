@@ -23,7 +23,9 @@
             var tree = new InspireTree({
                 target: '.tree',
                 data: $.getJSON('sample-data/full.json'),
-                checkbox: true
+                selection: {
+                    mode: 'checkbox'
+                }
             });
         });
     </script>

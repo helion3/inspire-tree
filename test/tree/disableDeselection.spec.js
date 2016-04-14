@@ -13,7 +13,9 @@ describe('Tree.disableDeselection', function() {
         // Create tree
         tree = new InspireTree({
             target: $tree,
-            multiselect: true,
+            selection: {
+                multiple: true
+            },
             data: [{
                 text: 'A',
                 id: 1

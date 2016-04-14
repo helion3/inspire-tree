@@ -8,7 +8,9 @@ describe('checkboxes', function() {
 
         tree = new InspireTree({
             target: '.tree',
-            checkbox: true,
+            selection: {
+                mode: 'checkbox'
+            },
             data: [{
                 text: 'A',
                 id: 1,

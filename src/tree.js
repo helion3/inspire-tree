@@ -22,31 +22,38 @@ function InspireTree(opts) {
     }
 
     // Assign defaults
-    tree.config = _.defaults(opts, {
+    tree.config = _.defaultsDeep({}, opts, {
         allowLoadEvents: [],
-        allowSelection: noop,
-        autoDeselect: true,
-        autoSelectChildren: false,
-        checkbox: false,
         contextMenu: false,
         dragTargets: false,
-        multiselect: false,
         renderer: false,
-        requireSelection: false,
         search: false,
+        selection: {
+            allow: noop,
+            autoDeselect: true,
+            autoSelectChildren: false,
+            mode: 'default',
+            multiple: false,
+            require: false
+        },
+        showCheckboxes: false,
         sort: false,
         tabindex: -1
     });
 
     // If checkbox mode, we must force auto-selecting children
-    if (tree.config.checkbox) {
-        tree.config.autoSelectChildren = true;
+    if (tree.config.selection.mode === 'checkbox') {
+        tree.config.selection.autoSelectChildren = true;
         tree.config.autoDeselect = false;
+
+        if (!_.isBoolean(opts.showCheckboxes)) {
+            tree.config.showCheckboxes = true;
+        }
     }
 
     // If auto-selecting children, we must force multiselect
-    if (tree.config.autoSelectChildren) {
-        tree.config.multiselect = true;
+    if (tree.config.selection.autoSelectChildren) {
+        tree.config.selection.multiple = true;
     }
 
     // Default node state values
@@ -313,7 +320,7 @@ function InspireTree(opts) {
     /**
      * Deselect this node.
      *
-     * If requireSelection is true and this is the last selected
+     * If selection.require is true and this is the last selected
      * node, the node will remain in a selected state.
      *
      * @category TreeNode
@@ -321,7 +328,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.deselect = function(skipParentIndeterminate) {
-        if (!tree.config.requireSelection || tree.selected().length > 1) {
+        if (!tree.config.selection.require || tree.selected().length > 1) {
             var node = this;
             dom.batch();
 
@@ -329,7 +336,7 @@ function InspireTree(opts) {
             baseStateChange('selected', false, 'deselected', this);
 
             // If children were auto-selected
-            if (tree.config.autoSelectChildren) {
+            if (tree.config.selection.autoSelectChildren) {
                 // Deselect all children
                 if (node.hasChildren()) {
                     node.children.recurseDown(function(child) {
@@ -339,7 +346,7 @@ function InspireTree(opts) {
 
                 if (node.hasParent()) {
                     // Set indeterminate state for parent
-                    if (tree.config.checkbox && !skipParentIndeterminate) {
+                    if (tree.config.showCheckboxes && !skipParentIndeterminate) {
                         node.getParent().refreshIndeterminateState();
                     }
                     else {
@@ -883,7 +890,7 @@ function InspireTree(opts) {
         var node = this;
         node.itree.state.indeterminate = false;
 
-        if (tree.config.checkbox) {
+        if (tree.config.showCheckboxes) {
             var childrenCount = node.children.length;
             var oldValue = node.itree.state.indeterminate;
 
@@ -988,22 +995,22 @@ function InspireTree(opts) {
             node.focus();
 
             if (tree.canAutoDeselect()) {
-                var oldVal = tree.config.requireSelection;
-                tree.config.requireSelection = false;
+                var oldVal = tree.config.selection.require;
+                tree.config.selection.require = false;
                 tree.deselectDeep();
-                tree.config.requireSelection = oldVal;
+                tree.config.selection.require = oldVal;
             }
 
             node.itree.state.selected = true;
 
-            if (tree.config.autoSelectChildren) {
+            if (tree.config.selection.autoSelectChildren) {
                 if (node.hasChildren()) {
                     node.children.recurseDown(function(child) {
                         baseStateChange('selected', true, 'selected', child);
                     });
                 }
 
-                if (tree.config.checkbox && node.hasParent()) {
+                if (tree.config.showCheckboxes && node.hasParent()) {
                     node.getParent().refreshIndeterminateState();
                 }
             }
@@ -1029,7 +1036,7 @@ function InspireTree(opts) {
      * @return {boolean} If node selectable.
      */
     TreeNode.prototype.selectable = function() {
-        var allow = tree.config.allowSelection(this);
+        var allow = tree.config.selection.allow(this);
         return typeof allow === 'boolean' ? allow : this.itree.state.selectable;
     };
 
@@ -1864,7 +1871,7 @@ function InspireTree(opts) {
      * @return {boolean} If tree will auto-deselect nodes.
      */
     tree.canAutoDeselect = function() {
-        return tree.config.autoDeselect && !preventDeselection;
+        return tree.config.selection.autoDeselect && !preventDeselection;
     };
 
     /**
@@ -1884,7 +1891,7 @@ function InspireTree(opts) {
      * @return {Tree} Tree instance.
      */
     tree.disableDeselection = function() {
-        if (tree.config.multiselect) {
+        if (tree.config.selection.multiple) {
             preventDeselection = true;
         }
 
@@ -1944,7 +1951,7 @@ function InspireTree(opts) {
 
                 model = collectionToModel(nodes);
 
-                if (tree.config.requireSelection && !tree.selected().length) {
+                if (tree.config.selection.require && !tree.selected().length) {
                     tree.selectFirstAvailableNode();
                 }
 
@@ -2087,7 +2094,7 @@ function InspireTree(opts) {
      * @return {Promise} Load method promise.
      */
     tree.reload = function() {
-        return tree.load(tree.config.data);
+        return tree.load(opts.data || tree.config.data);
     };
 
     /**
