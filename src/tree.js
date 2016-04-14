@@ -142,6 +142,7 @@ function InspireTree(opts) {
 
         if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
             this.children = new TreeNodes();
+            this.children._context = this;
         }
 
         child.itree.parent = this;
@@ -686,6 +687,7 @@ function InspireTree(opts) {
             var error = function(err) {
                 node.itree.state.loading = false;
                 node.children = new TreeNodes();
+                node.children._context = node;
                 node.markDirty();
                 dom.applyChanges();
 
@@ -1190,17 +1192,19 @@ function InspireTree(opts) {
     /**
      * Clones (deep) the array of nodes.
      *
+     * Note: Cloning will *not* clone the context pointer.
+     *
      * @category TreeNodes
      * @return {TreeNodes} Array of cloned nodes.
      */
     TreeNodes.prototype.clone = function() {
-        var newArray = new TreeNodes();
+        var newNodes = new TreeNodes();
 
         _.each(this, function(node) {
-            newArray.push(node.clone());
+            newNodes.push(node.clone());
         });
 
-        return newArray;
+        return newNodes;
     };
 
     /**
@@ -1212,6 +1216,7 @@ function InspireTree(opts) {
      */
     TreeNodes.prototype.concat = function(nodes) {
         var newNodes = new TreeNodes();
+        newNodes._context = this._context;
 
         var pusher = function(node) {
             newNodes.push(node);
@@ -1221,6 +1226,18 @@ function InspireTree(opts) {
         _.each(nodes, pusher);
 
         return newNodes;
+    };
+
+    /**
+     * Get the context of this collection. If a collection
+     * of children, context is the parent node. Otherwise
+     * the context is the tree itself.
+     *
+     * @category TreeNodes
+     * @return {TreeNode|object} Node object or tree instance.
+     */
+    TreeNodes.prototype.context = function() {
+        return this._context || tree;
     };
 
     /**
@@ -1582,6 +1599,8 @@ function InspireTree(opts) {
             collection.push(objectToModel(node, parent));
         });
 
+        collection._context = parent;
+
         return collection;
     };
 
@@ -1627,6 +1646,7 @@ function InspireTree(opts) {
                 if (node.hasChildren()) {
                     if (!_.isArrayLike(existing.children)) {
                         existing.children = new TreeNodes();
+                        existing.children._context = existing;
                     }
 
                     _.each(node.children, function(child) {
