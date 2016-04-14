@@ -1293,6 +1293,19 @@ function InspireTree(opts) {
     };
 
     /**
+     * Iterate every TreeNode in this collection.
+     *
+     * @category TreeNodes
+     * @param {function} iteratee Iteratee invoke for each node.
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.each = function(iteratee) {
+        _.each(this, iteratee);
+
+        return this;
+    };
+
+    /**
      * Recursively expands all nodes, loading all dynamic calls.
      *
      * @category TreeNodes
