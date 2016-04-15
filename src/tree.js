@@ -27,7 +27,7 @@ function InspireTree(opts) {
         contextMenu: false,
         dragTargets: false,
         nodes: {
-            resetStateOnRestore: false
+            resetStateOnRestore: true
         },
         renderer: false,
         search: false,
