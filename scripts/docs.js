@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var each = require('lodash.foreach');
+var _ = require('lodash');
 var docdown = require('docdown');
 var fs = require('fs');
 var path = require('path');
@@ -17,7 +17,7 @@ if (!fs.existsSync(outPath)) {
     fs.mkdirSync(outPath);
 }
 
-each(sourceFiles, function(sourceFile) {
+_.each(sourceFiles, function(sourceFile) {
     var markdown = docdown({
         title: '',
         toc: 'categories',
