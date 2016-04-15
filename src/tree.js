@@ -112,6 +112,7 @@ function InspireTree(opts) {
     /**
      * Represents a singe node object within the tree.
      *
+     * @category TreeNode
      * @param {TreeNode} source TreeNode to copy.
      * @return {TreeNode} Tree node object.
      */
@@ -617,7 +618,8 @@ function InspireTree(opts) {
     /**
      * Returns a "path" of indices, values which map this node's location within all parent contexts.
      *
-     * @return {string} [description]
+     * @category TreeNode
+     * @return {string} Index path
      */
     TreeNode.prototype.indexPath = function() {
         var indices = [];
@@ -1303,6 +1305,7 @@ function InspireTree(opts) {
     /**
      * Returns deepest nodes from this array.
      *
+     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     TreeNodes.prototype.deepest = function() {
@@ -1458,6 +1461,7 @@ function InspireTree(opts) {
     /**
      * Insert a new node at a given position.
      *
+     * @category TreeNodes
      * @param {integer} index Index at which to insert the node.
      * @param {object} object Raw node object or TreeNode.
      * @return {TreeNode} Node object.
