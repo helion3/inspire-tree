@@ -283,7 +283,7 @@ function InspireTree(opts) {
 
         // Remove old hierarchy data
         _.each(parents, function(node) {
-            var clone = _.clone(node);
+            var clone = _.cloneDeep(node);
             delete clone.itree.parent;
             delete clone.children;
 
@@ -293,7 +293,7 @@ function InspireTree(opts) {
         parents = nodes.reverse();
 
         if (!excludeNode) {
-            var clone = _.clone(node);
+            var clone = _.cloneDeep(node);
 
             // Filter out hidden children
             if (node.hasChildren()) {
@@ -440,7 +440,7 @@ function InspireTree(opts) {
      * @return {object} Cloned/modified node object.
      */
     TreeNode.prototype.export = function() {
-        var clone = _.clone(this);
+        var clone = _.cloneDeep(this);
         delete clone.itree;
 
         if (clone.hasChildren()) {
