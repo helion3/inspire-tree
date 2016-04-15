@@ -345,7 +345,7 @@ function InspireTree(opts) {
             if (tree.config.selection.autoSelectChildren) {
                 // Deselect all children
                 if (node.hasChildren()) {
-                    node.children.recurseDown(function(child) {
+                    node.children.each(function(child) {
                         child.deselect(true);
                     });
                 }
