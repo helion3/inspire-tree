@@ -1,5 +1,11 @@
 # Changes to Inspire Tree
 
+# 1.6.1
+
+- Added `src` directory to npm include list.
+- `search` will skip soft-removed nodes.
+- Fixed clones being shallow.
+
 # 1.6
 
 - Added `selection.autoSelectChildren` option to also set selected state of child nodes when parent is selected.
