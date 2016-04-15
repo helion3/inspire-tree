@@ -74,7 +74,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 - **renderer** - Function which returns a custom renderer (see below).
 - **search** - Custom search callback (for external handling of entire search).
 - **selection.allow** - Dynamically determine `selectable` boolean for a node.
-- **selection.autodeselect** - Prevent automatic deselection.
+- **selection.autoDeselect** - Prevent automatic deselection.
 - **selection.autoSelectChildren** - Auto-select children when a parent node is selected, regardless of their visibility.
 - **selection.multiple** - Allow multiple nodes to be selected at a time.
 - **selection.mode** - `default` or `checkbox`. Checkbox mode auto-selects children, doesn't auto deselect.
