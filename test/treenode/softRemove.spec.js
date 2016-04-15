@@ -12,6 +12,9 @@ describe('TreeNode.prototype.softRemove', function() {
 
         // Create tree
         tree = new InspireTree({
+            nodes: {
+                resetStateOnRestore: false
+            },
             target: $tree,
             data: [{
                 text: 'A',
