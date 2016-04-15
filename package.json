@@ -50,6 +50,7 @@
   "files": [
     "dist",
     "img",
+    "src",
     "*.json",
     "LICENSE",
     "README.md"
