@@ -68,15 +68,18 @@ Data objects must have at least a `text` property. Additional properties are lis
 ## Tree Configuration
 
 - **allowLoadEvents** - Array of state-change events to fire for pre-set states.
-- **allowSelection** - Dynamically determine `selectable` boolean for a node.
-- **autoSelectChildren** - Auto-select children when a parent node is selected, regardless of their visibility.
 - **checkbox** - Enable tri-state (unchecked, checked, partial) checkboxes for selection.
 - **data** - An array, promise, or callback function.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
-- **multiselect** - Allow multiple nodes to be selected at a time.
 - **renderer** - Function which returns a custom renderer (see below).
-- **requireSelection** - Require at least one selected node.
 - **search** - Custom search callback (for external handling of entire search).
+- **selection.allow** - Dynamically determine `selectable` boolean for a node.
+- **selection.autodeselect** - Prevent automatic deselection.
+- **selection.autoSelectChildren** - Auto-select children when a parent node is selected, regardless of their visibility.
+- **selection.multiple** - Allow multiple nodes to be selected at a time.
+- **selection.mode** - `default` or `checkbox`. Checkbox mode auto-selects children, doesn't auto deselect.
+- **selection.require** - Require at least one selected node.
+- **showCheckboxes** - Show checkboxes in DOM. (Defaults to true if `selection.mode` === 'checkbox').
 - **sort** - Property to sort by, or a custom sort function.
 - **tabindex** - Define a tab index for the tree container (used for key nav).
 - **target** - An Element, selector, or jQuery object.

@@ -1,5 +1,48 @@
 # Changes to Inspire Tree
 
+# 1.6
+
+- Added `selection.autoSelectChildren` option to also set selected state of child nodes when parent is selected.
+- Added `tree.isNode` method.
+- Added `TreeNode.interdeterminate` method.
+- Added `TreeNodes.addNode()` method to add a node to a collection. If a sort method is defined, it will insert at the correction position.
+- Added `TreeNodes.context()` method to return the parent node or tree context.
+- Added `TreeNodes.each()` method for chain-friendly node iteration.
+- Added `TreeNodes.insertAt()` method which inserts a node at a given index or merges existing.
+- Added `TreeNodes.tree()` method to allow cleaner chain context changes.
+- Added `showCheckboxes` configuration option.
+- Added defaults to custom render objects to allow for undefined methods.
+- Cleaned which files are ignore for both npm/bower packages.
+- Fixed interdeterminate/deselection logic/state/dom issues.
+- Mapped `expanded`, `selectable`, and `visible` filter methods on TreeNodes.
+- Removed internal mergeNode method, in favor of smarter `addNode`/`insertAt` methods.
+- Replaced `tree.addNode` with a mapping to `TreeNodes.addNode`. The method signature is unchanged.
+- Separate checkbox visuals and checkbox selection mode for finer control over behaviors.
+
+**Breaking Changes**
+
+- Changed `tree.reload()` to return the `tree.load` promise instead of the tree instance.
+- Changed `TreeNode.copyHierarchy` to exclude hidden children (when `excludeNode` is false).
+- Moved `allowSelection` configuration option to `selection.allow`.
+- Moved `autoDeselect` configuration option to `selection.autoDeselect`.
+- Moved `multiselect` configuration option to `selection.multiple`.
+- Moved `requireSelection` configuration option to `selection.require`.
+- Moved `checkbox` configuration option to `selection.mode: 'checkbox'`.
+- `TreeNode.restore` may now reset the node's state - this must be enabled via config option `nodes.resetStateOnRestore`.
+- `TreeNode.softRemove` no longer resets a node's state.
+- Removed `dist/scss` files in favor of including `src` and `img` directories.
+
+# 1.5
+
+Note: 1.5 was quickly unpublished because it became clear that our logic for a new feature wasn't acceptable. All of these changes appear in 1.6.
+
+- Added `tree.canAutoDeselect` method.
+- Added `autoSelectChildren` option.
+
+**Breaking Changes**
+
+- Replaced `tree.preventDeselection` boolean with `tree.enableDeselection` and `tree.disableDeselection` methods.
+
 # 1.4.5
 
 - Updated data loader to accept a returned promise as an alternative to resolve/reject arguments.
