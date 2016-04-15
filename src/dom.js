@@ -68,13 +68,11 @@ module.exports = function InspireDOM(tree) {
             selected: node.selected(),
             indeterminate: node.itree.state.indeterminate
         }, VStateCompare, function() {
-            var attributes = {
-                type: 'checkbox',
-                checked: node.selected() ? 'checked' : undefined // eslint-disable-line no-undefined
-            };
-
             return h('input', {
-                attributes: attributes,
+                attributes: {
+                    type: 'checkbox'
+                },
+                checked: node.selected(),
                 indeterminate: node.itree.state.indeterminate,
                 onclick: function(event) {
                     node.toggleSelect();
