@@ -47,7 +47,10 @@ describe('checkboxes', function() {
     });
 
     it('parent deselects when no children selected', function() {
-        tree.node(2).deselect();
+        tree.node(2).select();
+
+        // Deselect children
+        tree.nodes([3, 4]).deselect();
 
         expect(tree.node(1).selected()).to.be.false;
         expect(tree.node(1).itree.state.indeterminate).to.be.false;

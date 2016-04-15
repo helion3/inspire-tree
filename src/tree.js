@@ -334,7 +334,7 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.deselect = function(skipParentIndeterminate) {
-        if (!tree.config.selection.require || tree.selected().length > 1) {
+        if (this.selected() && (!tree.config.selection.require || tree.selected().length > 1)) {
             var node = this;
             dom.batch();
 
