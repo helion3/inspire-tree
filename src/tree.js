@@ -2238,18 +2238,20 @@ function InspireTree(opts) {
         dom.batch();
 
         model.recurseDown(function(node) {
-            var match = predicate(node);
-            var wasHidden = node.hidden();
-            node.itree.state.hidden = !match;
+            if (!node.removed()) {
+                var match = predicate(node);
+                var wasHidden = node.hidden();
+                node.itree.state.hidden = !match;
 
-            // If hidden state will change
-            if (wasHidden !== node.hidden()) {
-                node.markDirty();
-            }
+                // If hidden state will change
+                if (wasHidden !== node.hidden()) {
+                    node.markDirty();
+                }
 
-            if (match) {
-                matches.push(node);
-                node.expandParents();
+                if (match) {
+                    matches.push(node);
+                    node.expandParents();
+                }
             }
         });
 

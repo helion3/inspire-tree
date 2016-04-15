@@ -73,5 +73,11 @@ describe('Tree.search', function() {
         expect(tree.node(2).children[1].hidden()).to.be.true;
     });
 
+    it('does not return removed nodes', function() {
+        tree.node(1).softRemove();
+
+        expect(tree.search('fox')).to.have.length(0);
+    });
+
     after(helpers.clearDOM);
 });
