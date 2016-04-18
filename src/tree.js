@@ -1880,19 +1880,6 @@ function InspireTree(opts) {
         return node;
     }
 
-    var model = new TreeNodes();
-
-    // Map some model.TreeNodes method to the tree to make life easier for users
-    for (var method in TreeNodes.prototype) {
-        if (method !== 'constructor' && !tree[method] && _.isFunction(TreeNodes.prototype[method])) {
-            (function(methodName) {
-                tree[methodName] = function() {
-                    return model[methodName].apply(model, arguments);
-                };
-            }(method));
-        }
-    }
-
     /**
      * Resolve promise-like objects consistently.
      *
@@ -1919,6 +1906,19 @@ function InspireTree(opts) {
             }
         });
     };
+
+    var model = new TreeNodes();
+
+    // Map some model.TreeNodes method to the tree to make life easier for users
+    for (var method in TreeNodes.prototype) {
+        if (method !== 'constructor' && !tree[method] && _.isFunction(TreeNodes.prototype[method])) {
+            (function(methodName) {
+                tree[methodName] = function() {
+                    return model[methodName].apply(model, arguments);
+                };
+            }(method));
+        }
+    }
 
     /**
      * Add nodes.
