@@ -1523,6 +1523,28 @@ function InspireTree(opts) {
     };
 
     /**
+     * Invoke method(s) on each node.
+     *
+     * @category TreeNodes
+     * @param {string|array} methods Method name(s).
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.invoke = function(methods) {
+        return baseInvoke(this, methods);
+    };
+
+    /**
+     * Invoke method(s) deeply.
+     *
+     * @category TreeNodes
+     * @param {string|array} methods Method name(s).
+     * @return {TreeNodes} Array of node objects.
+     */
+    TreeNodes.prototype.invokeDeep = function(methods) {
+        return baseInvoke(this, methods, true);
+    };
+
+    /**
      * Iterate down all nodes and any children.
      *
      * @category TreeNodes
@@ -1596,13 +1618,7 @@ function InspireTree(opts) {
      */
     function mapToEach(method) {
         TreeNodes.prototype[method] = function() {
-            dom.batch();
-            _.each(this, function(node) {
-                node[method]();
-            });
-            dom.end();
-
-            return this;
+            return this.invoke(method);
         };
     }
 
@@ -1615,13 +1631,7 @@ function InspireTree(opts) {
      */
     function mapToEachDeeply(method) {
         TreeNodes.prototype[method + 'Deep'] = function() {
-            dom.batch();
-            this.recurseDown(function(node) {
-                node[method]();
-            });
-            dom.end();
-
-            return this;
+            return this.invokeDeep(method);
         };
     }
 
@@ -1660,6 +1670,33 @@ function InspireTree(opts) {
     });
 
     /**
+     * Invoke given method(s) on tree nodes.
+     *
+     * @private
+     * @param {TreeNodes} nodes Array of node objects.
+     * @param {string|array} methods Method names.
+     * @param {boolean} deep Invoke deeply.
+     * @return {TreeNodes} Array of node objects.
+     */
+    function baseInvoke(nodes, methods, deep) {
+        methods = _.castArray(methods);
+
+        dom.batch();
+
+        nodes[deep ? 'recurseDown' : 'each'](function(node) {
+            _.each(methods, function(method) {
+                if (_.isFunction(node[method])) {
+                    node[method]();
+                }
+            });
+        });
+
+        dom.end();
+
+        return nodes;
+    }
+
+    /**
      * Stores repetitive state change logic for most state methods.
      *
      * @private
@@ -1681,9 +1718,7 @@ function InspireTree(opts) {
             tree.emit('node.' + verb, node);
 
             if (deep && node.hasChildren()) {
-                node.getChildren().recurseDown(function(child) {
-                    child[deep]();
-                });
+                node.getChildren().invokeDeep(deep);
             }
 
             node.markDirty();
@@ -1728,7 +1763,7 @@ function InspireTree(opts) {
      */
     function getPredicateFunction(predicate) {
         var fn = predicate;
-        if (typeof predicate === 'string') {
+        if (_.isString(predicate)) {
             fn = function(node) {
                 return _.isFunction(node[predicate]) ? node[predicate]() : node[predicate];
             };
