@@ -35,6 +35,7 @@ function InspireTree(opts) {
             allow: noop,
             autoDeselect: true,
             autoSelectChildren: false,
+            disableDirectDeselection: false,
             mode: 'default',
             multiple: false,
             require: false

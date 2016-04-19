@@ -295,7 +295,15 @@ module.exports = function InspireDOM(tree) {
                         }
                     }
 
-                    node.toggleSelect();
+                    if (node.selected()) {
+                        if (!tree.config.selection.disableDirectDeselection) {
+                            node.deselect();
+                        }
+                    }
+                    else {
+                        node.select();
+                    }
+
                     tree.enableDeselection();
 
                     // Emit
