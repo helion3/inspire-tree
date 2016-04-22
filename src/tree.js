@@ -1582,21 +1582,28 @@ function InspireTree(opts) {
      * var some = tree.nodes([1, 2, 3])
      */
     TreeNodes.prototype.nodes = function(refs) {
-        var nodes = this;
-        var results;
+        var results = this;
 
         if (_.isArray(refs)) {
+            // Ensure incoming IDs are strings
+            refs = _.map(refs, function(element) {
+                if (_.isNumber(element)) {
+                    element = element.toString();
+                }
+
+                return element;
+            });
+
             results = new TreeNodes();
 
-            _.each(refs, function(ref) {
-                var node = nodes.node(ref);
-                if (node) {
+            this.recurseDown(function(node) {
+                if (refs.indexOf(node.id) > -1) {
                     results.push(node);
                 }
             });
         }
 
-        return results || this;
+        return results;
     };
 
     /**
