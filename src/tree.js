@@ -1401,7 +1401,7 @@ function InspireTree(opts) {
         var matches = new TreeNodes();
 
         _.each(flat, function(node) {
-            matches.push(node.copyHierarchy());
+            matches.addNode(node.copyHierarchy());
         });
 
         return matches;
