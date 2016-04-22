@@ -1490,7 +1490,7 @@ function InspireTree(opts) {
                 }
 
                 // Merge truthy children
-                else if (object.children) {
+                else if (object.children && _.isBoolean(existingNode.children)) {
                     existingNode.children = object.children;
                 }
 
