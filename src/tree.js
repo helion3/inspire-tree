@@ -1471,7 +1471,7 @@ function InspireTree(opts) {
         // If node has a pre-existing ID
         if (object.id) {
             // Is it already in the tree?
-            var existingNode = tree.node(object.id);
+            var existingNode = this.node(object.id);
             if (existingNode) {
                 existingNode.restore().show();
 
@@ -1543,6 +1543,60 @@ function InspireTree(opts) {
      */
     TreeNodes.prototype.invokeDeep = function(methods) {
         return baseInvoke(this, methods, true);
+    };
+
+    /**
+     * Get a node.
+     *
+     * @category TreeNodes
+     * @param {string|number} id ID of node.
+     * @return {TreeNode} Node object.
+     */
+    TreeNodes.prototype.node = function(id) {
+        var match;
+
+        if (_.isNumber(id)) {
+            id = id.toString();
+        }
+
+        this.recurseDown(function(node) {
+            if (node.id === id) {
+                match = node;
+
+                return false;
+            }
+        });
+
+        return match;
+    };
+
+    /**
+     * Get all nodes in a tree, or nodes for an array of IDs.
+     *
+     * @category Tree
+     * @param {array} refs Array of ID references.
+     * @return {TreeNodes} Array of node objects.
+     * @example
+     *
+     * var all = tree.nodes()
+     * var some = tree.nodes([1, 2, 3])
+     */
+    TreeNodes.prototype.nodes = function(refs) {
+        var nodes = this;
+        var results;
+
+        if (_.isArray(refs)) {
+            results = new TreeNodes();
+
+            _.each(refs, function(ref) {
+                var node = nodes.node(ref);
+                if (node) {
+                    results.push(node);
+                }
+            });
+        }
+
+        return results || this;
     };
 
     /**
@@ -2143,60 +2197,6 @@ function InspireTree(opts) {
      */
     tree.muted = function() {
         return muted;
-    };
-
-    /**
-     * Get a node.
-     *
-     * @category Tree
-     * @param {string|number} id ID of node.
-     * @param {TreeNodes} nodes Base collection to search in.
-     * @return {TreeNode} Node object.
-     */
-    tree.node = function(id, nodes) {
-        var match;
-
-        if (_.isNumber(id)) {
-            id = id.toString();
-        }
-
-        (nodes || model).recurseDown(function(node) {
-            if (node.id === id) {
-                match = node;
-
-                return false;
-            }
-        });
-
-        return match;
-    };
-
-    /**
-     * Get all nodes in a tree, or nodes for an array of IDs.
-     *
-     * @category Tree
-     * @param {array} refs Array of ID references.
-     * @return {TreeNodes} Array of node objects.
-     * @example
-     *
-     * var all = tree.nodes()
-     * var some = tree.nodes([1, 2, 3])
-     */
-    tree.nodes = function(refs) {
-        var nodes = model;
-
-        if (_.isArray(refs)) {
-            nodes = new TreeNodes();
-
-            _.each(refs, function(ref) {
-                var node = tree.node(ref);
-                if (node) {
-                    nodes.push(node);
-                }
-            });
-        }
-
-        return nodes;
     };
 
     /**
