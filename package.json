@@ -37,7 +37,7 @@
     "style-loader": "^0.13.0",
     "svg-inline-loader": "^0.4.0",
     "virtual-dom": "^2.1.1",
-    "webpack": "^1.12.3"
+    "webpack": "^1.13.0"
   },
   "scripts": {
     "test": "./node_modules/karma/bin/karma start",
