@@ -24,7 +24,7 @@
     "karma": "^0.13.15",
     "karma-chai-plugins": "^0.7.0",
     "karma-coverage": "^1.0.0",
-    "karma-mocha": "^0.2.0",
+    "karma-mocha": "^1.0.1",
     "karma-mocha-reporter": "^2.0.0",
     "karma-phantomjs-launcher": "^1.0.0",
     "key-codes": "0.0.1",
