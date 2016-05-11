@@ -1,5 +1,17 @@
 # Changes to Inspire Tree
 
+# 1.7
+
+- Changed `extract` to make use of `addNode` for hierarchy merges.
+- Prevented `insertAt` from overwriting an array with a boolean for `children` when merging.
+- Added `disableDirectDeselection` configuration option.
+- Added `invoke` and `invokeDeep` methods to `TreeNodes`.
+- Improved performance of `TreeNodes.nodes`.
+
+**Breaking Changes**
+
+- Removed second `context` argument to `tree.node` and `tree.nodes`, as they now operate from `TreeNodes`.
+
 # 1.6.1
 
 - Added `src` directory to npm include list.
