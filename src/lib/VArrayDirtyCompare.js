@@ -19,7 +19,7 @@ module.exports = function VDirtyCompare(previousState, currentState) {
         diff = true;
     }
     else {
-        diff = _.find(currentState.nodes, 'itree.dirty', true);
+        diff = _.find(currentState.nodes, 'itree.dirty');
     }
 
     return diff;
