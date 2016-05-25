@@ -174,6 +174,7 @@ module.exports = function InspireDOM(tree) {
         return new VCache({
             dirty: node.itree.dirty
         }, VDirtyCompare, function() {
+            var attributes = node.itree.li.attributes || {};
             node.itree.dirty = false;
 
             var contents = [
@@ -202,7 +203,21 @@ module.exports = function InspireDOM(tree) {
                 classNames += '.hidden';
             }
 
-            var attributes = node.itree.li.attributes || {};
+            // Append any custom class names
+            var customClasses = attributes.class || attributes.className;
+            if (_.isFunction(customClasses)) {
+                customClasses = customClasses(node);
+            }
+
+            // Append content correctly
+            if (customClasses) {
+                if (_.isString(customClasses)) {
+                    classNames += '.' + customClasses.replace(' ', '.');
+                }
+                else if (_.isArray(customClasses)) {
+                    classNames += '.' + customClasses.join('.');
+                }
+            }
 
             // Force internal-use attributes
             attributes['data-uid'] = node.id;
