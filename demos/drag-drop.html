@@ -3,18 +3,27 @@
     <head>
         <meta charset="utf-8">
         <title>InspireTree</title>
-        <link rel="stylesheet" href="../build/inspire-tree.css" />
         <link rel="stylesheet" href="demo.css" />
         <style>
             body > div {
                 float: left;
                 margin-right: 20px;
             }
+
+            .drop-target {
+                box-sizing: border-box;
+                border: 1px solid #ccc;
+                padding: 20px;
+                height: 402px;
+                width: 302px;
+            }
         </style>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
     </head>
     <body>
         <div class="source-tree"></div>
         <div class="dest-tree"></div>
+        <div class="drop-target">a non-tree drop target</div>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
     <script src="require.config.js"></script>
@@ -28,12 +37,19 @@
                 target: '.source-tree',
                 data: $.getJSON('sample-data/full.json'),
                 dragTargets: [
-                    '.dest-tree'
+                    '.dest-tree',
+                    '.drop-target'
                 ]
             });
 
-            sourceTree.on('node.dropout', function(node) {
+            sourceTree.on('node.dropout', function(node, target, targetIsTree) {
                 node.softRemove();
+
+                if (targetIsTree) {
+                    alert('dropped ' + node.text + ' into another tree');
+                } else {
+                    alert('dropped ' + node.text + ' into a div');
+                }
             });
 
             var destTree = new InspireTree({

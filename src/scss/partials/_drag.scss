@@ -4,8 +4,8 @@
         position: fixed;
         z-index: 5000;
     }
+}
 
-    &.drop-target {
-        border: 1px solid #2dadc5;
-    }
+.itree-active-drop-target {
+    border: 1px solid #2dadc5;
 }

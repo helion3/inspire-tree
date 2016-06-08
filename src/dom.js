@@ -576,8 +576,8 @@ module.exports = function InspireDOM(tree) {
             });
 
             // If new target found for the first time
-            if (!$activeDropTarget && validTarget && validTarget.className.indexOf('drop-target') === -1) {
-                validTarget.className += ' drop-target';
+            if (!$activeDropTarget && validTarget && validTarget.className.indexOf('itree-active-drop-target') === -1) {
+                validTarget.className += ' itree-active-drop-target';
             }
 
             $activeDropTarget = validTarget;
@@ -595,16 +595,24 @@ module.exports = function InspireDOM(tree) {
         if ($dragElement) {
             $dragElement.parentNode.removeChild($dragElement);
 
-            if ($activeDropTarget && $activeDropTarget.inspireTree) {
-                var newNode = $activeDropTarget.inspireTree.addNode($dragNode.copyHierarchy().export());
+            if ($activeDropTarget) {
+                var targetIsTree = _.isFunction(_.get($activeDropTarget, 'inspireTree.addNode'));
 
-                tree.emit('node.dropout', $dragNode, $activeDropTarget);
-                $activeDropTarget.inspireTree.emit('node.dropin', newNode);
+                // Notify that the node was "dropped out" of this tree
+                tree.emit('node.dropout', $dragNode, $activeDropTarget, targetIsTree);
+
+                // If drop target supports the addNode method, invoke it
+                if (targetIsTree) {
+                    var newNode = $activeDropTarget.inspireTree.addNode($dragNode.copyHierarchy().export());
+
+                    // Notify that the node was "dropped out"
+                    $activeDropTarget.inspireTree.emit('node.dropin', newNode);
+                }
             }
         }
 
         if ($activeDropTarget) {
-            $activeDropTarget.className = $activeDropTarget.className.replace('drop-target', '');
+            $activeDropTarget.className = $activeDropTarget.className.replace('itree-active-drop-target', '');
         }
 
         $dragNode = null;
