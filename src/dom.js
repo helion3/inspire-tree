@@ -75,10 +75,18 @@ module.exports = function InspireDOM(tree) {
                 checked: node.selected(),
                 indeterminate: node.itree.state.indeterminate,
                 onclick: function(event) {
-                    node.toggleSelect();
+                    // Define our default handler
+                    var handler = function() {
+                        node.toggleSelect();
+                    };
 
-                    // Emit
-                    tree.emit('node.click', event, node);
+                    // Emit an event with our forwarded MouseEvent, node, and default handler
+                    tree.emit('node.click', event, node, handler);
+
+                    // Unless default is prevented, auto call our default handler
+                    if (!event.treeDefaultPrevented) {
+                        handler();
+                    }
                 }
             });
         });
@@ -288,50 +296,74 @@ module.exports = function InspireDOM(tree) {
                 },
                 oncontextmenu: function(event) {
                     if (contextMenuChoices) {
-                        renderContextMenu(event, node);
+                        // Define our default handler
+                        var handler = function() {
+                            renderContextMenu(event, node);
+                        };
 
-                        // Emit
-                        tree.emit('node.contextmenu', event, node);
+                        // Emit an event with our forwarded MouseEvent, node, and default handler
+                        tree.emit('node.contextmenu', event, node, handler);
+
+                        // Unless default is prevented, auto call our default handler
+                        if (!event.treeDefaultPrevented) {
+                            handler();
+                        }
                     }
                 },
                 onclick: function(event) {
-                    event.preventDefault();
+                    // Define our default handler
+                    var handler = function() {
+                        event.preventDefault();
 
-                    if (event.metaKey || event.ctrlKey || event.shiftKey) {
-                        tree.disableDeselection();
-                    }
-
-                    if (event.shiftKey) {
-                        clearSelection();
-
-                        var selected = tree.lastSelectedNode();
-                        if (selected) {
-                            tree.selectBetween.apply(tree, tree.boundingNodes(selected, node));
+                        if (event.metaKey || event.ctrlKey || event.shiftKey) {
+                            tree.disableDeselection();
                         }
-                    }
 
-                    if (node.selected()) {
-                        if (!tree.config.selection.disableDirectDeselection) {
-                            node.deselect();
+                        if (event.shiftKey) {
+                            clearSelection();
+
+                            var selected = tree.lastSelectedNode();
+                            if (selected) {
+                                tree.selectBetween.apply(tree, tree.boundingNodes(selected, node));
+                            }
                         }
-                    }
-                    else {
-                        node.select();
-                    }
 
-                    tree.enableDeselection();
+                        if (node.selected()) {
+                            if (!tree.config.selection.disableDirectDeselection) {
+                                node.deselect();
+                            }
+                        }
+                        else {
+                            node.select();
+                        }
 
-                    // Emit
-                    tree.emit('node.click', event, node);
+                        tree.enableDeselection();
+                    };
+
+                    // Emit an event with our forwarded MouseEvent, node, and default handler
+                    tree.emit('node.click', event, node, handler);
+
+                    // Unless default is prevented, auto call our default handler
+                    if (!event.treeDefaultPrevented) {
+                        handler();
+                    }
                 },
                 ondblclick: function(event) {
-                    // // Clear text selection which occurs on double click
-                    clearSelection();
+                    // Define our default handler
+                    var handler = function() {
+                        // Clear text selection which occurs on double click
+                        clearSelection();
 
-                    node.toggleCollapse();
+                        node.toggleCollapse();
+                    };
 
-                    // Emit
-                    tree.emit('node.dblclick', event, node);
+                    // Emit an event with our forwarded MouseEvent, node, and default handler
+                    tree.emit('node.dblclick', event, node, handler);
+
+                    // Unless default is prevented, auto call our default handler
+                    if (!event.treeDefaultPrevented) {
+                        handler();
+                    }
                 },
                 onmousedown: function() {
                     if (isDragDropEnabled) {

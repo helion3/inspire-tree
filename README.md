@@ -134,6 +134,30 @@ tree.on('node.click', function(event, node) {
 - **node.shown** - `(TreeNode node)` - Node shown.
 - **node.softremoved** - `(TreeNode node)` - Node soft removed.
 
+#### Overriding DOM Events
+
+In rare cases, you may need to override our default DOM event handlers. To assist with this, those events provide a `preventTreeDefault` method.
+
+```js
+tree.on('node.click', function(event, node) {
+    event.preventTreeDefault(); // Cancels default listener
+});
+```
+
+In these cases, it will be up to you to ensure any further logic has been implemented.
+
+However, the original handler is passed as an argument, which still allows you to execute it when you're ready.
+
+```js
+tree.on('node.click', function(event, node, handler) {
+    event.preventTreeDefault(); // Cancels default listener
+    // do some custom logic
+    handler(); // call the original tree logic
+});
+```
+
+Only DOM-based events support this: *node.click, node.dblclick, node.contextmenu*
+
 ## API Basics
 
 Each Inspire Tree instance returns an API object.

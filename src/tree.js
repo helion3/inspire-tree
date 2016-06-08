@@ -83,6 +83,15 @@ function InspireTree(opts) {
     var emit = tree.emit;
     tree.emit = function() {
         if (!muted) {
+            // Duck-type for a DOM event
+            if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
+                var event = arguments[1];
+                event.treeDefaultPrevented = false;
+                event.preventTreeDefault = function() {
+                    event.treeDefaultPrevented = true;
+                };
+            }
+
             emit.apply(tree, arguments);
         }
     };
