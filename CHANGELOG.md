@@ -1,5 +1,18 @@
 # Changes to Inspire Tree
 
+# 1.8
+
+- Added `preventTreeDefault` to DOM-related events `node.click`, `node.dblclick`, and `node.contextmenu`.
+- Added pointer for the default handler to DOM-related events, as the third argument.
+- Added support for non-tree DOM elements as drop targets.
+- Allowed custom classnames from `node.itree.li.attributes.class` or `node.itree.li.attributes.classNames`.
+
+**Breaking Changes**
+
+To allow for event overrides, DOM events fire *before* the Inspire Tree logic has executed. For example
+in 1.7, if you check `node.expanded()` inside a `node.dblclick` listener it would reflect the result
+of the double click. Now, it will return the *current* value, before the click handler logic has executed.
+
 # 1.7
 
 - Changed `extract` to make use of `addNode` for hierarchy merges.
