@@ -284,16 +284,17 @@ module.exports = function InspireDOM(tree) {
             text: node.text,
             hasVisibleChildren: hasVisibleChildren
         }, VStateCompare, function(previous, current) {
+            var attributes = node.itree.a.attributes || {};
             var classNames = ['title', 'icon'];
 
             if (!tree.config.showCheckboxes) {
                 classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
             }
 
+            attributes.unselectable = 'on';
+
             return h('a.' + classNames.join('.'), {
-                attributes: {
-                    unselectable: 'on'
-                },
+                attributes: attributes,
                 oncontextmenu: function(event) {
                     if (contextMenuChoices) {
                         // Define our default handler

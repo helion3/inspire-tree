@@ -1868,6 +1868,9 @@ function InspireTree(opts) {
         var li = itree.li = itree.li || {};
         li.attributes = li.attributes || {};
 
+        var a = itree.a = itree.a || {};
+        a.attributes = a.attributes || {};
+
         var state = itree.state = itree.state || {};
 
         // Enabled by default
