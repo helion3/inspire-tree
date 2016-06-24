@@ -89,6 +89,7 @@ Data objects must have at least a `text` property. Additional properties are lis
 - **text** - Text used in display.
 - **id** - Unique ID. If missing, one will be generated.
 - **children** - An array of child nodes.
+- **a.attributes** - Custom attributes for this node's `a`.
 - **li.attributes** - Custom attributes for this node's root `li`.
 - **itree** - An object used to describe initial tree values:
 	+ **icon** - Custom icon for the anchor.
