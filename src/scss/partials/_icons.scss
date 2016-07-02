@@ -11,7 +11,7 @@
 }
 
 .inspire-tree {
-    .icon:before {
+    .icon::before {
         background-position: 0 0;
         background-repeat: no-repeat;
         content: '';
@@ -21,33 +21,33 @@
     }
 
     .selected > .title-wrap {
-        .icon-folder:before {
+        .icon-folder::before {
             @include icon-folder(2dadc5);
         }
 
-        .icon-file-empty:before {
+        .icon-file-empty::before {
             @include icon-file-empty(2dadc5);
         }
     }
 
-    .icon-folder:before {
+    .icon-folder::before {
         @include icon-folder;
     }
 
-    .icon-caret:before {
+    .icon-caret::before {
         @include icon-caret;
     }
 
-    .icon-caret-down:before {
-        @extend .icon-caret:before;
+    .icon-caret-down::before {
+        @extend .icon-caret::before;
         transform: translate(-50%, -50%) rotate(90deg);
     }
 
-    .icon-file-empty:before {
+    .icon-file-empty::before {
         @include icon-file-empty;
     }
 
-    .loading > .title-wrap .title:before {
+    .loading > .title-wrap .title::before {
         background: url('../../img/spinner.gif') 0 0 no-repeat;
         content: '';
         height: 14px;
