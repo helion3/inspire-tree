@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 1.9.1
+
+- Fixed css somehow missed by deploy script.
+
 # 1.9
 
 - Added support for `a.attributes` primarily to allow for custom `href`s.

@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.9.0
+ * Inspire Tree v1.9.1
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors

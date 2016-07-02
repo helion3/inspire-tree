@@ -12216,9 +12216,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            });
 
+	            // Inverse and additional classes
 	            if (!node.hidden() && node.removed()) {
 	                classNames += '.hidden';
 	            }
+
+	            if (node.expanded()) {
+	                classNames += '.expanded';
+	            }
+
+	            classNames += node.children ? '.folder' : '.leaf';
 
 	            // Append any custom class names
 	            var customClasses = attributes.class || attributes.className;
@@ -12288,6 +12295,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function createTitleAnchor(node, hasVisibleChildren) {
 	        return new _VCache2.default({
+	            expanded: node.expanded(),
 	            icon: node.itree.icon,
 	            text: node.text,
 	            hasVisibleChildren: hasVisibleChildren
@@ -12296,7 +12304,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var classNames = ['title', 'icon'];
 
 	            if (!tree.config.showCheckboxes) {
-	                classNames.push(current.state.icon || (hasVisibleChildren ? 'icon-folder' : 'icon-file-empty'));
+	                var folder = node.expanded() ? 'icon-folder-open' : 'icon-folder';
+	                classNames.push(current.state.icon || (hasVisibleChildren ? folder : 'icon-file-empty'));
 	            }
 
 	            attributes.unselectable = 'on';
@@ -12425,9 +12434,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return new _VCache2.default({
 	            collapsed: node.collapsed()
 	        }, _VStateCompare2.default, function (previous, current) {
-	            var caret = current.state.collapsed ? '.icon-caret' : '.icon-caret-down';
+	            var icon = current.state.collapsed ? '.icon-expand' : '.icon-collapse';
 
-	            return (0, _h2.default)('a.toggle.icon' + caret, { onclick: function onclick() {
+	            return (0, _h2.default)('a.toggle.icon' + icon, { onclick: function onclick() {
 	                    node.toggleCollapse();
 	                } });
 	        });
