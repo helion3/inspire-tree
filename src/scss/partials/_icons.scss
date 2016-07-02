@@ -32,12 +32,14 @@
         @include icon-collapse;
         background-color: #fff;
         border-radius: 3px;
+        margin-left: -1px;
     }
 
     .icon-expand::before {
         @include icon-expand;
         background-color: #fff;
         border-radius: 3px;
+        margin-left: -1px;
     }
 
     .icon-file-empty::before {

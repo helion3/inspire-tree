@@ -1,9 +1,10 @@
-$tree-row-hover-color: #dafaff !default;
-$tree-row-selected-color: #a4eaf5 !default;
+$tree-row-hover-color: rgba(218, 250, 255, .5) !default;
+$tree-row-selected-color: rgba(164, 234, 245, .5) !default;
 $tree-node-height: 25px !default;
 
 @import 'partials/_context';
 @import 'partials/_core';
 @import 'partials/_drag';
+@import 'partials/_hierarchy';
 @import 'partials/_icons';
 @import 'partials/_wholerow';
