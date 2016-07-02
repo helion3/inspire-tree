@@ -1,5 +1,16 @@
 # Changes to Inspire Tree
 
+# 1.9
+
+- Added support for `a.attributes` primarily to allow for custom `href`s.
+- Added `icon-folder-open`.
+- Added hierarchy lines which can be disabled by excluding the `hierarchy.scss` file when building.
+- Revamped default theme icons and colors.
+
+**Breaking Changes**
+
+- `icon-caret` has been removed in favor of `icon-expand` and `icon-collapse` which also removes the rotation.
+
 # 1.8
 
 - Added `preventTreeDefault` to DOM-related events `node.click`, `node.dblclick`, and `node.contextmenu`.
