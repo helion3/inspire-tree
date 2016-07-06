@@ -1036,7 +1036,8 @@ function InspireTree(opts) {
     /**
      * Get or set a state value.
      *
-     * This a base method and will not invoke events.
+     * This is a base method and will not invoke related changes, for example
+     * setting selected=false will not trigger any deselection logic.
      *
      * @category TreeNode
      * @param {string} name Property name.
@@ -1045,8 +1046,14 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.state = function(name, newVal) {
         if (typeof newVal !== 'undefined') {
+            var oldVal = this.itree.state;
+
+            // Update values
             this.itree.state[name] = newVal;
             this.markDirty();
+
+            // Emit an event
+            tree.emit('node.state.changed', this, name, oldVal, newVal);
         }
 
         return this.itree.state[name];
