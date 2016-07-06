@@ -1017,8 +1017,16 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.set = function(property, value) {
-        this[property] = value;
-        this.markDirty();
+        if (this[property] !== value) {
+            var oldVal = this[property];
+
+            // Update value
+            this[property] = value;
+            this.markDirty();
+
+            // Emit an event
+            tree.emit('node.property.changed', this, property, oldVal, value);
+        }
 
         return this;
     };
@@ -1045,9 +1053,9 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.state = function(name, newVal) {
-        if (typeof newVal !== 'undefined') {
-            var oldVal = this.itree.state;
+        var oldVal = this.itree.state[name];
 
+        if (typeof newVal !== 'undefined' && oldVal !== newVal) {
             // Update values
             this.itree.state[name] = newVal;
             this.markDirty();

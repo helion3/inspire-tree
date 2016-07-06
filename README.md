@@ -129,6 +129,7 @@ tree.on('node.click', function(event, node) {
 - **node.expanded** - `(TreeNode node)` - Node expanded.
 - **node.focused** - `(TreeNode node)` - Node focused.
 - **node.hidden** - `(TreeNode node)` - Node hidden.
+- **node.property.changed** - `(TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue)` - A node's root property has changed.
 - **node.removed** - `(object node)` - Node removed.
 - **node.restored** - `(TreeNode node)` - Node restored.
 - **node.selected** - `(TreeNode node)` - Node selected.
