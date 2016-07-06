@@ -226,16 +226,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get if node collapsed.
-     *
-     * @category TreeNode
-     * @return {boolean} If collapsed.
-     */
-    TreeNode.prototype.collapsed = function() {
-        return this.state('collapsed');
-    };
-
-    /**
      * Get the containing context. If no parent present, the root context is returned.
      *
      * @category TreeNode
@@ -487,16 +477,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get whether node has focus or not.
-     *
-     * @category TreeNode
-     * @return {boolean} If focused.
-     */
-    TreeNode.prototype.focused = function() {
-        return this.state('focused');
-    };
-
-    /**
      * Get children for this node. If no children exist, an empty TreeNodes
      * collection is returned for safe chaining.
      *
@@ -589,16 +569,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get if node hidden.
-     *
-     * @category TreeNode
-     * @return {boolean} If hidden.
-     */
-    TreeNode.prototype.hidden = function() {
-        return this.state('hidden');
-    };
-
-    /**
      * Hide this node.
      *
      * @category TreeNode
@@ -613,16 +583,6 @@ function InspireTree(opts) {
         }
 
         return node;
-    };
-
-    /**
-     * Get if node is indeterminately selected.
-     *
-     * @category TreeNode
-     * @return {boolean} If indeterminately selected.
-     */
-    TreeNode.prototype.indeterminate = function() {
-        return this.state('indeterminate');
     };
 
     /**
@@ -978,16 +938,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get if node soft-removed.
-     *
-     * @category TreeNode
-     * @return {boolean} If soft-removed.
-     */
-    TreeNode.prototype.removed = function() {
-        return this.state('removed');
-    };
-
-    /**
      * Restore state if soft-removed.
      *
      * @category TreeNode
@@ -1059,16 +1009,6 @@ function InspireTree(opts) {
     };
 
     /**
-     * Get if node selected.
-     *
-     * @category TreeNode
-     * @return {boolean} If selected.
-     */
-    TreeNode.prototype.selected = function() {
-        return this.state('selected');
-    };
-
-    /**
      * Set a root property on this node.
      *
      * @category TreeNode
@@ -1081,17 +1021,6 @@ function InspireTree(opts) {
         this.markDirty();
 
         return this;
-    };
-
-    /**
-     * Set the selectable state.
-     *
-     * @category TreeNode
-     * @param {boolean} selectable Selectable state.
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.setSelectable = function(selectable) {
-        return baseStateChange('selectable', selectable, 'selectability-changed', this);
     };
 
     /**
@@ -1117,6 +1046,7 @@ function InspireTree(opts) {
     TreeNode.prototype.state = function(name, newVal) {
         if (typeof newVal !== 'undefined') {
             this.itree.state[name] = newVal;
+            this.markDirty();
         }
 
         return this.itree.state[name];
@@ -1203,6 +1133,15 @@ function InspireTree(opts) {
 
         return isVisible;
     };
+
+    // Map state lookup convenience methods
+    _.each(_.keys(defaultState), function(method) {
+        if (method !== 'selectable') {
+            TreeNode.prototype[method] = function() {
+                return this.state(method);
+            };
+        }
+    });
 
     /**
      * An Array-like collection of TreeNodes.
@@ -1725,7 +1664,7 @@ function InspireTree(opts) {
     }
 
     // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'setSelectable', 'show'];
+    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'show'];
     _.each(mapped, function(method) {
         mapToEach(method);
         mapToEachDeeply(method);
@@ -1735,10 +1674,7 @@ function InspireTree(opts) {
     _.each(['clean', 'expand', 'expandParents', 'softRemove'], mapToEach);
 
     // Predicate methods we can map
-    _.each([
-        'available', 'collapsed', 'expanded', 'focused',
-        'hidden', 'removed', 'selectable', 'selected', 'visible'
-    ], function(state) {
+    _.each(_.keys(defaultState).concat(['available', 'expanded', 'visible']), function(state) {
         TreeNodes.prototype[state] = function(full) {
             if (full) {
                 return this.extract(state);

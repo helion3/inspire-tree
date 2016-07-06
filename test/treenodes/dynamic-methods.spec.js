@@ -53,6 +53,11 @@ describe('TreeNodes dynamic methods', function() {
         expect(tree.nodes().hideDeep).to.be.a('function');
     });
 
+    it('"loading"', function() {
+        expect(tree.nodes().loading).to.be.a('function');
+        expect(tree.nodes().loading).to.be.a('function');
+    });
+
     it('"restore"', function() {
         expect(tree.nodes().restore).to.be.a('function');
     });
@@ -60,11 +65,6 @@ describe('TreeNodes dynamic methods', function() {
     it('"select"', function() {
         expect(tree.nodes().select).to.be.a('function');
         expect(tree.nodes().selectDeep).to.be.a('function');
-    });
-
-    it('"setSelectable"', function() {
-        expect(tree.nodes().setSelectable).to.be.a('function');
-        expect(tree.nodes().setSelectableDeep).to.be.a('function');
     });
 
     it('"show"', function() {
