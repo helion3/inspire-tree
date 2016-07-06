@@ -66,14 +66,14 @@ module.exports = function InspireDOM(tree) {
     function createCheckbox(node) {
         return new VCache({
             selected: node.selected(),
-            indeterminate: node.itree.state.indeterminate
+            indeterminate: node.state('indeterminate')
         }, VStateCompare, function() {
             return h('input', {
                 attributes: {
                     type: 'checkbox'
                 },
                 checked: node.selected(),
-                indeterminate: node.itree.state.indeterminate,
+                indeterminate: node.state('indeterminate'),
                 onclick: function(event) {
                     // Define our default handler
                     var handler = function() {
@@ -398,7 +398,7 @@ module.exports = function InspireDOM(tree) {
             hasVisibleChildren: hasVisibleChildren,
             collapsed: node.collapsed(),
             selected: node.selected(),
-            indeterminate: node.itree.state.indeterminate
+            indeterminate: node.state('indeterminate')
         }, VStateCompare, function() {
             var contents = [];
 

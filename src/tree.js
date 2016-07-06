@@ -232,7 +232,7 @@ function InspireTree(opts) {
      * @return {boolean} If collapsed.
      */
     TreeNode.prototype.collapsed = function() {
-        return this.itree.state.collapsed;
+        return this.state('collapsed');
     };
 
     /**
@@ -308,7 +308,7 @@ function InspireTree(opts) {
             // Filter out hidden children
             if (node.hasChildren()) {
                 clone.children = node.children.filter(function(n) {
-                    return !n.itree.state.hidden;
+                    return !n.state('hidden');
                 }).clone();
 
                 clone.children._context = clone;
@@ -349,7 +349,7 @@ function InspireTree(opts) {
             var node = this;
             dom.batch();
 
-            node.itree.state.indeterminate = false;
+            this.state('indeterminate', false);
             baseStateChange('selected', false, 'deselected', this);
 
             // If children were auto-selected
@@ -392,8 +392,8 @@ function InspireTree(opts) {
             var allow = (node.hasChildren() || (isDynamic && node.children === true));
 
             if (allow && (node.collapsed() || node.hidden())) {
-                node.itree.state.collapsed = false;
-                node.itree.state.hidden = false;
+                node.state('collapsed', false);
+                node.state('hidden', false);
 
                 tree.emit('node.expanded', node);
 
@@ -473,7 +473,7 @@ function InspireTree(opts) {
             // Batch selection changes
             dom.batch();
             tree.blurDeep();
-            node.itree.state.focused = true;
+            node.state('focused', true);
 
             // Emit this event
             tree.emit('node.focused', node);
@@ -493,7 +493,7 @@ function InspireTree(opts) {
      * @return {boolean} If focused.
      */
     TreeNode.prototype.focused = function() {
-        return this.itree.state.focused;
+        return this.state('focused');
     };
 
     /**
@@ -595,7 +595,7 @@ function InspireTree(opts) {
      * @return {boolean} If hidden.
      */
     TreeNode.prototype.hidden = function() {
-        return this.itree.state.hidden;
+        return this.state('hidden');
     };
 
     /**
@@ -622,7 +622,7 @@ function InspireTree(opts) {
      * @return {boolean} If indeterminately selected.
      */
     TreeNode.prototype.indeterminate = function() {
-        return this.itree.state.indeterminate;
+        return this.state('indeterminate');
     };
 
     /**
@@ -686,13 +686,13 @@ function InspireTree(opts) {
                 reject(new Error('Node does not have or support dynamic children.'));
             }
 
-            node.itree.state.loading = true;
+            node.state('loading', true);
             node.markDirty();
             dom.applyChanges();
 
             var complete = function(results) {
                 dom.batch();
-                node.itree.state.loading = false;
+                node.state('loading', false);
                 node.children = collectionToModel(results, node);
                 node.markDirty();
                 dom.end();
@@ -703,7 +703,7 @@ function InspireTree(opts) {
             };
 
             var error = function(err) {
-                node.itree.state.loading = false;
+                node.state('loading', false);
                 node.children = new TreeNodes();
                 node.children._context = node;
                 node.markDirty();
@@ -908,8 +908,8 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.refreshIndeterminateState = function() {
         var node = this;
-        var oldValue = node.itree.state.indeterminate;
-        node.itree.state.indeterminate = false;
+        var oldValue = node.state('indeterminate');
+        node.state('indeterminate', false);
 
         if (tree.config.showCheckboxes) {
             if (node.hasChildren()) {
@@ -928,11 +928,11 @@ function InspireTree(opts) {
                 });
 
                 // Set selected if all children are
-                node.itree.state.selected = (selected === childrenCount);
+                node.state('selected', (selected === childrenCount));
 
                 // Set indeterminate if any children are, or some children are selected
                 if (!node.selected()) {
-                    node.itree.state.indeterminate = indeterminate > 0 || (childrenCount > 0 && selected > 0 && selected < childrenCount);
+                    node.state('indeterminate', indeterminate > 0 || (childrenCount > 0 && selected > 0 && selected < childrenCount));
                 }
             }
 
@@ -940,7 +940,7 @@ function InspireTree(opts) {
                 node.getParent().refreshIndeterminateState();
             }
 
-            if (oldValue !== node.itree.state.indeterminate) {
+            if (oldValue !== node.state('indeterminate')) {
                 node.markDirty();
             }
         }
@@ -984,7 +984,7 @@ function InspireTree(opts) {
      * @return {boolean} If soft-removed.
      */
     TreeNode.prototype.removed = function() {
-        return this.itree.state.removed;
+        return this.state('removed');
     };
 
     /**
@@ -1019,7 +1019,7 @@ function InspireTree(opts) {
                 tree.config.selection.require = oldVal;
             }
 
-            node.itree.state.selected = true;
+            node.state('selected', true);
 
             if (tree.config.selection.autoSelectChildren) {
                 if (node.hasChildren()) {
@@ -1055,7 +1055,7 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.selectable = function() {
         var allow = tree.config.selection.allow(this);
-        return typeof allow === 'boolean' ? allow : this.itree.state.selectable;
+        return typeof allow === 'boolean' ? allow : this.state('selectable');
     };
 
     /**
@@ -1065,7 +1065,7 @@ function InspireTree(opts) {
      * @return {boolean} If selected.
      */
     TreeNode.prototype.selected = function() {
-        return this.itree.state.selected;
+        return this.state('selected');
     };
 
     /**
@@ -1084,7 +1084,7 @@ function InspireTree(opts) {
     };
 
     /**
-     * Show this node.
+     * Set the selectable state.
      *
      * @category TreeNode
      * @param {boolean} selectable Selectable state.
@@ -1102,6 +1102,24 @@ function InspireTree(opts) {
      */
     TreeNode.prototype.show = function() {
         return baseStateChange('hidden', false, 'shown', this);
+    };
+
+    /**
+     * Get or set a state value.
+     *
+     * This a base method and will not invoke events.
+     *
+     * @category TreeNode
+     * @param {string} name Property name.
+     * @param {boolean} newVal New value, if setting.
+     * @return {TreeNode} Node object.
+     */
+    TreeNode.prototype.state = function(name, newVal) {
+        if (typeof newVal !== 'undefined') {
+            this.itree.state[name] = newVal;
+        }
+
+        return this.itree.state[name];
     };
 
     /**
@@ -1779,12 +1797,12 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     function baseStateChange(prop, value, verb, node, deep) {
-        if (node.itree.state[prop] !== value) {
+        if (node.state(prop) !== value) {
             if (tree.config.nodes.resetStateOnRestore && verb === 'restored') {
                 resetState(node);
             }
 
-            node.itree.state[prop] = value;
+            node.state(prop, value);
 
             tree.emit('node.' + verb, node);
 
@@ -1948,7 +1966,7 @@ function InspireTree(opts) {
      */
     function resetState(node) {
         _.each(defaultState, function(val, prop) {
-            node.itree.state[prop] = val;
+            node.state(prop, val);
         });
 
         return node;
@@ -2296,7 +2314,7 @@ function InspireTree(opts) {
             if (!node.removed()) {
                 var match = predicate(node);
                 var wasHidden = node.hidden();
-                node.itree.state.hidden = !match;
+                node.state('hidden', !match);
 
                 // If hidden state will change
                 if (wasHidden !== node.hidden()) {
