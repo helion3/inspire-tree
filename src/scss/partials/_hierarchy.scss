@@ -1,24 +1,55 @@
-.inspire-tree li {
-    &.expanded.folder:not(.loading) {
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAADCAYAAABS3WWCAAAAFUlEQVQIW2M8d+HSf0YGBgYGRhALADMZBuJkyGahAAAAAElFTkSuQmCC');
-        background-position: 30px 0;
+.inspire-tree {
+    $full-line: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAYCAYAAAA7zJfaAAAAFUlEQVQIW2M8d+HSf0YGBgYGRrqyABKeKU0SV+t2AAAAAElFTkSuQmCC');
+    $half-line: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAMCAYAAACji9dXAAAAFUlEQVQIW2M8d+HSf0YGBgYGRpJZAJ2uFKcp4HfpAAAAAElFTkSuQmCC');
+    $intersection: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAYCAYAAAAh8HdUAAAAN0lEQVQ4T2M8d+HSfyMDPUYGEgBJimHmMo7aBAmK0dCDJgl4ioClDGLo0dBDDz0SMu5o2oMFFgBXbEeI0XwYIwAAAABJRU5ErkJgggAA');
+    $corner: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAKklEQVQoU2M8d+HSfyMDPUYGEgBJimHmMo7aBAmK0dCDJgl4ioClDGJoAGUZM32Z0U8tAAAAAElFTkSuQmCC');
+
+    // Half-line below first-child toggle buttons
+    > ol > .folder:first-child {
+        background-image: $half-line;
+        background-position: 11px 13px;
+        background-repeat: no-repeat;
+    }
+
+    // Half-line above last-child toggle buttons
+    .folder:last-child {
+        background-image: $half-line;
+        background-position: 11px 0;
+        background-repeat: no-repeat;
+    }
+
+    // Full line inside middle nodes
+    > ol .expanded:not(:last-child):not(:first-child), li:not(:last-child) {
+        background-image: $full-line;
+        background-position: 11px 0;
+        background-repeat: no-repeat;
+    }
+
+    // Full line inside expanded nodes
+    li.expanded:not(:last-child) > ol {
+        background-image: $full-line;
+        background-position: 11px 0;
         background-repeat: repeat-y;
     }
 
+    // Half-line below expanded folder
+    li.expanded.folder:not(.loading) > .title-wrap {
+        background-image: $half-line;
+        background-position: 31px 13px;
+        background-repeat: no-repeat;
+    }
+
+    // Leaf intersection lines
     .leaf:not(:last-child) {
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAABCAYAAAAFKSQHAAAAE0lEQVQIW2M8d+HSfyMDPUZSaADXOxtxhYX1JwAAAABJRU5ErkJgggAA');
-        background-position: 10px 12px;
+        background-image: $intersection;
+        background-position: 11px 0;
         background-repeat: no-repeat;
     }
 
+    // Last leaf corner lines
     .leaf:last-child {
-        background-color: #fff;
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAKklEQVQoU2M8d+HSfyMDPUYGEgBJimHmMo7aBAmK0dCDJgl4ioClDGJoAGUZM32Z0U8tAAAAAElFTkSuQmCC');
-        background-position: 10px 0;
+        background-image: $corner;
+        background-position: 11px 0;
         background-repeat: no-repeat;
-    }
-
-    &.folder {
-        background-clip: content-box;
     }
 }

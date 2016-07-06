@@ -164,7 +164,7 @@ module.exports = function InspireDOM(tree) {
     function createEmptyListItemNode() {
         return new VCache({}, VStateCompare, function() {
             return h('ol', [
-                h('li', [
+                h('li.leaf', [
                     h('span.title.icon.icon-file-empty.empty', ['No Results'])
                 ])
             ]);
