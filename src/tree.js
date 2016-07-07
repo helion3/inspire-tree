@@ -1461,7 +1461,7 @@ function InspireTree(opts) {
                     // Setup existing node's children property if needed
                     if (!_.isArrayLike(existingNode.children)) {
                         existingNode.children = new TreeNodes();
-                        existingNode.children._context = existing;
+                        existingNode.children._context = existingNode;
                     }
 
                     // Copy each child (using addNode, which uses insertAt)
