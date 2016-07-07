@@ -204,15 +204,9 @@ tree.nodes().expand();
 tree.nodes().expandDeep();
 ```
 
-**Mapped Methods**
+**Global TreeNodes Methods**
 
-`blur`, `clean`, `collapse`, `deselect`, `expand`, `hide`, `restore`, `select`, `setSelectable`, `show`, `softRemove`
-
-Most methods have a `___Deep` variant to execute recursively. e.g. `expandDeep`.
-
-**Methods for All Nodes**
-
-Many methods are mapped to the `tree` instance, so instead of always using `tree.nodes().someMethod()` you can
+Most `TreeNodes` methods are mapped to the `tree` instance to ease working with all nodes. Instead of using `tree.nodes().someMethod()` you can
 use `tree.someMethod()`.
 
 ## Custom Rendering
@@ -282,7 +276,6 @@ Possible solutions:
 Clone the repository, and get yourself setup:
 
 - `npm install` - Installs all project dependencies.
-- `bower install` - Install libs used only by included demos.
 - `npm run setup` - Copies git hooks and run workspace setup.
 
 Live-compile source changes as you develop:

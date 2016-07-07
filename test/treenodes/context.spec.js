@@ -21,7 +21,6 @@ describe('TreeNodes.prototype.context', function() {
 
     it('exists', function() {
         expect(tree.nodes().context).to.be.a('function');
-        expect(tree.context).to.be.a('function');
     });
 
     it('returns the tree as the root context', function() {

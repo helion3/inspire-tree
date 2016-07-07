@@ -26,7 +26,6 @@ describe('TreeNodes.prototype.expandParents', function() {
 
     it('exists', function() {
         expect(tree.nodes().expandParents).to.be.a('function');
-        expect(tree.expandParents).to.be.a('function');
     });
 
     it('returns a promise', function() {

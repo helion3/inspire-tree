@@ -9,6 +9,6 @@
  * @param {object} currentState  Current state.
  * @return {boolean} State is dirty.
  */
-module.exports = function VDirtyCompare(previousState, currentState) {
+export function VDirtyCompare(previousState, currentState) {
     return currentState.dirty;
 };

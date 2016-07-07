@@ -120,9 +120,6 @@ describe('Modification', function() {
         parent.copy(true).to(tree1);
         expect(tree1.node(2).children).to.have.length(2);
 
-        // Ensure children property doesn't exist when it never did
-        expect(tree1.node(20).children).to.be.undefined;
-
         tree2.removeAll();
     });
 

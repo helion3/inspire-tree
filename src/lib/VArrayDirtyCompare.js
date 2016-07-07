@@ -1,6 +1,6 @@
 'use strict';
 
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 /**
  * Returns whether or not a state is marked as dirty in
@@ -12,7 +12,7 @@ import _ from 'lodash';
  * @param {object} currentState  Current state.
  * @return {boolean} Any state is dirty.
  */
-module.exports = function VDirtyCompare(previousState, currentState) {
+export function VArrayDirtyCompare(previousState, currentState) {
     var diff = false;
 
     if (previousState.nodeCount !== currentState.nodeCount) {

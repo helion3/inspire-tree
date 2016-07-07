@@ -1,2016 +1,187 @@
 'use strict';
 
 // Libs
-import _ from 'lodash';
-import cuid from 'cuid';
-import EventEmitter from 'eventemitter2';
+import * as _ from 'lodash';
+import { collectionToModel } from './lib/collection-to-model';
+import { EventEmitter2 } from 'eventemitter2';
 import { Promise } from 'es6-promise';
+import { standardizePromise } from './lib/standardize-promise';
+import { TreeNode } from './treenode';
+import { TreeNodes } from './treenodes';
 
 // CSS
 require('./scss/tree.scss');
 
-function InspireTree(opts) {
-    var initialized = false;
-    var noop = function() {};
-    var tree = this;
-    var lastSelectedNode;
-    var muted = false;
-    var preventDeselection = false;
+/**
+ * Maps a method to the root TreeNodes collection.
+ *
+ * @private
+ * @param {InspireTree} tree Tree instance.
+ * @param {string} method Method name.
+ * @param {arguments} args Proxied arguments.
+ * @return {mixed} Proxied return value.
+ */
+function map(tree, method, args) {
+    return tree.model[method].apply(tree.model, args);
+}
 
-    if (!opts.data) {
-        throw new TypeError('Invalid data loader.');
-    }
+/**
+ * Represents a singe tree instance.
+ *
+ * @category Tree
+ * @return {InspireTree} Tree instance.
+ */
+export default class InspireTree extends EventEmitter2 {
+    constructor(opts) {
+        super();
 
-    // Assign defaults
-    tree.config = _.defaultsDeep({}, opts, {
-        allowLoadEvents: [],
-        contextMenu: false,
-        dragTargets: false,
-        editable: false,
-        editing: {
-            add: false,
-            edit: false,
-            remove: false
-        },
-        nodes: {
-            resetStateOnRestore: true
-        },
-        renderer: false,
-        search: false,
-        selection: {
-            allow: noop,
-            autoDeselect: true,
-            autoSelectChildren: false,
-            disableDirectDeselection: false,
-            mode: 'default',
-            multiple: false,
-            require: false
-        },
-        showCheckboxes: false,
-        sort: false,
-        tabindex: -1
-    });
+        var tree = this;
 
-    // If checkbox mode, we must force auto-selecting children
-    if (tree.config.selection.mode === 'checkbox') {
-        tree.config.selection.autoSelectChildren = true;
-        tree.config.selection.autoDeselect = false;
+        // Init properties
+        tree._lastSelectedNode;
+        tree._muted = false;
+        tree.allowsLoadEvents = false;
+        tree.dom = false;
+        tree.initialized = false;
+        tree.isDynamic = false;
+        tree.model = new TreeNodes(tree);
+        tree.opts = opts;
+        tree.preventDeselection = false;
 
-        if (!_.isBoolean(opts.showCheckboxes)) {
-            tree.config.showCheckboxes = true;
-        }
-    }
-
-    // If auto-selecting children, we must force multiselect
-    if (tree.config.selection.autoSelectChildren) {
-        tree.config.selection.multiple = true;
-    }
-
-    // Treat editable as full edit mode
-    if (opts.editable && !opts.editing) {
-        tree.config.editing.add = true;
-        tree.config.editing.edit = true;
-        tree.config.editing.remove = true;
-    }
-
-    // Default node state values
-    var defaultState = {
-        collapsed: true,
-        editable: _.get(tree, 'config.editing.edit'),
-        editing: false,
-        focused: false,
-        hidden: false,
-        indeterminate: false,
-        loading: false,
-        removed: false,
-        selectable: true,
-        selected: false
-    };
-
-    // Cache some configs
-    var allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
-    var isDynamic = _.isFunction(tree.config.data);
-
-    // Rendering
-    var dom;
-
-    // Override emitter so we can better control flow
-    var emit = tree.emit;
-    tree.emit = function() {
-        if (!muted) {
-            // Duck-type for a DOM event
-            if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
-                var event = arguments[1];
-                event.treeDefaultPrevented = false;
-                event.preventTreeDefault = function() {
-                    event.treeDefaultPrevented = true;
-                };
-            }
-
-            emit.apply(tree, arguments);
-        }
-    };
-
-    // Webpack has a DOM boolean that when false,
-    // allows us to exclude this library from our build.
-    // For those doing their own rendering, it's useless.
-    if (DOM) {
-        dom = new (require('./dom'))(tree);
-    }
-
-    // Validation
-    if (dom && (!_.isObject(opts) || !opts.target)) {
-        throw new TypeError('Property "target" is required, either an element or a selector.');
-    }
-
-    // Load custom/empty renderer
-    if (!dom) {
-        var renderer = _.isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {};
-        dom = _.defaults(renderer, {
-            applyChanges: noop,
-            attach: noop,
-            batch: noop,
-            end: noop
-        });
-    }
-
-    /**
-     * Represents a singe node object within the tree.
-     *
-     * @category TreeNode
-     * @param {TreeNode} source TreeNode to copy.
-     * @return {TreeNode} Tree node object.
-     */
-    function TreeNode(source) {
-        var node = this;
-
-        _.each(source, function(value, key) {
-            if (_.isObject(value)) {
-                if (_.isFunction(value.clone)) {
-                    node[key] = value.clone();
-                }
-                else {
-                    node[key] = _.cloneDeep(value);
-                }
-            }
-            else {
-                node[key] = value;
-            }
-        });
-    };
-
-    /**
-     * Add a child to this node.
-     *
-     * @category TreeNode
-     * @param {object} child Node object.
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.addChild = function(child) {
-        if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
-            this.children = new TreeNodes();
-            this.children._context = this;
+        if (!opts.data) {
+            throw new TypeError('Invalid data loader.');
         }
 
-        return this.children.addNode(child);
-    };
-
-    /**
-     * Get if node available.
-     *
-     * @category TreeNode
-     * @return {boolean} If available.
-     */
-    TreeNode.prototype.available = function() {
-        return (!this.hidden() && !this.removed());
-    };
-
-    /**
-     * Blur focus from this node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.blur = function() {
-        this.state('editing', false);
-
-        return baseStateChange('focused', false, 'blurred', this);
-    };
-
-    /**
-     * Hides parents without any visible children.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.clean = function() {
-        this.recurseUp(function(node) {
-            if (node.hasParent()) {
-                var parent = node.getParent();
-                if (!parent.hasVisibleChildren()) {
-                    parent.hide();
-                }
-            }
+        // Assign defaults
+        tree.config = _.defaultsDeep({}, opts, {
+            allowLoadEvents: [],
+            contextMenu: false,
+            dragTargets: false,
+            editable: false,
+            editing: {
+                add: false,
+                edit: false,
+                remove: false
+            },
+            nodes: {
+                resetStateOnRestore: true
+            },
+            renderer: false,
+            search: false,
+            selection: {
+                allow: _.noop,
+                autoDeselect: true,
+                autoSelectChildren: false,
+                disableDirectDeselection: false,
+                mode: 'default',
+                multiple: false,
+                require: false
+            },
+            showCheckboxes: false,
+            sort: false,
+            tabindex: -1
         });
 
-        return this;
-    };
+        // If checkbox mode, we must force auto-selecting children
+        if (tree.config.selection.mode === 'checkbox') {
+            tree.config.selection.autoSelectChildren = true;
+            tree.config.selection.autoDeselect = false;
 
-    /**
-     * Clones this node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} New node object.
-     */
-    TreeNode.prototype.clone = function() {
-        var newClone = new TreeNode(this);
-
-        if (this.hasChildren()) {
-            newClone.children = this.children.clone();
+            if (!_.isBoolean(opts.showCheckboxes)) {
+                tree.config.showCheckboxes = true;
+            }
         }
 
-        return newClone;
-    };
-
-    /**
-     * Collapse this node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.collapse = function() {
-        return baseStateChange('collapsed', true, 'collapsed', this);
-    };
-
-    /**
-     * Get the containing context. If no parent present, the root context is returned.
-     *
-     * @category TreeNode
-     * @return {TreeNodes} Node array object.
-     */
-    TreeNode.prototype.context = function() {
-        return this.hasParent() ? this.getParent().children : model;
-    };
-
-    /**
-     * Copies node to a new tree instance.
-     *
-     * @category TreeNode
-     * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
-     * @return {object} Property "to" for defining destination.
-     */
-    TreeNode.prototype.copy = function(hierarchy) {
-        var node = this;
-
-        if (hierarchy) {
-            node = node.copyHierarchy();
+        // If auto-selecting children, we must force multiselect
+        if (tree.config.selection.autoSelectChildren) {
+            tree.config.selection.multiple = true;
         }
 
-        return {
+        // Treat editable as full edit mode
+        if (opts.editable && !opts.editing) {
+            tree.config.editing.add = true;
+            tree.config.editing.edit = true;
+            tree.config.editing.remove = true;
+        }
 
-            /**
-             * Sets a destination.
-             *
-             * @category CopyNode
-             * @param {object} dest Destination Inspire Tree.
-             * @return {object} New node object.
-             */
-            to: function(dest) {
-                if (!_.isFunction(dest.addNode)) {
-                    throw new Error('Destination must be an Inspire Tree instance.');
+        // Init the default state for nodes
+        tree.defaultState = {
+            collapsed: true,
+            editable: _.get(tree, 'config.editing.edit'),
+            editing: false,
+            focused: false,
+            hidden: false,
+            indeterminate: false,
+            loading: false,
+            removed: false,
+            selectable: true,
+            selected: false
+        };
+
+        // Cache some configs
+        tree.allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
+        tree.isDynamic = _.isFunction(tree.config.data);
+
+        // Override emitter so we can better control flow
+        var emit = tree.emit;
+        tree.emit = function() {
+            if (!tree.muted()) {
+                // Duck-type for a DOM event
+                if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
+                    var event = arguments[1];
+                    event.treeDefaultPrevented = false;
+                    event.preventTreeDefault = function() {
+                        event.treeDefaultPrevented = true;
+                    };
                 }
 
-                return dest.addNode(node.export());
+                emit.apply(tree, arguments);
             }
         };
-    };
 
-    /**
-     * Copies all parents of a node.
-     *
-     * @category TreeNode
-     * @param {boolean} excludeNode Exclude given node from hierarchy.
-     * @return {TreeNode} Root node object with hierarchy.
-     */
-    TreeNode.prototype.copyHierarchy = function(excludeNode) {
-        var node = this;
-        var parents = node.getParents();
-
-        var nodes = [];
-
-        // Remove old hierarchy data
-        _.each(parents, function(node) {
-            var clone = _.cloneDeep(node);
-            delete clone.itree.parent;
-            delete clone.children;
-
-            nodes.push(clone);
-        });
-
-        parents = nodes.reverse();
-
-        if (!excludeNode) {
-            var clone = _.cloneDeep(node);
-
-            // Filter out hidden children
-            if (node.hasChildren()) {
-                clone.children = node.children.filter(function(n) {
-                    return !n.state('hidden');
-                }).clone();
-
-                clone.children._context = clone;
-            }
-
-            nodes.push(clone);
+        // Webpack has a DOM boolean that when false,
+        // allows us to exclude this library from our build.
+        // For those doing their own rendering, it's useless.
+        if (DOM) {
+            tree.dom = new (require('./dom'))(tree);
         }
 
-        var hierarchy = nodes[0];
-        var pointer = hierarchy;
-        var l = nodes.length;
-        _.each(nodes, function(parent, key) {
-            var children = new TreeNodes();
-
-            if (key + 1 < l) {
-                children.push(nodes[key + 1]);
-                pointer.children = children;
-
-                pointer = pointer.children[0];
-            }
-        });
-
-        return hierarchy;
-    };
-
-    /**
-     * Deselect this node.
-     *
-     * If selection.require is true and this is the last selected
-     * node, the node will remain in a selected state.
-     *
-     * @category TreeNode
-     * @param {boolean} skipParentIndeterminate Skip refreshing parent indeterminate states.
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.deselect = function(skipParentIndeterminate) {
-        if (this.selected() && (!tree.config.selection.require || tree.selected().length > 1)) {
-            var node = this;
-            dom.batch();
-
-            this.state('indeterminate', false);
-            baseStateChange('selected', false, 'deselected', this);
-
-            // If children were auto-selected
-            if (tree.config.selection.autoSelectChildren) {
-                // Deselect all children
-                if (node.hasChildren()) {
-                    node.children.each(function(child) {
-                        child.deselect(true);
-                    });
-                }
-
-                if (node.hasParent()) {
-                    // Set indeterminate state for parent
-                    if (tree.config.showCheckboxes && !skipParentIndeterminate) {
-                        node.getParent().refreshIndeterminateState();
-                    }
-                    else {
-                        // Deselect parent node
-                        baseStateChange('selected', false, 'deselected', node.getParent());
-                    }
-                }
-            }
-
-            dom.end();
+        // Validation
+        if (tree.dom && (!_.isObject(opts) || !opts.target)) {
+            throw new TypeError('Property "target" is required, either an element or a selector.');
         }
 
-        return this;
-    };
-
-    /**
-     * Get if node editable. Required editing.edit to be enable via config.
-     *
-     * @category TreeNode
-     * @return {boolean} If node editable.
-     */
-    TreeNode.prototype.editable = function() {
-        return tree.config.editable && tree.config.editing.edit && this.state('editable');
-    };
-
-    /**
-     * Get if node is currently in edit mode.
-     *
-     * @category TreeNode
-     * @return {boolean} If node in edit mode.
-     */
-    TreeNode.prototype.editing = function() {
-        return this.state('editing');
-    };
-
-    /**
-     * Expand this node.
-     *
-     * @category TreeNode
-     * @return {Promise} Promise resolved on successful load and expand of children.
-     */
-    TreeNode.prototype.expand = function() {
-        var node = this;
-
-        return new Promise(function(resolve, reject) {
-            var allow = (node.hasChildren() || (isDynamic && node.children === true));
-
-            if (allow && (node.collapsed() || node.hidden())) {
-                node.state('collapsed', false);
-                node.state('hidden', false);
-
-                tree.emit('node.expanded', node);
-
-                if (isDynamic && node.children === true) {
-                    node.loadChildren().then(resolve).catch(reject);
-                }
-                else {
-                    node.markDirty();
-                    dom.applyChanges();
-                    resolve(node);
-                }
-            }
-            else {
-                // Resolve immediately
-                resolve(node);
-            }
-        });
-    };
-
-    /**
-     * Get if node expanded.
-     *
-     * @category TreeNode
-     * @return {boolean} If expanded.
-     */
-    TreeNode.prototype.expanded = function() {
-        return !this.collapsed();
-    };
-
-    /**
-     * Expand parent nodes.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.expandParents = function() {
-        if (this.hasParent()) {
-            this.getParent().recurseUp(function(node) {
-                node.expand();
+        // Load custom/empty renderer
+        if (!tree.dom) {
+            var renderer = _.isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {};
+            tree.dom = _.defaults(renderer, {
+                applyChanges: _.noop,
+                attach: _.noop,
+                batch: _.noop,
+                end: _.noop
             });
         }
 
-        return this;
-    };
+        // Connect to our target DOM element
+        tree.dom.attach(tree.config.target);
 
-    /**
-     * Clones a node, removes itree property, and returns it
-     * as a native object.
-     *
-     * Note: does not use node.clone() because we don't want a
-     * TreeNode and we need to avoid redundant cloning children.
-     *
-     * @category TreeNode
-     * @return {object} Cloned/modified node object.
-     */
-    TreeNode.prototype.export = function() {
-        var clone = _.cloneDeep(this);
-        delete clone.itree;
+        // Load initial user data
+        tree.load(tree.config.data);
 
-        if (clone.hasChildren()) {
-            clone.children = clone.children.export();
-        }
-
-        return clone.toObject();
-    };
-
-    /**
-     * Focus a node without changing its selection.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.focus = function() {
-        var node = this;
-
-        if (!node.focused()) {
-            // Batch selection changes
-            dom.batch();
-            tree.blurDeep();
-            node.state('focused', true);
-
-            // Emit this event
-            tree.emit('node.focused', node);
-
-            // Mark hierarchy dirty and apply
-            node.markDirty();
-            dom.end();
-        }
-
-        return node;
-    };
-
-    /**
-     * Get children for this node. If no children exist, an empty TreeNodes
-     * collection is returned for safe chaining.
-     *
-     * @category TreeNode
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNode.prototype.getChildren = function() {
-        return this.hasChildren() ? this.children : new TreeNodes();
-    };
-
-    /**
-     * Get the immediate parent, if any.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.getParent = function() {
-        return this.itree.parent;
-    };
-
-    /**
-     * Returns parent nodes. Excludes any siblings.
-     *
-     * @category TreeNode
-     * @return {TreeNodes} Node objects.
-     */
-    TreeNode.prototype.getParents = function() {
-        var parents = new TreeNodes();
-
-        if (this.hasParent()) {
-            this.getParent().recurseUp(function(node) {
-                parents.push(node);
-            });
-        }
-
-        return parents;
-    };
-
-    /**
-     * Get a textual hierarchy for a given node. An array
-     * of text from this node's root ancestor to the given node.
-     *
-     * @category TreeNode
-     * @return {array} Array of node texts.
-     */
-    TreeNode.prototype.getTextualHierarchy = function() {
-        var paths = [];
-
-        this.recurseUp(function(node) {
-            paths.unshift(node.text);
-        });
-
-        return paths;
-    };
-
-    /**
-     * If node has any children.
-     *
-     * @category TreeNode
-     * @return {boolean} If children.
-     */
-    TreeNode.prototype.hasChildren = function() {
-        return (_.isArrayLike(this.children) && this.children.length > 0);
-    };
-
-    /**
-     * If node has a parent.
-     *
-     * @category TreeNode
-     * @return {boolean} If parent.
-     */
-    TreeNode.prototype.hasParent = function() {
-        return Boolean(this.itree.parent);
-    };
-
-    /**
-     * If node has any visible children.
-     *
-     * @category TreeNode
-     * @return {boolean} If visible children.
-     */
-    TreeNode.prototype.hasVisibleChildren = function() {
-        var hasVisibleChildren = false;
-
-        if (this.hasChildren()) {
-            hasVisibleChildren = (this.children.filter('available').length > 0);
-        }
-
-        return hasVisibleChildren;
-    };
-
-    /**
-     * Hide this node.
-     *
-     * @category TreeNode
-     * @return {object} Node object.
-     */
-    TreeNode.prototype.hide = function() {
-        var node = baseStateChange('hidden', true, 'hidden', this);
-
-        // Update children
-        if (node.hasChildren()) {
-            node.children.hide();
-        }
-
-        return node;
-    };
-
-    /**
-     * Returns a "path" of indices, values which map this node's location within all parent contexts.
-     *
-     * @category TreeNode
-     * @return {string} Index path
-     */
-    TreeNode.prototype.indexPath = function() {
-        var indices = [];
-
-        this.recurseUp(function(node) {
-            indices.push(_.indexOf(node.context(), node));
-        });
-
-        return indices.reverse().join('.');
-    };
-
-    /**
-     * Find the last + deepest visible child of the previous sibling.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.lastDeepestVisibleChild = function() {
-        var found;
-
-        if (this.hasChildren() && !this.collapsed()) {
-            found = _.findLast(this.children, function(node) {
-                return node.visible();
-            });
-
-            var res = found.lastDeepestVisibleChild();
-            if (res) {
-                found = res;
-            }
-        }
-
-        return found;
-    };
-
-    /**
-     * Initiate a dynamic load of children for a given node.
-     *
-     * This requires `tree.config.data` to be a function which accepts
-     * three arguments: node, resolve, reject.
-     *
-     * Use the `node` to filter results.
-     *
-     * On load success, pass the result array to `resolve`.
-     * On error, pass the Error to `reject`.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.loadChildren = function() {
-        var node = this;
-
-        return new Promise(function(resolve, reject) {
-            if (!isDynamic || node.children !== true) {
-                reject(new Error('Node does not have or support dynamic children.'));
-            }
-
-            node.state('loading', true);
-            node.markDirty();
-            dom.applyChanges();
-
-            var complete = function(results) {
-                dom.batch();
-                node.state('loading', false);
-                node.children = collectionToModel(results, node);
-                node.markDirty();
-                dom.end();
-
-                resolve(node.children);
-
-                tree.emit('children.loaded', node);
-            };
-
-            var error = function(err) {
-                node.state('loading', false);
-                node.children = new TreeNodes();
-                node.children._context = node;
-                node.markDirty();
-                dom.applyChanges();
-
-                reject(err);
-
-                tree.emit('tree.loaderror', err);
-            };
-
-            var loader = tree.config.data(node, complete, error);
-
-            // Data loader is likely a promise
-            if (_.isObject(loader)) {
-                standardizePromise(loader).then(complete).catch(error);
-            }
-        });
-    };
-
-    /**
-     * Mark a node as dirty, rebuilding this node in the virtual DOM
-     * and rerendering to the live DOM, next time applyChanges is called.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.markDirty = function() {
-        if (!this.itree.dirty) {
-            this.itree.dirty = true;
-
-            if (this.hasParent()) {
-                this.getParent().markDirty();
-            }
-        }
-
-        return this;
-    };
-
-    /**
-     * Find the next visible sibling of our ancestor. Continues
-     * seeking up the tree until a valid node is found or we
-     * reach the root node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.nextVisibleAncestralSiblingNode = function() {
-        var next;
-
-        if (this.hasParent()) {
-            var parent = this.getParent();
-            next = parent.nextVisibleSiblingNode();
-
-            if (!next) {
-                next = parent.nextVisibleAncestralSiblingNode();
-            }
-        }
-
-        return next;
-    };
-
-    /**
-     * Find next visible child node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object, if any.
-     */
-    TreeNode.prototype.nextVisibleChildNode = function() {
-        var startingNode = this;
-        var next;
-
-        if (startingNode.hasChildren()) {
-            next = _.find(startingNode.children, function(child) {
-                return child.visible();
-            });
-        }
-
-        return next;
-    };
-
-    /**
-     * Get the next visible node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object if any.
-     */
-    TreeNode.prototype.nextVisibleNode = function() {
-        var startingNode = this;
-        var next;
-
-        // 1. Any visible children
-        next = startingNode.nextVisibleChildNode();
-
-        // 2. Any Siblings
-        if (!next) {
-            next = startingNode.nextVisibleSiblingNode();
-        }
-
-        // 3. Find sibling of ancestor(s)
-        if (!next) {
-            next = startingNode.nextVisibleAncestralSiblingNode();
-        }
-
-        return next;
-    };
-
-    /**
-     * Find the next visible sibling node.
-     *
-     * @category TreeNode
-     * @return {object} Node object, if any.
-     */
-    TreeNode.prototype.nextVisibleSiblingNode = function() {
-        var startingNode = this;
-        var context = (startingNode.hasParent() ? startingNode.getParent().children : tree.nodes());
-        var i = _.findIndex(context, { id: startingNode.id });
-
-        return _.find(_.slice(context, i + 1), function(node) {
-            return node.visible();
-        });
-    };
-
-    /**
-     * Find the previous visible node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object, if any.
-     */
-    TreeNode.prototype.previousVisibleNode = function() {
-        var startingNode = this;
-        var prev;
-
-        // 1. Any Siblings
-        prev = startingNode.previousVisibleSiblingNode();
-
-        // 2. If that sibling has children though, go there
-        if (prev && prev.hasChildren() && !prev.collapsed()) {
-            prev = prev.lastDeepestVisibleChild();
-        }
-
-        // 3. Parent
-        if (!prev && startingNode.hasParent()) {
-            prev = startingNode.getParent();
-        }
-
-        return prev;
-    };
-
-    /**
-     * Find the previous visible sibling node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object, if any.
-     */
-    TreeNode.prototype.previousVisibleSiblingNode = function() {
-        var context = (this.hasParent() ? this.getParent().children : tree.nodes());
-        var i = _.findIndex(context, { id: this.id });
-        return _.findLast(_.slice(context, 0, i), function(node) {
-            return node.visible();
-        });
-    };
-
-    /**
-     * Iterate down node and any children.
-     *
-     * @category TreeNode
-     * @param {function} iteratee Iteratee function.
-     * @return {TreeNode} Resulting node.
-     */
-    TreeNode.prototype.recurseDown = function(iteratee) {
-        recurseDown(this, iteratee);
-
-        return this;
-    };
-
-    /**
-     * Iterate up a node and its parents.
-     *
-     * @category TreeNode
-     * @param {function} iteratee Iteratee function.
-     * @return {TreeNode} Resulting node.
-     */
-    TreeNode.prototype.recurseUp = function(iteratee) {
-        var result = iteratee(this);
-
-        if (result !== false && this.hasParent()) {
-            this.getParent().recurseUp(iteratee);
-        }
-
-        return this;
-    };
-
-    /**
-     * Updates the indeterminate state of this node.
-     *
-     * Only available when checkbox=true.
-     * True if some, but not all children are selected.
-     * False if no children are selected.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.refreshIndeterminateState = function() {
-        var node = this;
-        var oldValue = node.state('indeterminate');
-        node.state('indeterminate', false);
-
-        if (tree.config.showCheckboxes) {
-            if (node.hasChildren()) {
-                var childrenCount = node.children.length;
-                var indeterminate = 0;
-                var selected = 0;
-
-                node.children.each(function(n) {
-                    if (n.selected()) {
-                        selected++;
-                    }
-
-                    if (n.indeterminate()) {
-                        indeterminate++;
-                    }
-                });
-
-                // Set selected if all children are
-                node.state('selected', (selected === childrenCount));
-
-                // Set indeterminate if any children are, or some children are selected
-                if (!node.selected()) {
-                    node.state('indeterminate', indeterminate > 0 || (childrenCount > 0 && selected > 0 && selected < childrenCount));
-                }
-            }
-
-            if (node.hasParent()) {
-                node.getParent().refreshIndeterminateState();
-            }
-
-            if (oldValue !== node.state('indeterminate')) {
-                node.markDirty();
-            }
-        }
-
-        return node;
-    };
-
-    /**
-     * Remove a node from the tree.
-     *
-     * @category TreeNode
-     * @return {object} Removed tree node object.
-     */
-    TreeNode.prototype.remove = function() {
-        var node = this;
-
-        var parent;
-        if (node.hasParent()) {
-            parent = node.getParent();
-        }
-
-        var context = (parent ? parent.children : model);
-        _.remove(context, { id: node.id });
-
-        if (parent) {
-            parent.refreshIndeterminateState();
-        }
-
-        var exported = node.export();
-        tree.emit('node.removed', exported);
-
-        dom.applyChanges();
-
-        return exported;
-    };
-
-    /**
-     * Restore state if soft-removed.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.restore = function() {
-        return baseStateChange('removed', false, 'restored', this);
-    };
-
-    /**
-     * Select this node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.select = function() {
-        var node = this;
-
-        if (!node.selected() && node.selectable()) {
-            // Batch selection changes
-            dom.batch();
-
-            if (tree.canAutoDeselect()) {
-                var oldVal = tree.config.selection.require;
-                tree.config.selection.require = false;
-                tree.deselectDeep();
-                tree.config.selection.require = oldVal;
-            }
-
-            node.state('selected', true);
-
-            if (tree.config.selection.autoSelectChildren) {
-                if (node.hasChildren()) {
-                    node.children.recurseDown(function(child) {
-                        baseStateChange('selected', true, 'selected', child);
-                    });
-                }
-
-                if (tree.config.showCheckboxes && node.hasParent()) {
-                    node.getParent().refreshIndeterminateState();
-                }
-            }
-
-            // Cache as the last selected node
-            lastSelectedNode = node;
-
-            // Emit this event
-            tree.emit('node.selected', node);
-
-            // Mark hierarchy dirty and apply
-            node.markDirty();
-            dom.end();
-        }
-
-        return node;
-    };
-
-    /**
-     * Get if node selectable.
-     *
-     * @category TreeNode
-     * @return {boolean} If node selectable.
-     */
-    TreeNode.prototype.selectable = function() {
-        var allow = tree.config.selection.allow(this);
-        return typeof allow === 'boolean' ? allow : this.state('selectable');
-    };
-
-    /**
-     * Set a root property on this node.
-     *
-     * @category TreeNode
-     * @param {string|number} property Property name.
-     * @param {*} value New value.
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.set = function(property, value) {
-        if (this[property] !== value) {
-            var oldVal = this[property];
-
-            // Update value
-            this[property] = value;
-            this.markDirty();
-
-            // Emit an event
-            tree.emit('node.property.changed', this, property, oldVal, value);
-        }
-
-        return this;
-    };
-
-    /**
-     * Show this node.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.show = function() {
-        return baseStateChange('hidden', false, 'shown', this);
-    };
-
-    /**
-     * Get or set a state value.
-     *
-     * This is a base method and will not invoke related changes, for example
-     * setting selected=false will not trigger any deselection logic.
-     *
-     * @category TreeNode
-     * @param {string} name Property name.
-     * @param {boolean} newVal New value, if setting.
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.state = function(name, newVal) {
-        var oldVal = this.itree.state[name];
-
-        if (typeof newVal !== 'undefined' && oldVal !== newVal) {
-            // Update values
-            this.itree.state[name] = newVal;
-            this.markDirty();
-
-            // Emit an event
-            tree.emit('node.state.changed', this, name, oldVal, newVal);
-        }
-
-        return this.itree.state[name];
-    };
-
-    /**
-     * Mark this node as "removed" without actually removing it.
-     *
-     * Expand/show methods will never reveal this node until restored.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.softRemove = function() {
-        return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
-    };
-
-    /**
-     * Toggles collapsed state.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.toggleCollapse = function() {
-        return (this.collapsed() ? this.expand() : this.collapse());
-    };
-
-    /**
-     * Toggles edit mode (and triggers DOM updates)
-     *
-     * @category TreeNode
-     * @return {void}
-     */
-    TreeNode.prototype.toggleEditing = function() {
-        this.state('editing', !this.state('editing'));
-
-        this.markDirty();
-        dom.applyChanges();
-    };
-
-    /**
-     * Toggles selected state.
-     *
-     * @category TreeNode
-     * @return {TreeNode} Node object.
-     */
-    TreeNode.prototype.toggleSelect = function() {
-        return (this.selected() ? this.deselect() : this.select());
-    };
-
-    /**
-     * Export this node as a native Object.
-     *
-     * @category TreeNode
-     * @return {object} Node object.
-     */
-    TreeNode.prototype.toObject = function() {
-        var object = {};
-
-        _.each(this, function(value, property) {
-            object[property] = value;
-        });
-
-        if (this.hasChildren() && _.isFunction(this.children.toArray)) {
-            object.children = this.children.toArray();
-        }
-
-        return object;
-    };
-
-    /**
-     * Checks whether a node is visible to a user. Returns false
-     * if it's hidden, or if any ancestor is hidden or collapsed.
-     *
-     * @category TreeNode
-     * @param {object} node Node object.
-     * @return {boolean} Whether visible.
-     */
-    TreeNode.prototype.visible = function() {
-        var node = this;
-
-        var isVisible = true;
-        if (node.hidden() || node.removed()) {
-            isVisible = false;
-        }
-        else if (node.hasParent()) {
-            if (node.getParent().collapsed()) {
-                isVisible = false;
-            }
-            else {
-                isVisible = node.getParent().visible();
-            }
-        }
-        else {
-            isVisible = true;
-        }
-
-        return isVisible;
-    };
-
-    // Map state lookup convenience methods
-    _.each(_.keys(defaultState), function(method) {
-        if (method !== 'editable' && method !== 'selectable') {
-            TreeNode.prototype[method] = function() {
-                return this.state(method);
-            };
-        }
-    });
-
-    /**
-     * An Array-like collection of TreeNodes.
-     *
-     * @category TreeNodes
-     * @param {array} array Array of TreeNode objects.
-     * @return {TreeNodes} Collection of TreeNode
-     */
-    function TreeNodes(array) {
-        var treeNodes = this;
-
-        if (_.isArray(array)) {
-            _.each(array, function(node) {
-                treeNodes.push(node);
-            });
-        }
-    };
-    TreeNodes.prototype = Object.create(Array.prototype);
-    TreeNodes.prototype.constructor = TreeNodes;
+        tree.initialized = true;
+    }
 
     /**
      * Adds a new node to this collection. If a sort
      * method is configured, the node will be added
      * in the appropriate order.
      *
-     * @category TreeNodes
-     * @param {object} object Node
-     * @return {TreeNode} Node object.
-     */
-    TreeNodes.prototype.addNode = function(object) {
-        // Base insertion index
-        var index = this.length;
-
-        // If tree is sorted, insert in correct position
-        if (tree.config.sort) {
-            index = _.sortedIndexBy(this, object, tree.config.sort);
-        }
-
-        return this.insertAt(index, object);
-    };
-
-    /**
-     * Clones (deep) the array of nodes.
-     *
-     * Note: Cloning will *not* clone the context pointer.
-     *
-     * @category TreeNodes
-     * @return {TreeNodes} Array of cloned nodes.
-     */
-    TreeNodes.prototype.clone = function() {
-        var newNodes = new TreeNodes();
-
-        _.each(this, function(node) {
-            newNodes.push(node.clone());
-        });
-
-        return newNodes;
-    };
-
-    /**
-     * Concat nodes like an Array would.
-     *
-     * @category TreeNodes
-     * @param {TreeNodes} nodes Array of nodes.
-     * @return {TreeNodes} Resulting node array.
-     */
-    TreeNodes.prototype.concat = function(nodes) {
-        var newNodes = new TreeNodes();
-        newNodes._context = this._context;
-
-        var pusher = function(node) {
-            newNodes.push(node);
-        };
-
-        _.each(this, pusher);
-        _.each(nodes, pusher);
-
-        return newNodes;
-    };
-
-    /**
-     * Get the context of this collection. If a collection
-     * of children, context is the parent node. Otherwise
-     * the context is the tree itself.
-     *
-     * @category TreeNodes
-     * @return {TreeNode|object} Node object or tree instance.
-     */
-    TreeNodes.prototype.context = function() {
-        return this._context || tree;
-    };
-
-    /**
-     * Copies nodes to a new tree instance.
-     *
-     * @category TreeNodes
-     * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
-     * @return {object} Methods to perform action on copied nodes.
-     */
-    TreeNodes.prototype.copy = function(hierarchy) {
-        var nodes = this;
-
-        return {
-
-            /**
-             * Sets a destination.
-             *
-             * @category CopyNode
-             * @param {object} dest Destination Inspire Tree.
-             * @return {array} Array of new nodes.
-             */
-            to: function(dest) {
-                if (!_.isFunction(dest.addNodes)) {
-                    throw new Error('Destination must be an Inspire Tree instance.');
-                }
-
-                var newNodes = new TreeNodes();
-
-                _.each(nodes, function(node) {
-                    newNodes.push(node.copy(hierarchy).to(dest));
-                });
-
-                return newNodes;
-            }
-        };
-    };
-
-    /**
-     * Returns deepest nodes from this array.
-     *
-     * @category TreeNodes
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.deepest = function() {
-        var matches = new TreeNodes();
-
-        this.recurseDown(function(node) {
-            if (!node.children) {
-                matches.push(node);
-            }
-        });
-
-        return matches;
-    };
-
-    /**
-     * Iterate every TreeNode in this collection.
-     *
-     * @category TreeNodes
-     * @param {function} iteratee Iteratee invoke for each node.
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.each = function(iteratee) {
-        _.each(this, iteratee);
-
-        return this;
-    };
-
-    /**
-     * Recursively expands all nodes, loading all dynamic calls.
-     *
-     * @category TreeNodes
-     * @return {Promise} Promise resolved only when all children have loaded and expanded.
-     */
-    TreeNodes.prototype.expandDeep = function() {
-        var nodes = this;
-
-        return new Promise(function(resolve) {
-            var waitCount = 0;
-
-            var done = function() {
-                if (--waitCount === 0) {
-                    resolve(nodes);
-                }
-            };
-
-            nodes.recurseDown(function(node) {
-                waitCount++;
-
-                // Ignore nodes without children
-                if (node.children) {
-                    node.expand().catch(done).then(function() {
-                        // Manually trigger expansion on newly loaded children
-                        node.children.expandDeep().catch(done).then(done);
-                    });
-                }
-                else {
-                    done();
-                }
-            });
-        });
-    };
-
-    /**
-     * Clones an array of node objects and removes any
-     * itree instance information/state.
-     *
-     * @category TreeNodes
-     * @return {array} Array of node objects.
-     */
-    TreeNodes.prototype.export = function() {
-        var clones = [];
-
-        _.each(this, function(node) {
-            clones.push(node.export());
-        });
-
-        return clones;
-    };
-
-    /**
-     * Returns a cloned hierarchy of all nodes matching a predicate.
-     *
-     * Because it filters deeply, we must clone all nodes so that we
-     * don't affect the actual node array.
-     *
-     * @category TreeNodes
-     * @param {string|function} predicate State flag or custom function.
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.extract = function(predicate) {
-        var flat = this.flatten(predicate);
-        var matches = new TreeNodes();
-
-        _.each(flat, function(node) {
-            matches.addNode(node.copyHierarchy());
-        });
-
-        return matches;
-    };
-
-    /**
-     * Returns nodes which match a predicate.
-     *
-     * @category TreeNodes
-     * @param {string|function} predicate State flag or custom function.
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.filter = function(predicate) {
-        var fn = getPredicateFunction(predicate);
-        var matches = new TreeNodes();
-
-        _.each(this, function(node) {
-            if (fn(node)) {
-                matches.push(node);
-            }
-        });
-
-        return matches;
-    };
-
-    /**
-     * Flattens a hierarchy, returning only node(s) matching the
-     * expected state or predicate function.
-     *
-     * @category TreeNodes
-     * @param {string|function} predicate State property or custom function.
-     * @return {TreeNodes} Flat array of matching nodes.
-     */
-    TreeNodes.prototype.flatten = function(predicate) {
-        var flat = new TreeNodes();
-
-        var fn = getPredicateFunction(predicate);
-        this.recurseDown(function(node) {
-            if (fn(node)) {
-                flat.push(node);
-            }
-        });
-
-        return flat;
-    };
-
-    /**
-     * Get a specific node in the collection, or undefined if it doesn't exist.
-     *
-     * @category TreeNodes
-     * @param {int} index Numeric index of requested node.
-     * @return {TreeNode} Node object. Undefined if invalid index.
-     */
-    TreeNodes.prototype.get = function(index) {
-        return this[index];
-    };
-
-    /**
-     * Insert a new node at a given position.
-     *
-     * @category TreeNodes
-     * @param {integer} index Index at which to insert the node.
-     * @param {object} object Raw node object or TreeNode.
-     * @return {TreeNode} Node object.
-     */
-    TreeNodes.prototype.insertAt = function(index, object) {
-        // If node has a pre-existing ID
-        if (object.id) {
-            // Is it already in the tree?
-            var existingNode = this.node(object.id);
-            if (existingNode) {
-                existingNode.restore().show();
-
-                // Merge children
-                if (_.isArrayLike(object.children)) {
-                    // Setup existing node's children property if needed
-                    if (!_.isArrayLike(existingNode.children)) {
-                        existingNode.children = new TreeNodes();
-                        existingNode.children._context = existingNode;
-                    }
-
-                    // Copy each child (using addNode, which uses insertAt)
-                    _.each(object.children, function(child) {
-                        existingNode.children.addNode(child);
-                    });
-                }
-
-                // Merge truthy children
-                else if (object.children && _.isBoolean(existingNode.children)) {
-                    existingNode.children = object.children;
-                }
-
-                existingNode.markDirty();
-                dom.applyChanges();
-
-                // Node merged, return it.
-                return existingNode;
-            }
-        }
-
-        // Node is new, insert at given location.
-        var node = tree.isNode(object) ? object : objectToModel(object);
-
-        // Insert
-        this.splice(index, 0, node);
-
-        // Refresh parent state and mark dirty
-        if (this._context) {
-            node.itree.parent = this._context;
-            this._context.refreshIndeterminateState().markDirty();
-        }
-
-        // Event
-        tree.emit('node.added', node);
-
-        node.markDirty();
-        dom.applyChanges();
-
-        return node;
-    };
-
-    /**
-     * Invoke method(s) on each node.
-     *
-     * @category TreeNodes
-     * @param {string|array} methods Method name(s).
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.invoke = function(methods) {
-        return baseInvoke(this, methods);
-    };
-
-    /**
-     * Invoke method(s) deeply.
-     *
-     * @category TreeNodes
-     * @param {string|array} methods Method name(s).
-     * @return {TreeNodes} Array of node objects.
-     */
-    TreeNodes.prototype.invokeDeep = function(methods) {
-        return baseInvoke(this, methods, true);
-    };
-
-    /**
-     * Get a node.
-     *
-     * @category TreeNodes
-     * @param {string|number} id ID of node.
-     * @return {TreeNode} Node object.
-     */
-    TreeNodes.prototype.node = function(id) {
-        var match;
-
-        if (_.isNumber(id)) {
-            id = id.toString();
-        }
-
-        this.recurseDown(function(node) {
-            if (node.id === id) {
-                match = node;
-
-                return false;
-            }
-        });
-
-        return match;
-    };
-
-    /**
-     * Get all nodes in a tree, or nodes for an array of IDs.
-     *
      * @category Tree
-     * @param {array} refs Array of ID references.
-     * @return {TreeNodes} Array of node objects.
-     * @example
-     *
-     * var all = tree.nodes()
-     * var some = tree.nodes([1, 2, 3])
-     */
-    TreeNodes.prototype.nodes = function(refs) {
-        var results = this;
-
-        if (_.isArray(refs)) {
-            // Ensure incoming IDs are strings
-            refs = _.map(refs, function(element) {
-                if (_.isNumber(element)) {
-                    element = element.toString();
-                }
-
-                return element;
-            });
-
-            results = new TreeNodes();
-
-            this.recurseDown(function(node) {
-                if (refs.indexOf(node.id) > -1) {
-                    results.push(node);
-                }
-            });
-        }
-
-        return results;
-    };
-
-    /**
-     * Iterate down all nodes and any children.
-     *
-     * @category TreeNodes
-     * @param {function} iteratee Iteratee function.
-     * @return {TreeNodes} Resulting nodes.
-     */
-    TreeNodes.prototype.recurseDown = function(iteratee) {
-        recurseDown(this, iteratee);
-
-        return this;
-    };
-
-    /**
-     * Sorts all TreeNode objects in this collection.
-     *
-     * If no custom sorter given, the configured "sort" value will be used.
-     *
-     * @category TreeNodes
-     * @param {string|function} sorter Sort function or property name.
-     * @return {TreeNodes} Array of node obejcts.
-     */
-    TreeNodes.prototype.sort = function(sorter) {
-        var nodes = this;
-        sorter = sorter || tree.config.sort;
-
-        // Only apply sort if one provided
-        if (sorter) {
-            var sorted = _.sortBy(nodes, sorter);
-
-            nodes.length = 0;
-            _.each(sorted, function(node) {
-                nodes.push(node);
-            });
-        }
-
-        return nodes;
-    };
-
-    /**
-     * Chained method for returning a chain to the tree context.
-     *
-     * @category TreeNodes
-     * @return {[type]} [description]
-     */
-    TreeNodes.prototype.tree = function() {
-        return tree;
-    };
-
-    /**
-     * Returns a native Array of nodes.
-     *
-     * @category TreeNodes
-     * @return {array} Array of node objects.
-     */
-    TreeNodes.prototype.toArray = function() {
-        var array = [];
-
-        _.each(this, function(node) {
-            array.push(node.toObject());
-        });
-
-        return array;
-    };
-
-    /**
-     * Map shallow to each TreeNode
-     *
-     * @private
-     * @param {string} method Method name.
-     * @return {void}
-     */
-    function mapToEach(method) {
-        TreeNodes.prototype[method] = function() {
-            return this.invoke(method);
-        };
-    }
-
-    /**
-     * Map deeply to all TreeNodes and children
-     *
-     * @private
-     * @param {string} method Method name.
-     * @return {void}
-     */
-    function mapToEachDeeply(method) {
-        TreeNodes.prototype[method + 'Deep'] = function() {
-            return this.invokeDeep(method);
-        };
-    }
-
-    // Methods we can map to each/deeply TreeNode
-    var mapped = ['blur', 'collapse', 'deselect', 'hide', 'restore', 'select', 'show'];
-    _.each(mapped, function(method) {
-        mapToEach(method);
-        mapToEachDeeply(method);
-    });
-
-    // Methods we can map to each TreeNode
-    _.each(['clean', 'expand', 'expandParents', 'softRemove'], mapToEach);
-
-    // Predicate methods we can map
-    _.each(_.keys(defaultState).concat(['available', 'expanded', 'visible']), function(state) {
-        TreeNodes.prototype[state] = function(full) {
-            if (full) {
-                return this.extract(state);
-            }
-
-            // Cache a state predicate function
-            var fn = getPredicateFunction(state);
-
-            return this.flatten(function(node) {
-                // Never include removed nodes unless specifically requested
-                if (state !== 'removed' && node.removed()) {
-                    return false;
-                }
-
-                return fn(node);
-            });
-        };
-    });
-
-    /**
-     * Invoke given method(s) on tree nodes.
-     *
-     * @private
-     * @param {TreeNodes} nodes Array of node objects.
-     * @param {string|array} methods Method names.
-     * @param {boolean} deep Invoke deeply.
-     * @return {TreeNodes} Array of node objects.
-     */
-    function baseInvoke(nodes, methods, deep) {
-        methods = _.castArray(methods);
-
-        dom.batch();
-
-        nodes[deep ? 'recurseDown' : 'each'](function(node) {
-            _.each(methods, function(method) {
-                if (_.isFunction(node[method])) {
-                    node[method]();
-                }
-            });
-        });
-
-        dom.end();
-
-        return nodes;
-    }
-
-    /**
-     * Stores repetitive state change logic for most state methods.
-     *
-     * @private
-     * @param {string} prop State property name.
-     * @param {boolean} value New state value.
-     * @param {string} verb Verb used for events.
-     * @param {TreeNode} node Node object.
-     * @param {string} deep Optional name of state method to call recursively.
+     * @param {object} node Node
      * @return {TreeNode} Node object.
      */
-    function baseStateChange(prop, value, verb, node, deep) {
-        if (node.state(prop) !== value) {
-            if (tree.config.nodes.resetStateOnRestore && verb === 'restored') {
-                resetState(node);
-            }
-
-            node.state(prop, value);
-
-            tree.emit('node.' + verb, node);
-
-            if (deep && node.hasChildren()) {
-                node.getChildren().invokeDeep(deep);
-            }
-
-            node.markDirty();
-            dom.applyChanges();
-        }
-
-        return node;
-    }
-
-    /**
-     * Parses a raw collection of objects into a model used
-     * within a tree. Adds state and other internal properties.
-     *
-     * @private
-     * @param {array|object} array Array of nodes
-     * @param {object} parent Pointer to parent object
-     * @return {array|object} Object model.
-     */
-    function collectionToModel(array, parent) {
-        var collection = new TreeNodes();
-
-        // Sort
-        if (tree.config.sort) {
-            array = _.sortBy(array, tree.config.sort);
-        }
-
-        _.each(array, function(node) {
-            collection.push(objectToModel(node, parent));
-        });
-
-        collection._context = parent;
-
-        return collection;
-    };
-
-    /**
-     * Creates a predicate function.
-     *
-     * @private
-     * @param {string|function} predicate Property name or custom function.
-     * @return {function} Predicate function.
-     */
-    function getPredicateFunction(predicate) {
-        var fn = predicate;
-        if (_.isString(predicate)) {
-            fn = function(node) {
-                return _.isFunction(node[predicate]) ? node[predicate]() : node[predicate];
-            };
-        }
-
-        return fn;
-    }
-
-    /**
-     * Parse a raw object into a model used within a tree.
-     *
-     * Note: Uses native js over lodash where performance
-     * benefits most, since this handles every node.
-     *
-     * @private
-     * @param {object} object Source object
-     * @param {object} parent Pointer to parent object.
-     * @return {object} Final object
-     */
-    function objectToModel(object, parent) {
-        // Create or type-ensure ID
-        object.id = object.id || cuid();
-        if (typeof object.id !== 'string') {
-            object.id = object.id.toString();
-        }
-
-        // High-performance default assignments
-        var itree = object.itree = object.itree || {};
-        itree.icon = itree.icon || false;
-
-        var li = itree.li = itree.li || {};
-        li.attributes = li.attributes || {};
-
-        var a = itree.a = itree.a || {};
-        a.attributes = a.attributes || {};
-
-        var state = itree.state = itree.state || {};
-
-        // Enabled by default
-        state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : defaultState.collapsed;
-        state.editable = typeof state.editable === 'boolean' ? state.editable : defaultState.editable;
-        state.editing = typeof state.editing === 'boolean' ? state.editing : defaultState.editing;
-        state.selectable = typeof state.selectable === 'boolean' ? state.selectable : defaultState.selectable;
-
-        // Disabled by default
-        state.focused = state.focused || defaultState.focused;
-        state.hidden = state.hidden || defaultState.hidden;
-        state.indeterminate = state.indeterminate || defaultState.indeterminate;
-        state.loading = state.loading || defaultState.loading;
-        state.removed = state.removed || defaultState.removed;
-        state.selected = state.selected || defaultState.selected;
-
-        // Save parent, if any.
-        object.itree.parent = parent;
-
-        // Wrap
-        object = _.assign(new TreeNode(), object);
-
-        if (object.hasChildren()) {
-            object.children = collectionToModel(object.children, object);
-        }
-
-        // Fire events for pre-set states, if enabled
-        if (allowsLoadEvents) {
-            _.each(tree.config.allowLoadEvents, function(eventName) {
-                if (state[eventName]) {
-                    tree.emit('node.' + eventName, object);
-                }
-            });
-        }
-
-        return object;
-    };
-
-    /**
-     * Base recursion function for a collection or node.
-     *
-     * Returns false if execution should cease.
-     *
-     * @private
-     * @param {TreeNode|TreeNodes} obj Node or collection.
-     * @param {function} iteratee Iteratee function
-     * @return {boolean} Cease iteration.
-     */
-    function recurseDown(obj, iteratee) {
-        var res;
-
-        if (_.isArrayLike(obj)) {
-            _.each(obj, function(node) {
-                res = recurseDown(node, iteratee);
-
-                return res;
-            });
-        }
-        else {
-            res = iteratee(obj);
-
-            // Recurse children
-            if (res !== false && obj.hasChildren()) {
-                res = recurseDown(obj.children, iteratee);
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * Reset a node's state to the tree default.
-     *
-     * @private
-     * @param {TreeNode} node Node object.
-     * @returns {TreeNode} Node object.
-     */
-    function resetState(node) {
-        _.each(defaultState, function(val, prop) {
-            node.state(prop, val);
-        });
-
-        return node;
-    }
-
-    /**
-     * Resolve promise-like objects consistently.
-     *
-     * @private
-     * @param {object} promise Promise-like object.
-     * @returns {Promise} Promise
-     */
-    function standardizePromise(promise) {
-        return new Promise(function(resolve, reject) {
-            if (!_.isObject(promise)) {
-                return reject(new Error('Invalid Promise'));
-            }
-
-            if (_.isFunction(promise.then)) {
-                promise.then(resolve);
-            }
-
-            // jQuery promises use "error"
-            if (_.isFunction(promise.error)) {
-                promise.error(reject);
-            }
-            else if (_.isFunction(promise.catch)) {
-                promise.catch(reject);
-            }
-        });
-    };
-
-    var model = new TreeNodes();
-
-    // Map some model.TreeNodes method to the tree to make life easier for users
-    for (var method in TreeNodes.prototype) {
-        if (method !== 'constructor' && !tree[method] && _.isFunction(TreeNodes.prototype[method])) {
-            (function(methodName) {
-                tree[methodName] = function() {
-                    return model[methodName].apply(model, arguments);
-                };
-            }(method));
-        }
+    addNode() {
+        return map(this, 'addNode', arguments);
     }
 
     /**
@@ -2020,18 +191,50 @@ function InspireTree(opts) {
      * @param {array} nodes Array of node objects.
      * @return {TreeNodes} Added node objects.
      */
-    tree.addNodes = function(nodes) {
-        dom.batch();
+    addNodes(nodes) {
+        var tree = this;
+        tree.dom.batch();
 
-        var newNodes = new TreeNodes();
+        var newNodes = new TreeNodes(this);
         _.each(nodes, function(node) {
             newNodes.push(tree.addNode(node));
         });
 
-        dom.end();
+        tree.dom.end();
 
         return newNodes;
-    };
+    }
+
+    /**
+     * Query for all available nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    available() {
+        return map(this, 'available', arguments);
+    }
+
+    /**
+     * Blur children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    blur() {
+        return map(this, 'blur', arguments);
+    }
+
+    /**
+     * Blur all children (deeply) in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    blurDeep() {
+        return map(this, 'blurDeep', arguments);
+    }
 
     /**
      * Compares any number of TreeNode objects and returns
@@ -2040,7 +243,7 @@ function InspireTree(opts) {
      * @category Tree
      * @return {array} Array with two TreeNode objects.
      */
-    tree.boundingNodes = function() {
+    boundingNodes() {
         var pathMap = _.transform(arguments, function(map, node) {
             map[node.indexPath().replace(/\./g, '')] = node;
         }, {});
@@ -2050,7 +253,7 @@ function InspireTree(opts) {
             _.get(pathMap, _.head(paths)),
             _.get(pathMap, _.tail(paths))
         ];
-    };
+    }
 
     /**
      * Get if the tree will auto-deselect currently selected nodes
@@ -2059,9 +262,19 @@ function InspireTree(opts) {
      * @category Tree
      * @return {boolean} If tree will auto-deselect nodes.
      */
-    tree.canAutoDeselect = function() {
-        return tree.config.selection.autoDeselect && !preventDeselection;
-    };
+    canAutoDeselect() {
+        return this.config.selection.autoDeselect && !this.preventDeselection;
+    }
+
+    /**
+     * Clean children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    clean() {
+        return map(this, 'clean', arguments);
+    }
 
     /**
      * Shows all nodes and collapses parents.
@@ -2069,9 +282,104 @@ function InspireTree(opts) {
      * @category Tree
      * @return {Tree} Tree instance.
      */
-    tree.clearSearch = function() {
-        return tree.showDeep().collapseDeep().tree();
-    };
+    clearSearch() {
+        return this.showDeep().collapseDeep().tree();
+    }
+
+    /**
+     * Clones (deep) the array of nodes.
+     *
+     * Note: Cloning will *not* clone the context pointer.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of cloned nodes.
+     */
+    clone() {
+        return map(this, 'clone', arguments);
+    }
+
+    /**
+     * Collapse children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    collapse() {
+        return map(this, 'collapse', arguments);
+    }
+
+    /**
+     * Query for all collapsed nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    collapsed() {
+        return map(this, 'collapsed', arguments);
+    }
+
+    /**
+     * Collapse all children (deeply) in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    collapseDeep() {
+        return map(this, 'collapseDeep', arguments);
+    }
+
+    /**
+     * Concat nodes like an Array would.
+     *
+     * @category Tree
+     * @param {TreeNodes} nodes Array of nodes.
+     * @return {TreeNodes} Resulting node array.
+     */
+    concat() {
+        return map(this, 'concat', arguments);
+    }
+
+    /**
+     * Copies nodes to a new tree instance.
+     *
+     * @category Tree
+     * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @return {object} Methods to perform action on copied nodes.
+     */
+    copy() {
+        return map(this, 'copy', arguments);
+    }
+
+    /**
+     * Returns deepest nodes from this array.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    deepest() {
+        return map(this, 'deepest', arguments);
+    }
+
+    /**
+     * Deselect children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    deselect() {
+        return map(this, 'deselect', arguments);
+    }
+
+    /**
+     * Deselect all children (deeply) in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    deselectDeep() {
+        return map(this, 'deselectDeep', arguments);
+    }
 
     /**
      * Disable auto-deselection of currently selected nodes.
@@ -2079,13 +387,46 @@ function InspireTree(opts) {
      * @category Tree
      * @return {Tree} Tree instance.
      */
-    tree.disableDeselection = function() {
-        if (tree.config.selection.multiple) {
-            preventDeselection = true;
+    disableDeselection() {
+        if (this.config.selection.multiple) {
+            this.preventDeselection = true;
         }
 
-        return tree;
-    };
+        return this;
+    }
+
+    /**
+     * Iterate every TreeNode in this collection.
+     *
+     * @category Tree
+     * @param {function} iteratee Iteratee invoke for each node.
+     * @return {TreeNodes} Array of node objects.
+     */
+    each() {
+        return map(this, 'each', arguments);
+    }
+
+    /**
+     * Query for all editable nodes.
+     *
+     * @category TreeNodes
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    editable() {
+        return map(this, 'editable', arguments);
+    }
+
+    /**
+     * Query for all nodes in editing mode.
+     *
+     * @category TreeNodes
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    editing() {
+        return map(this, 'editing', arguments);
+    }
 
     /**
      * Enable auto-deselection of currently selected nodes.
@@ -2093,11 +434,177 @@ function InspireTree(opts) {
      * @category Tree
      * @return {Tree} Tree instance.
      */
-    tree.enableDeselection = function() {
-        preventDeselection = false;
+    enableDeselection() {
+        this.preventDeselection = false;
 
-        return tree;
-    };
+        return this;
+    }
+
+    /**
+     * Expand children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    expand() {
+        return map(this, 'expand', arguments);
+    }
+
+    /**
+     * Query for all expanded nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    expandDeep() {
+        return map(this, 'expandDeep', arguments);
+    }
+
+    /**
+     * Recursively expands all nodes, loading all dynamic calls.
+     *
+     * @category Tree
+     * @return {Promise} Promise resolved only when all children have loaded and expanded.
+     */
+    expanded() {
+        return map(this, 'expanded', arguments);
+    }
+
+    /**
+     * Returns a cloned hierarchy of all nodes matching a predicate.
+     *
+     * Because it filters deeply, we must clone all nodes so that we
+     * don't affect the actual node array.
+     *
+     * @category Tree
+     * @param {string|function} predicate State flag or custom function.
+     * @return {TreeNodes} Array of node objects.
+     */
+    extract() {
+        return map(this, 'extract', arguments);
+    }
+
+    /**
+     * Returns nodes which match a predicate.
+     *
+     * @category Tree
+     * @param {string|function} predicate State flag or custom function.
+     * @return {TreeNodes} Array of node objects.
+     */
+    filter() {
+        return map(this, 'filter', arguments);
+    }
+
+    /**
+     * Flattens a hierarchy, returning only node(s) matching the
+     * expected state or predicate function.
+     *
+     * @category Tree
+     * @param {string|function} predicate State property or custom function.
+     * @return {TreeNodes} Flat array of matching nodes.
+     */
+    flatten() {
+        return map(this, 'flatten', arguments);
+    }
+
+    /**
+     * Query for all focused nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    focused() {
+        return map(this, 'focused', arguments);
+    }
+
+    /**
+     * Get a specific node in the collection, or undefined if it doesn't exist.
+     *
+     * @category Tree
+     * @param {int} index Numeric index of requested node.
+     * @return {TreeNode} Node object. Undefined if invalid index.
+     */
+    get() {
+        return map(this, 'get', arguments);
+    }
+
+    /**
+     * Query for all hidden nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    hidden() {
+        return map(this, 'hidden', arguments);
+    }
+
+    /**
+     * Hide children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    hide() {
+        return map(this, 'hide', arguments);
+    }
+
+    /**
+     * Hide all children (deeply) in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    hideDeep() {
+        return map(this, 'hideDeep', arguments);
+    }
+
+    /**
+     * Query for all indeterminate nodes.
+     *
+     * @category TreeNodes
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    indeterminate() {
+        return map(this, 'indeterminate', arguments);
+    }
+
+    /**
+     * Insert a new node at a given position.
+     *
+     * @category Tree
+     * @param {integer} index Index at which to insert the node.
+     * @param {object} object Raw node object or TreeNode.
+     * @return {TreeNode} Node object.
+     */
+    insertAt() {
+        return map(this, 'insertAt', arguments);
+    }
+
+    /**
+     * Invoke method(s) on each node.
+     *
+     * @category Tree
+     * @param {string|array} methods Method name(s).
+     * @return {TreeNodes} Array of node objects.
+     */
+    invoke() {
+        return map(this, 'invoke', arguments);
+    }
+
+    /**
+     * Invoke method(s) deeply.
+     *
+     * @category Tree
+     * @param {string|array} methods Method name(s).
+     * @return {TreeNodes} Array of node objects.
+     */
+    invokeDeep() {
+        return map(this, 'invokeDeep', arguments);
+    }
 
     /**
      * Check if an object is a TreeNode.
@@ -2106,13 +613,9 @@ function InspireTree(opts) {
      * @param {object} object Object
      * @return {boolean} If object is a TreeNode.
      */
-    tree.isNode = function(object) {
-        if (object.constructor) {
-            return object.constructor.name === 'TreeNode';
-        }
-
-        return false;
-    };
+    isNode(object) {
+        return (object instanceof TreeNode);
+    }
 
     /**
      * Get the most recently selected node, if any.
@@ -2120,9 +623,9 @@ function InspireTree(opts) {
      * @category Tree
      * @return {TreeNode} Last selected node, or undefined.
      */
-    tree.lastSelectedNode = function() {
-        return lastSelectedNode;
-    };
+    lastSelectedNode() {
+        return this._lastSelectedNode;
+    }
 
     /**
      * Loads tree. Accepts an array or a promise.
@@ -2134,12 +637,14 @@ function InspireTree(opts) {
      *
      * tree.load($.getJSON('nodes.json'));
      */
-    tree.load = function(loader) {
+    load(loader) {
+        var tree = this;
+
         return new Promise(function(resolve, reject) {
             var complete = function(nodes) {
                 // Delay event for synchronous loader. Otherwise it fires
                 // before the user has a chance to listen.
-                if (!initialized && _.isArray(nodes)) {
+                if (!tree.initialized && _.isArray(nodes)) {
                     setTimeout(function() {
                         tree.emit('data.loaded', nodes);
                     });
@@ -2149,32 +654,32 @@ function InspireTree(opts) {
                 }
 
                 // Clear and call rendering on existing data
-                if (model.length > 0) {
+                if (tree.model.length > 0) {
                     tree.removeAll();
                 }
 
-                model = collectionToModel(nodes);
+                tree.model = collectionToModel(tree, nodes);
 
                 if (tree.config.selection.require && !tree.selected().length) {
                     tree.selectFirstAvailableNode();
                 }
 
                 // Delay event for synchronous loader
-                if (!initialized && _.isArray(nodes)) {
+                if (!tree.initialized && _.isArray(nodes)) {
                     setTimeout(function() {
-                        tree.emit('model.loaded', model);
+                        tree.emit('model.loaded', tree.model);
                     });
                 }
                 else {
-                    tree.emit('model.loaded', model);
+                    tree.emit('model.loaded', tree.model);
                 }
 
-                resolve(model);
+                resolve(tree.model);
 
-                dom.applyChanges();
+                tree.dom.applyChanges();
 
-                if (_.isFunction(dom.scrollSelectedIntoView)) {
-                    dom.scrollSelectedIntoView();
+                if (_.isFunction(tree.dom.scrollSelectedIntoView)) {
+                    tree.dom.scrollSelectedIntoView();
                 }
             };
 
@@ -2207,7 +712,18 @@ function InspireTree(opts) {
                 throw new Error('Invalid data loader.');
             }
         });
-    };
+    }
+
+    /**
+     * Query for all loading nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    loading() {
+        return map(this, 'loading', arguments);
+    }
 
     /*
      * Pause events.
@@ -2216,16 +732,16 @@ function InspireTree(opts) {
      * @param {array} events Event names to mute.
      * @return {Tree} Tree instance.
      */
-    tree.mute = function(events) {
+    mute(events) {
         if (_.isString(events) || _.isArray(events)) {
-            muted = _.castArray(events);
+            this._muted = _.castArray(events);
         }
         else {
-            muted = true;
+            this._muted = true;
         }
 
-        return tree;
-    };
+        return this;
+    }
 
     /**
      * Get current mute settings.
@@ -2233,9 +749,49 @@ function InspireTree(opts) {
      * @category Tree
      * @return {boolean|array} Muted events. If all, true.
      */
-    tree.muted = function() {
-        return muted;
-    };
+    muted() {
+        return this._muted;
+    }
+
+    /**
+     * Get a node.
+     *
+     * @category Tree
+     * @param {string|number} id ID of node.
+     * @return {TreeNode} Node object.
+     */
+    node() {
+        return map(this, 'node', arguments);
+    }
+
+    /**
+     * Get all nodes in a tree, or nodes for an array of IDs.
+     *
+     * @category Tree
+     * @param {array} refs Array of ID references.
+     * @return {TreeNodes} Array of node objects.
+     * @example
+     *
+     * var all = tree.nodes()
+     * var some = tree.nodes([1, 2, 3])
+     */
+    nodes() {
+        return map(this, 'nodes', arguments);
+    }
+
+    /**
+     * Base recursion function for a collection or node.
+     *
+     * Returns false if execution should cease.
+     *
+     * @private
+     * @param {TreeNode|TreeNodes} obj Node or collection.
+     * @param {function} iteratee Iteratee function
+     * @return {boolean} Cease iteration.
+     */
+    recurseDown() {
+        return map(this, 'recurseDown', arguments);
+    }
 
     /**
      * Reloads/re-executes the original data loader.
@@ -2243,9 +799,9 @@ function InspireTree(opts) {
      * @category Tree
      * @return {Promise} Load method promise.
      */
-    tree.reload = function() {
-        return tree.load(opts.data || tree.config.data);
-    };
+    reload() {
+        return this.load(this.opts.data || this.config.data);
+    }
 
     /**
      * Removes all nodes.
@@ -2253,12 +809,43 @@ function InspireTree(opts) {
      * @category Tree
      * @return {Tree} Tree instance.
      */
-    tree.removeAll = function() {
-        model = new TreeNodes();
-        dom.applyChanges();
+    removeAll() {
+        this.model = new TreeNodes(this);
+        this.dom.applyChanges();
 
-        return tree;
-    };
+        return this;
+    }
+
+    /**
+     * Query for all soft-removed nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    removed() {
+        return map(this, 'removed', arguments);
+    }
+
+    /**
+     * Restore children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    restore() {
+        return map(this, 'restore', arguments);
+    }
+
+    /**
+     * Restore all children (deeply) in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    restoreDeep() {
+        return map(this, 'restoreDeep', arguments);
+    }
 
     /**
      * Search nodes, showing only those that match and the necessary hierarchy.
@@ -2267,22 +854,23 @@ function InspireTree(opts) {
      * @param {*} query Search string, RegExp, or function.
      * @return {TreeNodes} Array of matching node objects.
      */
-    tree.search = function(query) {
-        var matches = new TreeNodes();
+    search(query) {
+        var tree = this;
+        var matches = new TreeNodes(this);
 
         var custom = tree.config.search;
         if (_.isFunction(custom)) {
             return custom(
                 query,
                 function resolver(nodes) {
-                    dom.batch();
+                    tree.dom.batch();
 
                     tree.hideDeep();
                     _.each(nodes, function(node) {
                         tree.addNode(node);
                     });
 
-                    dom.end();
+                    tree.dom.end();
                 },
                 function rejecter(err) {
                     tree.emit('tree.loaderror', err);
@@ -2309,9 +897,9 @@ function InspireTree(opts) {
             predicate = query;
         }
 
-        dom.batch();
+        tree.dom.batch();
 
-        model.recurseDown(function(node) {
+        tree.model.recurseDown(function(node) {
             if (!node.removed()) {
                 var match = predicate(node);
                 var wasHidden = node.hidden();
@@ -2329,10 +917,31 @@ function InspireTree(opts) {
             }
         });
 
-        dom.end();
+        tree.dom.end();
 
         return matches;
-    };
+    }
+
+    /**
+     * Select children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    select() {
+        return map(this, 'select', arguments);
+    }
+
+    /**
+     * Query for all selectable nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    selectable() {
+        return map(this, 'selectable', arguments);
+    }
 
     /**
      * Select all nodes between a start and end node.
@@ -2343,8 +952,8 @@ function InspireTree(opts) {
      * @param {TreeNode} endNode Ending node
      * @return {Tree} Tree instance.
      */
-    tree.selectBetween = function(startNode, endNode) {
-        dom.batch();
+    selectBetween(startNode, endNode) {
+        this.dom.batch();
 
         var node = startNode.nextVisibleNode();
         while (node) {
@@ -2357,10 +966,31 @@ function InspireTree(opts) {
             node = node.nextVisibleNode();
         }
 
-        dom.end();
+        this.dom.end();
 
-        return tree;
+        return this;
     };
+
+    /**
+     * Select all children (deeply) in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    selectDeep() {
+        return map(this, 'selectDeep', arguments);
+    }
+
+    /**
+     * Query for all selected nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    selected() {
+        return map(this, 'selected', arguments);
+    }
 
     /**
      * Select the first available node at the root level.
@@ -2368,8 +998,8 @@ function InspireTree(opts) {
      * @category Tree
      * @return {TreeNode} Selected node object.
      */
-    tree.selectFirstAvailableNode = function() {
-        var node = model.filter('available').get(0);
+    selectFirstAvailableNode() {
+        var node = this.model.filter('available').get(0);
         if (node) {
             node.select();
         }
@@ -2378,39 +1008,88 @@ function InspireTree(opts) {
     };
 
     /**
+     * Show children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    show() {
+        return map(this, 'show', arguments);
+    }
+
+    /**
+     * Show all children (deeply) in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    showDeep() {
+        return map(this, 'showDeep', arguments);
+    }
+
+    /**
+     * Soft-remove children in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    softRemove() {
+        return map(this, 'softRemove', arguments);
+    }
+
+    /**
+     * Sorts all TreeNode objects in this collection.
+     *
+     * If no custom sorter given, the configured "sort" value will be used.
+     *
+     * @category Tree
+     * @param {string|function} sorter Sort function or property name.
+     * @return {TreeNodes} Array of node obejcts.
+     */
+    sort() {
+        return map(this, 'sort', arguments);
+    }
+
+    /**
+     * Returns a native Array of nodes.
+     *
+     * @category Tree
+     * @return {array} Array of node objects.
+     */
+    toArray() {
+        return map(this, 'toArray', arguments);
+    }
+
+    /**
      * Resume events.
      *
      * @category Tree
      * @param {array} events Events to unmute.
      * @return {Tree} Tree instance.
      */
-    tree.unmute = function(events) {
+    unmute(events) {
         // Diff array and set to false if we're now empty
         if (_.isString(events) || _.isArray(events)) {
-            muted = _.difference(muted, _.castArray(events));
-            if (!muted.length) {
-                muted = false;
+            this._muted = _.difference(this._muted, _.castArray(events));
+            if (!this._muted.length) {
+                this._muted = false;
             }
         }
         else {
-            muted = false;
+            this._muted = false;
         }
 
-        return tree;
+        return this;
     };
 
-    // Connect to our target DOM element
-    dom.attach(tree.config.target);
-
-    // Load initial user data
-    tree.load(tree.config.data);
-
-    initialized = true;
-
-    return tree;
-};
-
-// Mixin EventEmitter
-InspireTree.prototype = Object.create(EventEmitter.prototype);
-
-module.exports = InspireTree;
+    /**
+     * Query for all visible nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    visible() {
+        return map(this, 'visible', arguments);
+    }
+}

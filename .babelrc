@@ -1,0 +1,10 @@
+{
+    "presets": ["es2015"],
+    "plugins": [
+        "add-module-exports",
+        ["babel-plugin-transform-builtin-extend", {
+            "globals": ["Array"],
+            "approximate": true
+        }]
+    ]
+}

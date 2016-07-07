@@ -51,6 +51,12 @@ if (!BUNDLE) {
     };
 }
 
+var babelPlugins = ['add-module-exports'];
+
+if (BUNDLE) {
+    babelPlugins.push('lodash');
+}
+
 module.exports = {
     entry: {
         'inspire-tree': './src/tree.js'
@@ -80,9 +86,12 @@ module.exports = {
         library: 'InspireTree',
         libraryTarget: 'umd'
     },
+    resolve: {
+        extensions: ['', '.ts', '.js']
+    },
     module: {
         loaders: [{
-            loader: 'babel?presets[]=es2015' + (BUNDLE ? '&plugins[]=lodash' : '')
+            loader: 'babel-loader' + (BUNDLE ? '?plugins[]=lodash' : '')
         }, {
             test: /\.scss$/,
             loader: ExtractTextPlugin.extract('style-loader', sassLoaders.join('!'))

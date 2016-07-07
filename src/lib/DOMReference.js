@@ -7,9 +7,8 @@
  * @category DOM
  * @return {object} Object holding the final node.
  */
-function DOMReference() {};
-DOMReference.prototype.hook = function(node) {
-    this.node = node;
-};
-
-module.exports = DOMReference;
+export class DOMReference {
+    hook(node) {
+        this.node = node;
+    }
+}

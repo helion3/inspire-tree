@@ -1,52 +1,155 @@
 'use strict';
 
 // Libs
-import _ from 'lodash';
-import createElement from 'virtual-dom/create-element';
-import diff from 'virtual-dom/diff';
-import DOMReference from './lib/DOMReference';
-import h from 'virtual-dom/h';
-import keyCodes from 'key-codes';
-import patch from 'virtual-dom/patch';
-import VCache from './lib/VCache';
-import VArrayDirtyCompare from './lib/VArrayDirtyCompare';
-import VDirtyCompare from './lib/VDirtyCompare';
-import VStateCompare from './lib/VStateCompare';
+import * as _ from 'lodash';
+import { create as createElement, diff, h, patch } from 'virtual-dom';
+import { DOMReference } from './lib/DOMReference';
+import { VCache } from './lib/VCache';
+import { VArrayDirtyCompare } from './lib/VArrayDirtyCompare';
+import { VDirtyCompare } from './lib/VDirtyCompare';
+import { VStateCompare } from './lib/VStateCompare';
 
-module.exports = function InspireDOM(tree) {
-    var dom = this;
-    var $activeDropTarget;
-    var $dragElement;
-    var $dragNode;
-    var $target;
-    var batching = 0;
-    var dragHandleOffset;
-    var dropTargets = [];
-    var isDragDropEnabled = false;
-    var isMouseHeld = false;
+/**
+ * Helper method to create an object for a new node.
+ *
+ * @private
+ * @return {void}
+ */
+function blankNode() {
+    return {
+        text: 'New Node',
+        itree: {
+            state: {
+                editing: true,
+                focused: true
+            }
+        }
+    };
+}
 
-    // Cache because we use in loops
-    var isDynamic = _.isFunction(tree.config.data);
-    var contextMenuChoices = tree.config.contextMenu;
+/**
+ * Default InspireTree rendering logic.
+ *
+ * @category DOM
+ * @return {InspireDOM} Default renderer.
+ */
+export default class InspireDOM {
+    constructor(tree) {
+        // Init properties
+        this._tree = tree;
+        this.batching = 0;
+        this.dropTargets = [];
+
+        // Cache because we use in loops
+        this.isDynamic = _.isFunction(this._tree.config.data);
+        this.contextMenuChoices = this._tree.config.contextMenu;
+    }
 
     /**
-     * Helper method to create an object for a new node.
+     * Apply pending data changes to the DOM.
+     *
+     * Will skip rendering as long as any calls
+     * to `batch` have yet to be resolved,
      *
      * @category DOM
      * @private
      * @return {void}
      */
-    function blankNode() {
-        return {
-            text: 'New Node',
-            itree: {
-                state: {
-                    editing: true,
-                    focused: true
+    applyChanges() {
+        // Never rerender when until batch complete
+        if (this.batching > 0) {
+            return;
+        }
+
+        this.renderNodes();
+    }
+
+    /**
+     * Attaches to the DOM element for rendering.
+     *
+     * @category DOM
+     * @private
+     * @param {HTMLElement} target Element, selector, or jQuery-like object.
+     * @return {void}
+     */
+    attach(target) {
+        var dom = this;
+        dom.$target = dom.getElement(target);
+
+        if (!dom.$target) {
+            throw new Error('No valid element to attach to.');
+        }
+
+        // Set classnames
+        var classNames = dom.$target.className.split(' ');
+        classNames.push('inspire-tree');
+
+        if (dom._tree.config.editable) {
+            classNames.push('editable');
+
+            _.each(_.pickBy(dom._tree.config.editing, _.identity), function(v, key) {
+                classNames.push('editable-' + key);
+            });
+        }
+
+        dom.$target.className = classNames.join(' ');
+        dom.$target.setAttribute('tabindex', dom._tree.config.tabindex || 0);
+
+        // Handle keyboard interaction
+        dom.$target.addEventListener('keyup', dom.keyboardListener.bind(dom));
+
+        if (dom.contextMenuChoices) {
+            document.body.addEventListener('click', function() {
+                dom.closeContextMenu();
+            });
+        }
+
+        var dragTargetSelectors = dom._tree.config.dragTargets;
+        if (!_.isEmpty(dragTargetSelectors)) {
+            _.each(dragTargetSelectors, function(selector) {
+                var dropTarget = dom.getElement(selector);
+
+                if (dropTarget) {
+                    dom.dropTargets.push(dropTarget);
                 }
+                else {
+                    throw new Error('No valid element found for drop target ' + selector);
+                }
+            });
+        }
+
+        dom.isDragDropEnabled = dom.dropTargets.length > 0;
+
+        if (dom.isDragDropEnabled) {
+            document.addEventListener('mouseup', dom.mouseUpListener.bind(dom));
+            document.addEventListener('mousemove', dom.mouseMoveListener.bind(dom));
+        }
+
+        // Sync browser focus to focus state
+        dom._tree.on('node.focused', function(node) {
+            var elem = node.itree.ref.node.querySelector('.title');
+            if (elem !== document.activeElement) {
+                elem.focus();
             }
-        };
-    };
+        });
+
+        dom.$target.inspireTree = dom._tree;
+    }
+
+    /**
+     * Disable rendering in preparation for multiple changes.
+     *
+     * @category DOM
+     * @private
+     * @return {void}
+     */
+    batch() {
+        if (this.batching < 0) {
+            this.batching = 0;
+        }
+
+        this.batching++;
+    }
 
     /**
      * Clear page text selection, primarily after a click event which
@@ -56,7 +159,7 @@ module.exports = function InspireDOM(tree) {
      * @private
      * @return {void}
      */
-    function clearSelection() {
+    clearSelection() {
         if (document.selection && document.selection.empty) {
             document.selection.empty();
         }
@@ -72,12 +175,12 @@ module.exports = function InspireDOM(tree) {
      * @private
      * @return {void}
      */
-    function closeContextMenu() {
-        if (contextMenuNode) {
-            contextMenuNode.parentNode.removeChild(contextMenuNode);
-            contextMenuNode = null;
+    closeContextMenu() {
+        if (this.contextMenuNode) {
+            this.contextMenuNode.parentNode.removeChild(this.contextMenuNode);
+            this.contextMenuNode = null;
         }
-    };
+    }
 
     /**
      * Creates a tri-state checkbox input.
@@ -85,7 +188,9 @@ module.exports = function InspireDOM(tree) {
      * @param {TreeNode} node Node object.
      * @return {object} Input node element.
      */
-    function createCheckbox(node) {
+    createCheckbox(node) {
+        var dom = this;
+
         return new VCache({
             selected: node.selected(),
             indeterminate: node.indeterminate()
@@ -103,14 +208,14 @@ module.exports = function InspireDOM(tree) {
                     };
 
                     // Emit an event with our forwarded MouseEvent, node, and default handler
-                    tree.emit('node.click', event, node, handler);
+                    dom._tree.emit('node.click', event, node, handler);
 
                     // Unless default is prevented, auto call our default handler
                     if (!event.treeDefaultPrevented) {
                         handler();
                     }
                 }
-            });
+            }, []);
         });
     }
 
@@ -122,14 +227,16 @@ module.exports = function InspireDOM(tree) {
      * @param {object} node Clicked node.
      * @return {object} Unordered list node.
      */
-    function createContextMenu(choices, node) {
+    createContextMenu(choices, node) {
+        var dom = this;
+
         return h('ul.itree-menu', {
             onclick: function(event) {
                 event.stopPropagation();
             }
         }, _.transform(choices, function(contents, choice) {
-            contents.push(createContextMenuListItem(choice, node));
-        }));
+            contents.push(dom.createContextMenuListItem(choice, node));
+        }, []));
     }
 
     /**
@@ -140,11 +247,13 @@ module.exports = function InspireDOM(tree) {
      * @param {object} node Node object.
      * @return {object} List item node.
      */
-    function createContextMenuListItem(choice, node) {
+    createContextMenuListItem(choice, node) {
+        var dom = this;
+
         return h('li', [[
             h('a', {
                 onclick: function(event) {
-                    choice.handler(event, node, closeContextMenu);
+                    choice.handler(event, node, dom.closeContextMenu);
                 }
             }, choice.text)
         ]]);
@@ -159,20 +268,20 @@ module.exports = function InspireDOM(tree) {
      * @param {Event} event Click event to use.
      * @return {void}
      */
-    function createDraggableElement(element, event) {
-        $dragNode = nodeFromTitleDOMElement(element);
+    createDraggableElement(element, event) {
+        this.$dragNode = this.nodeFromTitleDOMElement(element);
 
-        var offset = getAbsoluteOffset(element);
+        var offset = this.getAbsoluteOffset(element);
         var diffX = event.clientX - offset.left;
         var diffY = event.clientY - offset.top;
 
-        dragHandleOffset = { left: diffX, top: diffY };
+        this.dragHandleOffset = { left: diffX, top: diffY };
 
-        $dragElement = element.cloneNode(true);
-        $dragElement.className += ' dragging';
-        $dragElement.style.top = offset.top + 'px';
-        $dragElement.style.left = offset.left + 'px';
-        $target.appendChild($dragElement);
+        this.$dragElement = element.cloneNode(true);
+        this.$dragElement.className += ' dragging';
+        this.$dragElement.style.top = offset.top + 'px';
+        this.$dragElement.style.left = offset.left + 'px';
+        this.$target.appendChild(this.$dragElement);
     }
 
     /**
@@ -182,7 +291,9 @@ module.exports = function InspireDOM(tree) {
      * @param {TreeNode} node Node object.
      * @return {object} Input element and buttons
      */
-    function createEditField(node) {
+    createEditField(node) {
+        var dom = this;
+
         return new VCache({}, VStateCompare, function() {
             var input = new DOMReference();
 
@@ -250,7 +361,7 @@ module.exports = function InspireDOM(tree) {
      * @private
      * @return {object} List Item node.
      */
-    function createEmptyListItemNode() {
+    createEmptyListItemNode() {
         return new VCache({}, VStateCompare, function() {
             return h('ol', [
                 h('li.leaf', [
@@ -258,7 +369,7 @@ module.exports = function InspireDOM(tree) {
                 ])
             ]);
         });
-    };
+    }
 
     /**
      * Creates a list item node for a specific data node.
@@ -267,7 +378,9 @@ module.exports = function InspireDOM(tree) {
      * @param {object} node Data node.
      * @return {object} List Item node.
      */
-    function createListItemNode(node) {
+    createListItemNode(node) {
+        var dom = this;
+
         return new VCache({
             dirty: node.itree.dirty
         }, VDirtyCompare, function() {
@@ -279,7 +392,7 @@ module.exports = function InspireDOM(tree) {
             var contents = [];
 
             // Add inline edit controls
-            if (!node.editing() && tree.config.editing.edit) {
+            if (!node.editing() && dom._tree.config.editing.edit) {
                 buttons.push(h('a.btn.icon.icon-pencil', {
                     attributes: {
                         title: 'Edit this node'
@@ -292,7 +405,7 @@ module.exports = function InspireDOM(tree) {
                 }));
             }
 
-            if (!node.editing() && tree.config.editing.add) {
+            if (!node.editing() && dom._tree.config.editing.add) {
                 buttons.push(h('a.btn.icon.icon-plus', {
                     attributes: {
                         title: 'Add a child node'
@@ -306,7 +419,7 @@ module.exports = function InspireDOM(tree) {
                 }));
             }
 
-            if (!node.editing() && tree.config.editing.remove) {
+            if (!node.editing() && dom._tree.config.editing.remove) {
                 buttons.push(h('a.btn.icon.icon-minus', {
                     attributes: {
                         title: 'Remove this node'
@@ -323,14 +436,14 @@ module.exports = function InspireDOM(tree) {
                 contents.push(h('span.btn-group', buttons));
             }
 
-            contents.push(createTitleContainer(node));
+            contents.push(dom.createTitleContainer(node));
             contents.push(h('div.wholerow'));
 
             if (node.hasChildren()) {
-                contents.push(createOrderedList(node.children));
+                contents.push(dom.createOrderedList(node.children));
             }
-            else if (isDynamic) {
-                contents.push(createEmptyListItemNode());
+            else if (dom.isDynamic) {
+                contents.push(dom.createEmptyListItemNode());
             }
 
             // Add classes for any enabled states
@@ -378,7 +491,7 @@ module.exports = function InspireDOM(tree) {
                 ref: node.itree.ref
             }, contents);
         });
-    };
+    }
 
     /**
      * Creates list item nodes for an array of data nodes.
@@ -387,17 +500,18 @@ module.exports = function InspireDOM(tree) {
      * @param {array} nodes Data nodes.
      * @return {array} Array of List Item nodes.
      */
-    function createListItemNodes(nodes) {
+    createListItemNodes(nodes) {
+        var dom = this;
         var domNodes = [];
 
         _.each(nodes, function(node) {
             // We can't just remove the node if soft-removed
             // https://github.com/Matt-Esch/virtual-dom/issues/333
-            domNodes.push(createListItemNode(node));
+            domNodes.push(dom.createListItemNode(node));
         });
 
         return domNodes;
-    };
+    }
 
     /**
      * Creates an ordered list containing list item for
@@ -407,14 +521,16 @@ module.exports = function InspireDOM(tree) {
      * @param {array} nodes Data nodes.
      * @return {object} Oredered List node.
      */
-    function createOrderedList(nodes) {
+    createOrderedList(nodes) {
+        var dom = this;
+
         return new VCache({
             nodes: nodes,
             nodeCount: nodes.length
         }, VArrayDirtyCompare, function() {
-            return h('ol', createListItemNodes(nodes));
+            return h('ol', dom.createListItemNodes(nodes));
         });
-    };
+    }
 
     /**
      * Creates an anchor around the node title.
@@ -424,7 +540,9 @@ module.exports = function InspireDOM(tree) {
      * @param {boolean} hasVisibleChildren If this node has visible children.
      * @return {object} Anchor node.
      */
-    function createTitleAnchor(node, hasVisibleChildren) {
+    createTitleAnchor(node, hasVisibleChildren) {
+        var dom = this;
+
         return new VCache({
             editing: node.editing(),
             expanded: node.expanded(),
@@ -435,7 +553,7 @@ module.exports = function InspireDOM(tree) {
             var attributes = node.itree.a.attributes || {};
             var classNames = ['title', 'icon'];
 
-            if (!tree.config.showCheckboxes) {
+            if (!dom._tree.config.showCheckboxes) {
                 var folder = node.expanded() ? 'icon-folder-open' : 'icon-folder';
                 classNames.push(current.state.icon || (hasVisibleChildren ? folder : 'icon-file-empty'));
             }
@@ -443,7 +561,7 @@ module.exports = function InspireDOM(tree) {
             attributes.tabindex = 1;
             attributes.unselectable = 'on';
 
-            var contents = [node.editing() ? createEditField(node) : current.state.text];
+            var contents = [node.editing() ? dom.createEditField(node) : current.state.text];
 
             return h('a.' + classNames.join('.'), {
                 attributes: attributes,
@@ -451,14 +569,14 @@ module.exports = function InspireDOM(tree) {
                     node.blur();
                 },
                 oncontextmenu: function(event) {
-                    if (contextMenuChoices) {
+                    if (dom.contextMenuChoices) {
                         // Define our default handler
                         var handler = function() {
-                            renderContextMenu(event, node);
+                            dom.renderContextMenu(event, node);
                         };
 
                         // Emit an event with our forwarded MouseEvent, node, and default handler
-                        tree.emit('node.contextmenu', event, node, handler);
+                        dom._tree.emit('node.contextmenu', event, node, handler);
 
                         // Unless default is prevented, auto call our default handler
                         if (!event.treeDefaultPrevented) {
@@ -476,20 +594,20 @@ module.exports = function InspireDOM(tree) {
                         }
 
                         if (event.metaKey || event.ctrlKey || event.shiftKey) {
-                            tree.disableDeselection();
+                            dom._tree.disableDeselection();
                         }
 
                         if (event.shiftKey) {
-                            clearSelection();
+                            dom.clearSelection();
 
-                            var selected = tree.lastSelectedNode();
+                            var selected = dom._tree.lastSelectedNode();
                             if (selected) {
-                                tree.selectBetween.apply(tree, tree.boundingNodes(selected, node));
+                                dom._tree.selectBetween.apply(dom._tree, dom._tree.boundingNodes(selected, node));
                             }
                         }
 
                         if (node.selected()) {
-                            if (!tree.config.selection.disableDirectDeselection) {
+                            if (!dom._tree.config.selection.disableDirectDeselection) {
                                 node.deselect();
                             }
                         }
@@ -497,11 +615,11 @@ module.exports = function InspireDOM(tree) {
                             node.select();
                         }
 
-                        tree.enableDeselection();
+                        dom._tree.enableDeselection();
                     };
 
                     // Emit an event with our forwarded MouseEvent, node, and default handler
-                    tree.emit('node.click', event, node, handler);
+                    dom._tree.emit('node.click', event, node, handler);
 
                     // Unless default is prevented, auto call our default handler
                     if (!event.treeDefaultPrevented) {
@@ -512,13 +630,13 @@ module.exports = function InspireDOM(tree) {
                     // Define our default handler
                     var handler = function() {
                         // Clear text selection which occurs on double click
-                        clearSelection();
+                        dom.clearSelection();
 
                         node.toggleCollapse();
                     };
 
                     // Emit an event with our forwarded MouseEvent, node, and default handler
-                    tree.emit('node.dblclick', event, node, handler);
+                    dom._tree.emit('node.dblclick', event, node, handler);
 
                     // Unless default is prevented, auto call our default handler
                     if (!event.treeDefaultPrevented) {
@@ -529,8 +647,8 @@ module.exports = function InspireDOM(tree) {
                     node.focus();
                 },
                 onmousedown: function() {
-                    if (isDragDropEnabled) {
-                        isMouseHeld = true;
+                    if (dom.isDragDropEnabled) {
+                        dom.isMouseHeld = true;
                     }
                 }
             }, contents);
@@ -544,8 +662,9 @@ module.exports = function InspireDOM(tree) {
      * @param {string} node Node object.
      * @return {object} Container node.
      */
-    function createTitleContainer(node) {
-        var hasVisibleChildren = !isDynamic ? node.hasVisibleChildren() : Boolean(node.children);
+    createTitleContainer(node) {
+        var dom = this;
+        var hasVisibleChildren = !dom.isDynamic ? node.hasVisibleChildren() : Boolean(node.children);
 
         return new VCache({
             collapsed: node.collapsed(),
@@ -557,18 +676,18 @@ module.exports = function InspireDOM(tree) {
             var contents = [];
 
             if (hasVisibleChildren) {
-                contents.push(createToggleAnchor(node));
+                contents.push(dom.createToggleAnchor(node));
             }
 
-            if (tree.config.showCheckboxes) {
-                contents.push(createCheckbox(node));
+            if (dom._tree.config.showCheckboxes) {
+                contents.push(dom.createCheckbox(node));
             }
 
-            contents.push(createTitleAnchor(node, hasVisibleChildren));
+            contents.push(dom.createTitleAnchor(node, hasVisibleChildren));
 
             return h('div.title-wrap', contents);
         });
-    };
+    }
 
     /**
      * Creates an anchor used for expanding and collapsing a node.
@@ -577,7 +696,7 @@ module.exports = function InspireDOM(tree) {
      * @param {object} node Node object.
      * @return {object} Anchor node.
      */
-    function createToggleAnchor(node) {
+    createToggleAnchor(node) {
         return new VCache({
             collapsed: node.collapsed()
         }, VStateCompare, function(previous, current) {
@@ -587,8 +706,23 @@ module.exports = function InspireDOM(tree) {
                 onclick: function() {
                     node.toggleCollapse();
                 }
-            });
+            }, []);
         });
+    }
+
+    /**
+     * Permit rerendering of batched changes.
+     *
+     * @category DOM
+     * @private
+     * @return {void}
+     */
+    end() {
+        this.batching--;
+
+        if (this.batching === 0) {
+            this.applyChanges();
+        }
     }
 
     /**
@@ -598,7 +732,7 @@ module.exports = function InspireDOM(tree) {
      * @param {HTMLElement} element HTML Element.
      * @return {object} Object with top/left values.
      */
-    function getAbsoluteOffset(element) {
+    getAbsoluteOffset(element) {
         var x = 0;
         var y = 0;
 
@@ -626,7 +760,7 @@ module.exports = function InspireDOM(tree) {
      * @param {mixed} target Element, jQuery selector, selector.
      * @return {HTMLElement} Matching element.
      */
-    function getElement(target) {
+    getElement(target) {
         var $element;
 
         if (target instanceof HTMLElement) {
@@ -646,28 +780,16 @@ module.exports = function InspireDOM(tree) {
     }
 
     /**
-     * Helper method for obtaining the data-uid from a DOM element.
-     *
-     * @private
-     * @param {HTMLElement} element HTML Element.
-     * @return {object} Node object
-     */
-    function nodeFromTitleDOMElement(element) {
-        var uid = element.parentNode.parentNode.getAttribute('data-uid');
-        return tree.node(uid);
-    }
-
-    /**
      * Helper method to find a scrollable ancestor element.
      *
      * @param  {HTMLElement} $element Starting element.
      * @return {HTMLElement} Scrollable element.
      */
-    function getScrollableAncestor($element) {
+    getScrollableAncestor($element) {
         if ($element instanceof Element) {
             var style = getComputedStyle($element);
             if (style.overflow !== 'auto' && $element.parentNode) {
-                $element = getScrollableAncestor($element.parentNode);
+                $element = this.getScrollableAncestor($element.parentNode);
             }
         }
 
@@ -681,26 +803,26 @@ module.exports = function InspireDOM(tree) {
      * @param {Event} event Keyboard event.
      * @return {void}
      */
-    function keyboardListener(event) {
+    keyboardListener(event) {
         // Navigation
-        var focusedNode = tree.focused();
+        var focusedNode = this._tree.focused();
         if (focusedNode) {
             focusedNode = focusedNode[0];
             switch (event.which) {
-                case keyCodes.DOWN:
-                    moveFocusDownFrom(focusedNode);
+                case 40:
+                    this.moveFocusDownFrom(focusedNode);
                     break;
-                case keyCodes.ENTER:
+                case 13:
                     focusedNode.toggleSelect();
                     break;
-                case keyCodes.LEFT:
+                case 37:
                     focusedNode.collapse();
                     break;
-                case keyCodes.RIGHT:
+                case 39:
                     focusedNode.expand();
                     break;
-                case keyCodes.UP:
-                    moveFocusUpFrom(focusedNode);
+                case 38:
+                    this.moveFocusUpFrom(focusedNode);
                     break;
                 default:
             }
@@ -715,22 +837,22 @@ module.exports = function InspireDOM(tree) {
      * @param {Event} event Mouse move event.
      * @return {void}
      */
-    function mouseMoveListener(event) {
-        if (isMouseHeld && !$dragElement) {
-            createDraggableElement(event.target, event);
+    mouseMoveListener(event) {
+        if (this.isMouseHeld && !this.$dragElement) {
+            this.createDraggableElement(event.target, event);
         }
-        else if ($dragElement) {
+        else if (this.$dragElement) {
             event.preventDefault();
             event.stopPropagation();
 
-            var x = event.clientX - dragHandleOffset.left;
-            var y = event.clientY - dragHandleOffset.top;
+            var x = event.clientX - this.dragHandleOffset.left;
+            var y = event.clientY - this.dragHandleOffset.top;
 
-            $dragElement.style.left = x + 'px';
-            $dragElement.style.top = y + 'px';
+            this.$dragElement.style.left = x + 'px';
+            this.$dragElement.style.top = y + 'px';
 
             var validTarget;
-            _.each(dropTargets, function(target) {
+            _.each(this.dropTargets, function(target) {
                 var rect = target.getBoundingClientRect();
 
                 if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
@@ -740,48 +862,48 @@ module.exports = function InspireDOM(tree) {
             });
 
             // If new target found for the first time
-            if (!$activeDropTarget && validTarget && validTarget.className.indexOf('itree-active-drop-target') === -1) {
+            if (!this.$activeDropTarget && validTarget && validTarget.className.indexOf('itree-active-drop-target') === -1) {
                 validTarget.className += ' itree-active-drop-target';
             }
 
-            $activeDropTarget = validTarget;
+            this.$activeDropTarget = validTarget;
         }
-    };
+    }
 
     /**
      * Handle mouse up events for dragged elements.
      *
      * @return {void}
      */
-    function mouseUpListener() {
-        isMouseHeld = false;
+    mouseUpListener() {
+        this.isMouseHeld = false;
 
-        if ($dragElement) {
-            $dragElement.parentNode.removeChild($dragElement);
+        if (this.$dragElement) {
+            this.$dragElement.parentNode.removeChild(this.$dragElement);
 
-            if ($activeDropTarget) {
-                var targetIsTree = _.isFunction(_.get($activeDropTarget, 'inspireTree.addNode'));
+            if (this.$activeDropTarget) {
+                var targetIsTree = _.isFunction(_.get(this.$activeDropTarget, 'inspireTree.addNode'));
 
                 // Notify that the node was "dropped out" of this tree
-                tree.emit('node.dropout', $dragNode, $activeDropTarget, targetIsTree);
+                this._tree.emit('node.dropout', this.$dragNode, this.$activeDropTarget, targetIsTree);
 
                 // If drop target supports the addNode method, invoke it
                 if (targetIsTree) {
-                    var newNode = $activeDropTarget.inspireTree.addNode($dragNode.copyHierarchy().export());
+                    var newNode = this.$activeDropTarget.inspireTree.addNode(this.$dragNode.copyHierarchy().toObject());
 
                     // Notify that the node was "dropped out"
-                    $activeDropTarget.inspireTree.emit('node.dropin', newNode);
+                    this.$activeDropTarget.inspireTree.emit('node.dropin', newNode);
                 }
             }
         }
 
-        if ($activeDropTarget) {
-            $activeDropTarget.className = $activeDropTarget.className.replace('itree-active-drop-target', '');
+        if (this.$activeDropTarget) {
+            this.$activeDropTarget.className = this.$activeDropTarget.className.replace('itree-active-drop-target', '');
         }
 
-        $dragNode = null;
-        $dragElement = null;
-        $activeDropTarget = null;
+        this.$dragNode = null;
+        this.$dragElement = null;
+        this.$activeDropTarget = null;
     }
 
     /**
@@ -791,28 +913,38 @@ module.exports = function InspireDOM(tree) {
      * @param {object} startingNode Node object.
      * @return {void}
      */
-    function moveFocusDownFrom(startingNode) {
+    moveFocusDownFrom(startingNode) {
         var next = startingNode.nextVisibleNode();
         if (next) {
             next.focus();
         }
     }
 
-    /**
-     * Move select up the visible tree from a starting node.
-     *
-     * @private
-     * @param {object} startingNode Node object.
-     * @return {void}
-     */
-    function moveFocusUpFrom(startingNode) {
+   /**
+    * Move select up the visible tree from a starting node.
+    *
+    * @private
+    * @param {object} startingNode Node object.
+    * @return {void}
+    */
+    moveFocusUpFrom(startingNode) {
         var prev = startingNode.previousVisibleNode();
         if (prev) {
             prev.focus();
         }
     }
 
-    var contextMenuNode;
+    /**
+     * Helper method for obtaining the data-uid from a DOM element.
+     *
+     * @private
+     * @param {HTMLElement} element HTML Element.
+     * @return {object} Node object
+     */
+    nodeFromTitleDOMElement(element) {
+        var uid = element.parentNode.parentNode.getAttribute('data-uid');
+        return this._tree.node(uid);
+    }
 
     /**
      * Renders a context menu for a given contextmenu click and node.
@@ -822,27 +954,22 @@ module.exports = function InspireDOM(tree) {
      * @param {object} node Clicked node object.
      * @return {void}
      */
-    function renderContextMenu(event, node) {
-        var choices = contextMenuChoices;
+    renderContextMenu(event, node) {
+        var choices = this.contextMenuChoices;
 
         if (_.isArrayLike(choices)) {
             event.preventDefault();
 
-            if (!contextMenuNode) {
-                var ul = createContextMenu(choices, node);
-                contextMenuNode = createElement(ul);
-                document.body.appendChild(contextMenuNode);
+            if (!this.contextMenuNode) {
+                var ul = this.createContextMenu(choices, node);
+                this.contextMenuNode = createElement(ul);
+                document.body.appendChild(this.contextMenuNode);
             }
 
-            contextMenuNode.style.top = event.clientY + 'px';
-            contextMenuNode.style.left = event.clientX + 'px';
+            this.contextMenuNode.style.top = event.clientY + 'px';
+            this.contextMenuNode.style.left = event.clientX + 'px';
         }
     }
-
-    // Cache our root node, so we can patch re-render in the future.
-    var rootNode;
-    var ol;
-    var rendering = false;
 
     /**
      * Triggers rendering for the given node array.
@@ -852,163 +979,43 @@ module.exports = function InspireDOM(tree) {
      * @param {array} nodes Array of node objects.
      * @return {void}
      */
-    function renderNodes(nodes) {
-        if (rendering) {
+    renderNodes(nodes) {
+        var dom = this;
+
+        if (dom.rendering) {
             return;
         }
 
-        rendering = true;
+        dom.rendering = true;
 
-        var newOl = createOrderedList(nodes || tree.nodes(), true);
+        var newOl = dom.createOrderedList(nodes || dom._tree.nodes());
 
-        if (!rootNode) {
-            rootNode = createElement(newOl);
-            $target.appendChild(rootNode);
+        if (!dom.rootNode) {
+            dom.rootNode = createElement(newOl);
+            dom.$target.appendChild(this.rootNode);
 
-            if (tree.config.editing.add) {
-                $target.appendChild(createElement(new VCache({}, VArrayDirtyCompare, function() {
+            if (dom._tree.config.editing.add) {
+                dom.$target.appendChild(createElement(new VCache({}, VArrayDirtyCompare, function() {
                     return h('a.btn.icon.icon-plus', {
                         attributes: {
                             title: 'Add a new root node'
                         },
                         onclick: function() {
-                            tree.focused().blur();
+                            dom._tree.focused().blur();
 
-                            tree.addNode(blankNode());
+                            dom._tree.addNode(blankNode());
                         }
                     });
                 })));
             }
         }
         else {
-            var patches = diff(ol, newOl);
-            rootNode = patch(rootNode, patches);
+            var patches = diff(dom.ol, newOl);
+            dom.rootNode = patch(dom.rootNode, patches);
         }
 
-        ol = newOl;
-        rendering = false;
-    };
-
-    /**
-     * Apply pending data changes to the DOM.
-     *
-     * Will skip rendering as long as any calls
-     * to `batch` have yet to be resolved,
-     *
-     * @category DOM
-     * @private
-     * @return {void}
-     */
-    dom.applyChanges = function() {
-        // Never rerender when until batch complete
-        if (batching > 0) {
-            return;
-        }
-
-        renderNodes();
-    };
-
-    /**
-     * Attaches to the DOM element for rendering.
-     *
-     * @category DOM
-     * @private
-     * @param {HTMLElement} target Element, selector, or jQuery-like object.
-     * @return {void}
-     */
-    dom.attach = function(target) {
-        $target = getElement(target);
-
-        if (!$target) {
-            throw new Error('No valid element to attach to.');
-        }
-
-        // Set classnames
-        var classNames = $target.className.split(' ');
-        classNames.push('inspire-tree');
-
-        if (tree.config.editable) {
-            classNames.push('editable');
-
-            _.each(_.pickBy(tree.config.editing, _.identity), function(v, key) {
-                classNames.push('editable-' + key);
-            });
-        }
-
-        $target.className = classNames.join(' ');
-
-        // Attributes
-        $target.setAttribute('tabindex', tree.config.tabindex || 0);
-
-        // Handle keyboard interaction
-        $target.addEventListener('keyup', keyboardListener);
-
-        if (contextMenuChoices) {
-            document.body.addEventListener('click', function() {
-                closeContextMenu();
-            });
-        }
-
-        var dragTargetSelectors = tree.config.dragTargets;
-        if (!_.isEmpty(dragTargetSelectors)) {
-            _.each(dragTargetSelectors, function(selector) {
-                var dropTarget = getElement(selector);
-
-                if (dropTarget) {
-                    dropTargets.push(dropTarget);
-                }
-                else {
-                    throw new Error('No valid element found for drop target ' + selector);
-                }
-            });
-        }
-
-        isDragDropEnabled = dropTargets.length > 0;
-
-        if (isDragDropEnabled) {
-            document.addEventListener('mouseup', mouseUpListener);
-            document.addEventListener('mousemove', mouseMoveListener);
-        }
-
-        // Sync browser focus to focus state
-        tree.on('node.focused', function(node) {
-            var elem = node.itree.ref.node.querySelector('.title');
-            if (elem !== document.activeElement) {
-                elem.focus();
-            }
-        });
-
-        $target.inspireTree = tree;
-    };
-
-    /**
-     * Disable rendering in preparation for multiple changes.
-     *
-     * @category DOM
-     * @private
-     * @return {void}
-     */
-    dom.batch = function() {
-        if (batching < 0) {
-            batching = 0;
-        }
-
-        batching++;
-    };
-
-    /**
-     * Permit rerendering of batched changes.
-     *
-     * @category DOM
-     * @private
-     * @return {void}
-     */
-    dom.end = function() {
-        batching--;
-
-        if (batching === 0) {
-            dom.applyChanges();
-        }
+        dom.ol = newOl;
+        dom.rendering = false;
     };
 
     /**
@@ -1018,18 +1025,16 @@ module.exports = function InspireDOM(tree) {
      * @private
      * @return {void}
      */
-    dom.scrollSelectedIntoView = function() {
+    scrollSelectedIntoView() {
         var $tree = document.querySelector('.inspire-tree');
         var $selected = $tree.querySelector('.selected');
 
         if ($selected) {
-            var $container = getScrollableAncestor($tree);
+            var $container = this.getScrollableAncestor($tree);
 
             if ($container) {
                 $container.scrollTop = $selected.offsetTop;
             }
         }
-    };
-
-    return dom;
-};
+    }
+}
