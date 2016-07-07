@@ -539,11 +539,9 @@ module.exports = function InspireDOM(tree) {
                     break;
                 case keyCodes.LEFT:
                     focusedNode.collapse();
-                    moveFocusUpFrom(focusedNode);
                     break;
                 case keyCodes.RIGHT:
                     focusedNode.expand();
-                    moveFocusDownFrom(focusedNode);
                     break;
                 case keyCodes.UP:
                     moveFocusUpFrom(focusedNode);
