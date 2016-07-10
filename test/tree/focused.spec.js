@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Tree.getFocusedNode', function() {
+describe('Tree.focused', function() {
     var $tree;
     var tree;
 
@@ -28,8 +28,8 @@ describe('Tree.getFocusedNode', function() {
         expect(tree.focused()).to.have.length(0);
     });
 
-    it('returns select root node', function() {
-        tree.node(1).select();
+    it('returns focused node', function() {
+        tree.node(1).focus();
 
         expect(tree.focused()[0].id).to.equal('1');
     });

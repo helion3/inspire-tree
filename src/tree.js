@@ -960,8 +960,6 @@ function InspireTree(opts) {
             // Batch selection changes
             dom.batch();
 
-            node.focus();
-
             if (tree.canAutoDeselect()) {
                 var oldVal = tree.config.selection.require;
                 tree.config.selection.require = false;

@@ -796,7 +796,10 @@ module.exports = function InspireDOM(tree) {
 
         // Sync browser focus to focus state
         tree.on('node.focused', function(node) {
-            node.itree.ref.node.querySelector('.title').focus();
+            var elem = node.itree.ref.node.querySelector('.title');
+            if (elem !== document.activeElement) {
+                elem.focus();
+            }
         });
 
         $target.inspireTree = tree;
