@@ -305,10 +305,14 @@ module.exports = function InspireDOM(tree) {
                 classNames.push(current.state.icon || (hasVisibleChildren ? folder : 'icon-file-empty'));
             }
 
+            attributes.tabindex = 1;
             attributes.unselectable = 'on';
 
             return h('a.' + classNames.join('.'), {
                 attributes: attributes,
+                onblur: function() {
+                    node.blur();
+                },
                 oncontextmenu: function(event) {
                     if (contextMenuChoices) {
                         // Define our default handler
@@ -380,6 +384,9 @@ module.exports = function InspireDOM(tree) {
                         handler();
                     }
                 },
+                onfocus: function() {
+                    node.focus();
+                },
                 onmousedown: function() {
                     if (isDragDropEnabled) {
                         isMouseHeld = true;
@@ -434,9 +441,11 @@ module.exports = function InspireDOM(tree) {
         }, VStateCompare, function(previous, current) {
             var icon = (current.state.collapsed ? '.icon-expand' : '.icon-collapse');
 
-            return h('a.toggle.icon' + icon, { onclick: function() {
-                node.toggleCollapse();
-            } });
+            return h('a.toggle.icon' + icon, {
+                onclick: function() {
+                    node.toggleCollapse();
+                }
+            });
         });
     }
 
@@ -753,7 +762,7 @@ module.exports = function InspireDOM(tree) {
         }
 
         $target.className += ' inspire-tree';
-        $target.setAttribute('tabindex', tree.config.tabindex || -1);
+        $target.setAttribute('tabindex', tree.config.tabindex || 0);
 
         // Handle keyboard interaction
         $target.addEventListener('keyup', keyboardListener);
@@ -785,8 +794,9 @@ module.exports = function InspireDOM(tree) {
             document.addEventListener('mousemove', mouseMoveListener);
         }
 
-        $target.addEventListener('blur', function() {
-            tree.focused().blur();
+        // Sync browser focus to focus state
+        tree.on('node.focused', function(node) {
+            node.itree.ref.node.querySelector('.title').focus();
         });
 
         $target.inspireTree = tree;

@@ -77,5 +77,9 @@
             top: -2px;
             vertical-align: middle;
         }
+
+        &:focus {
+            outline: none;
+        }
     }
 }
