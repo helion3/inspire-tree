@@ -4,6 +4,7 @@
 import _ from 'lodash';
 import createElement from 'virtual-dom/create-element';
 import diff from 'virtual-dom/diff';
+import DOMReference from './lib/DOMReference';
 import h from 'virtual-dom/h';
 import keyCodes from 'key-codes';
 import patch from 'virtual-dom/patch';
@@ -184,6 +185,7 @@ module.exports = function InspireDOM(tree) {
         }, VDirtyCompare, function() {
             var attributes = node.itree.li.attributes || {};
             node.itree.dirty = false;
+            node.itree.ref = new DOMReference();
 
             var contents = [
                 createTitleContainer(node),
@@ -237,7 +239,10 @@ module.exports = function InspireDOM(tree) {
             // Force internal-use attributes
             attributes['data-uid'] = node.id;
 
-            return h('li' + classNames, { attributes: attributes }, contents);
+            return h('li' + classNames, {
+                attributes: attributes,
+                ref: node.itree.ref
+            }, contents);
         });
     };
 
