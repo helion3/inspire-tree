@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Tree.selected', function() {
+describe('TreeNodes.prototype.selected', function() {
     var $tree;
     var tree;
 
@@ -21,6 +21,7 @@ describe('Tree.selected', function() {
     });
 
     it('exists', function() {
+        expect(tree.nodes().selected).to.be.a('function');
         expect(tree.selected).to.be.a('function');
     });
 

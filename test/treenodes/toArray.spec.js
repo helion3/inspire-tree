@@ -18,6 +18,7 @@ describe('TreeNodes.prototype.toArray', function() {
 
     it('exists', function() {
         expect(tree.nodes().toArray).to.be.a('function');
+        expect(tree.toArray).to.be.a('function');
     });
 
     it('returns nodes as a native array', function() {

@@ -27,6 +27,7 @@ describe('TreeNodes.prototype.flatten', function() {
 
     it('exists', function() {
         expect(tree.nodes().flatten).to.be.a('function');
+        expect(tree.flatten).to.be.a('function');
     });
 
     it('returns flat array of hidden nodes', function() {

@@ -26,6 +26,7 @@ describe('TreeNodes.prototype.sort', function() {
 
     it('exists', function() {
         expect(tree.nodes().sort).to.be.a('function');
+        expect(tree.sort).to.be.a('function');
     });
 
     it('sorts alphabetically', function() {

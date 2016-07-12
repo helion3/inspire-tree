@@ -29,6 +29,7 @@ describe('TreeNodes.prototype.deepest', function() {
 
     it('exists', function() {
         expect(tree.nodes().deepest).to.be.a('function');
+        expect(tree.deepest).to.be.a('function');
     });
 
     it('returns only deepest nodes', function() {

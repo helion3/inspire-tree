@@ -32,6 +32,7 @@ describe('TreeNodes.prototype.recurseDown', function() {
 
     it('exists', function() {
         expect(tree.nodes().recurseDown).to.be.a('function');
+        expect(tree.recurseDown).to.be.a('function');
     });
 
     it('recurse down treenodes and children', function() {

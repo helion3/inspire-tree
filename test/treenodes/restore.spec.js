@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNodes.prototype.get', function() {
+describe('TreeNodes.prototype.restore', function() {
     var tree;
 
     before(function() {
@@ -11,9 +11,7 @@ describe('TreeNodes.prototype.get', function() {
             target: $('.tree'),
             data: [{
                 text: 'A',
-                id: 1
-            }, {
-                text: 'B',
+                id: 1,
                 itree: {
                     state: {
                         removed: true
@@ -24,16 +22,15 @@ describe('TreeNodes.prototype.get', function() {
     });
 
     it('exists', function() {
-        expect(tree.nodes().get).to.be.a('function');
-        expect(tree.get).to.be.a('function');
+        expect(tree.nodes().restore).to.be.a('function');
+        expect(tree.restore).to.be.a('function');
     });
 
-    it('returns undefined for an invalid index', function() {
-        expect(tree.nodes().get(50)).to.be.undefined;
-    });
+    it('restores a node', function() {
+        expect(tree.removed()).to.have.length(1);
 
-    it('returns a node for a valid index', function() {
-        expect(tree.nodes().get(1).text).to.equal('B');
+        tree.restore();
+        expect(tree.removed()).to.have.length(0);
     });
 
     after(helpers.clearDOM);

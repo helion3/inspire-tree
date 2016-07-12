@@ -1,6 +1,6 @@
 'use strict';
 
-describe('TreeNodes.prototype.get', function() {
+describe('TreeNodes.prototype.selectable', function() {
     var tree;
 
     before(function() {
@@ -14,9 +14,10 @@ describe('TreeNodes.prototype.get', function() {
                 id: 1
             }, {
                 text: 'B',
+                id: 2,
                 itree: {
                     state: {
-                        removed: true
+                        selectable: false
                     }
                 }
             }]
@@ -24,16 +25,12 @@ describe('TreeNodes.prototype.get', function() {
     });
 
     it('exists', function() {
-        expect(tree.nodes().get).to.be.a('function');
-        expect(tree.get).to.be.a('function');
+        expect(tree.nodes().selectable).to.be.a('function');
+        expect(tree.selectable).to.be.a('function');
     });
 
-    it('returns undefined for an invalid index', function() {
-        expect(tree.nodes().get(50)).to.be.undefined;
-    });
-
-    it('returns a node for a valid index', function() {
-        expect(tree.nodes().get(1).text).to.equal('B');
+    it('returns all selectable nodes', function() {
+        expect(tree.selectable()).to.have.length(1);
     });
 
     after(helpers.clearDOM);

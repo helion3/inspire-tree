@@ -22,6 +22,7 @@ describe('TreeNodes.prototype.concat', function() {
 
     it('exists', function() {
         expect(tree.nodes().concat).to.be.a('function');
+        expect(tree.concat).to.be.a('function');
     });
 
     it('combines two tree nodes arrays into one', function() {

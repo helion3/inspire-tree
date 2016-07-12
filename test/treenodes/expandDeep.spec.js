@@ -13,17 +13,12 @@ describe('TreeNodes.prototype.expandDeep', function() {
         // Create tree
         tree = new InspireTree({
             target: $tree,
-            data: [{
-                text: 'A',
-                id: 1,
-                children: [{
-                    text: 'AA'
-                }]
-            }]
+            data: []
         });
     });
 
     it('exists', function() {
+        expect(tree.nodes().expandDeep).to.be.a('function');
         expect(tree.expandDeep).to.be.a('function');
     });
 

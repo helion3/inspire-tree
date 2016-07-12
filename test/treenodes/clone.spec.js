@@ -25,6 +25,7 @@ describe('TreeNodes.prototype.clone', function() {
 
     it('exists', function() {
         expect(tree.nodes().clone).to.be.a('function');
+        expect(tree.clone).to.be.a('function');
     });
 
     it('returns a complete clone', function() {
