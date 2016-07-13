@@ -82,7 +82,7 @@ module.exports = {
     },
     module: {
         loaders: [{
-            loader: 'babel?presets[]=es2015'
+            loader: 'babel?presets[]=es2015' + (BUNDLE ? '&plugins[]=lodash' : '')
         }, {
             test: /\.scss$/,
             loader: ExtractTextPlugin.extract('style-loader', sassLoaders.join('!'))
