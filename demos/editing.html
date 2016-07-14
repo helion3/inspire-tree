@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
+        <link rel="stylesheet" href="demo.css" />
+    </head>
+    <body>
+        <div class="tree"></div>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
+    <script src="require.config.js"></script>
+    <script>
+        require([
+            'jquery',
+            'lodash',
+            'inspireTree'
+        ], function($, _, InspireTree) {
+            var tree = new InspireTree({
+                target: '.tree',
+                editable: true,
+                data: $.getJSON('./sample-data/full.json')
+            });
+
+            tree.onAny(function() {
+                console.log(this.event, arguments);
+            });
+        });
+    </script>
+</html>

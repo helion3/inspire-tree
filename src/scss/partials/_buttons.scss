@@ -1,0 +1,39 @@
+.inspire-tree {
+    .btn {
+        background-color: rgba(255, 255, 255, .4);
+        border: 1px solid rgba(0, 0, 0, .2);
+        border-radius: 3px;
+        display: inline-block;
+        height: 20px;
+        transition: all 150ms linear;
+        width: 20px;
+
+        &:hover {
+            box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
+        }
+
+        + .btn {
+            margin-left: 5px;
+        }
+
+        &.icon {
+            position: relative;
+
+            &::before {
+                display: block;
+                height: 14px;
+                left: 50%;
+                position: absolute;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 14px;
+            }
+        }
+    }
+
+    .btn-group {
+        display: inline-block;
+        height: $tree-node-height;
+        line-height: $tree-node-height;
+    }
+}

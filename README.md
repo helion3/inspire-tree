@@ -18,6 +18,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 - Load child nodes upfront or dynamically (or a mix of both).
 - Tri-state checkboxes (optional).
 - Multiselect (optional).
+- Inline editing (optional).
 - Search by plain string, RegExp, custom matcher, or external resources (optional).
 - Sorting (optional).
 - AMD and CommonJS support (RequireJS, Node/Webpack).
@@ -71,6 +72,11 @@ Data objects must have at least a `text` property. Additional properties are lis
 - **checkbox** - Enable tri-state (unchecked, checked, partial) checkboxes for selection.
 - **data** - An array, promise, or callback function.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
+- **editable** - Allow inline editing.
+- **editing** (defaults to true if `editable` is true)
+    + **add** - Allow user to add nodes.
+    + **edit** -  Allow user to edit existing nodes.
+    + **remove** - Allow user to remove nodes.
 - **renderer** - Function which returns a custom renderer (see below).
 - **search** - Custom search callback (for external handling of entire search).
 - **selection.allow** - Dynamically determine `selectable` boolean for a node.

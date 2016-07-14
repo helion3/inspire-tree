@@ -8,6 +8,10 @@
         outline: none;
     }
 
+    &, * {
+        box-sizing: border-box;
+    }
+
     /* ~~@@@~~~~~ Lists ~~~~~@@@~~ */
     ol {
         list-style: none;
@@ -23,13 +27,8 @@
         display: none;
     }
 
-    a {
-        cursor: default;
-        display: block;
-        height: 100%;
-    }
-
     li > .title-wrap {
+        min-height: $tree-node-height;
         position: relative;
         z-index: 2;
     }
@@ -62,6 +61,9 @@
     }
 
     .title {
+        cursor: default;
+        display: block;
+        height: $tree-node-height;
         line-height: $tree-node-height;
         overflow: hidden;
         padding-left: 30px;
@@ -74,8 +76,8 @@
         &::before {
             left: -5px;
             position: relative;
-            top: -2px;
-            vertical-align: middle;
+            top: 5px;
+            vertical-align: top;
         }
 
         &:focus {

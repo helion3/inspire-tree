@@ -1,0 +1,36 @@
+.inspire-tree {
+    .editable form {
+        display: inline-block;
+        height: $tree-node-height;
+        line-height: $tree-node-height;
+        padding-top: 2px;
+
+        input {
+            height: 20px;
+        }
+
+        input, .btn {
+            vertical-align: top;
+        }
+    }
+
+    .editable > .btn-group {
+        display: none;
+        padding-top: 2px;
+        position: absolute;
+        right: 10px;
+        z-index: 3;
+    }
+
+    .editable:hover > .btn-group {
+        display: block;
+    }
+
+    input + .btn-group {
+        margin-left: 10px;
+    }
+
+    > .btn.icon {
+        margin-left: 2px;
+    }
+}

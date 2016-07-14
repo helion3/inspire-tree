@@ -12,7 +12,7 @@ section {
     overflow: hidden;
 }
 
-input {
+body > input {
     font-size: 14px;
     margin-bottom: 15px;
     padding: 5px;

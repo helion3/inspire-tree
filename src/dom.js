@@ -14,10 +14,12 @@ import VDirtyCompare from './lib/VDirtyCompare';
 import VStateCompare from './lib/VStateCompare';
 
 module.exports = function InspireDOM(tree) {
+    var dom = this;
     var $activeDropTarget;
     var $dragElement;
     var $dragNode;
     var $target;
+    var batching = 0;
     var dragHandleOffset;
     var dropTargets = [];
     var isDragDropEnabled = false;
@@ -26,6 +28,25 @@ module.exports = function InspireDOM(tree) {
     // Cache because we use in loops
     var isDynamic = _.isFunction(tree.config.data);
     var contextMenuChoices = tree.config.contextMenu;
+
+    /**
+     * Helper method to create an object for a new node.
+     *
+     * @category DOM
+     * @private
+     * @return {void}
+     */
+    function blankNode() {
+        return {
+            text: 'New Node',
+            itree: {
+                state: {
+                    editing: true,
+                    focused: true
+                }
+            }
+        };
+    };
 
     /**
      * Clear page text selection, primarily after a click event which
@@ -155,6 +176,73 @@ module.exports = function InspireDOM(tree) {
     }
 
     /**
+     * Creates an input field for editing node text.
+     *
+     * @private
+     * @param {TreeNode} node Node object.
+     * @return {object} Input element and buttons
+     */
+    function createEditField(node) {
+        return new VCache({}, VStateCompare, function() {
+            var input = new DOMReference();
+
+            var save = function() {
+                // Update the text
+                node.set('text', input.node.value);
+
+                // Disable editing and update
+                node.state('editing', false);
+                node.markDirty();
+                dom.applyChanges();
+            };
+
+            return h('form', {
+                onsubmit: function(event) {
+                    event.preventDefault();
+                }
+            }, [
+                h('input', {
+                    ref: input,
+                    value: node.text,
+                    onclick: function(event) {
+                        // Prevent node click event from firing
+                        event.stopPropagation();
+                    },
+                    onkeypress: function(event) {
+                        if (event.which === 13) {
+                            save();
+                        }
+                    }
+                }),
+                h('span.btn-group', [
+                    h('button.btn.icon.icon-check', {
+                        attributes: {
+                            title: 'Save',
+                            type: 'button'
+                        },
+                        onclick: function(event) {
+                            event.stopPropagation();
+
+                            save();
+                        }
+                    }),
+                    h('button.btn.icon.icon-cross', {
+                        attributes: {
+                            title: 'Cancel',
+                            type: 'button'
+                        },
+                        onclick: function(event) {
+                            event.stopPropagation();
+
+                            node.toggleEditing();
+                        }
+                    })
+                ])
+            ]);
+        });
+    };
+
+    /**
      * Creates a list item node when a dynamic node returns no children.
      *
      * Cannot be clicked or expanded.
@@ -187,10 +275,56 @@ module.exports = function InspireDOM(tree) {
             node.itree.dirty = false;
             node.itree.ref = new DOMReference();
 
-            var contents = [
-                createTitleContainer(node),
-                h('div.wholerow')
-            ];
+            var buttons = [];
+            var contents = [];
+
+            // Add inline edit controls
+            if (!node.editing() && tree.config.editing.edit) {
+                buttons.push(h('a.btn.icon.icon-pencil', {
+                    attributes: {
+                        title: 'Edit this node'
+                    },
+                    onclick: function(event) {
+                        event.stopPropagation();
+
+                        node.toggleEditing();
+                    }
+                }));
+            }
+
+            if (!node.editing() && tree.config.editing.add) {
+                buttons.push(h('a.btn.icon.icon-plus', {
+                    attributes: {
+                        title: 'Add a child node'
+                    },
+                    onclick: function(event) {
+                        event.stopPropagation();
+
+                        node.addChild(blankNode());
+                        node.expand();
+                    }
+                }));
+            }
+
+            if (!node.editing() && tree.config.editing.remove) {
+                buttons.push(h('a.btn.icon.icon-minus', {
+                    attributes: {
+                        title: 'Remove this node'
+                    },
+                    onclick: function(event) {
+                        event.stopPropagation();
+
+                        node.remove();
+                    }
+                }));
+            }
+
+            if (buttons.length) {
+                contents.push(h('span.btn-group', buttons));
+            }
+
+            contents.push(createTitleContainer(node));
+            contents.push(h('div.wholerow'));
 
             if (node.hasChildren()) {
                 contents.push(createOrderedList(node.children));
@@ -292,6 +426,7 @@ module.exports = function InspireDOM(tree) {
      */
     function createTitleAnchor(node, hasVisibleChildren) {
         return new VCache({
+            editing: node.editing(),
             expanded: node.expanded(),
             icon: node.itree.icon,
             text: node.text,
@@ -307,6 +442,8 @@ module.exports = function InspireDOM(tree) {
 
             attributes.tabindex = 1;
             attributes.unselectable = 'on';
+
+            var contents = [node.editing() ? createEditField(node) : current.state.text];
 
             return h('a.' + classNames.join('.'), {
                 attributes: attributes,
@@ -333,6 +470,10 @@ module.exports = function InspireDOM(tree) {
                     // Define our default handler
                     var handler = function() {
                         event.preventDefault();
+
+                        if (node.editing()) {
+                            return;
+                        }
 
                         if (event.metaKey || event.ctrlKey || event.shiftKey) {
                             tree.disableDeselection();
@@ -392,7 +533,7 @@ module.exports = function InspireDOM(tree) {
                         isMouseHeld = true;
                     }
                 }
-            }, [current.state.text]);
+            }, contents);
         });
     }
 
@@ -407,10 +548,11 @@ module.exports = function InspireDOM(tree) {
         var hasVisibleChildren = !isDynamic ? node.hasVisibleChildren() : Boolean(node.children);
 
         return new VCache({
-            hasVisibleChildren: hasVisibleChildren,
             collapsed: node.collapsed(),
-            selected: node.selected(),
-            indeterminate: node.indeterminate()
+            editing: node.editing(),
+            hasVisibleChildren: hasVisibleChildren,
+            indeterminate: node.indeterminate(),
+            selected: node.selected()
         }, VStateCompare, function() {
             var contents = [];
 
@@ -700,6 +842,7 @@ module.exports = function InspireDOM(tree) {
     // Cache our root node, so we can patch re-render in the future.
     var rootNode;
     var ol;
+    var rendering = false;
 
     /**
      * Triggers rendering for the given node array.
@@ -710,11 +853,32 @@ module.exports = function InspireDOM(tree) {
      * @return {void}
      */
     function renderNodes(nodes) {
+        if (rendering) {
+            return;
+        }
+
+        rendering = true;
+
         var newOl = createOrderedList(nodes || tree.nodes(), true);
 
         if (!rootNode) {
             rootNode = createElement(newOl);
             $target.appendChild(rootNode);
+
+            if (tree.config.editing.add) {
+                $target.appendChild(createElement(new VCache({}, VArrayDirtyCompare, function() {
+                    return h('a.btn.icon.icon-plus', {
+                        attributes: {
+                            title: 'Add a new root node'
+                        },
+                        onclick: function() {
+                            tree.focused().blur();
+
+                            tree.addNode(blankNode());
+                        }
+                    });
+                })));
+            }
         }
         else {
             var patches = diff(ol, newOl);
@@ -722,10 +886,8 @@ module.exports = function InspireDOM(tree) {
         }
 
         ol = newOl;
+        rendering = false;
     };
-
-    var dom = this;
-    var batching = 0;
 
     /**
      * Apply pending data changes to the DOM.
@@ -761,7 +923,21 @@ module.exports = function InspireDOM(tree) {
             throw new Error('No valid element to attach to.');
         }
 
-        $target.className += ' inspire-tree';
+        // Set classnames
+        var classNames = $target.className.split(' ');
+        classNames.push('inspire-tree');
+
+        if (tree.config.editable) {
+            classNames.push('editable');
+
+            _.each(_.pickBy(tree.config.editing, _.identity), function(v, key) {
+                classNames.push('editable-' + key);
+            });
+        }
+
+        $target.className = classNames.join(' ');
+
+        // Attributes
         $target.setAttribute('tabindex', tree.config.tabindex || 0);
 
         // Handle keyboard interaction

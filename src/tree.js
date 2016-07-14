@@ -26,6 +26,12 @@ function InspireTree(opts) {
         allowLoadEvents: [],
         contextMenu: false,
         dragTargets: false,
+        editable: false,
+        editing: {
+            add: false,
+            edit: false,
+            remove: false
+        },
         nodes: {
             resetStateOnRestore: true
         },
@@ -60,9 +66,18 @@ function InspireTree(opts) {
         tree.config.selection.multiple = true;
     }
 
+    // Treat editable as full edit mode
+    if (opts.editable && !opts.editing) {
+        tree.config.editing.add = true;
+        tree.config.editing.edit = true;
+        tree.config.editing.remove = true;
+    }
+
     // Default node state values
     var defaultState = {
         collapsed: true,
+        editable: _.get(tree, 'config.editing.edit'),
+        editing: false,
         focused: false,
         hidden: false,
         indeterminate: false,
@@ -177,6 +192,8 @@ function InspireTree(opts) {
      * @return {TreeNode} Node object.
      */
     TreeNode.prototype.blur = function() {
+        this.state('editing', false);
+
         return baseStateChange('focused', false, 'blurred', this);
     };
 
@@ -367,6 +384,26 @@ function InspireTree(opts) {
         }
 
         return this;
+    };
+
+    /**
+     * Get if node editable. Required editing.edit to be enable via config.
+     *
+     * @category TreeNode
+     * @return {boolean} If node editable.
+     */
+    TreeNode.prototype.editable = function() {
+        return tree.config.editable && tree.config.editing.edit && this.state('editable');
+    };
+
+    /**
+     * Get if node is currently in edit mode.
+     *
+     * @category TreeNode
+     * @return {boolean} If node in edit mode.
+     */
+    TreeNode.prototype.editing = function() {
+        return this.state('editing');
     };
 
     /**
@@ -1088,6 +1125,19 @@ function InspireTree(opts) {
     };
 
     /**
+     * Toggles edit mode (and triggers DOM updates)
+     *
+     * @category TreeNode
+     * @return {void}
+     */
+    TreeNode.prototype.toggleEditing = function() {
+        this.state('editing', !this.state('editing'));
+
+        this.markDirty();
+        dom.applyChanges();
+    };
+
+    /**
      * Toggles selected state.
      *
      * @category TreeNode
@@ -1149,7 +1199,7 @@ function InspireTree(opts) {
 
     // Map state lookup convenience methods
     _.each(_.keys(defaultState), function(method) {
-        if (method !== 'selectable') {
+        if (method !== 'editable' && method !== 'selectable') {
             TreeNode.prototype[method] = function() {
                 return this.state(method);
             };
@@ -1842,6 +1892,8 @@ function InspireTree(opts) {
 
         // Enabled by default
         state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : defaultState.collapsed;
+        state.editable = typeof state.editable === 'boolean' ? state.editable : defaultState.editable;
+        state.editing = typeof state.editing === 'boolean' ? state.editing : defaultState.editing;
         state.selectable = typeof state.selectable === 'boolean' ? state.selectable : defaultState.selectable;
 
         // Disabled by default

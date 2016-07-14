@@ -5,17 +5,23 @@
     $corner: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAKklEQVQoU2M8d+HSfyMDPUYGEgBJimHmMo7aBAmK0dCDJgl4ioClDGJoAGUZM32Z0U8tAAAAAElFTkSuQmCC');
 
     // Half-line below first-child toggle buttons
-    > ol > .folder:first-child {
+    > ol > .folder:first-child:not(:only-child) {
         background-image: $half-line;
         background-position: 11px 13px;
         background-repeat: no-repeat;
     }
 
     // Half-line above last-child toggle buttons
-    .folder:last-child {
+    .folder:last-child:not(:only-child) {
         background-image: $half-line;
         background-position: 11px 0;
         background-repeat: no-repeat;
+    }
+
+    // When adding rows is allowed
+    &.editable-add > ol > .folder:last-child:not(:only-child) {
+        background-image: $full-line;
+        background-repeat: repeat-y;
     }
 
     // Full line inside middle nodes
@@ -51,5 +57,10 @@
         background-image: $corner;
         background-position: 11px 0;
         background-repeat: no-repeat;
+    }
+
+    // When adding rows is allowed
+    &.editable-add > ol > .leaf:last-child {
+        background-image: $intersection;
     }
 }
