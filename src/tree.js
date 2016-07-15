@@ -409,7 +409,7 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all editable nodes.
      *
-     * @category TreeNodes
+     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -420,7 +420,7 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all nodes in editing mode.
      *
-     * @category TreeNodes
+     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -564,7 +564,7 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all indeterminate nodes.
      *
-     * @category TreeNodes
+     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */

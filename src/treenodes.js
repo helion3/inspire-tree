@@ -671,7 +671,7 @@ export class TreeNodes extends Array {
     /**
      * Get all nodes in a tree, or nodes for an array of IDs.
      *
-     * @category Tree
+     * @category TreeNodes
      * @param {array} refs Array of ID references.
      * @return {TreeNodes} Array of node objects.
      * @example

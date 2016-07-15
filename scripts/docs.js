@@ -9,7 +9,9 @@ var outPath = path.join(__dirname, '../docs');
 
 // Define which files to scan
 var sourceFiles = [
-    'tree.js'
+    'tree.js',
+    'treenode.js',
+    'treenodes.js'
 ];
 
 // Create output directory

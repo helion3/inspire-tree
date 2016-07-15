@@ -201,6 +201,7 @@ export class TreeNode {
     /**
      * Get whether this node is collapsed.
      *
+     * @category TreeNode
      * @return {boolean} Get if node collapsed.
      */
     collapsed() {
@@ -455,6 +456,7 @@ export class TreeNode {
     /**
      * Get whether this node is focused.
      *
+     * @category TreeNode
      * @return {boolean} Get if node focused.
      */
     focused() {
@@ -573,6 +575,7 @@ export class TreeNode {
     /**
      * Get whether this node is hidden.
      *
+     * @category TreeNode
      * @return {boolean} Get if node hidden.
      */
     hidden() {
@@ -598,6 +601,7 @@ export class TreeNode {
     /**
      * Get whether this node is indeterminate.
      *
+     * @category TreeNode
      * @return {boolean} Get if node indeterminate.
      */
     indeterminate() {
@@ -690,6 +694,7 @@ export class TreeNode {
     /**
      * Get whether this node is loading child data.
      *
+     * @category TreeNode
      * @return {boolean} Get if node loading.
      */
     loading() {
@@ -953,6 +958,7 @@ export class TreeNode {
     /**
      * Get whether this node is soft-removed.
      *
+     * @category TreeNode
      * @return {boolean} Get if node removed.
      */
     removed() {
@@ -1031,6 +1037,7 @@ export class TreeNode {
     /**
      * Get whether this node is selected.
      *
+     * @category TreeNode
      * @return {boolean} Get if node selected.
      */
     selected() {

@@ -16,7 +16,7 @@
     "chai": "^3.4.1",
     "css-loader": "^0.23.1",
     "cuid": "git+https://github.com/ericelliott/cuid.git",
-    "docdown": "^0.5.0",
+    "docdown": "git+https://github.com/jdalton/docdown.git",
     "es6-promise": "^3.1.2",
     "eslint": "^3.0.0",
     "eventemitter2": "^2.0.0",
@@ -42,6 +42,7 @@
     "webpack": "^1.13.0"
   },
   "scripts": {
+    "docs": "./scripts/docs.js",
     "test": "./node_modules/karma/bin/karma start",
     "watch": "webpack --progress --colors --watch",
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
