@@ -12,7 +12,7 @@
     }
 
     // Half-line above last-child toggle buttons
-    .folder:last-child:not(:only-child) {
+    .folder:last-child:not(:only-child), li .folder:last-child {
         background-image: $half-line;
         background-position: 11px 0;
         background-repeat: no-repeat;
