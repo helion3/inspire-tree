@@ -1,5 +1,28 @@
 # Changes to Inspire Tree
 
+# 1.10
+
+- Added `node.loading()` state convenience method.
+- Added `node.state(prop, val)` method for getting/setting state booleans.
+- Added `node.state.changed` event for all state property value changes.
+- Added `excludeChildren` parameter to `TreeNode.toObject`.
+- Added `ignoreKeys` parameter to the `TreeNode` constructor.
+- Added DOM element pointer for each node to `node.itree.ref`.
+- Fixed lodash modules being included in non-bundled builds.
+- Fixed minor css issues.
+- Improved efficiency/performance of export system.
+- Tied focus/blur state changes to native browser focus/blur events.
+- Added 60 unit tests & refactored internal code to ES6 class syntax.
+
+**Breaking Changes**
+
+- Nodes are no longer focused when selected via the API.
+- `expandParents` is no longer mapped to the `tree` api since it's useless at the root level.
+- Removed `export` methods. Use `TreeNodes.toArray` or `TreeNode.toObject`.
+- Removed `setSelectable` in favor of `node.state('selectable', value)`.
+- Removed `selectability-changed` event since it's now driven by `state()`. Instead, listen to `node.state.changed` and filter for `selectable`.
+- Left/right arrow keys no longer move focus after expanding/collapsing the node. It was inconsistent with native browser tabbing behavior.
+
 # 1.9.1
 
 - Fixed css somehow missed by deploy script.
