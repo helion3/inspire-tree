@@ -1078,21 +1078,21 @@ export class TreeNode {
      * @category TreeNode
      * @param {string} name Property name.
      * @param {boolean} newVal New value, if setting.
-     * @return {TreeNode} Node object.
+     * @return {boolean} Current value on read, old value on set.
      */
     state(name, newVal) {
-        var oldVal = this.itree.state[name];
+        var currentVal = this.itree.state[name];
 
-        if (typeof newVal !== 'undefined' && oldVal !== newVal) {
+        if (typeof newVal !== 'undefined' && currentVal !== newVal) {
             // Update values
             this.itree.state[name] = newVal;
             this.markDirty();
 
             // Emit an event
-            this._tree.emit('node.state.changed', this, name, oldVal, newVal);
+            this._tree.emit('node.state.changed', this, name, currentVal, newVal);
         }
 
-        return this.itree.state[name];
+        return currentVal;
     }
 
     /**

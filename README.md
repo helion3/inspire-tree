@@ -65,6 +65,8 @@ Data objects must have at least a `text` property. Additional properties are lis
 ## API Docs
 
 - [Tree API](docs/tree.md)
+- [TreeNode](docs/treenode.md)
+- [TreeNodes](docs/treenodes.md)
 
 ## Tree Configuration
 
@@ -177,6 +179,8 @@ All methods not specific to existing node/s are found directly on the API:
 tree.addNode({ text: 'Example' });
 ```
 
+- [Tree API Documentation](docs/tree.md)
+
 **TreeNode**
 
 Each incoming javascript object is wrapped as a `TreeNode`, which aliases methods useful on a single node.
@@ -184,6 +188,8 @@ Each incoming javascript object is wrapped as a `TreeNode`, which aliases method
 ```js
 tree.node('a-unique-id').select();
 ```
+
+- [TreeNode API Documentation](docs/treenode.md)
 
 **TreeNodes**
 
@@ -203,6 +209,7 @@ tree.nodes().expand();
 ```js
 tree.nodes().expandDeep();
 ```
+- [TreeNodes API Documentation](docs/treenodes.md)
 
 **Global TreeNodes Methods**
 
