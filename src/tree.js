@@ -1051,6 +1051,26 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Set state values for nodes in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    state() {
+        return map(this, 'state', arguments);
+    }
+
+    /**
+     * Set state values for nodes in this collection.
+     *
+     * @category Tree
+     * @return {TreeNodes} Array of node objects.
+     */
+    stateDeep() {
+        return map(this, 'stateDeep', arguments);
+    }
+
+    /**
      * Returns a native Array of nodes.
      *
      * @category Tree

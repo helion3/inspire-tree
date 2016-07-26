@@ -39,10 +39,11 @@ function baseStatePredicate(state, full) {
  * @private
  * @param {TreeNode} nodes Array of node objects.
  * @param {string|array} methods Method names.
+ * @param {array|Arguments} args Array of arguments to proxy.
  * @param {boolean} deep Invoke deeply.
  * @return {TreeNodes} Array of node objects.
  */
-function baseInvoke(nodes, methods, deep) {
+function baseInvoke(nodes, methods, args, deep) {
     methods = _.castArray(methods);
 
     nodes._tree.dom.batch();
@@ -50,7 +51,7 @@ function baseInvoke(nodes, methods, deep) {
     nodes[deep ? 'recurseDown' : 'each'](function(node) {
         _.each(methods, function(method) {
             if (_.isFunction(node[method])) {
-                node[method]();
+                node[method].apply(node, args);
             }
         });
     });
@@ -615,10 +616,11 @@ export class TreeNodes extends Array {
      *
      * @category TreeNodes
      * @param {string|array} methods Method name(s).
+     * @param {array|Arguments} args Array of arguments to proxy.
      * @return {TreeNodes} Array of node objects.
      */
-    invoke(methods) {
-        return baseInvoke(this, methods);
+    invoke(methods, args) {
+        return baseInvoke(this, methods, args);
     }
 
     /**
@@ -626,10 +628,11 @@ export class TreeNodes extends Array {
      *
      * @category TreeNodes
      * @param {string|array} methods Method name(s).
+     *  @param {array|Arguments} args Array of arguments to proxy.
      * @return {TreeNodes} Array of node objects.
      */
-    invokeDeep(methods) {
-        return baseInvoke(this, methods, true);
+    invokeDeep(methods, args) {
+        return baseInvoke(this, methods, args, true);
     }
 
     /**
@@ -844,6 +847,26 @@ export class TreeNodes extends Array {
         }
 
         return nodes;
+    }
+
+    /**
+     * Set state values for nodes in this collection.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Array of node objects.
+     */
+    state() {
+        return this.invoke('state', arguments);
+    }
+
+    /**
+     * Set state values recursively.
+     *
+     * @category TreeNodes
+     * @return {TreeNodes} Array of node objects.
+     */
+    stateDeep() {
+        return this.invokeDeep('state', arguments);
     }
 
     /**
