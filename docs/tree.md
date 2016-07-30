@@ -66,6 +66,8 @@
 * <a href="#showDeep">`showDeep`</a>
 * <a href="#softRemove">`softRemove`</a>
 * <a href="#sort">`sort`</a>
+* <a href="#state">`state`</a>
+* <a href="#stateDeep">`stateDeep`</a>
 * <a href="#toArray">`toArray`</a>
 * <a href="#unmute">`unmute`</a>
 * <a href="#visible">`visible`</a>
@@ -873,8 +875,30 @@ If no custom sorter given, the configured "sort" value will be used.
 
 <!-- div -->
 
+### <a id="state"></a>`state()`
+<a href="#state">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1059 "View in source") [&#x24C9;][1]
+
+Set state values for nodes in this collection.
+
+---
+
+<!-- /div -->
+
+<!-- div -->
+
+### <a id="stateDeep"></a>`stateDeep()`
+<a href="#stateDeep">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1069 "View in source") [&#x24C9;][1]
+
+Set state values for nodes in this collection.
+
+---
+
+<!-- /div -->
+
+<!-- div -->
+
 ### <a id="toArray"></a>`toArray()`
-<a href="#toArray">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1059 "View in source") [&#x24C9;][1]
+<a href="#toArray">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1079 "View in source") [&#x24C9;][1]
 
 Returns a native Array of nodes.
 
@@ -885,7 +909,7 @@ Returns a native Array of nodes.
 <!-- div -->
 
 ### <a id="unmute"></a>`unmute(events)`
-<a href="#unmute">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1070 "View in source") [&#x24C9;][1]
+<a href="#unmute">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1090 "View in source") [&#x24C9;][1]
 
 Resume events.
 
@@ -899,7 +923,7 @@ Resume events.
 <!-- div -->
 
 ### <a id="visible"></a>`visible(full)`
-<a href="#visible">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1092 "View in source") [&#x24C9;][1]
+<a href="#visible">#</a> [&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/tree.js#L1112 "View in source") [&#x24C9;][1]
 
 Query for all visible nodes.
 

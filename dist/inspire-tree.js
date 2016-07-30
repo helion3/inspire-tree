@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.9.1
+ * Inspire Tree v1.10.0
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -1317,6 +1317,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'sort',
 	        value: function sort() {
 	            return map(this, 'sort', arguments);
+	        }
+
+	        /**
+	         * Set state values for nodes in this collection.
+	         *
+	         * @category Tree
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'state',
+	        value: function state() {
+	            return map(this, 'state', arguments);
+	        }
+
+	        /**
+	         * Set state values for nodes in this collection.
+	         *
+	         * @category Tree
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'stateDeep',
+	        value: function stateDeep() {
+	            return map(this, 'stateDeep', arguments);
 	        }
 
 	        /**
@@ -2889,24 +2915,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @category TreeNode
 	         * @param {string} name Property name.
 	         * @param {boolean} newVal New value, if setting.
-	         * @return {TreeNode} Node object.
+	         * @return {boolean} Current value on read, old value on set.
 	         */
 
 	    }, {
 	        key: 'state',
 	        value: function state(name, newVal) {
-	            var oldVal = this.itree.state[name];
+	            var currentVal = this.itree.state[name];
 
-	            if (typeof newVal !== 'undefined' && oldVal !== newVal) {
+	            if (typeof newVal !== 'undefined' && currentVal !== newVal) {
 	                // Update values
 	                this.itree.state[name] = newVal;
 	                this.markDirty();
 
 	                // Emit an event
-	                this._tree.emit('node.state.changed', this, name, oldVal, newVal);
+	                this._tree.emit('node.state.changed', this, name, currentVal, newVal);
 	            }
 
-	            return this.itree.state[name];
+	            return currentVal;
 	        }
 
 	        /**
@@ -4244,10 +4270,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @private
 	 * @param {TreeNode} nodes Array of node objects.
 	 * @param {string|array} methods Method names.
+	 * @param {array|Arguments} args Array of arguments to proxy.
 	 * @param {boolean} deep Invoke deeply.
 	 * @return {TreeNodes} Array of node objects.
 	 */
-	function baseInvoke(nodes, methods, deep) {
+	function baseInvoke(nodes, methods, args, deep) {
 	    methods = _.castArray(methods);
 
 	    nodes._tree.dom.batch();
@@ -4255,7 +4282,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    nodes[deep ? 'recurseDown' : 'each'](function (node) {
 	        _.each(methods, function (method) {
 	            if (_.isFunction(node[method])) {
-	                node[method]();
+	                node[method].apply(node, args);
 	            }
 	        });
 	    });
@@ -4922,13 +4949,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @category TreeNodes
 	         * @param {string|array} methods Method name(s).
+	         * @param {array|Arguments} args Array of arguments to proxy.
 	         * @return {TreeNodes} Array of node objects.
 	         */
 
 	    }, {
 	        key: 'invoke',
-	        value: function invoke(methods) {
-	            return baseInvoke(this, methods);
+	        value: function invoke(methods, args) {
+	            return baseInvoke(this, methods, args);
 	        }
 
 	        /**
@@ -4936,13 +4964,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @category TreeNodes
 	         * @param {string|array} methods Method name(s).
+	         *  @param {array|Arguments} args Array of arguments to proxy.
 	         * @return {TreeNodes} Array of node objects.
 	         */
 
 	    }, {
 	        key: 'invokeDeep',
-	        value: function invokeDeep(methods) {
-	            return baseInvoke(this, methods, true);
+	        value: function invokeDeep(methods, args) {
+	            return baseInvoke(this, methods, args, true);
 	        }
 
 	        /**
@@ -5202,6 +5231,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            return nodes;
+	        }
+
+	        /**
+	         * Set state values for nodes in this collection.
+	         *
+	         * @category TreeNodes
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'state',
+	        value: function state() {
+	            return this.invoke('state', arguments);
+	        }
+
+	        /**
+	         * Set state values recursively.
+	         *
+	         * @category TreeNodes
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'stateDeep',
+	        value: function stateDeep() {
+	            return this.invokeDeep('state', arguments);
 	        }
 
 	        /**

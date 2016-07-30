@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 1.10.1
+
+- Added `TreeNodes.stateDeep` method for setting states recursively.
+- Mapped `TreeNode.state` method to TreeNodes.
+
+Note: 1.10 failed to provide a suitable alternative for `setSelectableDeep` which was removed when `setSelectable` was. Now you may use `TreeNodes.stateDeep('selectable', [true|false]);`.
+
 # 1.10
 
 - Added `node.loading()` state convenience method.
