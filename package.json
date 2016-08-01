@@ -31,7 +31,7 @@
     "karma-phantomjs-launcher": "^1.0.1",
     "key-codes": "0.0.1",
     "lodash": "^4.14.1",
-    "mocha": "^2.5.3",
+    "mocha": "^3.0.0",
     "node-sass": "^3.4.1",
     "phantomjs-prebuilt": "^2.1.6",
     "sass-loader": "^4.0.0",
