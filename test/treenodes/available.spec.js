@@ -11,7 +11,10 @@ describe('TreeNodes.prototype.available', function() {
             target: $('.tree'),
             data: [{
                 text: 'A',
-                id: 1
+                id: 1,
+                children: [{
+                    text: 'C'
+                }]
             }, {
                 text: 'B',
                 itree: {
@@ -29,7 +32,11 @@ describe('TreeNodes.prototype.available', function() {
     });
 
     it('returns only available nodes', function() {
-        expect(tree.nodes().available()).to.have.length(1);
+        expect(tree.nodes().available()).to.have.length(2);
+    });
+
+    it('returns only available nodes from a treenodes subset', function() {
+        expect(tree.nodes().deepest().available()).to.have.length(1);
     });
 
     after(helpers.clearDOM);

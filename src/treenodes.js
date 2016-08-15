@@ -136,7 +136,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     available(full) {
-        return baseStatePredicate.call(this._tree, 'available', full);
+        return baseStatePredicate.call(this, 'available', full);
     }
 
     /**
@@ -199,7 +199,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     collapsed(full) {
-        return baseStatePredicate.call(this._tree, 'collapsed', full);
+        return baseStatePredicate.call(this, 'collapsed', full);
     }
 
     /**
@@ -341,7 +341,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     editable(full) {
-        return baseStatePredicate.call(this._tree, 'editable', full);
+        return baseStatePredicate.call(this, 'editable', full);
     }
 
     /**
@@ -352,7 +352,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     editing(full) {
-        return baseStatePredicate.call(this._tree, 'editing', full);
+        return baseStatePredicate.call(this, 'editing', full);
     }
 
     /**
@@ -373,7 +373,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     expanded(full) {
-        return baseStatePredicate.call(this._tree, 'expanded', full);
+        return baseStatePredicate.call(this, 'expanded', full);
     }
 
     /**
@@ -491,7 +491,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     focused(full) {
-        return baseStatePredicate.call(this._tree, 'focused', full);
+        return baseStatePredicate.call(this, 'focused', full);
     }
 
     /**
@@ -513,7 +513,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     hidden(full) {
-        return baseStatePredicate.call(this._tree, 'hidden', full);
+        return baseStatePredicate.call(this, 'hidden', full);
     }
 
     /**
@@ -544,7 +544,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     indeterminate(full) {
-        return baseStatePredicate.call(this._tree, 'indeterminate', full);
+        return baseStatePredicate.call(this, 'indeterminate', full);
     }
 
     /**
@@ -643,7 +643,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     loading(full) {
-        return baseStatePredicate.call(this._tree, 'loading', full);
+        return baseStatePredicate.call(this, 'loading', full);
     }
 
     /**
@@ -728,7 +728,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     removed(full) {
-        return baseStatePredicate.call(this._tree, 'removed', full);
+        return baseStatePredicate.call(this, 'removed', full);
     }
 
     /**
@@ -769,7 +769,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     selectable(full) {
-        return baseStatePredicate.call(this._tree, 'selectable', full);
+        return baseStatePredicate.call(this, 'selectable', full);
     }
 
     /**
@@ -790,7 +790,7 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     selected(full) {
-        return baseStatePredicate.call(this._tree, 'selected', full);
+        return baseStatePredicate.call(this, 'selected', full);
     }
 
     /**
@@ -903,6 +903,6 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     visible(full) {
-        return baseStatePredicate.call(this._tree, 'visible', full);
+        return baseStatePredicate.call(this, 'visible', full);
     }
 };
