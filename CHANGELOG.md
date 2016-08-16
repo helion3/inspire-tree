@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 1.10.2
+
+- Fixes `this` binding of mapped filter methods in TreeNodes.
+
 # 1.10.1
 
 - Added `TreeNodes.stateDeep` method for setting states recursively.

@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.10.0
+ * Inspire Tree v1.10.2
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -11972,7 +11972,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'available',
 	        value: function available(full) {
-	            return baseStatePredicate.call(this._tree, 'available', full);
+	            return baseStatePredicate.call(this, 'available', full);
 	        }
 
 	        /**
@@ -12053,7 +12053,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'collapsed',
 	        value: function collapsed(full) {
-	            return baseStatePredicate.call(this._tree, 'collapsed', full);
+	            return baseStatePredicate.call(this, 'collapsed', full);
 	        }
 
 	        /**
@@ -12222,7 +12222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'editable',
 	        value: function editable(full) {
-	            return baseStatePredicate.call(this._tree, 'editable', full);
+	            return baseStatePredicate.call(this, 'editable', full);
 	        }
 
 	        /**
@@ -12236,7 +12236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'editing',
 	        value: function editing(full) {
-	            return baseStatePredicate.call(this._tree, 'editing', full);
+	            return baseStatePredicate.call(this, 'editing', full);
 	        }
 
 	        /**
@@ -12263,7 +12263,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'expanded',
 	        value: function expanded(full) {
-	            return baseStatePredicate.call(this._tree, 'expanded', full);
+	            return baseStatePredicate.call(this, 'expanded', full);
 	        }
 
 	        /**
@@ -12398,7 +12398,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'focused',
 	        value: function focused(full) {
-	            return baseStatePredicate.call(this._tree, 'focused', full);
+	            return baseStatePredicate.call(this, 'focused', full);
 	        }
 
 	        /**
@@ -12426,7 +12426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'hidden',
 	        value: function hidden(full) {
-	            return baseStatePredicate.call(this._tree, 'hidden', full);
+	            return baseStatePredicate.call(this, 'hidden', full);
 	        }
 
 	        /**
@@ -12466,7 +12466,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'indeterminate',
 	        value: function indeterminate(full) {
-	            return baseStatePredicate.call(this._tree, 'indeterminate', full);
+	            return baseStatePredicate.call(this, 'indeterminate', full);
 	        }
 
 	        /**
@@ -12577,7 +12577,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'loading',
 	        value: function loading(full) {
-	            return baseStatePredicate.call(this._tree, 'loading', full);
+	            return baseStatePredicate.call(this, 'loading', full);
 	        }
 
 	        /**
@@ -12674,7 +12674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'removed',
 	        value: function removed(full) {
-	            return baseStatePredicate.call(this._tree, 'removed', full);
+	            return baseStatePredicate.call(this, 'removed', full);
 	        }
 
 	        /**
@@ -12727,7 +12727,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'selectable',
 	        value: function selectable(full) {
-	            return baseStatePredicate.call(this._tree, 'selectable', full);
+	            return baseStatePredicate.call(this, 'selectable', full);
 	        }
 
 	        /**
@@ -12754,7 +12754,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'selected',
 	        value: function selected(full) {
-	            return baseStatePredicate.call(this._tree, 'selected', full);
+	            return baseStatePredicate.call(this, 'selected', full);
 	        }
 
 	        /**
@@ -12894,7 +12894,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'visible',
 	        value: function visible(full) {
-	            return baseStatePredicate.call(this._tree, 'visible', full);
+	            return baseStatePredicate.call(this, 'visible', full);
 	        }
 	    }]);
 
