@@ -26,27 +26,19 @@
         </style>
     </head>
     <body ng-controller="TestController">
-        <p>This demo replaces the default inspire-tree DOM renderer with an <a href="https://github.com/helion3/inspire-tree/blob/master/connectors/angular/inspire-tree.js">AngularJS-native directive</a>.</p>
-        <p>It supports renderering and keyboard navigation, but does not yet have drag and drop and context menu implementations.</p>
+        <p>This is an extremely basic demo of implementing an Angular-native renderer.</p>
         <div>
-            <inspire-tree options="sourceOptions"></inspire-tree>
-            <div class="toolbar">
-                <button ng-click="moveOne()">&gt;</button>
-                <button ng-click="revertOne()">&lt;</button>
-                <button ng-click="moveAll()">&gt;&gt;</button>
-                <button ng-click="revertAll()">&lt;&lt;</button>
-            </div>
-            <inspire-tree options="destOptions"></inspire-tree>
+            <inspire-tree options="options"></inspire-tree>
         </div>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
     <script>
         require.config({
             paths: {
-                angular: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min',
+                angular: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min',
                 inspireTree: '../dist/inspire-tree-core.min',
-                ngInspireTree: '../connectors/angular/inspire-tree',
-                lodash: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.1/lodash'
+                ngInspireTree: './angular-inspire-tree',
+                lodash: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.15.0/lodash'
             },
             shim: {
                 angular: {
@@ -63,61 +55,17 @@
             var module = angular.module('inspire', ['ngInspireTree']);
 
             module.controller('TestController', ['$http', '$scope', function($http, $scope) {
-                var sourceTree;
-                var destTree;
-
-                $scope.sourceOptions = {
-                    multiselect: true,
+                $scope.options = {
                     data: function(node, resolve, reject) {
+                        // InspireTree can take normal promises, but angular wraps the response
                         $http.get('sample-data/full.json').then(function(response) {
                             resolve(response.data);
                         }).catch(reject);
                     },
                     onRegisterApi: function(api) {
-                        sourceTree = api;
+                        console.log('api', api);
                     }
                 }
-
-                $scope.destOptions = {
-                    data: [],
-                    onRegisterApi: function(api) {
-                        destTree = api;
-                    }
-                }
-
-                $scope.moveOne = function() {
-                    var selected = sourceTree.selected();
-                    selected.softRemove().copy(true).to(destTree);
-                    destTree.nodes(_.map(selected, 'id')).expandParents();
-                };
-
-                $scope.revertOne = function() {
-                    var selected = destTree.selected();
-                    selected.softRemove().copy(true).to(sourceTree);
-
-                    // Hide all parents without visible children
-                    _.each(selected, function(selectedNode) {
-                        selectedNode.recurseUp(function(node) {
-                            if (node.hasParent()) {
-                                var parent = node.getParent();
-
-                                if (!parent.hasVisibleChildren()) {
-                                    parent.hide();
-                                }
-                            }
-
-                            return node;
-                        });
-                    });
-                };
-
-                $scope.moveAll = function() {
-                    sourceTree.nodes().softRemove().copy().to(destTree);
-                };
-
-                $scope.revertAll = function() {
-                    destTree.nodes().softRemove().copy().to(sourceTree);
-                };
             }]);
 
             // Bootstrap the SAMMWeb application

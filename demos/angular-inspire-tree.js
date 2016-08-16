@@ -26,7 +26,7 @@
                 scope: {
                     options: '='
                 },
-                link: function(scope, $element) {
+                link: function(scope) {
                     scope.options = scope.options || {};
 
                     var tree = new InspireTree(scope.options);
@@ -43,44 +43,6 @@
                     scope.$watch('options.data', function(newValue) {
                         if (typeof newValue !== 'function') {
                             tree.load(scope.options.data);
-                        }
-                    });
-
-                    // Keyboard nav
-                    $element.on('keyup', function() {
-                        // Navigation
-                        var focusedNode = tree.focused();
-                        if (focusedNode) {
-                            focusedNode = focusedNode[0];
-                            switch (event.which) {
-                                case 37:
-                                    focusedNode.collapse();
-                                    scope.$digest();
-                                    break;
-                                case 38:
-                                    var prev = focusedNode.previousVisibleNode();
-                                    if (prev) {
-                                        prev.focus();
-                                        scope.$digest();
-                                    }
-                                    break;
-                                case 39:
-                                    focusedNode.expand();
-                                    scope.$digest();
-                                    break;
-                                case 40:
-                                    var next = focusedNode.nextVisibleNode();
-                                    if (next) {
-                                        next.focus();
-                                        scope.$digest();
-                                    }
-                                    break;
-                                case 13:
-                                    focusedNode.toggleSelect();
-                                    scope.$digest();
-                                    break;
-                                default:
-                            }
                         }
                     });
                 }
@@ -123,7 +85,7 @@
                     '<div class="title-wrap">' +
                         '<a class="toggle icon" ' +
                         'ng-click="node.toggleCollapse()" ' +
-                        'ng-class="node.collapsed() ? \'icon-caret\' : \'icon-caret-down\'" ' +
+                        'ng-class="node.collapsed() ? \'icon-expand\' : \'icon-collapse\'" ' +
                         'ng-if="node.hasChildren()"></a> ' +
                         '<a class="title icon" ' +
                         'ng-class="getIcon()" ' +
