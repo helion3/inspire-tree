@@ -14,7 +14,7 @@
     "babel-plugin-transform-builtin-extend": "^1.1.0",
     "babel-preset-es2015": "^6.9.0",
     "chai": "^3.4.1",
-    "css-loader": "^0.23.1",
+    "css-loader": "^0.25.0",
     "cuid": "git+https://github.com/ericelliott/cuid.git",
     "docdown": "git+https://github.com/jdalton/docdown.git",
     "es6-promise": "^3.1.2",
