@@ -28,7 +28,7 @@
     "karma-coverage": "^1.0.0",
     "karma-mocha": "^1.1.1",
     "karma-mocha-reporter": "^2.0.0",
-    "karma-phantomjs-launcher": "^1.0.1",
+    "karma-phantomjs-launcher": "^1.0.2",
     "key-codes": "0.0.1",
     "lodash": "^4.14.1",
     "mocha": "^3.0.0",
