@@ -35,7 +35,7 @@
     "node-sass": "^3.9.1",
     "phantomjs-prebuilt": "^2.1.6",
     "sass-loader": "^4.0.0",
-    "sinon": "^1.17.2",
+    "sinon": "^1.17.6",
     "style-loader": "^0.13.0",
     "svg-inline-loader": "^0.7.0",
     "virtual-dom": "^2.1.1",
