@@ -6,8 +6,9 @@
     .wholerow {
         height: $tree-node-height;
         left: 0;
+        // We can't use translation because IE11 doesn't render parent overflow right
+        margin-top: -$tree-node-height;
         position: absolute;
-        transform: translate(0, -100%);
         width: 100%;
         z-index: 1;
     }
