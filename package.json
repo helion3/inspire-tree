@@ -17,7 +17,7 @@
     "css-loader": "^0.25.0",
     "cuid": "git+https://github.com/ericelliott/cuid.git",
     "docdown": "git+https://github.com/jdalton/docdown.git",
-    "es6-promise": "^3.1.2",
+    "es6-promise": "^4.0.3",
     "eslint": "^3.4.0",
     "eventemitter2": "^2.0.0",
     "extract-text-webpack-plugin": "^1.0.1",
