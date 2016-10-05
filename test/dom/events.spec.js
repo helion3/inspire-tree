@@ -23,14 +23,12 @@ describe('DOM-related events', function() {
     });
 
     it('provides a preventTreeDefault method', function(done) {
-        tree.on('model.loaded', function() {
-            tree.on('node.click', function(event) {
-                expect(event.preventTreeDefault).to.be.a('function');
-                done();
-            });
-
-            $tree.find('a.title').eq(0).click();
+        tree.on('node.click', function(event) {
+            expect(event.preventTreeDefault).to.be.a('function');
+            done();
         });
+
+        $tree.find('a.title').eq(0).click();
     });
 
     it('passes handler as an argument', function(done) {
