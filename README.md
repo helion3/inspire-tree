@@ -218,6 +218,7 @@ use `tree.someMethod()`.
 
 ## Custom Rendering
 
+[React Demo](https://github.com/helion3/inspire-tree-react-demo)
 [AngularJS Demo](http://helion3.com/inspire-tree/demos/angular.html)
 
 While Inspire Tree comes with a super-fast virtual DOM engine for element rendering, there are times
