@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.10.2
+ * Inspire Tree v1.10.3
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -77,15 +77,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _collectionToModel = __webpack_require__(2);
 
-	var _eventemitter = __webpack_require__(14);
+	var _eventemitter = __webpack_require__(12);
 
 	var _es6Promise = __webpack_require__(6);
 
-	var _standardizePromise = __webpack_require__(13);
+	var _standardizePromise = __webpack_require__(11);
 
 	var _treenode = __webpack_require__(5);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(10);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96,7 +96,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	// CSS
-	__webpack_require__(15);
+	__webpack_require__(13);
 
 	/**
 	 * Maps a method to the root TreeNodes collection.
@@ -124,7 +124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function InspireTree(opts) {
 	        _classCallCheck(this, InspireTree);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(InspireTree).call(this));
+	        var _this = _possibleConstructorReturn(this, (InspireTree.__proto__ || Object.getPrototypeOf(InspireTree)).call(this));
 
 	        var tree = _this;
 
@@ -1426,7 +1426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(10);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1689,11 +1689,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise = __webpack_require__(6);
 
-	var _recurseDown2 = __webpack_require__(11);
+	var _recurseDown2 = __webpack_require__(9);
 
-	var _standardizePromise = __webpack_require__(13);
+	var _standardizePromise = __webpack_require__(11);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(10);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -3048,7 +3048,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {'use strict';
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
@@ -3056,90 +3056,89 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
-	 *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
-	 * @version   3.2.1
+	 *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
+	 * @version   3.3.1
 	 */
 
-	(function () {
-	  "use strict";
+	(function (global, factory) {
+	  ( false ? 'undefined' : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() :  true ? !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : global.ES6Promise = factory();
+	})(undefined, function () {
+	  'use strict';
 
-	  function lib$es6$promise$utils$$objectOrFunction(x) {
+	  function objectOrFunction(x) {
 	    return typeof x === 'function' || (typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object' && x !== null;
 	  }
 
-	  function lib$es6$promise$utils$$isFunction(x) {
+	  function isFunction(x) {
 	    return typeof x === 'function';
 	  }
 
-	  function lib$es6$promise$utils$$isMaybeThenable(x) {
-	    return (typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object' && x !== null;
-	  }
-
-	  var lib$es6$promise$utils$$_isArray;
+	  var _isArray = undefined;
 	  if (!Array.isArray) {
-	    lib$es6$promise$utils$$_isArray = function lib$es6$promise$utils$$_isArray(x) {
+	    _isArray = function _isArray(x) {
 	      return Object.prototype.toString.call(x) === '[object Array]';
 	    };
 	  } else {
-	    lib$es6$promise$utils$$_isArray = Array.isArray;
+	    _isArray = Array.isArray;
 	  }
 
-	  var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
-	  var lib$es6$promise$asap$$len = 0;
-	  var lib$es6$promise$asap$$vertxNext;
-	  var lib$es6$promise$asap$$customSchedulerFn;
+	  var isArray = _isArray;
 
-	  var lib$es6$promise$asap$$asap = function asap(callback, arg) {
-	    lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len] = callback;
-	    lib$es6$promise$asap$$queue[lib$es6$promise$asap$$len + 1] = arg;
-	    lib$es6$promise$asap$$len += 2;
-	    if (lib$es6$promise$asap$$len === 2) {
+	  var len = 0;
+	  var vertxNext = undefined;
+	  var customSchedulerFn = undefined;
+
+	  var asap = function asap(callback, arg) {
+	    queue[len] = callback;
+	    queue[len + 1] = arg;
+	    len += 2;
+	    if (len === 2) {
 	      // If len is 2, that means that we need to schedule an async flush.
 	      // If additional callbacks are queued before the queue is flushed, they
 	      // will be processed by this flush that we are scheduling.
-	      if (lib$es6$promise$asap$$customSchedulerFn) {
-	        lib$es6$promise$asap$$customSchedulerFn(lib$es6$promise$asap$$flush);
+	      if (customSchedulerFn) {
+	        customSchedulerFn(flush);
 	      } else {
-	        lib$es6$promise$asap$$scheduleFlush();
+	        scheduleFlush();
 	      }
 	    }
 	  };
 
-	  function lib$es6$promise$asap$$setScheduler(scheduleFn) {
-	    lib$es6$promise$asap$$customSchedulerFn = scheduleFn;
+	  function setScheduler(scheduleFn) {
+	    customSchedulerFn = scheduleFn;
 	  }
 
-	  function lib$es6$promise$asap$$setAsap(asapFn) {
-	    lib$es6$promise$asap$$asap = asapFn;
+	  function setAsap(asapFn) {
+	    asap = asapFn;
 	  }
 
-	  var lib$es6$promise$asap$$browserWindow = typeof window !== 'undefined' ? window : undefined;
-	  var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
-	  var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
-	  var lib$es6$promise$asap$$isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+	  var browserWindow = typeof window !== 'undefined' ? window : undefined;
+	  var browserGlobal = browserWindow || {};
+	  var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
+	  var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
 
 	  // test for web worker but not in IE10
-	  var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
+	  var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
 
 	  // node
-	  function lib$es6$promise$asap$$useNextTick() {
+	  function useNextTick() {
 	    // node version 0.10.x displays a deprecation warning when nextTick is used recursively
 	    // see https://github.com/cujojs/when/issues/410 for details
 	    return function () {
-	      process.nextTick(lib$es6$promise$asap$$flush);
+	      return process.nextTick(flush);
 	    };
 	  }
 
 	  // vertx
-	  function lib$es6$promise$asap$$useVertxTimer() {
+	  function useVertxTimer() {
 	    return function () {
-	      lib$es6$promise$asap$$vertxNext(lib$es6$promise$asap$$flush);
+	      vertxNext(flush);
 	    };
 	  }
 
-	  function lib$es6$promise$asap$$useMutationObserver() {
+	  function useMutationObserver() {
 	    var iterations = 0;
-	    var observer = new lib$es6$promise$asap$$BrowserMutationObserver(lib$es6$promise$asap$$flush);
+	    var observer = new BrowserMutationObserver(flush);
 	    var node = document.createTextNode('');
 	    observer.observe(node, { characterData: true });
 
@@ -3149,83 +3148,122 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  // web worker
-	  function lib$es6$promise$asap$$useMessageChannel() {
+	  function useMessageChannel() {
 	    var channel = new MessageChannel();
-	    channel.port1.onmessage = lib$es6$promise$asap$$flush;
+	    channel.port1.onmessage = flush;
 	    return function () {
-	      channel.port2.postMessage(0);
+	      return channel.port2.postMessage(0);
 	    };
 	  }
 
-	  function lib$es6$promise$asap$$useSetTimeout() {
+	  function useSetTimeout() {
+	    // Store setTimeout reference so es6-promise will be unaffected by
+	    // other code modifying setTimeout (like sinon.useFakeTimers())
+	    var globalSetTimeout = setTimeout;
 	    return function () {
-	      setTimeout(lib$es6$promise$asap$$flush, 1);
+	      return globalSetTimeout(flush, 1);
 	    };
 	  }
 
-	  var lib$es6$promise$asap$$queue = new Array(1000);
-	  function lib$es6$promise$asap$$flush() {
-	    for (var i = 0; i < lib$es6$promise$asap$$len; i += 2) {
-	      var callback = lib$es6$promise$asap$$queue[i];
-	      var arg = lib$es6$promise$asap$$queue[i + 1];
+	  var queue = new Array(1000);
+	  function flush() {
+	    for (var i = 0; i < len; i += 2) {
+	      var callback = queue[i];
+	      var arg = queue[i + 1];
 
 	      callback(arg);
 
-	      lib$es6$promise$asap$$queue[i] = undefined;
-	      lib$es6$promise$asap$$queue[i + 1] = undefined;
+	      queue[i] = undefined;
+	      queue[i + 1] = undefined;
 	    }
 
-	    lib$es6$promise$asap$$len = 0;
+	    len = 0;
 	  }
 
-	  function lib$es6$promise$asap$$attemptVertx() {
+	  function attemptVertx() {
 	    try {
 	      var r = require;
-	      var vertx = __webpack_require__(9);
-	      lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
-	      return lib$es6$promise$asap$$useVertxTimer();
+	      var vertx = __webpack_require__(8);
+	      vertxNext = vertx.runOnLoop || vertx.runOnContext;
+	      return useVertxTimer();
 	    } catch (e) {
-	      return lib$es6$promise$asap$$useSetTimeout();
+	      return useSetTimeout();
 	    }
 	  }
 
-	  var lib$es6$promise$asap$$scheduleFlush;
+	  var scheduleFlush = undefined;
 	  // Decide what async method to use to triggering processing of queued callbacks:
-	  if (lib$es6$promise$asap$$isNode) {
-	    lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useNextTick();
-	  } else if (lib$es6$promise$asap$$BrowserMutationObserver) {
-	    lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMutationObserver();
-	  } else if (lib$es6$promise$asap$$isWorker) {
-	    lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useMessageChannel();
-	  } else if (lib$es6$promise$asap$$browserWindow === undefined && "function" === 'function') {
-	    lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$attemptVertx();
+	  if (isNode) {
+	    scheduleFlush = useNextTick();
+	  } else if (BrowserMutationObserver) {
+	    scheduleFlush = useMutationObserver();
+	  } else if (isWorker) {
+	    scheduleFlush = useMessageChannel();
+	  } else if (browserWindow === undefined && "function" === 'function') {
+	    scheduleFlush = attemptVertx();
 	  } else {
-	    lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
+	    scheduleFlush = useSetTimeout();
 	  }
-	  function lib$es6$promise$then$$then(onFulfillment, onRejection) {
+
+	  function then(onFulfillment, onRejection) {
+	    var _arguments = arguments;
+
 	    var parent = this;
 
-	    var child = new this.constructor(lib$es6$promise$$internal$$noop);
+	    var child = new this.constructor(noop);
 
-	    if (child[lib$es6$promise$$internal$$PROMISE_ID] === undefined) {
-	      lib$es6$promise$$internal$$makePromise(child);
+	    if (child[PROMISE_ID] === undefined) {
+	      makePromise(child);
 	    }
 
-	    var state = parent._state;
+	    var _state = parent._state;
 
-	    if (state) {
-	      var callback = arguments[state - 1];
-	      lib$es6$promise$asap$$asap(function () {
-	        lib$es6$promise$$internal$$invokeCallback(state, child, callback, parent._result);
-	      });
+	    if (_state) {
+	      (function () {
+	        var callback = _arguments[_state - 1];
+	        asap(function () {
+	          return invokeCallback(_state, child, callback, parent._result);
+	        });
+	      })();
 	    } else {
-	      lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+	      subscribe(parent, child, onFulfillment, onRejection);
 	    }
 
 	    return child;
 	  }
-	  var lib$es6$promise$then$$default = lib$es6$promise$then$$then;
-	  function lib$es6$promise$promise$resolve$$resolve(object) {
+
+	  /**
+	    `Promise.resolve` returns a promise that will become resolved with the
+	    passed `value`. It is shorthand for the following:
+	  
+	    ```javascript
+	    let promise = new Promise(function(resolve, reject){
+	      resolve(1);
+	    });
+	  
+	    promise.then(function(value){
+	      // value === 1
+	    });
+	    ```
+	  
+	    Instead of writing the above, your code now simply becomes the following:
+	  
+	    ```javascript
+	    let promise = Promise.resolve(1);
+	  
+	    promise.then(function(value){
+	      // value === 1
+	    });
+	    ```
+	  
+	    @method resolve
+	    @static
+	    @param {Any} value value that the returned promise will be resolved with
+	    Useful for tooling.
+	    @return {Promise} a promise that will become fulfilled with the given
+	    `value`
+	  */
+	  function resolve(object) {
 	    /*jshint validthis:true */
 	    var Constructor = this;
 
@@ -3233,39 +3271,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return object;
 	    }
 
-	    var promise = new Constructor(lib$es6$promise$$internal$$noop);
-	    lib$es6$promise$$internal$$resolve(promise, object);
+	    var promise = new Constructor(noop);
+	    _resolve(promise, object);
 	    return promise;
 	  }
-	  var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
-	  var lib$es6$promise$$internal$$PROMISE_ID = Math.random().toString(36).substring(16);
 
-	  function lib$es6$promise$$internal$$noop() {}
+	  var PROMISE_ID = Math.random().toString(36).substring(16);
 
-	  var lib$es6$promise$$internal$$PENDING = void 0;
-	  var lib$es6$promise$$internal$$FULFILLED = 1;
-	  var lib$es6$promise$$internal$$REJECTED = 2;
+	  function noop() {}
 
-	  var lib$es6$promise$$internal$$GET_THEN_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+	  var PENDING = void 0;
+	  var FULFILLED = 1;
+	  var REJECTED = 2;
 
-	  function lib$es6$promise$$internal$$selfFulfillment() {
+	  var GET_THEN_ERROR = new ErrorObject();
+
+	  function selfFulfillment() {
 	    return new TypeError("You cannot resolve a promise with itself");
 	  }
 
-	  function lib$es6$promise$$internal$$cannotReturnOwn() {
+	  function cannotReturnOwn() {
 	    return new TypeError('A promises callback cannot return that same promise.');
 	  }
 
-	  function lib$es6$promise$$internal$$getThen(promise) {
+	  function getThen(promise) {
 	    try {
 	      return promise.then;
 	    } catch (error) {
-	      lib$es6$promise$$internal$$GET_THEN_ERROR.error = error;
-	      return lib$es6$promise$$internal$$GET_THEN_ERROR;
+	      GET_THEN_ERROR.error = error;
+	      return GET_THEN_ERROR;
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+	  function tryThen(then, value, fulfillmentHandler, rejectionHandler) {
 	    try {
 	      then.call(value, fulfillmentHandler, rejectionHandler);
 	    } catch (e) {
@@ -3273,18 +3311,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$handleForeignThenable(promise, thenable, then) {
-	    lib$es6$promise$asap$$asap(function (promise) {
+	  function handleForeignThenable(promise, thenable, then) {
+	    asap(function (promise) {
 	      var sealed = false;
-	      var error = lib$es6$promise$$internal$$tryThen(then, thenable, function (value) {
+	      var error = tryThen(then, thenable, function (value) {
 	        if (sealed) {
 	          return;
 	        }
 	        sealed = true;
 	        if (thenable !== value) {
-	          lib$es6$promise$$internal$$resolve(promise, value);
+	          _resolve(promise, value);
 	        } else {
-	          lib$es6$promise$$internal$$fulfill(promise, value);
+	          fulfill(promise, value);
 	        }
 	      }, function (reason) {
 	        if (sealed) {
@@ -3292,103 +3330,103 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        sealed = true;
 
-	        lib$es6$promise$$internal$$reject(promise, reason);
+	        _reject(promise, reason);
 	      }, 'Settle: ' + (promise._label || ' unknown promise'));
 
 	      if (!sealed && error) {
 	        sealed = true;
-	        lib$es6$promise$$internal$$reject(promise, error);
+	        _reject(promise, error);
 	      }
 	    }, promise);
 	  }
 
-	  function lib$es6$promise$$internal$$handleOwnThenable(promise, thenable) {
-	    if (thenable._state === lib$es6$promise$$internal$$FULFILLED) {
-	      lib$es6$promise$$internal$$fulfill(promise, thenable._result);
-	    } else if (thenable._state === lib$es6$promise$$internal$$REJECTED) {
-	      lib$es6$promise$$internal$$reject(promise, thenable._result);
+	  function handleOwnThenable(promise, thenable) {
+	    if (thenable._state === FULFILLED) {
+	      fulfill(promise, thenable._result);
+	    } else if (thenable._state === REJECTED) {
+	      _reject(promise, thenable._result);
 	    } else {
-	      lib$es6$promise$$internal$$subscribe(thenable, undefined, function (value) {
-	        lib$es6$promise$$internal$$resolve(promise, value);
+	      subscribe(thenable, undefined, function (value) {
+	        return _resolve(promise, value);
 	      }, function (reason) {
-	        lib$es6$promise$$internal$$reject(promise, reason);
+	        return _reject(promise, reason);
 	      });
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable, then) {
-	    if (maybeThenable.constructor === promise.constructor && then === lib$es6$promise$then$$default && constructor.resolve === lib$es6$promise$promise$resolve$$default) {
-	      lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
+	  function handleMaybeThenable(promise, maybeThenable, then$$) {
+	    if (maybeThenable.constructor === promise.constructor && then$$ === then && maybeThenable.constructor.resolve === resolve) {
+	      handleOwnThenable(promise, maybeThenable);
 	    } else {
-	      if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
-	        lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
-	      } else if (then === undefined) {
-	        lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
-	      } else if (lib$es6$promise$utils$$isFunction(then)) {
-	        lib$es6$promise$$internal$$handleForeignThenable(promise, maybeThenable, then);
+	      if (then$$ === GET_THEN_ERROR) {
+	        _reject(promise, GET_THEN_ERROR.error);
+	      } else if (then$$ === undefined) {
+	        fulfill(promise, maybeThenable);
+	      } else if (isFunction(then$$)) {
+	        handleForeignThenable(promise, maybeThenable, then$$);
 	      } else {
-	        lib$es6$promise$$internal$$fulfill(promise, maybeThenable);
+	        fulfill(promise, maybeThenable);
 	      }
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$resolve(promise, value) {
+	  function _resolve(promise, value) {
 	    if (promise === value) {
-	      lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
-	    } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
-	      lib$es6$promise$$internal$$handleMaybeThenable(promise, value, lib$es6$promise$$internal$$getThen(value));
+	      _reject(promise, selfFulfillment());
+	    } else if (objectOrFunction(value)) {
+	      handleMaybeThenable(promise, value, getThen(value));
 	    } else {
-	      lib$es6$promise$$internal$$fulfill(promise, value);
+	      fulfill(promise, value);
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$publishRejection(promise) {
+	  function publishRejection(promise) {
 	    if (promise._onerror) {
 	      promise._onerror(promise._result);
 	    }
 
-	    lib$es6$promise$$internal$$publish(promise);
+	    publish(promise);
 	  }
 
-	  function lib$es6$promise$$internal$$fulfill(promise, value) {
-	    if (promise._state !== lib$es6$promise$$internal$$PENDING) {
+	  function fulfill(promise, value) {
+	    if (promise._state !== PENDING) {
 	      return;
 	    }
 
 	    promise._result = value;
-	    promise._state = lib$es6$promise$$internal$$FULFILLED;
+	    promise._state = FULFILLED;
 
 	    if (promise._subscribers.length !== 0) {
-	      lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, promise);
+	      asap(publish, promise);
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$reject(promise, reason) {
-	    if (promise._state !== lib$es6$promise$$internal$$PENDING) {
+	  function _reject(promise, reason) {
+	    if (promise._state !== PENDING) {
 	      return;
 	    }
-	    promise._state = lib$es6$promise$$internal$$REJECTED;
+	    promise._state = REJECTED;
 	    promise._result = reason;
 
-	    lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publishRejection, promise);
+	    asap(publishRejection, promise);
 	  }
 
-	  function lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection) {
-	    var subscribers = parent._subscribers;
-	    var length = subscribers.length;
+	  function subscribe(parent, child, onFulfillment, onRejection) {
+	    var _subscribers = parent._subscribers;
+	    var length = _subscribers.length;
 
 	    parent._onerror = null;
 
-	    subscribers[length] = child;
-	    subscribers[length + lib$es6$promise$$internal$$FULFILLED] = onFulfillment;
-	    subscribers[length + lib$es6$promise$$internal$$REJECTED] = onRejection;
+	    _subscribers[length] = child;
+	    _subscribers[length + FULFILLED] = onFulfillment;
+	    _subscribers[length + REJECTED] = onRejection;
 
 	    if (length === 0 && parent._state) {
-	      lib$es6$promise$asap$$asap(lib$es6$promise$$internal$$publish, parent);
+	      asap(publish, parent);
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$publish(promise) {
+	  function publish(promise) {
 	    var subscribers = promise._subscribers;
 	    var settled = promise._state;
 
@@ -3396,8 +3434,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return;
 	    }
 
-	    var child,
-	        callback,
+	    var child = undefined,
+	        callback = undefined,
 	        detail = promise._result;
 
 	    for (var i = 0; i < subscribers.length; i += 3) {
@@ -3405,7 +3443,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      callback = subscribers[i + settled];
 
 	      if (child) {
-	        lib$es6$promise$$internal$$invokeCallback(settled, child, callback, detail);
+	        invokeCallback(settled, child, callback, detail);
 	      } else {
 	        callback(detail);
 	      }
@@ -3414,32 +3452,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    promise._subscribers.length = 0;
 	  }
 
-	  function lib$es6$promise$$internal$$ErrorObject() {
+	  function ErrorObject() {
 	    this.error = null;
 	  }
 
-	  var lib$es6$promise$$internal$$TRY_CATCH_ERROR = new lib$es6$promise$$internal$$ErrorObject();
+	  var TRY_CATCH_ERROR = new ErrorObject();
 
-	  function lib$es6$promise$$internal$$tryCatch(callback, detail) {
+	  function tryCatch(callback, detail) {
 	    try {
 	      return callback(detail);
 	    } catch (e) {
-	      lib$es6$promise$$internal$$TRY_CATCH_ERROR.error = e;
-	      return lib$es6$promise$$internal$$TRY_CATCH_ERROR;
+	      TRY_CATCH_ERROR.error = e;
+	      return TRY_CATCH_ERROR;
 	    }
 	  }
 
-	  function lib$es6$promise$$internal$$invokeCallback(settled, promise, callback, detail) {
-	    var hasCallback = lib$es6$promise$utils$$isFunction(callback),
-	        value,
-	        error,
-	        succeeded,
-	        failed;
+	  function invokeCallback(settled, promise, callback, detail) {
+	    var hasCallback = isFunction(callback),
+	        value = undefined,
+	        error = undefined,
+	        succeeded = undefined,
+	        failed = undefined;
 
 	    if (hasCallback) {
-	      value = lib$es6$promise$$internal$$tryCatch(callback, detail);
+	      value = tryCatch(callback, detail);
 
-	      if (value === lib$es6$promise$$internal$$TRY_CATCH_ERROR) {
+	      if (value === TRY_CATCH_ERROR) {
 	        failed = true;
 	        error = value.error;
 	        value = null;
@@ -3448,7 +3486,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      if (promise === value) {
-	        lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$cannotReturnOwn());
+	        _reject(promise, cannotReturnOwn());
 	        return;
 	      }
 	    } else {
@@ -3456,54 +3494,262 @@ return /******/ (function(modules) { // webpackBootstrap
 	      succeeded = true;
 	    }
 
-	    if (promise._state !== lib$es6$promise$$internal$$PENDING) {
+	    if (promise._state !== PENDING) {
 	      // noop
 	    } else if (hasCallback && succeeded) {
-	        lib$es6$promise$$internal$$resolve(promise, value);
-	      } else if (failed) {
-	        lib$es6$promise$$internal$$reject(promise, error);
-	      } else if (settled === lib$es6$promise$$internal$$FULFILLED) {
-	        lib$es6$promise$$internal$$fulfill(promise, value);
-	      } else if (settled === lib$es6$promise$$internal$$REJECTED) {
-	        lib$es6$promise$$internal$$reject(promise, value);
-	      }
-	  }
-
-	  function lib$es6$promise$$internal$$initializePromise(promise, resolver) {
-	    try {
-	      resolver(function resolvePromise(value) {
-	        lib$es6$promise$$internal$$resolve(promise, value);
-	      }, function rejectPromise(reason) {
-	        lib$es6$promise$$internal$$reject(promise, reason);
-	      });
-	    } catch (e) {
-	      lib$es6$promise$$internal$$reject(promise, e);
+	      _resolve(promise, value);
+	    } else if (failed) {
+	      _reject(promise, error);
+	    } else if (settled === FULFILLED) {
+	      fulfill(promise, value);
+	    } else if (settled === REJECTED) {
+	      _reject(promise, value);
 	    }
 	  }
 
-	  var lib$es6$promise$$internal$$id = 0;
-	  function lib$es6$promise$$internal$$nextId() {
-	    return lib$es6$promise$$internal$$id++;
+	  function initializePromise(promise, resolver) {
+	    try {
+	      resolver(function resolvePromise(value) {
+	        _resolve(promise, value);
+	      }, function rejectPromise(reason) {
+	        _reject(promise, reason);
+	      });
+	    } catch (e) {
+	      _reject(promise, e);
+	    }
 	  }
 
-	  function lib$es6$promise$$internal$$makePromise(promise) {
-	    promise[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$id++;
+	  var id = 0;
+	  function nextId() {
+	    return id++;
+	  }
+
+	  function makePromise(promise) {
+	    promise[PROMISE_ID] = id++;
 	    promise._state = undefined;
 	    promise._result = undefined;
 	    promise._subscribers = [];
 	  }
 
-	  function lib$es6$promise$promise$all$$all(entries) {
-	    return new lib$es6$promise$enumerator$$default(this, entries).promise;
+	  function Enumerator(Constructor, input) {
+	    this._instanceConstructor = Constructor;
+	    this.promise = new Constructor(noop);
+
+	    if (!this.promise[PROMISE_ID]) {
+	      makePromise(this.promise);
+	    }
+
+	    if (isArray(input)) {
+	      this._input = input;
+	      this.length = input.length;
+	      this._remaining = input.length;
+
+	      this._result = new Array(this.length);
+
+	      if (this.length === 0) {
+	        fulfill(this.promise, this._result);
+	      } else {
+	        this.length = this.length || 0;
+	        this._enumerate();
+	        if (this._remaining === 0) {
+	          fulfill(this.promise, this._result);
+	        }
+	      }
+	    } else {
+	      _reject(this.promise, validationError());
+	    }
 	  }
-	  var lib$es6$promise$promise$all$$default = lib$es6$promise$promise$all$$all;
-	  function lib$es6$promise$promise$race$$race(entries) {
+
+	  function validationError() {
+	    return new Error('Array Methods must be provided an Array');
+	  };
+
+	  Enumerator.prototype._enumerate = function () {
+	    var length = this.length;
+	    var _input = this._input;
+
+	    for (var i = 0; this._state === PENDING && i < length; i++) {
+	      this._eachEntry(_input[i], i);
+	    }
+	  };
+
+	  Enumerator.prototype._eachEntry = function (entry, i) {
+	    var c = this._instanceConstructor;
+	    var resolve$$ = c.resolve;
+
+	    if (resolve$$ === resolve) {
+	      var _then = getThen(entry);
+
+	      if (_then === then && entry._state !== PENDING) {
+	        this._settledAt(entry._state, i, entry._result);
+	      } else if (typeof _then !== 'function') {
+	        this._remaining--;
+	        this._result[i] = entry;
+	      } else if (c === Promise) {
+	        var promise = new c(noop);
+	        handleMaybeThenable(promise, entry, _then);
+	        this._willSettleAt(promise, i);
+	      } else {
+	        this._willSettleAt(new c(function (resolve$$) {
+	          return resolve$$(entry);
+	        }), i);
+	      }
+	    } else {
+	      this._willSettleAt(resolve$$(entry), i);
+	    }
+	  };
+
+	  Enumerator.prototype._settledAt = function (state, i, value) {
+	    var promise = this.promise;
+
+	    if (promise._state === PENDING) {
+	      this._remaining--;
+
+	      if (state === REJECTED) {
+	        _reject(promise, value);
+	      } else {
+	        this._result[i] = value;
+	      }
+	    }
+
+	    if (this._remaining === 0) {
+	      fulfill(promise, this._result);
+	    }
+	  };
+
+	  Enumerator.prototype._willSettleAt = function (promise, i) {
+	    var enumerator = this;
+
+	    subscribe(promise, undefined, function (value) {
+	      return enumerator._settledAt(FULFILLED, i, value);
+	    }, function (reason) {
+	      return enumerator._settledAt(REJECTED, i, reason);
+	    });
+	  };
+
+	  /**
+	    `Promise.all` accepts an array of promises, and returns a new promise which
+	    is fulfilled with an array of fulfillment values for the passed promises, or
+	    rejected with the reason of the first passed promise to be rejected. It casts all
+	    elements of the passed iterable to promises as it runs this algorithm.
+	  
+	    Example:
+	  
+	    ```javascript
+	    let promise1 = resolve(1);
+	    let promise2 = resolve(2);
+	    let promise3 = resolve(3);
+	    let promises = [ promise1, promise2, promise3 ];
+	  
+	    Promise.all(promises).then(function(array){
+	      // The array here would be [ 1, 2, 3 ];
+	    });
+	    ```
+	  
+	    If any of the `promises` given to `all` are rejected, the first promise
+	    that is rejected will be given as an argument to the returned promises's
+	    rejection handler. For example:
+	  
+	    Example:
+	  
+	    ```javascript
+	    let promise1 = resolve(1);
+	    let promise2 = reject(new Error("2"));
+	    let promise3 = reject(new Error("3"));
+	    let promises = [ promise1, promise2, promise3 ];
+	  
+	    Promise.all(promises).then(function(array){
+	      // Code here never runs because there are rejected promises!
+	    }, function(error) {
+	      // error.message === "2"
+	    });
+	    ```
+	  
+	    @method all
+	    @static
+	    @param {Array} entries array of promises
+	    @param {String} label optional string for labeling the promise.
+	    Useful for tooling.
+	    @return {Promise} promise that is fulfilled when all `promises` have been
+	    fulfilled, or rejected if any of them become rejected.
+	    @static
+	  */
+	  function all(entries) {
+	    return new Enumerator(this, entries).promise;
+	  }
+
+	  /**
+	    `Promise.race` returns a new promise which is settled in the same way as the
+	    first passed promise to settle.
+	  
+	    Example:
+	  
+	    ```javascript
+	    let promise1 = new Promise(function(resolve, reject){
+	      setTimeout(function(){
+	        resolve('promise 1');
+	      }, 200);
+	    });
+	  
+	    let promise2 = new Promise(function(resolve, reject){
+	      setTimeout(function(){
+	        resolve('promise 2');
+	      }, 100);
+	    });
+	  
+	    Promise.race([promise1, promise2]).then(function(result){
+	      // result === 'promise 2' because it was resolved before promise1
+	      // was resolved.
+	    });
+	    ```
+	  
+	    `Promise.race` is deterministic in that only the state of the first
+	    settled promise matters. For example, even if other promises given to the
+	    `promises` array argument are resolved, but the first settled promise has
+	    become rejected before the other promises became fulfilled, the returned
+	    promise will become rejected:
+	  
+	    ```javascript
+	    let promise1 = new Promise(function(resolve, reject){
+	      setTimeout(function(){
+	        resolve('promise 1');
+	      }, 200);
+	    });
+	  
+	    let promise2 = new Promise(function(resolve, reject){
+	      setTimeout(function(){
+	        reject(new Error('promise 2'));
+	      }, 100);
+	    });
+	  
+	    Promise.race([promise1, promise2]).then(function(result){
+	      // Code here never runs
+	    }, function(reason){
+	      // reason.message === 'promise 2' because promise 2 became rejected before
+	      // promise 1 became fulfilled
+	    });
+	    ```
+	  
+	    An example real-world use case is implementing timeouts:
+	  
+	    ```javascript
+	    Promise.race([ajax('foo.json'), timeout(5000)])
+	    ```
+	  
+	    @method race
+	    @static
+	    @param {Array} promises array of promises to observe
+	    Useful for tooling.
+	    @return {Promise} a promise which settles in the same way as the first passed
+	    promise to settle.
+	  */
+	  function race(entries) {
 	    /*jshint validthis:true */
 	    var Constructor = this;
 
-	    if (!lib$es6$promise$utils$$isArray(entries)) {
-	      return new Constructor(function (resolve, reject) {
-	        reject(new TypeError('You must pass an array to race.'));
+	    if (!isArray(entries)) {
+	      return new Constructor(function (_, reject) {
+	        return reject(new TypeError('You must pass an array to race.'));
 	      });
 	    } else {
 	      return new Constructor(function (resolve, reject) {
@@ -3514,76 +3760,123 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  }
-	  var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
-	  function lib$es6$promise$promise$reject$$reject(reason) {
+
+	  /**
+	    `Promise.reject` returns a promise rejected with the passed `reason`.
+	    It is shorthand for the following:
+	  
+	    ```javascript
+	    let promise = new Promise(function(resolve, reject){
+	      reject(new Error('WHOOPS'));
+	    });
+	  
+	    promise.then(function(value){
+	      // Code here doesn't run because the promise is rejected!
+	    }, function(reason){
+	      // reason.message === 'WHOOPS'
+	    });
+	    ```
+	  
+	    Instead of writing the above, your code now simply becomes the following:
+	  
+	    ```javascript
+	    let promise = Promise.reject(new Error('WHOOPS'));
+	  
+	    promise.then(function(value){
+	      // Code here doesn't run because the promise is rejected!
+	    }, function(reason){
+	      // reason.message === 'WHOOPS'
+	    });
+	    ```
+	  
+	    @method reject
+	    @static
+	    @param {Any} reason value that the returned promise will be rejected with.
+	    Useful for tooling.
+	    @return {Promise} a promise rejected with the given `reason`.
+	  */
+	  function reject(reason) {
 	    /*jshint validthis:true */
 	    var Constructor = this;
-	    var promise = new Constructor(lib$es6$promise$$internal$$noop);
-	    lib$es6$promise$$internal$$reject(promise, reason);
+	    var promise = new Constructor(noop);
+	    _reject(promise, reason);
 	    return promise;
 	  }
-	  var lib$es6$promise$promise$reject$$default = lib$es6$promise$promise$reject$$reject;
 
-	  function lib$es6$promise$promise$$needsResolver() {
+	  function needsResolver() {
 	    throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
 	  }
 
-	  function lib$es6$promise$promise$$needsNew() {
+	  function needsNew() {
 	    throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
 	  }
 
-	  var lib$es6$promise$promise$$default = lib$es6$promise$promise$$Promise;
 	  /**
 	    Promise objects represent the eventual result of an asynchronous operation. The
 	    primary way of interacting with a promise is through its `then` method, which
 	    registers callbacks to receive either a promise's eventual value or the reason
 	    why the promise cannot be fulfilled.
-	     Terminology
+	  
+	    Terminology
 	    -----------
-	     - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
+	  
+	    - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
 	    - `thenable` is an object or function that defines a `then` method.
 	    - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
 	    - `exception` is a value that is thrown using the throw statement.
 	    - `reason` is a value that indicates why a promise was rejected.
 	    - `settled` the final resting state of a promise, fulfilled or rejected.
-	     A promise can be in one of three states: pending, fulfilled, or rejected.
-	     Promises that are fulfilled have a fulfillment value and are in the fulfilled
+	  
+	    A promise can be in one of three states: pending, fulfilled, or rejected.
+	  
+	    Promises that are fulfilled have a fulfillment value and are in the fulfilled
 	    state.  Promises that are rejected have a rejection reason and are in the
 	    rejected state.  A fulfillment value is never a thenable.
-	     Promises can also be said to *resolve* a value.  If this value is also a
+	  
+	    Promises can also be said to *resolve* a value.  If this value is also a
 	    promise, then the original promise's settled state will match the value's
 	    settled state.  So a promise that *resolves* a promise that rejects will
 	    itself reject, and a promise that *resolves* a promise that fulfills will
 	    itself fulfill.
-	      Basic Usage:
+	  
+	  
+	    Basic Usage:
 	    ------------
-	     ```js
-	    var promise = new Promise(function(resolve, reject) {
+	  
+	    ```js
+	    let promise = new Promise(function(resolve, reject) {
 	      // on success
 	      resolve(value);
-	       // on failure
+	  
+	      // on failure
 	      reject(reason);
 	    });
-	     promise.then(function(value) {
+	  
+	    promise.then(function(value) {
 	      // on fulfillment
 	    }, function(reason) {
 	      // on rejection
 	    });
 	    ```
-	     Advanced Usage:
+	  
+	    Advanced Usage:
 	    ---------------
-	     Promises shine when abstracting away asynchronous interactions such as
+	  
+	    Promises shine when abstracting away asynchronous interactions such as
 	    `XMLHttpRequest`s.
-	     ```js
+	  
+	    ```js
 	    function getJSON(url) {
 	      return new Promise(function(resolve, reject){
-	        var xhr = new XMLHttpRequest();
-	         xhr.open('GET', url);
+	        let xhr = new XMLHttpRequest();
+	  
+	        xhr.open('GET', url);
 	        xhr.onreadystatechange = handler;
 	        xhr.responseType = 'json';
 	        xhr.setRequestHeader('Accept', 'application/json');
 	        xhr.send();
-	         function handler() {
+	  
+	        function handler() {
 	          if (this.readyState === this.DONE) {
 	            if (this.status === 200) {
 	              resolve(this.response);
@@ -3594,67 +3887,76 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	      });
 	    }
-	     getJSON('/posts.json').then(function(json) {
+	  
+	    getJSON('/posts.json').then(function(json) {
 	      // on fulfillment
 	    }, function(reason) {
 	      // on rejection
 	    });
 	    ```
-	     Unlike callbacks, promises are great composable primitives.
-	     ```js
+	  
+	    Unlike callbacks, promises are great composable primitives.
+	  
+	    ```js
 	    Promise.all([
 	      getJSON('/posts'),
 	      getJSON('/comments')
 	    ]).then(function(values){
 	      values[0] // => postsJSON
 	      values[1] // => commentsJSON
-	       return values;
+	  
+	      return values;
 	    });
 	    ```
-	     @class Promise
+	  
+	    @class Promise
 	    @param {function} resolver
 	    Useful for tooling.
 	    @constructor
 	  */
-	  function lib$es6$promise$promise$$Promise(resolver) {
-	    this[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$nextId();
+	  function Promise(resolver) {
+	    this[PROMISE_ID] = nextId();
 	    this._result = this._state = undefined;
 	    this._subscribers = [];
 
-	    if (lib$es6$promise$$internal$$noop !== resolver) {
-	      typeof resolver !== 'function' && lib$es6$promise$promise$$needsResolver();
-	      this instanceof lib$es6$promise$promise$$Promise ? lib$es6$promise$$internal$$initializePromise(this, resolver) : lib$es6$promise$promise$$needsNew();
+	    if (noop !== resolver) {
+	      typeof resolver !== 'function' && needsResolver();
+	      this instanceof Promise ? initializePromise(this, resolver) : needsNew();
 	    }
 	  }
 
-	  lib$es6$promise$promise$$Promise.all = lib$es6$promise$promise$all$$default;
-	  lib$es6$promise$promise$$Promise.race = lib$es6$promise$promise$race$$default;
-	  lib$es6$promise$promise$$Promise.resolve = lib$es6$promise$promise$resolve$$default;
-	  lib$es6$promise$promise$$Promise.reject = lib$es6$promise$promise$reject$$default;
-	  lib$es6$promise$promise$$Promise._setScheduler = lib$es6$promise$asap$$setScheduler;
-	  lib$es6$promise$promise$$Promise._setAsap = lib$es6$promise$asap$$setAsap;
-	  lib$es6$promise$promise$$Promise._asap = lib$es6$promise$asap$$asap;
+	  Promise.all = all;
+	  Promise.race = race;
+	  Promise.resolve = resolve;
+	  Promise.reject = reject;
+	  Promise._setScheduler = setScheduler;
+	  Promise._setAsap = setAsap;
+	  Promise._asap = asap;
 
-	  lib$es6$promise$promise$$Promise.prototype = {
-	    constructor: lib$es6$promise$promise$$Promise,
+	  Promise.prototype = {
+	    constructor: Promise,
 
 	    /**
 	      The primary way of interacting with a promise is through its `then` method,
 	      which registers callbacks to receive either a promise's eventual value or the
 	      reason why the promise cannot be fulfilled.
-	       ```js
+	    
+	      ```js
 	      findUser().then(function(user){
 	        // user is available
 	      }, function(reason){
 	        // user is unavailable, and you are given the reason why
 	      });
 	      ```
-	       Chaining
+	    
+	      Chaining
 	      --------
-	       The return value of `then` is itself a promise.  This second, 'downstream'
+	    
+	      The return value of `then` is itself a promise.  This second, 'downstream'
 	      promise is resolved with the return value of the first promise's fulfillment
 	      or rejection handler, or rejected if the handler throws an exception.
-	       ```js
+	    
+	      ```js
 	      findUser().then(function (user) {
 	        return user.name;
 	      }, function (reason) {
@@ -3663,7 +3965,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
 	        // will be `'default name'`
 	      });
-	       findUser().then(function (user) {
+	    
+	      findUser().then(function (user) {
 	        throw new Error('Found user, but still unhappy');
 	      }, function (reason) {
 	        throw new Error('`findUser` rejected and we're unhappy');
@@ -3675,7 +3978,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	      ```
 	      If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-	       ```js
+	    
+	      ```js
 	      findUser().then(function (user) {
 	        throw new PedagogicalException('Upstream error');
 	      }).then(function (value) {
@@ -3686,21 +3990,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // The `PedgagocialException` is propagated all the way down to here
 	      });
 	      ```
-	       Assimilation
+	    
+	      Assimilation
 	      ------------
-	       Sometimes the value you want to propagate to a downstream promise can only be
+	    
+	      Sometimes the value you want to propagate to a downstream promise can only be
 	      retrieved asynchronously. This can be achieved by returning a promise in the
 	      fulfillment or rejection handler. The downstream promise will then be pending
 	      until the returned promise is settled. This is called *assimilation*.
-	       ```js
+	    
+	      ```js
 	      findUser().then(function (user) {
 	        return findCommentsByAuthor(user);
 	      }).then(function (comments) {
 	        // The user's comments are now available
 	      });
 	      ```
-	       If the assimliated promise rejects, then the downstream promise will also reject.
-	       ```js
+	    
+	      If the assimliated promise rejects, then the downstream promise will also reject.
+	    
+	      ```js
 	      findUser().then(function (user) {
 	        return findCommentsByAuthor(user);
 	      }).then(function (comments) {
@@ -3709,20 +4018,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // If `findCommentsByAuthor` rejects, we'll have the reason here
 	      });
 	      ```
-	       Simple Example
+	    
+	      Simple Example
 	      --------------
-	       Synchronous Example
-	       ```javascript
-	      var result;
-	       try {
+	    
+	      Synchronous Example
+	    
+	      ```javascript
+	      let result;
+	    
+	      try {
 	        result = findResult();
 	        // success
 	      } catch(reason) {
 	        // failure
 	      }
 	      ```
-	       Errback Example
-	       ```js
+	    
+	      Errback Example
+	    
+	      ```js
 	      findResult(function(result, err){
 	        if (err) {
 	          // failure
@@ -3731,20 +4046,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      });
 	      ```
-	       Promise Example;
-	       ```javascript
+	    
+	      Promise Example;
+	    
+	      ```javascript
 	      findResult().then(function(result){
 	        // success
 	      }, function(reason){
 	        // failure
 	      });
 	      ```
-	       Advanced Example
+	    
+	      Advanced Example
 	      --------------
-	       Synchronous Example
-	       ```javascript
-	      var author, books;
-	       try {
+	    
+	      Synchronous Example
+	    
+	      ```javascript
+	      let author, books;
+	    
+	      try {
 	        author = findAuthor();
 	        books  = findBooksByAuthor(author);
 	        // success
@@ -3752,13 +4073,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // failure
 	      }
 	      ```
-	       Errback Example
-	       ```js
-	       function foundBooks(books) {
-	       }
-	       function failure(reason) {
-	       }
-	       findAuthor(function(author, err){
+	    
+	      Errback Example
+	    
+	      ```js
+	    
+	      function foundBooks(books) {
+	    
+	      }
+	    
+	      function failure(reason) {
+	    
+	      }
+	    
+	      findAuthor(function(author, err){
 	        if (err) {
 	          failure(err);
 	          // failure
@@ -3782,8 +4110,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      });
 	      ```
-	       Promise Example;
-	       ```javascript
+	    
+	      Promise Example;
+	    
+	      ```javascript
 	      findAuthor().
 	        then(findBooksByAuthor).
 	        then(function(books){
@@ -3792,33 +4122,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // something went wrong
 	      });
 	      ```
-	       @method then
+	    
+	      @method then
 	      @param {Function} onFulfilled
 	      @param {Function} onRejected
 	      Useful for tooling.
 	      @return {Promise}
 	    */
-	    then: lib$es6$promise$then$$default,
+	    then: then,
 
 	    /**
 	      `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
 	      as the catch block of a try/catch statement.
-	       ```js
+	    
+	      ```js
 	      function findAuthor(){
 	        throw new Error('couldn't find that author');
 	      }
-	       // synchronous
+	    
+	      // synchronous
 	      try {
 	        findAuthor();
 	      } catch(reason) {
 	        // something went wrong
 	      }
-	       // async with promises
+	    
+	      // async with promises
 	      findAuthor().catch(function(reason){
 	        // something went wrong
 	      });
 	      ```
-	       @method catch
+	    
+	      @method catch
 	      @param {Function} onRejection
 	      Useful for tooling.
 	      @return {Promise}
@@ -3827,104 +4162,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this.then(null, onRejection);
 	    }
 	  };
-	  var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
-	  function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
-	    this._instanceConstructor = Constructor;
-	    this.promise = new Constructor(lib$es6$promise$$internal$$noop);
 
-	    if (!this.promise[lib$es6$promise$$internal$$PROMISE_ID]) {
-	      lib$es6$promise$$internal$$makePromise(this.promise);
-	    }
-
-	    if (lib$es6$promise$utils$$isArray(input)) {
-	      this._input = input;
-	      this.length = input.length;
-	      this._remaining = input.length;
-
-	      this._result = new Array(this.length);
-
-	      if (this.length === 0) {
-	        lib$es6$promise$$internal$$fulfill(this.promise, this._result);
-	      } else {
-	        this.length = this.length || 0;
-	        this._enumerate();
-	        if (this._remaining === 0) {
-	          lib$es6$promise$$internal$$fulfill(this.promise, this._result);
-	        }
-	      }
-	    } else {
-	      lib$es6$promise$$internal$$reject(this.promise, lib$es6$promise$enumerator$$validationError());
-	    }
-	  }
-
-	  function lib$es6$promise$enumerator$$validationError() {
-	    return new Error('Array Methods must be provided an Array');
-	  }
-
-	  lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function () {
-	    var length = this.length;
-	    var input = this._input;
-
-	    for (var i = 0; this._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
-	      this._eachEntry(input[i], i);
-	    }
-	  };
-
-	  lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function (entry, i) {
-	    var c = this._instanceConstructor;
-	    var resolve = c.resolve;
-
-	    if (resolve === lib$es6$promise$promise$resolve$$default) {
-	      var then = lib$es6$promise$$internal$$getThen(entry);
-
-	      if (then === lib$es6$promise$then$$default && entry._state !== lib$es6$promise$$internal$$PENDING) {
-	        this._settledAt(entry._state, i, entry._result);
-	      } else if (typeof then !== 'function') {
-	        this._remaining--;
-	        this._result[i] = entry;
-	      } else if (c === lib$es6$promise$promise$$default) {
-	        var promise = new c(lib$es6$promise$$internal$$noop);
-	        lib$es6$promise$$internal$$handleMaybeThenable(promise, entry, then);
-	        this._willSettleAt(promise, i);
-	      } else {
-	        this._willSettleAt(new c(function (resolve) {
-	          resolve(entry);
-	        }), i);
-	      }
-	    } else {
-	      this._willSettleAt(resolve(entry), i);
-	    }
-	  };
-
-	  lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function (state, i, value) {
-	    var promise = this.promise;
-
-	    if (promise._state === lib$es6$promise$$internal$$PENDING) {
-	      this._remaining--;
-
-	      if (state === lib$es6$promise$$internal$$REJECTED) {
-	        lib$es6$promise$$internal$$reject(promise, value);
-	      } else {
-	        this._result[i] = value;
-	      }
-	    }
-
-	    if (this._remaining === 0) {
-	      lib$es6$promise$$internal$$fulfill(promise, this._result);
-	    }
-	  };
-
-	  lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function (promise, i) {
-	    var enumerator = this;
-
-	    lib$es6$promise$$internal$$subscribe(promise, undefined, function (value) {
-	      enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
-	    }, function (reason) {
-	      enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
-	    });
-	  };
-	  function lib$es6$promise$polyfill$$polyfill() {
-	    var local;
+	  function polyfill() {
+	    var local = undefined;
 
 	    if (typeof global !== 'undefined') {
 	      local = global;
@@ -3940,33 +4180,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var P = local.Promise;
 
-	    if (P && Object.prototype.toString.call(P.resolve()) === '[object Promise]' && !P.cast) {
-	      return;
+	    if (P) {
+	      var promiseToString = null;
+	      try {
+	        promiseToString = Object.prototype.toString.call(P.resolve());
+	      } catch (e) {
+	        // silently ignored
+	      }
+
+	      if (promiseToString === '[object Promise]' && !P.cast) {
+	        return;
+	      }
 	    }
 
-	    local.Promise = lib$es6$promise$promise$$default;
-	  }
-	  var lib$es6$promise$polyfill$$default = lib$es6$promise$polyfill$$polyfill;
-
-	  var lib$es6$promise$umd$$ES6Promise = {
-	    'Promise': lib$es6$promise$promise$$default,
-	    'polyfill': lib$es6$promise$polyfill$$default
-	  };
-
-	  /* global define:true module:true window: true */
-	  if ("function" === 'function' && __webpack_require__(10)['amd']) {
-	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
-	      return lib$es6$promise$umd$$ES6Promise;
-	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	  } else if (typeof module !== 'undefined' && module['exports']) {
-	    module['exports'] = lib$es6$promise$umd$$ES6Promise;
-	  } else if (typeof this !== 'undefined') {
-	    this['ES6Promise'] = lib$es6$promise$umd$$ES6Promise;
+	    local.Promise = Promise;
 	  }
 
-	  lib$es6$promise$polyfill$$default();
-	}).call(undefined);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), (function() { return this; }()), __webpack_require__(8)(module)))
+	  polyfill();
+	  // Strange compat..
+	  Promise.polyfill = polyfill;
+	  Promise.Promise = Promise;
+
+	  return Promise;
+	});
+	//# sourceMappingURL=es6-promise.map
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), (function() { return this; }())))
 
 /***/ },
 /* 7 */
@@ -3975,7 +4213,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	// shim for using process in browser
-
 	var process = module.exports = {};
 
 	// cached from whatever global is present so that test runners that stub it
@@ -3986,22 +4223,79 @@ return /******/ (function(modules) { // webpackBootstrap
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout() {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
 	    try {
-	        cachedSetTimeout = setTimeout;
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
 	    } catch (e) {
-	        cachedSetTimeout = function cachedSetTimeout() {
-	            throw new Error('setTimeout is not defined');
-	        };
+	        cachedSetTimeout = defaultSetTimout;
 	    }
 	    try {
-	        cachedClearTimeout = clearTimeout;
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
 	    } catch (e) {
-	        cachedClearTimeout = function cachedClearTimeout() {
-	            throw new Error('clearTimeout is not defined');
-	        };
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
 	})();
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch (e) {
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch (e) {
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e) {
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e) {
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
@@ -4026,7 +4320,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = cachedSetTimeout(cleanUpNextTick);
+	    var timeout = runTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -4043,7 +4337,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    cachedClearTimeout(timeout);
+	    runClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -4055,7 +4349,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        cachedSetTimeout(drainQueue, 0);
+	        runTimeout(drainQueue);
 	    }
 	};
 
@@ -4102,34 +4396,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports) {
 
-	"use strict";
-
-	module.exports = function (module) {
-		if (!module.webpackPolyfill) {
-			module.deprecate = function () {};
-			module.paths = [];
-			// module.parent = undefined by default
-			module.children = [];
-			module.webpackPolyfill = 1;
-		}
-		return module;
-	};
-
-/***/ },
-/* 9 */
-/***/ function(module, exports) {
-
 	/* (ignored) */
 
 /***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	module.exports = function() { throw new Error("define cannot be used indirect"); };
-
-
-/***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4145,7 +4415,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _treenode = __webpack_require__(5);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(10);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -4181,7 +4451,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 12 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4203,7 +4473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _es6Promise = __webpack_require__(6);
 
-	var _recurseDown2 = __webpack_require__(11);
+	var _recurseDown2 = __webpack_require__(9);
 
 	var _treenode = __webpack_require__(5);
 
@@ -4328,7 +4598,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function TreeNodes(tree, array) {
 	        _classCallCheck(this, TreeNodes);
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TreeNodes).call(this));
+	        var _this = _possibleConstructorReturn(this, (TreeNodes.__proto__ || Object.getPrototypeOf(TreeNodes)).call(this));
 
 	        _this._tree = tree;
 	        _this.length = 0;
@@ -5312,7 +5582,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	;
 
 /***/ },
-/* 13 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5357,7 +5627,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 14 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -5387,17 +5657,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function configure(conf) {
 	    if (conf) {
-
 	      this._conf = conf;
 
 	      conf.delimiter && (this.delimiter = conf.delimiter);
-	      conf.maxListeners && (this._events.maxListeners = conf.maxListeners);
+	      this._events.maxListeners = conf.maxListeners !== undefined ? conf.maxListeners : defaultMaxListeners;
 	      conf.wildcard && (this.wildcard = conf.wildcard);
 	      conf.newListener && (this.newListener = conf.newListener);
 
 	      if (this.wildcard) {
 	        this.listenerTree = {};
 	      }
+	    } else {
+	      this._events.maxListeners = defaultMaxListeners;
+	    }
+	  }
+
+	  function logPossibleMemoryLeak(count) {
+	    console.error('(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.', count);
+
+	    if (console.trace) {
+	      console.trace();
 	    }
 	  }
 
@@ -5544,7 +5823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var tree = this.listenerTree;
 	    var name = type.shift();
 
-	    while (name) {
+	    while (name !== undefined) {
 
 	      if (!tree[name]) {
 	        tree[name] = {};
@@ -5556,28 +5835,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (!tree._listeners) {
 	          tree._listeners = listener;
-	        } else if (typeof tree._listeners === 'function') {
-	          tree._listeners = [tree._listeners, listener];
-	        } else if (isArray(tree._listeners)) {
+	        } else {
+	          if (typeof tree._listeners === 'function') {
+	            tree._listeners = [tree._listeners];
+	          }
 
 	          tree._listeners.push(listener);
 
-	          if (!tree._listeners.warned) {
-
-	            var m = defaultMaxListeners;
-
-	            if (typeof this._events.maxListeners !== 'undefined') {
-	              m = this._events.maxListeners;
-	            }
-
-	            if (m > 0 && tree._listeners.length > m) {
-
-	              tree._listeners.warned = true;
-	              console.error('(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.', tree._listeners.length);
-	              if (console.trace) {
-	                console.trace();
-	              }
-	            }
+	          if (!tree._listeners.warned && this._events.maxListeners > 0 && tree._listeners.length > this._events.maxListeners) {
+	            tree._listeners.warned = true;
+	            logPossibleMemoryLeak(tree._listeners.length);
 	          }
 	        }
 	        return true;
@@ -5597,10 +5864,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  EventEmitter.prototype.delimiter = '.';
 
 	  EventEmitter.prototype.setMaxListeners = function (n) {
-	    this._events || init.call(this);
-	    this._events.maxListeners = n;
-	    if (!this._conf) this._conf = {};
-	    this._conf.maxListeners = n;
+	    if (n !== undefined) {
+	      this._events || init.call(this);
+	      this._events.maxListeners = n;
+	      if (!this._conf) this._conf = {};
+	      this._conf.maxListeners = n;
+	    }
 	  };
 
 	  EventEmitter.prototype.event = '';
@@ -5734,8 +6003,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (arguments[1] instanceof Error) {
 	        throw arguments[1]; // Unhandled 'error' event
 	      } else {
-	          throw new Error("Uncaught, unspecified 'error' event.");
-	        }
+	        throw new Error("Uncaught, unspecified 'error' event.");
+	      }
 	      return false;
 	    }
 
@@ -5838,15 +6107,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (arguments[1] instanceof Error) {
 	        return Promise.reject(arguments[1]); // Unhandled 'error' event
 	      } else {
-	          return Promise.reject("Uncaught, unspecified 'error' event.");
-	        }
+	        return Promise.reject("Uncaught, unspecified 'error' event.");
+	      }
 	    }
 
 	    return Promise.all(promises);
 	  };
 
 	  EventEmitter.prototype.on = function (type, listener) {
-
 	    if (typeof type === 'function') {
 	      this.onAny(type);
 	      return this;
@@ -5869,37 +6137,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (!this._events[type]) {
 	      // Optimize the case of one listener. Don't need the extra array object.
 	      this._events[type] = listener;
-	    } else if (typeof this._events[type] === 'function') {
-	      // Adding the second element, need to change to array.
-	      this._events[type] = [this._events[type], listener];
-	    } else if (isArray(this._events[type])) {
+	    } else {
+	      if (typeof this._events[type] === 'function') {
+	        // Change to array.
+	        this._events[type] = [this._events[type]];
+	      }
+
 	      // If we've already got an array, just append.
 	      this._events[type].push(listener);
 
 	      // Check for listener leak
-	      if (!this._events[type].warned) {
-
-	        var m = defaultMaxListeners;
-
-	        if (typeof this._events.maxListeners !== 'undefined') {
-	          m = this._events.maxListeners;
-	        }
-
-	        if (m > 0 && this._events[type].length > m) {
-
-	          this._events[type].warned = true;
-	          console.error('(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.', this._events[type].length);
-	          if (console.trace) {
-	            console.trace();
-	          }
-	        }
+	      if (!this._events[type].warned && this._events.maxListeners > 0 && this._events[type].length > this._events.maxListeners) {
+	        this._events[type].warned = true;
+	        logPossibleMemoryLeak(this._events[type].length);
 	      }
 	    }
+
 	    return this;
 	  };
 
 	  EventEmitter.prototype.onAny = function (fn) {
-
 	    if (typeof fn !== 'function') {
 	      throw new Error('onAny only accepts instances of Function');
 	    }
@@ -5987,7 +6244,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (var i in keys) {
 	        var key = keys[i];
 	        var obj = root[key];
-	        if (obj instanceof Function || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== "object") continue;
+	        if (obj instanceof Function || (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== "object" || obj === null) continue;
 	        if (Object.keys(obj).length > 0) {
 	          recursivelyGarbageCollect(root[key]);
 	        }
@@ -6039,8 +6296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var leaf = leafs[iLeaf];
 	        leaf._listeners = null;
 	      }
-	    } else {
-	      if (!this._events || !this._events[type]) return this;
+	    } else if (this._events) {
 	      this._events[type] = null;
 	    }
 	    return this;
@@ -6061,6 +6317,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this._events[type] = [this._events[type]];
 	    }
 	    return this._events[type];
+	  };
+
+	  EventEmitter.prototype.listenerCount = function (type) {
+	    return this.listeners(type).length;
 	  };
 
 	  EventEmitter.prototype.listenersAny = function () {
@@ -6087,7 +6347,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 15 */
+/* 13 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin

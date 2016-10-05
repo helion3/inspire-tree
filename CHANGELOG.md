@@ -1,8 +1,13 @@
 # Changes to Inspire Tree
 
+# 1.10.3
+
+- Fixed icon-folder-open svg encoding which resolves a rendering issue in IE.
+- Changed wholerow css to negative margins over translateY to resolve an IE rendering issue.
+
 # 1.10.2
 
-- Fixes `this` binding of mapped filter methods in TreeNodes.
+- Fixed `this` binding of mapped filter methods in TreeNodes.
 
 # 1.10.1
 
