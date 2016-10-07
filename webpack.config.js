@@ -1,4 +1,5 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 var path = require('path');
 var webpack = require('webpack');
 var pkgConfig = require('./package.json');
@@ -37,6 +38,15 @@ var plugins = [
 
 if (PROD) {
     plugins.push(new webpack.optimize.UglifyJsPlugin({ minimize: true }));
+}
+
+if (BUNDLE) {
+    plugins.push(new LodashModuleReplacementPlugin({
+        shorthands: true,
+        flattening: true,
+        collections: true,
+        paths: true
+    }));
 }
 
 var externals = {};
