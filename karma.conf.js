@@ -7,6 +7,7 @@ module.exports = function(config) {
                 pattern: 'demos/sample-data/*.json',
                 included: false
             },
+            'node_modules/es6-promise/dist/es6-promise.js',
             'node_modules/jquery/dist/jquery.js',
             'node_modules/lodash/lodash.js',
             'build/inspire-tree.js',
