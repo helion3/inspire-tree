@@ -1,5 +1,8 @@
 'use strict';
 
+// Ensure polyfill has run.
+this.ES6Promise.polyfill();
+
 describe('Inspire Tree', function() {
     before(function() {
         helpers.createTreeContainer();
