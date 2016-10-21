@@ -50,7 +50,7 @@ The `dist` directory contains several versions:
 
 ## IE
 
-InspireTree uses the javascript Promise API, which unfortunately is supported everywhere except IE.
+InspireTree uses the javascript Promise API, which is supported everywhere except IE.
 
 Many web frameworks already have Promise polyfills so we no longer bundle es6-promise, instead relying on those provided
 by your existing framework, or allowing you to choose your own.
