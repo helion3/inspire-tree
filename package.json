@@ -12,7 +12,7 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-lodash": "^3.2.0",
     "babel-plugin-transform-builtin-extend": "^1.1.0",
-    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-es2015": "^6.18.0",
     "chai": "^3.4.1",
     "css-loader": "^0.25.0",
     "cuid": "git+https://github.com/ericelliott/cuid.git",
