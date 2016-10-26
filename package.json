@@ -40,7 +40,7 @@
     "style-loader": "^0.13.0",
     "svg-inline-loader": "^0.7.1",
     "virtual-dom": "^2.1.1",
-    "webpack": "^1.13.0"
+    "webpack": "^1.13.3"
   },
   "scripts": {
     "docs": "./scripts/docs.js",
