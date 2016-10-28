@@ -4,6 +4,7 @@
 import * as _ from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
 import { objectToNode } from './lib/object-to-node';
+import { Promise } from 'es6-promise';
 import { recurseDown } from './lib/recurse-down';
 import { standardizePromise } from './lib/standardize-promise';
 import { TreeNodes } from './treenodes';

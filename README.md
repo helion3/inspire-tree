@@ -13,6 +13,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Robust API.
 - Events everywhere.
+- No required external dependencies.
 - Load data directly, via promises, or callbacks.
 - Load child nodes upfront or dynamically (or a mix of both).
 - Tri-state checkboxes (optional).
@@ -44,18 +45,9 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 The `dist` directory contains several versions:
 
-- `bundled` - Includes stripped-down version of lodash.
+- `bundled` - Includes stripped-down version of lodash, has no external dependencies.
 - `core` - Excludes DOM rendering logic, for those using a custom renderer.
 - `min` - Minified source for production use.
-
-## IE
-
-InspireTree uses the javascript Promise API, which is supported everywhere except IE.
-
-Many web frameworks already have Promise polyfills so we no longer bundle es6-promise, instead relying on those provided
-by your existing framework, or allowing you to choose your own.
-
-If you need a promise polyfill for IE, we recommend [es6-promise](https://github.com/stefanpenner/es6-promise)
 
 ## Using
 

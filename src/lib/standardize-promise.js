@@ -1,6 +1,7 @@
 'use strict';
 
 import * as _ from 'lodash';
+import { Promise } from 'es6-promise';
 
 /**
  * Resolve promise-like objects consistently.
