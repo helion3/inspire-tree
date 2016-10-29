@@ -284,7 +284,7 @@ Possible solutions:
 
 Clone the repository, and get yourself setup:
 
-- `npm install` - Installs all project dependencies.
+- `yarn install` - Installs all project dependencies.
 - `npm run setup` - Copies git hooks and run workspace setup.
 
 Live-compile source changes as you develop:

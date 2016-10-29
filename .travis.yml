@@ -2,8 +2,12 @@ language: node_js
 node_js:
   - "7"
   - "6"
+before_install:
+  - npm install -g webpack yarn
+  - yarn -V
+install:
+  - yarn install
 before_script:
-  - npm install -g webpack
   - webpack
 script:
   - npm test
