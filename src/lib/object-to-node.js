@@ -2,7 +2,7 @@
 
 import * as _ from 'lodash';
 import { collectionToModel } from './collection-to-model';
-import cuid from 'cuid';
+import uuid from 'uuid';
 import { TreeNode } from '../treenode';
 
 /**
@@ -19,7 +19,7 @@ import { TreeNode } from '../treenode';
  */
 export function objectToNode(tree, object, parent) {
     // Create or type-ensure ID
-    object.id = object.id || cuid();
+    object.id = object.id || uuid.v4();
     if (typeof object.id !== 'string') {
         object.id = object.id.toString();
     }
