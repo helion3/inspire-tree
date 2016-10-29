@@ -16,7 +16,7 @@
     "chai": "^3.4.1",
     "css-loader": "^0.25.0",
     "cuid": "git+https://github.com/ericelliott/cuid.git",
-    "docdown": "git+https://github.com/jdalton/docdown.git",
+    "docdown": "^0.7.1",
     "es6-promise": "^4.0.4",
     "eslint": "^3.4.0",
     "eventemitter2": "^2.0.0",
