@@ -1,3 +1,4 @@
+var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 var path = require('path');
@@ -24,7 +25,7 @@ Licensed under MIT. ' + pkgConfig.repository + '/blob/master/LICENSE';
 
 var sassLoaders = [
     'css-loader',
-    'autoprefixer-loader?browsers=last 5 versions',
+    'postcss-loader',
     'sass-loader?includePaths[]=' + path.resolve(__dirname, './src')
 ];
 
@@ -113,5 +114,6 @@ module.exports = {
             loader: 'file'
         }]
     },
-    plugins: plugins
+    plugins: plugins,
+    postcss: [autoprefixer({ browsers: ['last 2 versions'] })]
 };
