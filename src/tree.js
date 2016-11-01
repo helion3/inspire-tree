@@ -451,7 +451,7 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
-     * Query for all expanded nodes.
+     * Recursively expands all nodes, loading all dynamic calls.
      *
      * @category Tree
      * @param {boolean} full Retain full hiearchy.
@@ -462,7 +462,7 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
-     * Recursively expands all nodes, loading all dynamic calls.
+     * Query for all expanded nodes.
      *
      * @category Tree
      * @return {Promise} Promise resolved only when all children have loaded and expanded.
@@ -785,9 +785,8 @@ export default class InspireTree extends EventEmitter2 {
      * Returns false if execution should cease.
      *
      * @private
-     * @param {TreeNode|TreeNodes} obj Node or collection.
      * @param {function} iteratee Iteratee function
-     * @return {boolean} Cease iteration.
+     * @return {TreeNodes} Resulting nodes.
      */
     recurseDown() {
         return map(this, 'recurseDown', arguments);
@@ -1054,6 +1053,8 @@ export default class InspireTree extends EventEmitter2 {
      * Set state values for nodes in this collection.
      *
      * @category Tree
+     * @param {string} name Property name.
+     * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
      */
     state() {
@@ -1064,6 +1065,8 @@ export default class InspireTree extends EventEmitter2 {
      * Set state values for nodes in this collection.
      *
      * @category Tree
+     * @param {string} name Property name.
+     * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
      */
     stateDeep() {

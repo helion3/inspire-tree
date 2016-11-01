@@ -860,6 +860,8 @@ export class TreeNodes extends Array {
      * Set state values for nodes in this collection.
      *
      * @category TreeNodes
+     * @param {string} name Property name.
+     * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
      */
     state() {
@@ -870,6 +872,8 @@ export class TreeNodes extends Array {
      * Set state values recursively.
      *
      * @category TreeNodes
+     * @param {string} name Property name.
+     * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
      */
     stateDeep() {
