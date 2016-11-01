@@ -605,7 +605,14 @@ export class TreeNodes extends Array {
         // Event
         this._tree.emit('node.added', node);
 
+        // Always mark this node as dirty
         node.markDirty();
+
+        // If pushing this node anywhere but the end, other nodes may change.
+        if (this.length - 1 !== index) {
+            this.invoke('markDirty');
+        }
+
         this._tree.dom.applyChanges();
 
         return node;

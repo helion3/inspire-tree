@@ -385,7 +385,6 @@ export default class InspireDOM {
             dirty: node.itree.dirty
         }, VDirtyCompare, function() {
             var attributes = node.itree.li.attributes || {};
-            node.itree.dirty = false;
             node.itree.ref = new DOMReference();
 
             var buttons = [];
@@ -485,6 +484,9 @@ export default class InspireDOM {
 
             // Force internal-use attributes
             attributes['data-uid'] = node.id;
+
+            // Clear dirty bool only after everything has been generated
+            node.itree.dirty = false;
 
             return h('li' + classNames, {
                 attributes: attributes,
@@ -668,6 +670,7 @@ export default class InspireDOM {
 
         return new VCache({
             collapsed: node.collapsed(),
+            dirty: node.itree.dirty,
             editing: node.editing(),
             hasVisibleChildren: hasVisibleChildren,
             indeterminate: node.indeterminate(),
