@@ -137,6 +137,23 @@ export class TreeNode {
     }
 
     /**
+     * Add multiple children to this node.
+     *
+     * @category TreeNode
+     * @param {object} children Array of nodes.
+     * @return {TreeNode} Node object.
+     */
+    addChildren(children) {
+        this._tree.dom.batch();
+        _.each(children, (child) => {
+            this.addChild(child);
+        });
+        this._tree.dom.end();
+
+        return this;
+    }
+
+    /**
      * Get if node available.
      *
      * @category TreeNode
