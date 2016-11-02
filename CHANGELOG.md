@@ -1,5 +1,13 @@
 # Changes to Inspire Tree
 
+# 1.10.4
+
+- Added `TreeNode.addChildren` method for bulk additions.
+- Added typescript definition file.
+- Fixed rendering error for nodes shifted by node insertion while sorting.
+- Switched unique id generation libraries.
+- Expanded tree shaking on bundled lodash for lighter builds.
+
 # 1.10.3
 
 - Fixed icon-folder-open svg encoding which resolves a rendering issue in IE.

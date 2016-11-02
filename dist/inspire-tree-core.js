@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.10.3
+ * Inspire Tree v1.10.4
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -77,15 +77,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _collectionToModel = __webpack_require__(2);
 
-	var _eventemitter = __webpack_require__(12);
+	var _eventemitter = __webpack_require__(13);
 
-	var _es6Promise = __webpack_require__(6);
+	var _es6Promise = __webpack_require__(7);
 
-	var _standardizePromise = __webpack_require__(11);
+	var _standardizePromise = __webpack_require__(12);
 
-	var _treenode = __webpack_require__(5);
+	var _treenode = __webpack_require__(6);
 
-	var _treenodes = __webpack_require__(10);
+	var _treenodes = __webpack_require__(11);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96,7 +96,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	// CSS
-	__webpack_require__(13);
+	__webpack_require__(14);
 
 	/**
 	 * Maps a method to the root TreeNodes collection.
@@ -613,7 +613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
-	         * Query for all expanded nodes.
+	         * Recursively expands all nodes, loading all dynamic calls.
 	         *
 	         * @category Tree
 	         * @param {boolean} full Retain full hiearchy.
@@ -627,7 +627,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
-	         * Recursively expands all nodes, loading all dynamic calls.
+	         * Query for all expanded nodes.
 	         *
 	         * @category Tree
 	         * @return {Promise} Promise resolved only when all children have loaded and expanded.
@@ -1008,9 +1008,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Returns false if execution should cease.
 	         *
 	         * @private
-	         * @param {TreeNode|TreeNodes} obj Node or collection.
 	         * @param {function} iteratee Iteratee function
-	         * @return {boolean} Cease iteration.
+	         * @return {TreeNodes} Resulting nodes.
 	         */
 
 	    }, {
@@ -1323,6 +1322,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Set state values for nodes in this collection.
 	         *
 	         * @category Tree
+	         * @param {string} name Property name.
+	         * @param {boolean} newVal New value, if setting.
 	         * @return {TreeNodes} Array of node objects.
 	         */
 
@@ -1336,6 +1337,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Set state values for nodes in this collection.
 	         *
 	         * @category Tree
+	         * @param {string} name Property name.
+	         * @param {boolean} newVal New value, if setting.
 	         * @return {TreeNodes} Array of node objects.
 	         */
 
@@ -1426,7 +1429,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _treenodes = __webpack_require__(10);
+	var _treenodes = __webpack_require__(11);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1474,11 +1477,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _collectionToModel = __webpack_require__(2);
 
-	var _cuid = __webpack_require__(4);
+	var _uuid = __webpack_require__(4);
 
-	var _cuid2 = _interopRequireDefault(_cuid);
+	var _uuid2 = _interopRequireDefault(_uuid);
 
-	var _treenode = __webpack_require__(5);
+	var _treenode = __webpack_require__(6);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1498,7 +1501,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function objectToNode(tree, object, parent) {
 	    // Create or type-ensure ID
-	    object.id = object.id || (0, _cuid2.default)();
+	    object.id = object.id || _uuid2.default.v4();
 	    if (typeof object.id !== 'string') {
 	        object.id = object.id.toString();
 	    }
@@ -1557,115 +1560,224 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	/**
-	 * cuid.js
-	 * Collision-resistant UID generator for browsers and node.
-	 * Sequential for fast db lookups and recency sorting.
-	 * Safe for element IDs and server-side lookups.
-	 *
-	 * Extracted from CLCTR
-	 *
-	 * Copyright (c) Eric Elliott 2012
-	 * MIT License
-	 */
+	//     uuid.js
+	//
+	//     Copyright (c) 2010-2012 Robert Kieffer
+	//     MIT License - http://opensource.org/licenses/mit-license.php
 
-	/*global window, navigator, document, require, process, module */
-	(function (app) {
-	  'use strict';
+	// Unique ID creation requires a high quality random # generator.  We feature
+	// detect to determine the best RNG source, normalizing to a function that
+	// returns 128-bits of randomness, since that's what's usually required
+	var _rng = __webpack_require__(5);
 
-	  var namespace = 'cuid',
-	      c = 0,
-	      blockSize = 4,
-	      base = 36,
-	      discreteValues = Math.pow(base, blockSize),
-	      pad = function pad(num, size) {
-	    var s = "000000000" + num;
-	    return s.substr(s.length - size);
-	  },
-	      randomBlock = function randomBlock() {
-	    return pad((Math.random() * discreteValues << 0).toString(base), blockSize);
-	  },
-	      safeCounter = function safeCounter() {
-	    c = c < discreteValues ? c : 0;
-	    c++; // this is not subliminal
-	    return c - 1;
-	  },
-	      api = function cuid() {
-	    // Starting with a lowercase letter makes
-	    // it HTML element ID friendly.
-	    var letter = 'c',
-	        // hard-coded allows for sequential access
+	// Maps for number <-> hex string conversion
+	var _byteToHex = [];
+	var _hexToByte = {};
+	for (var i = 0; i < 256; i++) {
+	  _byteToHex[i] = (i + 0x100).toString(16).substr(1);
+	  _hexToByte[_byteToHex[i]] = i;
+	}
 
-	    // timestamp
-	    // warning: this exposes the exact date and time
-	    // that the uid was created.
-	    timestamp = new Date().getTime().toString(base),
+	// **`parse()` - Parse a UUID into it's component bytes**
+	function parse(s, buf, offset) {
+	  var i = buf && offset || 0,
+	      ii = 0;
 
+	  buf = buf || [];
+	  s.toLowerCase().replace(/[0-9a-f]{2}/g, function (oct) {
+	    if (ii < 16) {
+	      // Don't overflow!
+	      buf[i + ii++] = _hexToByte[oct];
+	    }
+	  });
 
-	    // Prevent same-machine collisions.
-	    counter,
-
-
-	    // A few chars to generate distinct ids for different
-	    // clients (so different computers are far less
-	    // likely to generate the same id)
-	    fingerprint = api.fingerprint(),
-
-
-	    // Grab some more chars from Math.random()
-	    random = randomBlock() + randomBlock();
-
-	    counter = pad(safeCounter().toString(base), blockSize);
-
-	    return letter + timestamp + counter + fingerprint + random;
-	  };
-
-	  api.slug = function slug() {
-	    var date = new Date().getTime().toString(36),
-	        counter,
-	        print = api.fingerprint().slice(0, 1) + api.fingerprint().slice(-1),
-	        random = randomBlock().slice(-2);
-
-	    counter = safeCounter().toString(36).slice(-4);
-
-	    return date.slice(-2) + counter + print + random;
-	  };
-
-	  api.globalCount = function globalCount() {
-	    // We want to cache the results of this
-	    var cache = function calc() {
-	      var i,
-	          count = 0;
-
-	      for (i in window) {
-	        count++;
-	      }
-
-	      return count;
-	    }();
-
-	    api.globalCount = function () {
-	      return cache;
-	    };
-	    return cache;
-	  };
-
-	  api.fingerprint = function browserPrint() {
-	    return pad((navigator.mimeTypes.length + navigator.userAgent.length).toString(36) + api.globalCount().toString(36), 4);
-	  };
-
-	  // don't change anything from here down.
-	  if (app && app.register) {
-	    app.register(namespace, api);
-	  } else if (true) {
-	    module.exports = api;
-	  } else {
-	    app[namespace] = api;
+	  // Zero out remaining bytes if string was short
+	  while (ii < 16) {
+	    buf[i + ii++] = 0;
 	  }
-	})(undefined);
+
+	  return buf;
+	}
+
+	// **`unparse()` - Convert UUID byte array (ala parse()) into a string**
+	function unparse(buf, offset) {
+	  var i = offset || 0,
+	      bth = _byteToHex;
+	  return bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]];
+	}
+
+	// **`v1()` - Generate time-based UUID**
+	//
+	// Inspired by https://github.com/LiosK/UUID.js
+	// and http://docs.python.org/library/uuid.html
+
+	// random #'s we need to init node and clockseq
+	var _seedBytes = _rng();
+
+	// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+	var _nodeId = [_seedBytes[0] | 0x01, _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]];
+
+	// Per 4.2.2, randomize (14 bit) clockseq
+	var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
+
+	// Previous uuid creation time
+	var _lastMSecs = 0,
+	    _lastNSecs = 0;
+
+	// See https://github.com/broofa/node-uuid for API details
+	function v1(options, buf, offset) {
+	  var i = buf && offset || 0;
+	  var b = buf || [];
+
+	  options = options || {};
+
+	  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+	  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+	  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+	  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+	  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+	  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+	  // Per 4.2.1.2, use count of uuid's generated during the current clock
+	  // cycle to simulate higher resolution clock
+	  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+	  // Time since last uuid creation (in msecs)
+	  var dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 10000;
+
+	  // Per 4.2.1.2, Bump clockseq on clock regression
+	  if (dt < 0 && options.clockseq === undefined) {
+	    clockseq = clockseq + 1 & 0x3fff;
+	  }
+
+	  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+	  // time interval
+	  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+	    nsecs = 0;
+	  }
+
+	  // Per 4.2.1.2 Throw error if too many uuids are requested
+	  if (nsecs >= 10000) {
+	    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+	  }
+
+	  _lastMSecs = msecs;
+	  _lastNSecs = nsecs;
+	  _clockseq = clockseq;
+
+	  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+	  msecs += 12219292800000;
+
+	  // `time_low`
+	  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+	  b[i++] = tl >>> 24 & 0xff;
+	  b[i++] = tl >>> 16 & 0xff;
+	  b[i++] = tl >>> 8 & 0xff;
+	  b[i++] = tl & 0xff;
+
+	  // `time_mid`
+	  var tmh = msecs / 0x100000000 * 10000 & 0xfffffff;
+	  b[i++] = tmh >>> 8 & 0xff;
+	  b[i++] = tmh & 0xff;
+
+	  // `time_high_and_version`
+	  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+	  b[i++] = tmh >>> 16 & 0xff;
+
+	  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+	  b[i++] = clockseq >>> 8 | 0x80;
+
+	  // `clock_seq_low`
+	  b[i++] = clockseq & 0xff;
+
+	  // `node`
+	  var node = options.node || _nodeId;
+	  for (var n = 0; n < 6; n++) {
+	    b[i + n] = node[n];
+	  }
+
+	  return buf ? buf : unparse(b);
+	}
+
+	// **`v4()` - Generate random UUID**
+
+	// See https://github.com/broofa/node-uuid for API details
+	function v4(options, buf, offset) {
+	  // Deprecated - 'format' argument, as supported in v1.2
+	  var i = buf && offset || 0;
+
+	  if (typeof options == 'string') {
+	    buf = options == 'binary' ? new Array(16) : null;
+	    options = null;
+	  }
+	  options = options || {};
+
+	  var rnds = options.random || (options.rng || _rng)();
+
+	  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+	  rnds[6] = rnds[6] & 0x0f | 0x40;
+	  rnds[8] = rnds[8] & 0x3f | 0x80;
+
+	  // Copy bytes to buffer, if provided
+	  if (buf) {
+	    for (var ii = 0; ii < 16; ii++) {
+	      buf[i + ii] = rnds[ii];
+	    }
+	  }
+
+	  return buf || unparse(rnds);
+	}
+
+	// Export public API
+	var uuid = v4;
+	uuid.v1 = v1;
+	uuid.v4 = v4;
+	uuid.parse = parse;
+	uuid.unparse = unparse;
+
+	module.exports = uuid;
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
+
+	var rng;
+
+	var crypto = global.crypto || global.msCrypto; // for IE 11
+	if (crypto && crypto.getRandomValues) {
+	  // WHATWG crypto-based RNG - http://wiki.whatwg.org/wiki/Crypto
+	  // Moderately fast, high quality
+	  var _rnds8 = new Uint8Array(16);
+	  rng = function whatwgRNG() {
+	    crypto.getRandomValues(_rnds8);
+	    return _rnds8;
+	  };
+	}
+
+	if (!rng) {
+	  // Math.random()-based (RNG)
+	  //
+	  // If all else fails, use Math.random().  It's fast, but is of unspecified
+	  // quality.
+	  var _rnds = new Array(16);
+	  rng = function rng() {
+	    for (var i = 0, r; i < 16; i++) {
+	      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+	      _rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+	    }
+
+	    return _rnds;
+	  };
+	}
+
+	module.exports = rng;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1687,13 +1799,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _es6Promise = __webpack_require__(6);
+	var _es6Promise = __webpack_require__(7);
 
-	var _recurseDown2 = __webpack_require__(9);
+	var _recurseDown2 = __webpack_require__(10);
 
-	var _standardizePromise = __webpack_require__(11);
+	var _standardizePromise = __webpack_require__(12);
 
-	var _treenodes = __webpack_require__(10);
+	var _treenodes = __webpack_require__(11);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1828,6 +1940,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            return this.children.addNode(child);
+	        }
+
+	        /**
+	         * Add multiple children to this node.
+	         *
+	         * @category TreeNode
+	         * @param {object} children Array of nodes.
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'addChildren',
+	        value: function addChildren(children) {
+	            var _this = this;
+
+	            var nodes = new _treenodes.TreeNodes();
+
+	            this._tree.dom.batch();
+	            _.each(children, function (child) {
+	                nodes.push(_this.addChild(child));
+	            });
+	            this._tree.dom.end();
+
+	            return nodes;
 	        }
 
 	        /**
@@ -2322,7 +2458,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Hide this node.
 	         *
 	         * @category TreeNode
-	         * @return {object} Node object.
+	         * @return {TreeNode} Node object.
 	         */
 
 	    }, {
@@ -2421,7 +2557,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * On error, pass the Error to `reject`.
 	         *
 	         * @category TreeNode
-	         * @return {TreeNode} Node object.
+	         * @return {Promise} Promise resolving children nodes.
 	         */
 
 	    }, {
@@ -2587,7 +2723,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Find the next visible sibling node.
 	         *
 	         * @category TreeNode
-	         * @return {object} Node object, if any.
+	         * @return {TreeNode} Node object, if any.
 	         */
 
 	    }, {
@@ -2653,7 +2789,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @category TreeNode
 	         * @param {function} iteratee Iteratee function.
-	         * @return {TreeNode} Resulting node.
+	         * @return {TreeNode} Node object.
 	         */
 
 	    }, {
@@ -2669,7 +2805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @category TreeNode
 	         * @param {function} iteratee Iteratee function.
-	         * @return {TreeNode} Resulting node.
+	         * @return {TreeNode} Node object.
 	         */
 
 	    }, {
@@ -2962,6 +3098,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function toggleCollapse() {
 	            return this.collapsed() ? this.expand() : this.collapse();
 	        }
+
+	        /**
+	         * Toggles editing state.
+	         *
+	         * @category TreeNode
+	         * @return {TreeNode} Node object.
+	         */
+
 	    }, {
 	        key: 'toggleEditing',
 	        value: function toggleEditing() {
@@ -2969,6 +3113,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            this.markDirty();
 	            this._tree.dom.applyChanges();
+
+	            return this;
 	        }
 
 	        /**
@@ -3015,7 +3161,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * if it's hidden, or if any ancestor is hidden or collapsed.
 	         *
 	         * @category TreeNode
-	         * @param {object} node Node object.
 	         * @return {boolean} Whether visible.
 	         */
 
@@ -3045,19 +3190,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
 	 *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
-	 * @version   3.3.1
+	 * @version   4.0.5
 	 */
 
 	(function (global, factory) {
@@ -3131,9 +3276,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // vertx
 	  function useVertxTimer() {
-	    return function () {
-	      vertxNext(flush);
-	    };
+	    if (typeof vertxNext !== 'undefined') {
+	      return function () {
+	        vertxNext(flush);
+	      };
+	    }
+
+	    return useSetTimeout();
 	  }
 
 	  function useMutationObserver() {
@@ -3183,7 +3332,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function attemptVertx() {
 	    try {
 	      var r = require;
-	      var vertx = __webpack_require__(8);
+	      var vertx = __webpack_require__(9);
 	      vertxNext = vertx.runOnLoop || vertx.runOnContext;
 	      return useVertxTimer();
 	    } catch (e) {
@@ -4196,7 +4345,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    local.Promise = Promise;
 	  }
 
-	  polyfill();
 	  // Strange compat..
 	  Promise.polyfill = polyfill;
 	  Promise.Promise = Promise;
@@ -4204,10 +4352,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Promise;
 	});
 	//# sourceMappingURL=es6-promise.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8), (function() { return this; }())))
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4393,13 +4541,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4413,9 +4561,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
-	var _treenode = __webpack_require__(5);
+	var _treenode = __webpack_require__(6);
 
-	var _treenodes = __webpack_require__(10);
+	var _treenodes = __webpack_require__(11);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -4451,7 +4599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4471,11 +4619,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _es6Promise = __webpack_require__(6);
+	var _es6Promise = __webpack_require__(7);
 
-	var _recurseDown2 = __webpack_require__(9);
+	var _recurseDown2 = __webpack_require__(10);
 
-	var _treenode = __webpack_require__(5);
+	var _treenode = __webpack_require__(6);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -5208,7 +5356,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // Event
 	            this._tree.emit('node.added', node);
 
+	            // Always mark this node as dirty
 	            node.markDirty();
+
+	            // If pushing this node anywhere but the end, other nodes may change.
+	            if (this.length - 1 !== index) {
+	                this.invoke('markDirty');
+	            }
+
 	            this._tree.dom.applyChanges();
 
 	            return node;
@@ -5507,6 +5662,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Set state values for nodes in this collection.
 	         *
 	         * @category TreeNodes
+	         * @param {string} name Property name.
+	         * @param {boolean} newVal New value, if setting.
 	         * @return {TreeNodes} Array of node objects.
 	         */
 
@@ -5520,6 +5677,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Set state values recursively.
 	         *
 	         * @category TreeNodes
+	         * @param {string} name Property name.
+	         * @param {boolean} newVal New value, if setting.
 	         * @return {TreeNodes} Array of node objects.
 	         */
 
@@ -5582,7 +5741,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5596,7 +5755,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
-	var _es6Promise = __webpack_require__(6);
+	var _es6Promise = __webpack_require__(7);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -5627,12 +5786,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/*!
 	 * EventEmitter2
@@ -6347,7 +6506,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
