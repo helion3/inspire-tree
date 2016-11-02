@@ -141,16 +141,18 @@ export class TreeNode {
      *
      * @category TreeNode
      * @param {object} children Array of nodes.
-     * @return {TreeNode} Node object.
+     * @return {TreeNodes} Array of node objects.
      */
     addChildren(children) {
+        var nodes = new TreeNodes();
+
         this._tree.dom.batch();
         _.each(children, (child) => {
-            this.addChild(child);
+            nodes.push(this.addChild(child));
         });
         this._tree.dom.end();
 
-        return this;
+        return nodes;
     }
 
     /**
@@ -576,7 +578,7 @@ export class TreeNode {
      * Hide this node.
      *
      * @category TreeNode
-     * @return {object} Node object.
+     * @return {TreeNode} Node object.
      */
     hide() {
         var node = baseStateChange('hidden', true, 'hidden', this);
@@ -660,7 +662,7 @@ export class TreeNode {
      * On error, pass the Error to `reject`.
      *
      * @category TreeNode
-     * @return {TreeNode} Node object.
+     * @return {Promise} Promise resolving children nodes.
      */
 
     loadChildren() {
@@ -809,7 +811,7 @@ export class TreeNode {
      * Find the next visible sibling node.
      *
      * @category TreeNode
-     * @return {object} Node object, if any.
+     * @return {TreeNode} Node object, if any.
      */
     nextVisibleSiblingNode() {
         var startingNode = this;
@@ -866,7 +868,7 @@ export class TreeNode {
      *
      * @category TreeNode
      * @param {function} iteratee Iteratee function.
-     * @return {TreeNode} Resulting node.
+     * @return {TreeNode} Node object.
      */
     recurseDown(iteratee) {
         recurseDown(this, iteratee);
@@ -879,7 +881,7 @@ export class TreeNode {
      *
      * @category TreeNode
      * @param {function} iteratee Iteratee function.
-     * @return {TreeNode} Resulting node.
+     * @return {TreeNode} Node object.
      */
     recurseUp(iteratee) {
         var result = iteratee(this);
@@ -1134,11 +1136,19 @@ export class TreeNode {
         return (this.collapsed() ? this.expand() : this.collapse());
     }
 
+    /**
+     * Toggles editing state.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
     toggleEditing() {
         this.state('editing', !this.state('editing'));
 
         this.markDirty();
         this._tree.dom.applyChanges();
+
+        return this;
     }
 
     /**
@@ -1179,7 +1189,6 @@ export class TreeNode {
      * if it's hidden, or if any ancestor is hidden or collapsed.
      *
      * @category TreeNode
-     * @param {object} node Node object.
      * @return {boolean} Whether visible.
      */
     visible() {

@@ -51,6 +51,7 @@
     "deploy": "./scripts/docs.js && DIR=dist webpack && PROD=1 DIR=dist webpack -p && BUNDLE=1 DIR=dist webpack && BUNDLE=1 PROD=1 DIR=dist webpack -p && EXCLUDE_DOM=1 DIR=dist webpack && EXCLUDE_DOM=1 PROD=1 DIR=dist webpack -p && BUNDLE=1 EXCLUDE_DOM=1 DIR=dist webpack && BUNDLE=1 EXCLUDE_DOM=1 PROD=1 DIR=dist webpack -p"
   },
   "main": "dist/inspire-tree.js",
+  "types": "./inspire-tree.d.ts",
   "files": [
     "dist",
     "img",
