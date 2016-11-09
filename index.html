@@ -51,11 +51,9 @@
             'inspireTree'
         ], function($, _, InspireTree) {
             var tree = new InspireTree({
-                target: '.tree'
-                // data: $.getJSON('demos/sample-data/full.json')
+                target: '.tree',
+                data: $.getJSON('demos/sample-data/full.json')
             });
-
-            tree.load($.getJSON('demos/sample-data/full.json'));
 
             console.log('api', tree);
 
