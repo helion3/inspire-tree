@@ -166,7 +166,12 @@ export default class InspireTree extends EventEmitter2 {
         tree.dom.attach(tree.config.target);
 
         // Load initial user data
-        tree.load(tree.config.data);
+        tree.load(tree.config.data).catch(function(err) {
+            // Proxy initial errors. At this point we should never consume them
+            setTimeout(function() {
+                throw err;
+            });
+        });
 
         tree.initialized = true;
     }
@@ -640,7 +645,7 @@ export default class InspireTree extends EventEmitter2 {
     load(loader) {
         var tree = this;
 
-        return new Promise(function(resolve, reject) {
+        var promise = new Promise(function(resolve, reject) {
             var complete = function(nodes) {
                 // Delay event for synchronous loader. Otherwise it fires
                 // before the user has a chance to listen.
@@ -683,11 +688,6 @@ export default class InspireTree extends EventEmitter2 {
                 }
             };
 
-            var error = function(err) {
-                tree.emit('data.loaderror', err);
-                reject(err);
-            };
-
             // Data given already as an array
             if (_.isArrayLike(loader)) {
                 complete(loader);
@@ -695,7 +695,7 @@ export default class InspireTree extends EventEmitter2 {
 
             // Data loader requires a caller/callback
             else if (_.isFunction(loader)) {
-                var resp = loader(null, complete, error);
+                var resp = loader(null, complete, reject);
 
                 // Loader returned its own object
                 if (resp) {
@@ -705,13 +705,20 @@ export default class InspireTree extends EventEmitter2 {
 
             // Data loader is likely a promise
             if (_.isObject(loader)) {
-                standardizePromise(loader).then(complete).catch(error);
+                standardizePromise(loader).then(complete).catch(reject);
             }
 
             else {
                 throw new Error('Invalid data loader.');
             }
         });
+
+        // Copy to event listeners
+        promise.catch(function(err) {
+            tree.emit('data.loaderror', err);
+        });
+
+        return promise;
     }
 
     /**
