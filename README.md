@@ -49,9 +49,9 @@ The `dist` directory contains several versions:
 - `core` - Excludes DOM rendering logic, for those using a custom renderer.
 - `min` - Minified source for production use.
 
-## Using
+## Usage
 
-At a minimum you must provide a target DOM element and data / data loader.
+In most use-cases you need to provide a target DOM element and a source of data:
 
 ```js
 var tree = new InspireTree({
@@ -61,6 +61,18 @@ var tree = new InspireTree({
 ```
 
 Data objects must have at least a `text` property. Additional properties are listed below in "Node Configuration".
+
+If you're using a custom DOM renderer (see below), the `target` property is optional.
+
+### Data Loading and Initialization Errors
+
+When you define a data loader in the InspireTree constructor, the promise isn't accessible, and this can consume errors
+that you should be aware of. There are a few choices:
+
+- If `data` was provided to the constructor, InspireTree will automatically throw any errors. However, errors from
+  future calls will only be available through the `load()` method's promise or the `data.loaderror` event.
+- Listen to the `data.loaderror` event. All load errors, including initial errors, emit this event.
+- Load the data after tree initialization: `tree.load(data).catch(function(err) { ... })`.
 
 ## API Docs
 

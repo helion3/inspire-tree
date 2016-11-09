@@ -13,14 +13,6 @@ describe('Inspire Tree', function() {
         expect(InspireTree).to.be.throw(TypeError);
     });
 
-    it('throws error when no data loader given', function() {
-        var wrapped = function() {
-            new InspireTree({ target: '.tree' });
-        };
-
-        expect(wrapped).to.be.throw(Error);
-    });
-
     var tree;
 
     it('returns API', function() {

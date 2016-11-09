@@ -48,10 +48,6 @@ export default class InspireTree extends EventEmitter2 {
         tree.opts = opts;
         tree.preventDeselection = false;
 
-        if (!opts.data) {
-            throw new TypeError('Invalid data loader.');
-        }
-
         // Assign defaults
         tree.config = _.defaultsDeep({}, opts, {
             allowLoadEvents: [],
@@ -166,12 +162,14 @@ export default class InspireTree extends EventEmitter2 {
         tree.dom.attach(tree.config.target);
 
         // Load initial user data
-        tree.load(tree.config.data).catch(function(err) {
-            // Proxy initial errors. At this point we should never consume them
-            setTimeout(function() {
-                throw err;
+        if (tree.config.data) {
+            tree.load(tree.config.data).catch(function(err) {
+                // Proxy initial errors. At this point we should never consume them
+                setTimeout(function() {
+                    throw err;
+                });
             });
-        });
+        }
 
         tree.initialized = true;
     }
@@ -709,7 +707,7 @@ export default class InspireTree extends EventEmitter2 {
             }
 
             else {
-                throw new Error('Invalid data loader.');
+                error(new Error('Invalid data loader.'));
             }
         });
 

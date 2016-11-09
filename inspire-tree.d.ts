@@ -28,7 +28,7 @@ declare module "inspire-tree" {
     interface Config {
         allowLoadEvents?: Array<string>;
         contextMenu?: boolean;
-        data: Array<any>|Promise<any>|DataResolver;
+        data?: Array<any>|Promise<any>|DataResolver;
         dragTargets?: Array<string>;
         editable?: boolean;
         editing?: {
