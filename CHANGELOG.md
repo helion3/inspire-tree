@@ -1,5 +1,11 @@
 # Changes to Inspire Tree
 
+# 1.10.5
+
+- Fixed initial data loader to throw caught errors, and to emit them in `data.loaderror` event.
+- Removed data config requirement, allowing deferred data loading.
+- Fixed checkboxes showing over loading icons.
+
 # 1.10.4
 
 - Added `TreeNode.addChildren` method for bulk additions.

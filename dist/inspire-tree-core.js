@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.10.4
+ * Inspire Tree v1.10.5
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -139,10 +139,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        tree.opts = opts;
 	        tree.preventDeselection = false;
 
-	        if (!opts.data) {
-	            throw new TypeError('Invalid data loader.');
-	        }
-
 	        // Assign defaults
 	        tree.config = _.defaultsDeep({}, opts, {
 	            allowLoadEvents: [],
@@ -257,7 +253,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        tree.dom.attach(tree.config.target);
 
 	        // Load initial user data
-	        tree.load(tree.config.data);
+	        if (tree.config.data) {
+	            tree.load(tree.config.data).catch(function (err) {
+	                // Proxy initial errors. At this point we should never consume them
+	                setTimeout(function () {
+	                    throw err;
+	                });
+	            });
+	        }
 
 	        tree.initialized = true;
 	        return _this;
@@ -853,7 +856,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function load(loader) {
 	            var tree = this;
 
-	            return new _es6Promise.Promise(function (resolve, reject) {
+	            var promise = new _es6Promise.Promise(function (resolve, reject) {
 	                var complete = function complete(nodes) {
 	                    // Delay event for synchronous loader. Otherwise it fires
 	                    // before the user has a chance to listen.
@@ -894,11 +897,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                };
 
-	                var error = function error(err) {
-	                    tree.emit('data.loaderror', err);
-	                    reject(err);
-	                };
-
 	                // Data given already as an array
 	                if (_.isArrayLike(loader)) {
 	                    complete(loader);
@@ -906,7 +904,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                // Data loader requires a caller/callback
 	                else if (_.isFunction(loader)) {
-	                        var resp = loader(null, complete, error);
+	                        var resp = loader(null, complete, reject);
 
 	                        // Loader returned its own object
 	                        if (resp) {
@@ -916,11 +914,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                // Data loader is likely a promise
 	                if (_.isObject(loader)) {
-	                    (0, _standardizePromise.standardizePromise)(loader).then(complete).catch(error);
+	                    (0, _standardizePromise.standardizePromise)(loader).then(complete).catch(reject);
 	                } else {
-	                    throw new Error('Invalid data loader.');
+	                    error(new Error('Invalid data loader.'));
 	                }
 	            });
+
+	            // Copy to event listeners
+	            promise.catch(function (err) {
+	                tree.emit('data.loaderror', err);
+	            });
+
+	            return promise;
 	        }
 
 	        /**
