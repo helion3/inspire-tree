@@ -31,7 +31,7 @@
     "lodash": "^4.16.4",
     "lodash-webpack-plugin": "^0.10.2",
     "mocha": "^3.1.2",
-    "node-sass": "^3.11.0",
+    "node-sass": "^3.12.1",
     "phantomjs-prebuilt": "^2.1.6",
     "postcss-loader": "^1.1.1",
     "sass-loader": "^4.0.0",
