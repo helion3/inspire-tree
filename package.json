@@ -38,7 +38,7 @@
     "sinon": "^1.17.6",
     "style-loader": "^0.13.0",
     "svg-inline-loader": "^0.7.1",
-    "uuid": "^2.0.3",
+    "uuid": "^3.0.0",
     "virtual-dom": "^2.1.1",
     "webpack": "^1.13.3"
   },
