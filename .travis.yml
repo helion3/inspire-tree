@@ -3,7 +3,7 @@ node_js:
   - "7"
   - "6"
 before_install:
-  - npm install -g webpack yarn
+  - npm install -g webpack yarn@0.16.1
   - yarn -V
 install:
   - yarn install
