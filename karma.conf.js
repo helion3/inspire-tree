@@ -11,7 +11,7 @@ module.exports = function(config) {
             'node_modules/lodash/lodash.js',
             'build/inspire-tree.js',
             'test/helpers.js',
-            'test/treeNode/loadChildren.spec.js'
+            'test/**/*.spec.js'
         ],
         autoWatch: false,
         basePath: '',
