@@ -447,7 +447,7 @@ export default class InspireDOM {
             else if (dom.isDynamic && !node.hasLoadedChildren()) {
                 contents.push(dom.createEmptyListItemNode(true));
             }
-            else {
+            else if (dom.isDynamic) {
                 contents.push(dom.createEmptyListItemNode());
             }
 

@@ -11,9 +11,11 @@ describe('DOM', function() {
         new InspireTree({
             target: '.tree',
             data: [{
-                text: 'A'
+                text: 'A',
+                id: 1
             }, {
                 text: 'B',
+                id: 2,
                 children: [{
                     text: 'B1'
                 }]
@@ -21,19 +23,18 @@ describe('DOM', function() {
         });
 
         $tree = $('.tree');
-        var $lis = $tree.find('li');
 
-        expect($lis.eq(0).find('.title').text()).to.equal('A');
-        expect($lis.eq(1).find('> div .title').text()).to.equal('B');
+        expect($tree.find('[data-uid=1] > div .title').text()).to.equal('A');
+        expect($tree.find('[data-uid=2] > div .title').text()).to.equal('B');
     });
 
     it('renders wholerow div', function() {
-        expect($tree.find('li:eq(0) > .wholerow')).to.have.length(1);
+        expect($tree.find('[data-uid=1] > .wholerow')).to.have.length(1);
     });
 
     it('renders toggle only for nodes with children', function() {
-        expect($tree.find('li:eq(0) .toggle')).to.have.length(0);
-        expect($tree.find('li:eq(1) .toggle')).to.have.length(1);
+        expect($tree.find('[data-uid=1] .toggle')).to.have.length(0);
+        expect($tree.find('[data-uid=2] .toggle')).to.have.length(1);
     });
 
     after(helpers.clearDOM);
