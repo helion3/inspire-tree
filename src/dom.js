@@ -359,13 +359,16 @@ export default class InspireDOM {
      * Cannot be clicked or expanded.
      *
      * @private
+     * @param {boolean} unloaded If data has yet to load.
      * @return {object} List Item node.
      */
-    createEmptyListItemNode() {
-        return new VCache({}, VStateCompare, function() {
+    createEmptyListItemNode(unloaded) {
+        return new VCache({
+            unloaded: unloaded
+        }, VStateCompare, function() {
             return h('ol', [
                 h('li.leaf', [
-                    h('span.title.icon.icon-file-empty.empty', ['No Results'])
+                    h('span.title.icon.icon-file-empty.empty', [unloaded ? 'Loading...' : 'No Results'])
                 ])
             ]);
         });
@@ -441,7 +444,10 @@ export default class InspireDOM {
             if (node.hasChildren()) {
                 contents.push(dom.createOrderedList(node.children));
             }
-            else if (dom.isDynamic) {
+            else if (dom.isDynamic && !node.hasLoadedChildren()) {
+                contents.push(dom.createEmptyListItemNode(true));
+            }
+            else {
                 contents.push(dom.createEmptyListItemNode());
             }
 

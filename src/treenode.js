@@ -549,6 +549,16 @@ export class TreeNode {
     }
 
     /**
+     * If children loading method has completed. Will always be true for non-dynamic nodes.
+     *
+     * @category TreeNode
+     * @return {boolean} If we've attempted to load children.
+     */
+    hasLoadedChildren() {
+        return _.isArrayLike(this.children);
+    }
+
+    /**
      * If node has a parent.
      *
      * @category TreeNode
@@ -664,7 +674,6 @@ export class TreeNode {
      * @category TreeNode
      * @return {Promise} Promise resolving children nodes.
      */
-
     loadChildren() {
         var node = this;
 
