@@ -690,6 +690,12 @@ export class TreeNode {
                 node._tree.dom.batch();
                 node.state('loading', false);
                 node.children = collectionToModel(node._tree, results, node);
+
+                // If using checkbox mode, share selection with newly loaded children
+                if (node._tree.config.selection.mode === 'checkbox' && node.selected()) {
+                    node.children.select();
+                }
+
                 node.markDirty();
                 node._tree.dom.end();
 

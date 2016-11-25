@@ -9,15 +9,48 @@ describe('TreeNode.prototype.loadChildren', function() {
         // Create tree
         tree = new InspireTree({
             target: $('.tree'),
-            data: [{
-                data: 'A',
-                id: 1
-            }]
+            selection: {
+                mode: 'checkbox'
+            },
+            data: function(node, resolve) {
+                if (!node) {
+                    resolve([{
+                        text: 'A',
+                        id: 1,
+                        children: true
+                    }]);
+                }
+                else {
+                    resolve([{
+                        text: 'B',
+                        id: 2
+                    }]);
+                }
+            }
         });
     });
 
     it('exists', function() {
         expect(tree.node(1).loadChildren).to.be.a('function');
+    });
+
+    it('loads children', function(done) {
+        var node = tree.node(1);
+
+        expect(node.hasChildren()).to.be.false;
+        expect(node.hasLoadedChildren()).to.be.false;
+        expect(node.selected()).to.be.false;
+
+        node.select().expand().then(function() {
+            expect(node.hasChildren()).to.be.true;
+            expect(node.hasLoadedChildren()).to.be.true;
+            expect(node.selected()).to.be.true;
+            done();
+        });
+    });
+
+    it('shares checked states', function() {
+        expect(tree.node(2).selected()).to.be.true;
     });
 
     after(helpers.clearDOM);
