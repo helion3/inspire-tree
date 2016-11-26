@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 1.10.6
+
+- Added `TreeNode.hasLoadedChildren` to determine if children of a node have been loaded yet.
+- Added physical dom.js file to distribution so browserify can properly resolve the optional module.
+- Changed "No Results" to Loading... for unloaded children of dynamic trees.
+- Fixed dynamically loaded children not inheriting their parent's selected state.
+
 # 1.10.5
 
 - Fixed initial data loader to throw caught errors, and to emit them in `data.loaderror` event.

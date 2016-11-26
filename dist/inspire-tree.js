@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.10.5
+ * Inspire Tree v1.10.6
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -1565,11 +1565,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	//     uuid.js
-	//
-	//     Copyright (c) 2010-2012 Robert Kieffer
-	//     MIT License - http://opensource.org/licenses/mit-license.php
-
 	// Unique ID creation requires a high quality random # generator.  We feature
 	// detect to determine the best RNG source, normalizing to a function that
 	// returns 128-bits of randomness, since that's what's usually required
@@ -1578,36 +1573,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Maps for number <-> hex string conversion
 	var _byteToHex = [];
 	var _hexToByte = {};
-	for (var i = 0; i < 256; i++) {
+	for (var i = 0; i < 256; ++i) {
 	  _byteToHex[i] = (i + 0x100).toString(16).substr(1);
 	  _hexToByte[_byteToHex[i]] = i;
 	}
 
-	// **`parse()` - Parse a UUID into it's component bytes**
-	function parse(s, buf, offset) {
-	  var i = buf && offset || 0,
-	      ii = 0;
-
-	  buf = buf || [];
-	  s.toLowerCase().replace(/[0-9a-f]{2}/g, function (oct) {
-	    if (ii < 16) {
-	      // Don't overflow!
-	      buf[i + ii++] = _hexToByte[oct];
-	    }
-	  });
-
-	  // Zero out remaining bytes if string was short
-	  while (ii < 16) {
-	    buf[i + ii++] = 0;
-	  }
-
-	  return buf;
-	}
-
-	// **`unparse()` - Convert UUID byte array (ala parse()) into a string**
-	function unparse(buf, offset) {
-	  var i = offset || 0,
-	      bth = _byteToHex;
+	function buff_to_string(buf, offset) {
+	  var i = offset || 0;
+	  var bth = _byteToHex;
 	  return bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]];
 	}
 
@@ -1698,11 +1671,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // `node`
 	  var node = options.node || _nodeId;
-	  for (var n = 0; n < 6; n++) {
+	  for (var n = 0; n < 6; ++n) {
 	    b[i + n] = node[n];
 	  }
 
-	  return buf ? buf : unparse(b);
+	  return buf ? buf : buff_to_string(b);
 	}
 
 	// **`v4()` - Generate random UUID**
@@ -1726,20 +1699,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // Copy bytes to buffer, if provided
 	  if (buf) {
-	    for (var ii = 0; ii < 16; ii++) {
+	    for (var ii = 0; ii < 16; ++ii) {
 	      buf[i + ii] = rnds[ii];
 	    }
 	  }
 
-	  return buf || unparse(rnds);
+	  return buf || buff_to_string(rnds);
 	}
 
 	// Export public API
 	var uuid = v4;
 	uuid.v1 = v1;
 	uuid.v4 = v4;
-	uuid.parse = parse;
-	uuid.unparse = unparse;
 
 	module.exports = uuid;
 
@@ -2428,6 +2399,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
+	         * If children loading method has completed. Will always be true for non-dynamic nodes.
+	         *
+	         * @category TreeNode
+	         * @return {boolean} If we've attempted to load children.
+	         */
+
+	    }, {
+	        key: 'hasLoadedChildren',
+	        value: function hasLoadedChildren() {
+	            return _.isArrayLike(this.children);
+	        }
+
+	        /**
 	         * If node has a parent.
 	         *
 	         * @category TreeNode
@@ -2583,6 +2567,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    node._tree.dom.batch();
 	                    node.state('loading', false);
 	                    node.children = (0, _collectionToModel.collectionToModel)(node._tree, results, node);
+
+	                    // If using checkbox mode, share selection with newly loaded children
+	                    if (node._tree.config.selection.mode === 'checkbox' && node.selected()) {
+	                        node.children.select();
+	                    }
+
 	                    node.markDirty();
 	                    node._tree.dom.end();
 
@@ -5827,6 +5817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this._events.maxListeners = conf.maxListeners !== undefined ? conf.maxListeners : defaultMaxListeners;
 	      conf.wildcard && (this.wildcard = conf.wildcard);
 	      conf.newListener && (this.newListener = conf.newListener);
+	      conf.verboseMemoryLeak && (this.verboseMemoryLeak = conf.verboseMemoryLeak);
 
 	      if (this.wildcard) {
 	        this.listenerTree = {};
@@ -5836,8 +5827,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 
-	  function logPossibleMemoryLeak(count) {
-	    console.error('(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.', count);
+	  function logPossibleMemoryLeak(count, eventName) {
+	    var errorMsg = '(node) warning: possible EventEmitter memory ' + 'leak detected. %d listeners added. ' + 'Use emitter.setMaxListeners() to increase limit.';
+
+	    if (this.verboseMemoryLeak) {
+	      errorMsg += ' Event name: %s.';
+	      console.error(errorMsg, count, eventName);
+	    } else {
+	      console.error(errorMsg, count);
+	    }
 
 	    if (console.trace) {
 	      console.trace();
@@ -5847,6 +5845,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function EventEmitter(conf) {
 	    this._events = {};
 	    this.newListener = false;
+	    this.verboseMemoryLeak = false;
 	    configure.call(this, conf);
 	  }
 	  EventEmitter.EventEmitter2 = EventEmitter; // backwards compatibility for exporting EventEmitter property
@@ -6008,7 +6007,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	          if (!tree._listeners.warned && this._events.maxListeners > 0 && tree._listeners.length > this._events.maxListeners) {
 	            tree._listeners.warned = true;
-	            logPossibleMemoryLeak(tree._listeners.length);
+	            logPossibleMemoryLeak.call(this, tree._listeners.length, name);
 	          }
 	        }
 	        return true;
@@ -6313,7 +6312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Check for listener leak
 	      if (!this._events[type].warned && this._events.maxListeners > 0 && this._events[type].length > this._events.maxListeners) {
 	        this._events[type].warned = true;
-	        logPossibleMemoryLeak(this._events[type].length);
+	        logPossibleMemoryLeak.call(this, this._events[type].length, type);
 	      }
 	    }
 
@@ -6932,11 +6931,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Cannot be clicked or expanded.
 	         *
 	         * @private
+	         * @param {boolean} unloaded If data has yet to load.
 	         * @return {object} List Item node.
 	         */
-	        value: function createEmptyListItemNode() {
-	            return new _VCache.VCache({}, _VStateCompare.VStateCompare, function () {
-	                return (0, _virtualDom.h)('ol', [(0, _virtualDom.h)('li.leaf', [(0, _virtualDom.h)('span.title.icon.icon-file-empty.empty', ['No Results'])])]);
+	        value: function createEmptyListItemNode(unloaded) {
+	            return new _VCache.VCache({
+	                unloaded: unloaded
+	            }, _VStateCompare.VStateCompare, function () {
+	                return (0, _virtualDom.h)('ol', [(0, _virtualDom.h)('li.leaf', [(0, _virtualDom.h)('span.title.icon.icon-file-empty.empty', [unloaded ? 'Loading...' : 'No Results'])])]);
 	            });
 	        }
 
@@ -7012,6 +7014,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                if (node.hasChildren()) {
 	                    contents.push(dom.createOrderedList(node.children));
+	                } else if (dom.isDynamic && !node.hasLoadedChildren()) {
+	                    contents.push(dom.createEmptyListItemNode(true));
 	                } else if (dom.isDynamic) {
 	                    contents.push(dom.createEmptyListItemNode());
 	                }
