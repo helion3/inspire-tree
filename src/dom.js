@@ -4,9 +4,9 @@
 import * as _ from 'lodash';
 import { create as createElement, diff, h, patch } from 'virtual-dom';
 import { DOMReference } from './lib/DOMReference';
+import uuid from 'uuid';
 import { VCache } from './lib/VCache';
 import { VArrayDirtyCompare } from './lib/VArrayDirtyCompare';
-import { VDirtyCompare } from './lib/VDirtyCompare';
 import { VStateCompare } from './lib/VStateCompare';
 
 /**
@@ -39,6 +39,7 @@ export default class InspireDOM {
         this._tree = tree;
         this.batching = 0;
         this.dropTargets = [];
+        this.$scrollLayer;
 
         // Cache because we use in loops
         this.isDynamic = _.isFunction(this._tree.config.data);
@@ -75,6 +76,7 @@ export default class InspireDOM {
     attach(target) {
         var dom = this;
         dom.$target = dom.getElement(target);
+        dom.$scrollLayer = dom.getScrollableAncestor(dom.$target);
 
         if (!dom.$target) {
             throw new Error('No valid element to attach to.');
@@ -130,6 +132,30 @@ export default class InspireDOM {
             var elem = node.itree.ref.node.querySelector('.title');
             if (elem !== document.activeElement) {
                 elem.focus();
+            }
+        });
+
+        // Set pagination limits
+        this.pagination = {
+            perPage: this.getNodesPerPage()
+        };
+
+        var perPage = this.pagination.perPage;
+        dom._tree.on('model.loaded', function() {
+            dom._tree.nodes().recurseDown(function(node) {
+                if (node.children) {
+                    node.itree.pagination = {
+                        perPage: perPage
+                    };
+                }
+            });
+        });
+
+        dom._tree.on('node.added', function(node) {
+            if (node.children) {
+                node.itree.pagination = {
+                    perPage: perPage
+                };
             }
         });
 
@@ -385,8 +411,12 @@ export default class InspireDOM {
         var dom = this;
 
         return new VCache({
-            dirty: node.itree.dirty
-        }, VDirtyCompare, function() {
+            dirty: node.itree.dirty,
+            text: node.text
+        }, VStateCompare, function() {
+            // Mark as rendered
+            node.state('rendered', true);
+
             var attributes = node.itree.li.attributes || {};
             node.itree.ref = new DOMReference();
 
@@ -442,7 +472,7 @@ export default class InspireDOM {
             contents.push(h('div.wholerow'));
 
             if (node.hasChildren()) {
-                contents.push(dom.createOrderedList(node.children));
+                contents.push(dom.createOrderedList(node.children, node));
             }
             else if (dom.isDynamic && !node.hasLoadedChildren()) {
                 contents.push(dom.createEmptyListItemNode(true));
@@ -517,21 +547,81 @@ export default class InspireDOM {
     }
 
     /**
+     * Creates an anchor that loads more nodes when clicked.
+     *
+     * Cannot be selected or expanded.
+     *
+     * @private
+     * @param {TreeNode} context Parent node or undefined for root.
+     * @return {object} List Item node.
+     */
+    createLoadMoreNode(context) {
+        var dom = this;
+
+        return new VCache({}, VStateCompare, function() {
+            return h('li.leaf.detached', {
+                key: uuid.v4()
+            }, [
+                h('a.title.icon.icon-more.load-more', {
+                    key: uuid.v4(),
+                    onclick: function(event) {
+                        event.preventDefault();
+
+                        if (context) {
+                            context.itree.pagination.perPage += dom.getNodesPerPage();
+                            context.markDirty();
+                        }
+                        else {
+                            dom.pagination.perPage += dom.getNodesPerPage();
+                        }
+
+                        dom.applyChanges();
+                    }
+                }, ['Load More'])
+            ]);
+        });
+    }
+
+    /**
      * Creates an ordered list containing list item for
      * provided data nodes.
      *
      * @private
-     * @param {array} nodes Data nodes.
+     * @param {TreeNodes} nodes Data nodes.
+     * @param {TreeNode} context Parent node, if any.
      * @return {object} Oredered List node.
      */
-    createOrderedList(nodes) {
-        var dom = this;
+    createOrderedList(nodes, context) {
+        var opts = {};
+        var perPage = 0;
+        var renderNodes = nodes;
+
+        // If rendering deferred, chunk the nodes client-side
+        if (this._tree.config.dom.deferredRendering) {
+            // Determine the perPage. Either for our current context or for the root level
+            if (context) {
+                perPage = _.get(context, 'itree.pagination.perPage', this.getNodesPerPage());
+            }
+            else {
+                perPage = this.pagination.perPage;
+            }
+
+            // Slice the current nodes by this context's pagination
+            renderNodes = _.slice(nodes, 0, perPage);
+        }
+
+        var contents = [this.createListItemNodes(renderNodes)];
+
+        // If deferred rendering and we have nodes remaining, show a Load More... link
+        if (this._tree.config.dom.deferredRendering && perPage < nodes.length) {
+            contents.push(this.createLoadMoreNode(context));
+        }
 
         return new VCache({
-            nodes: nodes,
-            nodeCount: nodes.length
-        }, VArrayDirtyCompare, function() {
-            return h('ol', dom.createListItemNodes(nodes));
+            nodes: renderNodes,
+            nodeCount: renderNodes.length
+        }, VArrayDirtyCompare, () => {
+            return h('ol', opts, contents);
         });
     }
 
@@ -758,6 +848,17 @@ export default class InspireDOM {
     }
 
     /**
+     * Get the max nodes per "page" we'll allow. Defaults to how many nodes can fit.
+     *
+     * @private
+     * @return {integer} Node count
+     */
+    getNodesPerPage() {
+        var perPage = this._tree.config.dom.pagination.perPage;
+        return perPage > 0 ? perPage : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
+    }
+
+    /**
      * Helper method to find a scrollable ancestor element.
      *
      * @param  {HTMLElement} $element Starting element.
@@ -958,42 +1059,40 @@ export default class InspireDOM {
      * @return {void}
      */
     renderNodes(nodes) {
-        var dom = this;
-
-        if (dom.rendering) {
+        if (this.rendering) {
             return;
         }
 
-        dom.rendering = true;
+        this.rendering = true;
 
-        var newOl = dom.createOrderedList(nodes || dom._tree.nodes());
+        var newOl = this.createOrderedList(nodes || this._tree.nodes());
 
-        if (!dom.rootNode) {
-            dom.rootNode = createElement(newOl);
-            dom.$target.appendChild(this.rootNode);
+        if (!this.rootNode) {
+            this.rootNode = createElement(newOl);
+            this.$target.appendChild(this.rootNode);
 
-            if (dom._tree.config.editing.add) {
-                dom.$target.appendChild(createElement(new VCache({}, VArrayDirtyCompare, function() {
+            if (this._tree.config.editing.add) {
+                this.$target.appendChild(createElement(new VCache({}, VArrayDirtyCompare, () => {
                     return h('a.btn.icon.icon-plus', {
                         attributes: {
                             title: 'Add a new root node'
                         },
                         onclick: function() {
-                            dom._tree.focused().blur();
+                            this._tree.focused().blur();
 
-                            dom._tree.addNode(blankNode());
+                            this._tree.addNode(blankNode());
                         }
                     });
                 })));
             }
         }
         else {
-            var patches = diff(dom.ol, newOl);
-            dom.rootNode = patch(dom.rootNode, patches);
+            var patches = diff(this.ol, newOl);
+            this.rootNode = patch(this.rootNode, patches);
         }
 
-        dom.ol = newOl;
-        dom.rendering = false;
+        this.ol = newOl;
+        this.rendering = false;
     };
 
     /**
@@ -1007,12 +1106,8 @@ export default class InspireDOM {
         var $tree = document.querySelector('.inspire-tree');
         var $selected = $tree.querySelector('.selected');
 
-        if ($selected) {
-            var $container = this.getScrollableAncestor($tree);
-
-            if ($container) {
-                $container.scrollTop = $selected.offsetTop;
-            }
+        if ($selected && dom.$scrollLayer) {
+            dom.$scrollLayer.scrollTop = $selected.offsetTop;
         }
     }
 }

@@ -56,10 +56,15 @@ export default class InspireTree extends EventEmitter2 {
             },
             contextMenu: false,
             data: false,
-            dragTargets: false,
             dom: {
+                deferredRendering: false,
+                nodeHeight: 25,
+                pagination: {
+                    perPage: -1
+                },
                 showCheckboxes: false
             },
+            dragTargets: false,
             editable: false,
             editing: {
                 add: false,
@@ -146,6 +151,7 @@ export default class InspireTree extends EventEmitter2 {
             indeterminate: false,
             loading: false,
             removed: false,
+            rendered: false,
             selectable: true,
             selected: false
         };
@@ -153,6 +159,7 @@ export default class InspireTree extends EventEmitter2 {
         // Cache some configs
         tree.allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
         tree.isDynamic = _.isFunction(tree.config.data);
+        tree.usesNativeDOM = DOM;
 
         // Override emitter so we can better control flow
         var emit = tree.emit;

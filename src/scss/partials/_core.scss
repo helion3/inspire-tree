@@ -73,6 +73,15 @@
         white-space: nowrap;
         z-index: 1;
 
+        &.load-more {
+            color: $tree-link-color;
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
         &::before {
             left: -5px;
             position: relative;

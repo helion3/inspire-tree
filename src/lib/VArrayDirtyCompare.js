@@ -15,7 +15,10 @@ import * as _ from 'lodash';
 export function VArrayDirtyCompare(previousState, currentState) {
     var diff = false;
 
-    if (previousState.nodeCount !== currentState.nodeCount) {
+    if (currentState.force) {
+        diff = true;
+    }
+    else if (previousState.nodeCount !== currentState.nodeCount) {
         diff = true;
     }
     else {

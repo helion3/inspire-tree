@@ -30,6 +30,10 @@
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23#{$color}%22%20d%3D%22M0%2013v6c0%200.552%200.448%201%201%201h30c0.552%200%201-0.448%201-1v-6c0-0.552-0.448-1-1-1h-30c-0.552%200-1%200.448-1%201z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E');
 }
 
+@mixin icon-more($color: 6A6A6A) {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23#{$color}%22%20d%3D%22M12%209.984c1.078%200%202.016%200.938%202.016%202.016s-0.938%202.016-2.016%202.016-2.016-0.938-2.016-2.016%200.938-2.016%202.016-2.016zM18%209.984c1.078%200%202.016%200.938%202.016%202.016s-0.938%202.016-2.016%202.016-2.016-0.938-2.016-2.016%200.938-2.016%202.016-2.016zM6%209.984c1.078%200%202.016%200.938%202.016%202.016s-0.938%202.016-2.016%202.016-2.016-0.938-2.016-2.016%200.938-2.016%202.016-2.016z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E');
+}
+
 @mixin icon-pencil($color: 6A6A6A) {
     background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23#{$color}%22%20d%3D%22M27%200c2.761%200%205%202.239%205%205%200%201.126-0.372%202.164-1%203l-2%202-7-7%202-2c0.836-0.628%201.874-1%203-1zM2%2023l-2%209%209-2%2018.5-18.5-7-7-18.5%2018.5zM22.362%2011.362l-14%2014-1.724-1.724%2014-14%201.724%201.724z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E%0A');
 }
@@ -96,6 +100,10 @@
 
     .icon-minus:hover::before {
         @include icon-minus(CC0000);
+    }
+
+    .icon-more::before {
+        @include icon-more;
     }
 
     .icon-pencil::before {

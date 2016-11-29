@@ -85,11 +85,15 @@ that you should be aware of. There are a few choices:
 
 - **allowLoadEvents** - Array of state-change events to fire for pre-set states.
 - **checkbox**
-    - **autoCheckChildren** - Automatically check/uncheck children when parent toggled.
+    + **autoCheckChildren** - Automatically check/uncheck children when parent toggled.
 - **contextMenu** - Array of choices (object with `text` property, `handler` function) for a custom context menu.
 - **data** - An array, promise, or callback function.
 - **dom**
-    - **showCheckboxes** - Show checkbox inputs.
+    + **deferredRendering** - Only render nodes as the user clicks to display more. (See "Deferrals" section below.)
+    + **nodeHeight** - Height (in pixels) of your nodes. Used with `deferredRendering`, if `pagination.perPage` not provided.
+    + **pagination**
+        - **perPage** - How many nodes are rendered/loaded at once. Used with `deferredRendering`. Defaults to nodes which fit in the container.
+    + **showCheckboxes** - Show checkbox inputs.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
 - **editable** - Allow inline editing.
 - **editing** (defaults to true if `editable` is true)
@@ -236,6 +240,17 @@ tree.nodes().expandDeep();
 
 Most `TreeNodes` methods are mapped to the `tree` instance to ease working with all nodes. Instead of using `tree.nodes().someMethod()` you can
 use `tree.someMethod()`.
+
+## Deferrals
+
+### Deferred Rendering
+
+Deferred Rendering breaks up nodes into "pages" which the user can click to display, allowing us to defer rendering
+of some nodes.
+
+To work properly, you need to enable `dom.deferredRendering` in the configuration.
+
+A "Load More" link will show at the bottom of each section which has more nodes than are initially allowed.
 
 ## Custom Rendering
 

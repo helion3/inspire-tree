@@ -242,6 +242,7 @@ declare module "inspire-tree" {
         refreshIndeterminateState(): TreeNode;
         remove(): any;
         removed(): boolean;
+        rendered(): boolean;
         restore(): TreeNode;
         select(shallow?: boolean): TreeNode;
         selectable(): boolean;

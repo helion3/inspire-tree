@@ -46,7 +46,7 @@
     }
 
     // Leaf intersection lines
-    .leaf:not(:last-child) {
+    .leaf:not(:last-child):not(.detached) {
         background-image: $intersection;
         background-position: 11px 0;
         background-repeat: no-repeat;
@@ -55,6 +55,12 @@
     // Last leaf corner lines
     .leaf:last-child {
         background-image: $corner;
+        background-position: 11px 0;
+        background-repeat: no-repeat;
+    }
+
+    .leaf.detached:last-child {
+        background-image: $half-line;
         background-position: 11px 0;
         background-repeat: no-repeat;
     }

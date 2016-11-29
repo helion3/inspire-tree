@@ -975,6 +975,19 @@ export class TreeNode {
     }
 
     /**
+     * Get whether this node has been rendered.
+     *
+     * Will be false if deferred rendering is enable and the node has
+     * not yet been loaded, or if a custom DOM renderer is used.
+     *
+     * @category TreeNode
+     * @return {boolean} Get if node rendered.
+     */
+    rendered() {
+        return this.state('rendered');
+    }
+
+    /**
      * Restore state if soft-removed.
      *
      * @category TreeNode
@@ -1209,7 +1222,7 @@ export class TreeNode {
         var node = this;
 
         var isVisible = true;
-        if (node.hidden() || node.removed()) {
+        if (node.hidden() || node.removed() || (this._tree.usesNativeDOM && !node.rendered())) {
             isVisible = false;
         }
         else if (node.hasParent()) {

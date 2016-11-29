@@ -49,6 +49,7 @@ export function objectToNode(tree, object, parent) {
     state.indeterminate = state.indeterminate || tree.defaultState.indeterminate;
     state.loading = state.loading || tree.defaultState.loading;
     state.removed = state.removed || tree.defaultState.removed;
+    state.rendered = state.rendered || tree.defaultState.rendered;
     state.selected = state.selected || tree.defaultState.selected;
 
     // Save parent, if any.
