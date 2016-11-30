@@ -86,6 +86,7 @@ that you should be aware of. There are a few choices:
 - **allowLoadEvents** - Array of state-change events to fire for pre-set states.
 - **checkbox**
     - **autoCheckChildren** - Automatically check/uncheck children when parent toggled.
+- **contextMenu** - Array of choices (object with `text` property, `handler` function) for a custom context menu.
 - **data** - An array, promise, or callback function.
 - **dom**
     - **showCheckboxes** - Show checkbox inputs.
@@ -97,12 +98,14 @@ that you should be aware of. There are a few choices:
     + **remove** - Allow user to remove nodes.
 - **renderer** - Function which returns a custom renderer (see below).
 - **search** - Custom search callback (for external handling of entire search).
-- **selection.allow** - Dynamically determine `selectable` boolean for a node.
-- **selection.autoDeselect** - Prevent automatic deselection.
-- **selection.autoSelectChildren** - Auto-select children when a parent node is selected, regardless of their visibility.
-- **selection.multiple** - Allow multiple nodes to be selected at a time.
-- **selection.mode** - `default` or `checkbox`. Checkbox mode auto-selects children, doesn't auto deselect.
-- **selection.require** - Require at least one selected node.
+- **selection**
+    + **allow** - Dynamically determine `selectable` boolean for a node.
+    + **autoDeselect** - Prevent automatic deselection.
+    + **autoSelectChildren** - Auto-select children when a parent node is selected, regardless of their visibility.
+    + **disableDirectDeselection** - Disallow deselecting a node by clicking on it while selected.
+    + **mode** - `default` or `checkbox`. Checkbox mode auto-selects children, doesn't auto deselect.
+    + **multiple** - Allow multiple nodes to be selected at a time.
+    + **require** - Require at least one selected node.
 - **showCheckboxes** - Show checkboxes in DOM. (Defaults to true if `selection.mode` === 'checkbox').
 - **sort** - Property to sort by, or a custom sort function.
 - **tabindex** - Define a tab index for the tree container (used for key nav).

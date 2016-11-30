@@ -55,6 +55,7 @@ export default class InspireTree extends EventEmitter2 {
                 autoCheckChildren: true
             },
             contextMenu: false,
+            data: false,
             dragTargets: false,
             dom: {
                 showCheckboxes: false
@@ -81,7 +82,8 @@ export default class InspireTree extends EventEmitter2 {
             },
             showCheckboxes: false,
             sort: false,
-            tabindex: -1
+            tabindex: -1,
+            target: false
         });
 
         // If checkbox mode, we must force auto-selecting children
