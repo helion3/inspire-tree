@@ -5,12 +5,12 @@
         <title>InspireTree</title>
         <link rel="stylesheet" href="../build/inspire-tree.css" />
         <link rel="stylesheet" href="demo.css" />
-        <style>
-            .inspire-tree .selected .wholerow { background: none; }
-        </style>
     </head>
     <body>
-        <div class="tree"></div>
+        <p>Checkboxes control node selection:</p>
+        <div class="selection-tree"></div>
+        <p>Checkboxes are separate from selection:</p>
+        <div class="checkbox-tree"></div>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
     <script src="require.config.js"></script>
@@ -20,11 +20,19 @@
             'lodash',
             'inspireTree'
         ], function($, _, InspireTree) {
-            var tree = new InspireTree({
-                target: '.tree',
+            var tree1 = new InspireTree({
+                target: '.selection-tree',
                 data: $.getJSON('sample-data/full.json'),
                 selection: {
                     mode: 'checkbox'
+                }
+            });
+
+            var tree2 = new InspireTree({
+                target: '.checkbox-tree',
+                data: $.getJSON('sample-data/full.json'),
+                dom: {
+                    showCheckboxes: true
                 }
             });
         });

@@ -64,6 +64,7 @@ declare module "inspire-tree" {
         blurDeep(): TreeNodes;
         boundingNodes(): Array<TreeNode>;
         canAutoDeselect(): boolean;
+        checked(): TreeNodes;
         clean(): TreeNodes;
         clearSearch(): InspireTree;
         clone(): TreeNodes;
@@ -133,6 +134,7 @@ declare module "inspire-tree" {
         available(): TreeNodes;
         blur(): TreeNodes;
         blurDeep(): TreeNodes;
+        checked(): TreeNodes;
         clean(): TreeNodes;
         clone(): TreeNodes;
         collapse(): TreeNodes;
@@ -193,6 +195,8 @@ declare module "inspire-tree" {
         addChildren(nodes: Array<any>): TreeNodes;
         available(): boolean;
         blur(): TreeNode;
+        check(shallow?: boolean): TreeNode;
+        checked(): boolean;
         clean(): TreeNode;
         clone(excludeKeys?: Array<string>): TreeNode;
         collapse(): TreeNode;
@@ -203,7 +207,7 @@ declare module "inspire-tree" {
         context(): TreeNodes;
         copy(hierarchy?: boolean): Copy;
         copyHierarchy(excludeNode?: boolean): TreeNode;
-        deselect(skipParentIndeterminate?: boolean): TreeNode;
+        deselect(shallow?: boolean): TreeNode;
         editable(): boolean;
         editing(): boolean;
         expand(): Promise<TreeNode>;
@@ -238,17 +242,19 @@ declare module "inspire-tree" {
         remove(): any;
         removed(): boolean;
         restore(): TreeNode;
-        select(): TreeNode;
+        select(shallow?: boolean): TreeNode;
         selectable(): boolean;
         selected(): boolean;
         set(key: number|string, val: any): TreeNode;
         show(): TreeNode;
         state(key: string, val: boolean): TreeNodes;
         softRemove(): TreeNode;
+        toggleCheck(): TreeNode;
         toggleCollapse(): TreeNode;
         toggleEditing(): TreeNode;
         toggleSelect(): TreeNode;
         toObject(excludeChildren?: boolean): any;
+        uncheck(shallow?: boolean): TreeNode;
         visible(): boolean;
     }
 

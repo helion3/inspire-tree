@@ -41,6 +41,7 @@ export function objectToNode(tree, object, parent) {
     state.selectable = typeof state.selectable === 'boolean' ? state.selectable : tree.defaultState.selectable;
 
     // Disabled by default
+    state.checked = typeof state.checked === 'boolean' ? state.checked : false;
     state.editable = typeof state.editable === 'boolean' ? state.editable : tree.defaultState.editable;
     state.editing = typeof state.editing === 'boolean' ? state.editing : tree.defaultState.editing;
     state.focused = state.focused || tree.defaultState.focused;

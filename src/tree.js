@@ -51,8 +51,14 @@ export default class InspireTree extends EventEmitter2 {
         // Assign defaults
         tree.config = _.defaultsDeep({}, opts, {
             allowLoadEvents: [],
+            checkbox: {
+                autoCheckChildren: true
+            },
             contextMenu: false,
             dragTargets: false,
+            dom: {
+                showCheckboxes: false
+            },
             editable: false,
             editing: {
                 add: false,
@@ -81,16 +87,44 @@ export default class InspireTree extends EventEmitter2 {
         // If checkbox mode, we must force auto-selecting children
         if (tree.config.selection.mode === 'checkbox') {
             tree.config.selection.autoSelectChildren = true;
-            tree.config.selection.autoDeselect = false;
 
-            if (!_.isBoolean(opts.showCheckboxes)) {
-                tree.config.showCheckboxes = true;
+            // If user didn't specify showCheckboxes,
+            // but is using checkbox selection mode,
+            // enable it automatically.
+            if (!_.isBoolean(_.get(opts, 'dom.showCheckboxes'))) {
+                tree.config.dom.showCheckboxes = true;
             }
+
+            // In checkbox mode, checked=selected
+            tree.on('node.checked', function(node) {
+                if (!node.selected()) {
+                    node.select(true);
+                }
+            });
+
+            tree.on('node.selected', function(node) {
+                if (!node.checked()) {
+                    node.check(true);
+                }
+            });
+
+            tree.on('node.unchecked', function(node) {
+                if (node.selected()) {
+                    node.deselect(true);
+                }
+            });
+
+            tree.on('node.deselected', function(node) {
+                if (node.checked()) {
+                    node.uncheck(true);
+                }
+            });
         }
 
         // If auto-selecting children, we must force multiselect
         if (tree.config.selection.autoSelectChildren) {
             tree.config.selection.multiple = true;
+            tree.config.selection.autoDeselect = false;
         }
 
         // Treat editable as full edit mode
@@ -267,6 +301,17 @@ export default class InspireTree extends EventEmitter2 {
      */
     canAutoDeselect() {
         return this.config.selection.autoDeselect && !this.preventDeselection;
+    }
+
+    /**
+     * Query for all checked nodes.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    checked() {
+        return map(this, 'checked', arguments);
     }
 
     /**

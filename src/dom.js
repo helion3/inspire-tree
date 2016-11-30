@@ -192,19 +192,19 @@ export default class InspireDOM {
         var dom = this;
 
         return new VCache({
-            selected: node.selected(),
+            checked: node.checked(),
             indeterminate: node.indeterminate()
         }, VStateCompare, function() {
             return h('input', {
                 attributes: {
                     type: 'checkbox'
                 },
-                checked: node.selected(),
+                checked: node.checked(),
                 indeterminate: node.indeterminate(),
                 onclick: function(event) {
                     // Define our default handler
                     var handler = function() {
-                        node.toggleSelect();
+                        node.toggleCheck();
                     };
 
                     // Emit an event with our forwarded MouseEvent, node, and default handler
@@ -561,7 +561,7 @@ export default class InspireDOM {
             var attributes = node.itree.a.attributes || {};
             var classNames = ['title', 'icon'];
 
-            if (!dom._tree.config.showCheckboxes) {
+            if (!dom._tree.config.dom.showCheckboxes) {
                 var folder = node.expanded() ? 'icon-folder-open' : 'icon-folder';
                 classNames.push(current.state.icon || (hasVisibleChildren ? folder : 'icon-file-empty'));
             }
@@ -675,6 +675,7 @@ export default class InspireDOM {
         var hasVisibleChildren = !dom.isDynamic ? node.hasVisibleChildren() : Boolean(node.children);
 
         return new VCache({
+            checked: node.checked(),
             collapsed: node.collapsed(),
             dirty: node.itree.dirty,
             editing: node.editing(),
@@ -688,7 +689,7 @@ export default class InspireDOM {
                 contents.push(dom.createToggleAnchor(node));
             }
 
-            if (dom._tree.config.showCheckboxes) {
+            if (dom._tree.config.dom.showCheckboxes) {
                 contents.push(dom.createCheckbox(node));
             }
 

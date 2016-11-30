@@ -84,8 +84,11 @@ that you should be aware of. There are a few choices:
 ## Tree Configuration
 
 - **allowLoadEvents** - Array of state-change events to fire for pre-set states.
-- **checkbox** - Enable tri-state (unchecked, checked, partial) checkboxes for selection.
+- **checkbox**
+    - **autoCheckChildren** - Automatically check/uncheck children when parent toggled.
 - **data** - An array, promise, or callback function.
+- **dom**
+    - **showCheckboxes** - Show checkbox inputs.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
 - **editable** - Allow inline editing.
 - **editing** (defaults to true if `editable` is true)
@@ -140,6 +143,7 @@ tree.on('node.click', function(event, node) {
 - **model.loaded** - `(Array nodes)` - Data has been parsed into an internal model.
 - **node.added** - `(TreeNode node)` - Node added.
 - **node.blurred** - `(TreeNode node)` - Node lost focus.
+- **node.checked** - `(TreeNode node)` - Node checked.
 - **node.click** - `(Event event, TreeNode node)` - User clicked node.
 - **node.collapsed** - `(TreeNode node)` - Node collapsed.
 - **node.contextmenu** - `(Event event, TreeNode node)` - User right-clicked node.
@@ -157,6 +161,7 @@ tree.on('node.click', function(event, node) {
 - **node.state.changed** - `(TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue)` - A node state boolean has changed.
 - **node.shown** - `(TreeNode node)` - Node shown.
 - **node.softremoved** - `(TreeNode node)` - Node soft removed.
+- **node.unchecked** - `(TreeNode node)` - Node unchecked.
 
 #### Overriding DOM Events
 

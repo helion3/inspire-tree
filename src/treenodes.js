@@ -160,6 +160,17 @@ export class TreeNodes extends Array {
     }
 
     /**
+     * Query for all checked nodes.
+     *
+     * @category TreeNodes
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    checked(full) {
+        return baseStatePredicate.call(this, 'checked', full);
+    }
+
+    /**
      * Clean children in this collection.
      *
      * @category TreeNodes

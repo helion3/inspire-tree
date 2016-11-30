@@ -2,44 +2,13 @@
 
 // Libs
 import * as _ from 'lodash';
+import { baseStateChange } from './lib/base-state-change';
 import { collectionToModel } from './lib/collection-to-model';
 import { objectToNode } from './lib/object-to-node';
 import { Promise } from 'es6-promise';
 import { recurseDown } from './lib/recurse-down';
 import { standardizePromise } from './lib/standardize-promise';
 import { TreeNodes } from './treenodes';
-
-/**
- * Stores repetitive state change logic for most state methods.
- *
- * @private
- * @param {string} prop State property name.
- * @param {boolean} value New state value.
- * @param {string} verb Verb used for events.
- * @param {TreeNode} node Node object.
- * @param {string} deep Optional name of state method to call recursively.
- * @return {TreeNode} Node object.
- */
-function baseStateChange(prop, value, verb, node, deep) {
-    if (node.state(prop) !== value) {
-        if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
-            resetState(node);
-        }
-
-        node.state(prop, value);
-
-        node._tree.emit('node.' + verb, node);
-
-        if (deep && node.hasChildren()) {
-            node.getChildren().invokeDeep(deep);
-        }
-
-        node.markDirty();
-        node._tree.dom.applyChanges();
-    }
-
-    return node;
-};
 
 /**
  * Helper method to clone an ITree config object.
@@ -63,21 +32,6 @@ function cloneItree(itree, excludeKeys) {
     });
 
     return clone;
-}
-
-/**
- * Reset a node's state to the tree default.
- *
- * @private
- * @param {TreeNode} node Node object.
- * @returns {TreeNode} Node object.
- */
-function resetState(node) {
-    _.each(node._tree.defaultState, function(val, prop) {
-        node.state(prop, val);
-    });
-
-    return node;
 }
 
 /**
@@ -176,6 +130,41 @@ export class TreeNode {
 
         return baseStateChange('focused', false, 'blurred', this);
     };
+
+    /**
+     * Marks this node as checked.
+     *
+     * @category TreeNode
+     * @param {boolean} shallow Skip auto-checking children.
+     * @return {TreeNode} Node object.
+     */
+    check(shallow) {
+        this._tree.dom.batch();
+
+        // Will we automatically apply state changes to our children
+        var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+
+        baseStateChange('checked', true, 'checked', this, deep);
+
+        // Refresh parent
+        if (this.hasParent()) {
+            this.getParent().refreshIndeterminateState();
+        }
+
+        this._tree.dom.end();
+
+        return this;
+    };
+
+    /**
+     * Get whether this node is checked.
+     *
+     * @category TreeNode
+     * @return {boolean} Get if node checked.
+     */
+    checked() {
+        return this.state('checked');
+    }
 
     /**
      * Hides parents without any visible children.
@@ -328,37 +317,18 @@ export class TreeNode {
      * node, the node will remain in a selected state.
      *
      * @category TreeNode
-     * @param {boolean} skipParentIndeterminate Skip refreshing parent indeterminate states.
+     * @param {boolean} shallow Skip auto-deselecting children.
      * @return {TreeNode} Node object.
      */
-    deselect(skipParentIndeterminate) {
+    deselect(shallow) {
         if (this.selected() && (!this._tree.config.selection.require || this._tree.selected().length > 1)) {
-            var node = this;
             this._tree.dom.batch();
 
+            // Will we apply this state change to our children?
+            var deep = !shallow && this._tree.config.selection.autoSelectChildren;
+
             this.state('indeterminate', false);
-            baseStateChange('selected', false, 'deselected', this);
-
-            // If children were auto-selected
-            if (this._tree.config.selection.autoSelectChildren) {
-                // Deselect all children
-                if (node.hasChildren()) {
-                    node.children.each(function(child) {
-                        child.deselect(true);
-                    });
-                }
-
-                if (node.hasParent()) {
-                    // Set indeterminate state for parent
-                    if (this._tree.config.showCheckboxes && !skipParentIndeterminate) {
-                        node.getParent().refreshIndeterminateState();
-                    }
-                    else {
-                        // Deselect parent node
-                        baseStateChange('selected', false, 'deselected', node.getParent());
-                    }
-                }
-            }
+            baseStateChange('selected', false, 'deselected', this, deep);
 
             this._tree.dom.end();
         }
@@ -911,27 +881,27 @@ export class TreeNode {
     /**
      * Updates the indeterminate state of this node.
      *
-     * Only available when checkbox=true.
-     * True if some, but not all children are selected.
-     * False if no children are selected.
+     * Only available when dom.showCheckboxes=true.
+     * True if some, but not all children are checked.
+     * False if no children are checked.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
      */
     refreshIndeterminateState() {
         var node = this;
-        var oldValue = node.state('indeterminate');
+        var oldValue = node.indeterminate();
         node.state('indeterminate', false);
 
-        if (this._tree.config.showCheckboxes) {
+        if (this._tree.config.dom.showCheckboxes) {
             if (node.hasChildren()) {
                 var childrenCount = node.children.length;
                 var indeterminate = 0;
-                var selected = 0;
+                var checked = 0;
 
                 node.children.each(function(n) {
-                    if (n.selected()) {
-                        selected++;
+                    if (n.checked()) {
+                        checked++;
                     }
 
                     if (n.indeterminate()) {
@@ -940,11 +910,16 @@ export class TreeNode {
                 });
 
                 // Set selected if all children are
-                node.state('selected', (selected === childrenCount));
+                if (checked === childrenCount) {
+                    baseStateChange('checked', true, 'checked', node);
+                }
+                else {
+                    baseStateChange('checked', false, 'unchecked', node);
+                }
 
                 // Set indeterminate if any children are, or some children are selected
-                if (!node.selected()) {
-                    node.state('indeterminate', indeterminate > 0 || (childrenCount > 0 && selected > 0 && selected < childrenCount));
+                if (!node.checked()) {
+                    node.state('indeterminate', indeterminate > 0 || (childrenCount > 0 && checked > 0 && checked < childrenCount));
                 }
             }
 
@@ -1013,9 +988,10 @@ export class TreeNode {
      * Select this node.
      *
      * @category TreeNode
+     * @param {boolean} shallow Skip auto-selecting children.
      * @return {TreeNode} Node object.
      */
-    select() {
+    select(shallow) {
         var node = this;
 
         if (!node.selected() && node.selectable()) {
@@ -1029,25 +1005,13 @@ export class TreeNode {
                 node._tree.config.selection.require = oldVal;
             }
 
-            node.state('selected', true);
+            // Will we apply this state change to our children?
+            var deep = !shallow && node._tree.config.selection.autoSelectChildren;
 
-            if (node._tree.config.selection.autoSelectChildren) {
-                if (node.hasChildren()) {
-                    node.children.recurseDown(function(child) {
-                        baseStateChange('selected', true, 'selected', child);
-                    });
-                }
-
-                if (node._tree.config.showCheckboxes && node.hasParent()) {
-                    node.getParent().refreshIndeterminateState();
-                }
-            }
+            baseStateChange('selected', true, 'selected', this, deep);
 
             // Cache as the last selected node
             node._tree._lastSelectedNode = node;
-
-            // Emit this event
-            node._tree.emit('node.selected', node);
 
             // Mark hierarchy dirty and apply
             node.markDirty();
@@ -1142,6 +1106,16 @@ export class TreeNode {
     }
 
     /**
+     * Toggles checked state.
+     *
+     * @category TreeNode
+     * @return {TreeNode} Node object.
+     */
+    toggleCheck() {
+        return (this.checked() ? this.uncheck() : this.check());
+    }
+
+    /**
      * Toggles collapsed state.
      *
      * @category TreeNode
@@ -1198,6 +1172,31 @@ export class TreeNode {
 
         return object;
     }
+
+    /**
+     * Unchecks this node.
+     *
+     * @category TreeNode
+     * @param {boolean} shallow Skip auto-unchecking children.
+     * @return {TreeNode} Node object.
+     */
+    uncheck(shallow) {
+        this._tree.dom.batch();
+
+        // Will we apply this state change to our children?
+        var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+
+        baseStateChange('checked', false, 'unchecked', this, deep);
+
+        // Refresh our parent
+        if (this.hasParent()) {
+            this.getParent().refreshIndeterminateState();
+        }
+
+        this._tree.dom.end();
+
+        return this;
+    };
 
     /**
      * Checks whether a node is visible to a user. Returns false
