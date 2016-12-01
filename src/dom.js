@@ -271,16 +271,16 @@ export default class InspireDOM {
     createDraggableElement(element, event) {
         this.$dragNode = this.nodeFromTitleDOMElement(element);
 
-        var offset = this.getAbsoluteOffset(element);
-        var diffX = event.clientX - offset.left;
-        var diffY = event.clientY - offset.top;
+        var rect = element.getBoundingClientRect();
+        var diffX = event.clientX - rect.left;
+        var diffY = event.clientY - rect.top;
 
         this.dragHandleOffset = { left: diffX, top: diffY };
 
         this.$dragElement = element.cloneNode(true);
         this.$dragElement.className += ' dragging';
-        this.$dragElement.style.top = offset.top + 'px';
-        this.$dragElement.style.left = offset.left + 'px';
+        this.$dragElement.style.top = rect.top + 'px';
+        this.$dragElement.style.left = rect.left + 'px';
         this.$target.appendChild(this.$dragElement);
     }
 
@@ -733,33 +733,6 @@ export default class InspireDOM {
         if (this.batching === 0) {
             this.applyChanges();
         }
-    }
-
-    /**
-     * Calculcates the absolute offset values of an element.
-     *
-     * @private
-     * @param {HTMLElement} element HTML Element.
-     * @return {object} Object with top/left values.
-     */
-    getAbsoluteOffset(element) {
-        var x = 0;
-        var y = 0;
-
-        while (element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop)) {
-            x += element.offsetLeft - element.scrollLeft;
-            y += element.offsetTop - element.scrollTop;
-            element = element.offsetParent;
-        }
-
-        // IE10 stores scroll values on documentElement instead.
-        // Due to unit testing, document may not always exist
-        if (typeof document !== 'undefined') {
-            x -= document.documentElement.scrollLeft;
-            y -= document.documentElement.scrollTop;
-        }
-
-        return { top: y, left: x };
     }
 
     /**
