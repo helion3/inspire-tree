@@ -17,7 +17,7 @@ export function VStateCompare(previousState, currentState) {
 
     if (!isDirty) {
         _.each(currentState, function(val, key) {
-            if (val !== previousState[key]) {
+            if (key !== 'dirty' && val !== previousState[key]) {
                 isDirty = true;
                 return false;
             }

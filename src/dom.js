@@ -455,7 +455,7 @@ export default class InspireDOM {
             // http://jsperf.com/object-keys-to-classnames
             var classNames = '.';
             var state = node.itree.state;
-            _.each(Object.keys(state), function(key) {
+            _.each(state, function(value, key) {
                 if (state[key]) {
                     classNames += '.' + key;
                 }
@@ -509,16 +509,11 @@ export default class InspireDOM {
      * @return {array} Array of List Item nodes.
      */
     createListItemNodes(nodes) {
-        var dom = this;
-        var domNodes = [];
-
-        _.each(nodes, function(node) {
+        return _.map(nodes, (node) => {
             // We can't just remove the node if soft-removed
             // https://github.com/Matt-Esch/virtual-dom/issues/333
-            domNodes.push(dom.createListItemNode(node));
+            return this.createListItemNode(node);
         });
-
-        return domNodes;
     }
 
     /**
