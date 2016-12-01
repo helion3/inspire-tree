@@ -153,7 +153,7 @@ export default class InspireDOM {
 
     /**
      * Clear page text selection, primarily after a click event which
-     * nativelt selects a range of text.
+     * natively selects a range of text.
      *
      * @category DOM
      * @private
