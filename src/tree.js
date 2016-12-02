@@ -156,8 +156,8 @@ export default class InspireTree extends EventEmitter2 {
 
         // Override emitter so we can better control flow
         var emit = tree.emit;
-        tree.emit = function() {
-            if (!tree.muted()) {
+        tree.emit = function(eventName) {
+            if (!tree.isEventMuted(eventName)) {
                 // Duck-type for a DOM event
                 if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
                     var event = arguments[1];
@@ -665,6 +665,21 @@ export default class InspireTree extends EventEmitter2 {
      */
     isNode(object) {
         return (object instanceof TreeNode);
+    }
+
+    /**
+     * Check if an event is currently muted.
+     *
+     * @category Tree
+     * @param {string} eventName Event name.
+     * @return {boolean} If event is muted.
+     */
+    isEventMuted(eventName) {
+        if (_.isBoolean(this.muted())) {
+            return this.muted();
+        }
+
+        return _.includes(this.muted(), eventName);
     }
 
     /**

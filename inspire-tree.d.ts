@@ -97,6 +97,7 @@ declare module "inspire-tree" {
         insertAt(index: number, object: any): TreeNode;
         invoke(methods: string|Array<string>): TreeNodes;
         invokeDeep(methods: string|Array<string>): TreeNodes;
+        isEventMuted(eventName: string): boolean;
         isNode(object: any): boolean;
         lastSelectedNode(): TreeNode;
         load(loader: Promise<TreeNodes>): any;
