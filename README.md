@@ -239,6 +239,7 @@ use `tree.someMethod()`.
 
 ## Custom Rendering
 
+- Inferno: [Source](https://github.com/helion3/inspire-tree-inferno-demo) - [Demo](http://inspire-tree.com/inferno)
 - React: [Source](https://github.com/helion3/inspire-tree-react-demo) - [Demo](http://inspire-tree.com/react)
 - Angular: [Source](https://github.com/helion3/inspire-tree-angular-demo) - [Demo](http://inspire-tree.com/angular)
 - Angular2: [Source](https://github.com/helion3/inspire-tree-angular2-demo)
