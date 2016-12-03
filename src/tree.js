@@ -57,6 +57,7 @@ export default class InspireTree extends EventEmitter2 {
             contextMenu: false,
             data: false,
             dom: {
+                autoLoadMore: true,
                 deferredRendering: false,
                 nodeHeight: 25,
                 pagination: {

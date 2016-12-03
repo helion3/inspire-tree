@@ -159,6 +159,11 @@ export default class InspireDOM {
             }
         });
 
+        // Listen for scrolls for automatic loading
+        if (dom._tree.config.dom.deferredRendering && dom._tree.config.dom.autoLoadMore) {
+            dom.$target.addEventListener('scroll', _.throttle(dom.scrollListener.bind(dom), 20));
+        }
+
         dom.$target.inspireTree = dom._tree;
     }
 
@@ -567,15 +572,7 @@ export default class InspireDOM {
                     onclick: function(event) {
                         event.preventDefault();
 
-                        if (context) {
-                            context.itree.pagination.perPage += dom.getNodesPerPage();
-                            context.markDirty();
-                        }
-                        else {
-                            dom.pagination.perPage += dom.getNodesPerPage();
-                        }
-
-                        dom.applyChanges();
+                        dom.loadMore(context, event);
                     }
                 }, ['Load More'])
             ]);
@@ -909,6 +906,34 @@ export default class InspireDOM {
     }
 
     /**
+     * Loads/renders additional nodes for a given context, or the root.
+     *
+     * @private
+     * @param {TreeNode} context Parent node, or none for root.
+     * @param {Event} event Click or scroll event which triggered this call.
+     * @return {void}
+     */
+    loadMore(context, event) {
+        var pagination;
+
+        if (context) {
+            pagination = context.itree.pagination;
+            context.markDirty();
+        }
+        else {
+            pagination = this.pagination;
+        }
+
+        // Increment the pagination
+        pagination.perPage += this.getNodesPerPage();
+
+        // Emit an event
+        this._tree.emit('node.paginate', context, pagination, event);
+
+        this.applyChanges();
+    }
+
+    /**
      * Listener for mouse move events for drag and drop.
      * Is removed automatically on mouse up.
      *
@@ -1094,6 +1119,42 @@ export default class InspireDOM {
         this.ol = newOl;
         this.rendering = false;
     };
+
+    /**
+     * Listens for scroll events, to automatically trigger
+     * Load More links when they're scrolled into view.
+     *
+     * @category DOM
+     * @private
+     * @param {Event} event Scroll event.
+     * @return {void}
+     */
+    scrollListener(event) {
+        if (!this.rendering) {
+            // Get the bounding rect of the scroll layer
+            var rect = this.$scrollLayer.getBoundingClientRect();
+
+            // Find all load-more links
+            var links = document.querySelectorAll('.load-more');
+            _.each(links, (link) => {
+                // Look for load-more links which overlap our "viewport"
+                var r = link.getBoundingClientRect();
+                var overlap = !(rect.right < r.left || rect.left > r.right || rect.bottom < r.top || rect.top > r.bottom);
+
+                if (overlap) {
+                    // Auto-trigger Load More links
+                    var context;
+
+                    var $parent = link.parentNode.parentNode.parentNode;
+                    if ($parent.tagName === 'LI') {
+                        context = this._tree.node($parent.getAttribute('data-uid'));
+                    }
+
+                    this.loadMore(context, event);
+                }
+            });
+        }
+    }
 
     /**
      * Scroll the first selected node into view.

@@ -89,6 +89,7 @@ that you should be aware of. There are a few choices:
 - **contextMenu** - Array of choices (object with `text` property, `handler` function) for a custom context menu.
 - **data** - An array, promise, or callback function.
 - **dom**
+    + **autoLoadMore** - Automatically triggers "Load More" links on scroll. Used with `deferredRendering`.
     + **deferredRendering** - Only render nodes as the user clicks to display more. (See "Deferrals" section below.)
     + **nodeHeight** - Height (in pixels) of your nodes. Used with `deferredRendering`, if `pagination.perPage` not provided.
     + **pagination**
@@ -157,10 +158,11 @@ tree.on('node.click', function(event, node) {
 - **node.dblclick** - `(Event event, TreeNode node)` - User double-clicked node.
 - **node.deselected** - `(TreeNode node)` - Node deselected.
 - **node.dropin** - `(TreeNode node)` - Tree has received a new node via drop.
-- **node.dropout** - `(TreeNode node, Element elem)` - Node dropped into a valid target.
+- **node.dropout** - `(TreeNode node), (Element elem)` - Node dropped into a valid target.
 - **node.expanded** - `(TreeNode node)` - Node expanded.
 - **node.focused** - `(TreeNode node)` - Node focused.
 - **node.hidden** - `(TreeNode node)` - Node hidden.
+- **node.paginate** - `(TreeNode context), (Object pagination) (Event event)` - Nodes were paginated. Context is undefined when for the root level.
 - **node.property.changed** - `(TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue)` - A node's root property has changed.
 - **node.removed** - `(object node)` - Node removed.
 - **node.restored** - `(TreeNode node)` - Node restored.
