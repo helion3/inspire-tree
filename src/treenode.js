@@ -1108,7 +1108,10 @@ export class TreeNode {
         if (typeof newVal !== 'undefined' && currentVal !== newVal) {
             // Update values
             this.itree.state[name] = newVal;
-            this.markDirty();
+
+            if (name !== 'rendered') {
+                this.markDirty();
+            }
 
             // Emit an event
             this._tree.emit('node.state.changed', this, name, currentVal, newVal);
