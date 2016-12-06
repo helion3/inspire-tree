@@ -60,9 +60,6 @@ export default class InspireTree extends EventEmitter2 {
                 autoLoadMore: true,
                 deferredRendering: false,
                 nodeHeight: 25,
-                pagination: {
-                    perPage: -1
-                },
                 showCheckboxes: false
             },
             dragTargets: false,
@@ -74,6 +71,9 @@ export default class InspireTree extends EventEmitter2 {
             },
             nodes: {
                 resetStateOnRestore: true
+            },
+            pagination: {
+                limit: -1
             },
             renderer: false,
             search: false,
@@ -714,7 +714,13 @@ export default class InspireTree extends EventEmitter2 {
         var tree = this;
 
         var promise = new Promise(function(resolve, reject) {
-            var complete = function(nodes) {
+            var complete = function(nodes, totalNodes) {
+                tree.dom.pagination.total = nodes.length;
+
+                if (_.parseInt(totalNodes) > nodes.length) {
+                    tree.dom.pagination.total = _.parseInt(totalNodes);
+                }
+
                 // Delay event for synchronous loader. Otherwise it fires
                 // before the user has a chance to listen.
                 if (!tree.initialized && _.isArray(nodes)) {
@@ -726,12 +732,8 @@ export default class InspireTree extends EventEmitter2 {
                     tree.emit('data.loaded', nodes);
                 }
 
-                // Clear and call rendering on existing data
-                if (tree.model.length > 0) {
-                    tree.removeAll();
-                }
-
-                tree.model = collectionToModel(tree, nodes);
+                // Concat newly loaded nodes
+                tree.model = tree.model.concat(collectionToModel(tree, nodes));
 
                 if (tree.config.selection.require && !tree.selected().length) {
                     tree.selectFirstAvailableNode();
@@ -763,7 +765,7 @@ export default class InspireTree extends EventEmitter2 {
 
             // Data loader requires a caller/callback
             else if (_.isFunction(loader)) {
-                var resp = loader(null, complete, reject);
+                var resp = loader(null, complete, reject, tree.dom.pagination);
 
                 // Loader returned its own object
                 if (resp) {
@@ -874,6 +876,8 @@ export default class InspireTree extends EventEmitter2 {
      * @return {Promise} Load method promise.
      */
     reload() {
+        this.removeAll();
+
         return this.load(this.opts.data || this.config.data);
     }
 

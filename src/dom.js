@@ -137,30 +137,33 @@ export default class InspireDOM {
 
         // Set pagination limits
         this.pagination = {
-            perPage: this.getNodesPerPage()
+            limit: this.getNodeslimit()
         };
 
-        var perPage = this.pagination.perPage;
-        dom._tree.on('model.loaded', function() {
+        var limit = this.pagination.limit;
+        dom._tree.on('model.loaded', () => {
+            // Set context-specific pagination
             dom._tree.nodes().recurseDown(function(node) {
                 if (node.children) {
                     node.itree.pagination = {
-                        perPage: perPage
+                        limit: limit,
+                        total: node.hasChildren() ? node.children.length : -1
                     };
                 }
             });
         });
 
-        dom._tree.on('node.added', function(node) {
+        dom._tree.on('node.added', (node) => {
             if (node.children) {
                 node.itree.pagination = {
-                    perPage: perPage
+                    limit: limit,
+                    total: node.hasChildren() ? node.children.length : -1
                 };
             }
         });
 
         // Listen for scrolls for automatic loading
-        if (dom._tree.config.dom.deferredRendering && dom._tree.config.dom.autoLoadMore) {
+        if ((dom._tree.config.dom.deferredRendering || dom._tree.config.deferredLoading) && dom._tree.config.dom.autoLoadMore) {
             dom.$target.addEventListener('scroll', _.throttle(dom.scrollListener.bind(dom), 20));
         }
 
@@ -552,6 +555,25 @@ export default class InspireDOM {
     }
 
     /**
+     * Creates a list item node when a dynamic node returns no children.
+     *
+     * Cannot be clicked or expanded.
+     *
+     * @private
+     * @param {boolean} unloaded If data has yet to load.
+     * @return {object} List Item node.
+     */
+    createLoadingTextNode() {
+        return new VCache({
+            text: uuid()
+        }, VStateCompare, function() {
+            return h('li.leaf', [
+                h('span.title.icon.icon-more', ['Loading...'])
+            ]);
+        });
+    }
+
+    /**
      * Creates an anchor that loads more nodes when clicked.
      *
      * Cannot be selected or expanded.
@@ -561,18 +583,15 @@ export default class InspireDOM {
      * @return {object} List Item node.
      */
     createLoadMoreNode(context) {
-        var dom = this;
-
-        return new VCache({}, VStateCompare, function() {
-            return h('li.leaf.detached', {
-                key: uuid.v4()
-            }, [
+        return new VCache({
+            text: uuid()
+        }, VStateCompare, function() {
+            return h('li.leaf.detached', [
                 h('a.title.icon.icon-more.load-more', {
-                    key: uuid.v4(),
-                    onclick: function(event) {
+                    onclick: (event) => {
                         event.preventDefault();
 
-                        dom.loadMore(context, event);
+                        this.loadMore(context, event);
                     }
                 }, ['Load More'])
             ]);
@@ -590,34 +609,35 @@ export default class InspireDOM {
      */
     createOrderedList(nodes, context) {
         var opts = {};
-        var perPage = 0;
         var renderNodes = nodes;
+        var pagination = this.getContextPagination(context);
 
         // If rendering deferred, chunk the nodes client-side
         if (this._tree.config.dom.deferredRendering) {
-            // Determine the perPage. Either for our current context or for the root level
-            if (context) {
-                perPage = _.get(context, 'itree.pagination.perPage', this.getNodesPerPage());
-            }
-            else {
-                perPage = this.pagination.perPage;
-            }
+            // Determine the limit. Either for our current context or for the root level
+            var limit = pagination.limit || this.getNodeslimit();
 
             // Slice the current nodes by this context's pagination
-            renderNodes = _.slice(nodes, 0, perPage);
-        }
-
-        var contents = [this.createListItemNodes(renderNodes)];
-
-        // If deferred rendering and we have nodes remaining, show a Load More... link
-        if (this._tree.config.dom.deferredRendering && perPage < nodes.length) {
-            contents.push(this.createLoadMoreNode(context));
+            renderNodes = _.slice(nodes, 0, limit);
         }
 
         return new VCache({
             nodes: renderNodes,
-            nodeCount: renderNodes.length
+            nodeCount: renderNodes.length,
+            loading: this.loading
         }, VArrayDirtyCompare, () => {
+            var contents = [this.createListItemNodes(renderNodes)];
+
+            // If deferred rendering and we have nodes remaining, show a Load More... link
+            if ((this._tree.config.dom.deferredRendering || this._tree.config.deferredLoading) && nodes.length < pagination.total) {
+                if (!this.loading) {
+                    contents.push(this.createLoadMoreNode(context));
+                }
+                else {
+                    contents.push(this.createLoadingTextNode());
+                }
+            }
+
             return h('ol', opts, contents);
         });
     }
@@ -818,6 +838,16 @@ export default class InspireDOM {
     }
 
     /**
+     * Get the pagination for the given context node, or root if undefined.
+     *
+     * @param {TreeNode} context Context node.
+     * @return {object} Pagination configuration object.
+     */
+    getContextPagination(context) {
+        return context ? _.get(context, 'itree.pagination') : this.pagination;
+    }
+
+    /**
      * Get an HTMLElement through various means:
      * An element, jquery object, or a selector.
      *
@@ -850,9 +880,9 @@ export default class InspireDOM {
      * @private
      * @return {integer} Node count
      */
-    getNodesPerPage() {
-        var perPage = this._tree.config.dom.pagination.perPage;
-        return perPage > 0 ? perPage : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
+    getNodeslimit() {
+        var limit = this._tree.config.pagination.limit;
+        return limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
     }
 
     /**
@@ -911,26 +941,45 @@ export default class InspireDOM {
      * @private
      * @param {TreeNode} context Parent node, or none for root.
      * @param {Event} event Click or scroll event which triggered this call.
-     * @return {void}
+     * @return {Promise} Resolves with request results.
      */
     loadMore(context, event) {
-        var pagination;
+        var pagination = this.getContextPagination(context);
+        var promise;
 
-        if (context) {
-            pagination = context.itree.pagination;
-            context.markDirty();
-        }
-        else {
-            pagination = this.pagination;
-        }
+        // Set loading flag, prevents repeat requests
+        this.loading = true;
+
+        // Mark this context as dirty since we'll update text/tree nodes
+        _.invoke(context, 'markDirty');
 
         // Increment the pagination
-        pagination.perPage += this.getNodesPerPage();
+        pagination.limit += this.getNodeslimit();
 
         // Emit an event
         this._tree.emit('node.paginate', context, pagination, event);
 
+        if (this._tree.config.deferredLoading) {
+            if (context) {
+                promise = context.loadChildren();
+            }
+            else {
+                promise = this._tree.load(this._tree.config.data);
+            }
+        }
+
         this.applyChanges();
+
+        // Clear the loading flag
+        promise.then(() => {
+            this.loading = false;
+            this.applyChanges();
+        }).catch(function() {
+            this.loading = false;
+            this.applyChanges();
+        });
+
+        return promise;
     }
 
     /**
@@ -1130,7 +1179,7 @@ export default class InspireDOM {
      * @return {void}
      */
     scrollListener(event) {
-        if (!this.rendering) {
+        if (!this.rendering && !this.loading) {
             // Get the bounding rect of the scroll layer
             var rect = this.$scrollLayer.getBoundingClientRect();
 

@@ -648,7 +648,7 @@ export class TreeNode {
         var node = this;
 
         return new Promise(function(resolve, reject) {
-            if (!node._tree.isDynamic || node.children !== true) {
+            if (!node._tree.isDynamic || (!_.isArrayLike(node.children) && node.children !== true)) {
                 reject(new Error('Node does not have or support dynamic children.'));
             }
 
@@ -656,10 +656,21 @@ export class TreeNode {
             node.markDirty();
             node._tree.dom.applyChanges();
 
-            var complete = function(results) {
+            var complete = function(nodes, totalNodes) {
+                if (_.parseInt(totalNodes) > nodes.length) {
+                    node.itree.pagination.total = _.parseInt(totalNodes);
+                }
+
                 node._tree.dom.batch();
                 node.state('loading', false);
-                node.children = collectionToModel(node._tree, results, node);
+
+                var model = collectionToModel(node._tree, nodes, node);
+                if (_.isArrayLike(node.children)) {
+                    node.children = node.children.concat(model);
+                }
+                else {
+                    node.children = model;
+                }
 
                 // If using checkbox mode, share selection with newly loaded children
                 if (node._tree.config.selection.mode === 'checkbox' && node.selected()) {
@@ -686,7 +697,7 @@ export class TreeNode {
                 node._tree.emit('tree.loaderror', err);
             };
 
-            var loader = node._tree.config.data(node, complete, error);
+            var loader = node._tree.config.data(node, complete, error, node.itree.pagination);
 
             // Data loader is likely a promise
             if (_.isObject(loader)) {

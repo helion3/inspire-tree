@@ -29,7 +29,14 @@ declare module "inspire-tree" {
         allowLoadEvents?: Array<string>;
         contextMenu?: boolean;
         data?: Array<any>|Promise<any>|DataResolver;
+        dom?: {
+            autoLoadMore?: boolean;
+            deferredRendering?: boolean;
+            nodeHeight?: number;
+            showCheckboxes?: boolean;
+        };
         dragTargets?: Array<string>;
+        deferredLoading?: boolean;
         editable?: boolean;
         editing?: {
             add?: boolean;
@@ -38,6 +45,9 @@ declare module "inspire-tree" {
         };
         nodes?: {
             resetStateOnRestore?: boolean;
+        };
+        pagination?: {
+            limit?: number;
         };
         renderer?: any;
         search?: string|RegExp|NodeIteratee;
@@ -50,7 +60,6 @@ declare module "inspire-tree" {
             multiple?: boolean;
             require?: boolean;
         };
-        showCheckboxes?: boolean;
         sort?: string;
         tabindex?: number;
         target?: HTMLElement;

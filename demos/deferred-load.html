@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
+        <link rel="stylesheet" href="demo.css" />
+        <style>
+            .tree {
+                height: 500px;
+                overflow: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Loads and renders nodes as the user scrolls.</p>
+        <div class="tree"></div>
+        <ul class="log"></ul>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
+    <script src="require.config.js"></script>
+    <script>
+        require([
+            'jquery',
+            'inspireTree'
+        ], function($, InspireTree) {
+            var tree = new InspireTree({
+                target: '.tree',
+                deferredLoading: true,
+                data: function(node, resolve, reject, pagination) {
+                    var request = $.getJSON('sample-data/chunked-root.json');
+
+                    request.then(function(results) {
+                        if (!node) {
+                            results.unshift({ text: 'Helion3', children: true });
+                        }
+
+                        resolve(results, 100);
+                    });
+
+                    request.error(reject);
+                }
+            });
+        });
+    </script>
+</html>

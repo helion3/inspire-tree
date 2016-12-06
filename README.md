@@ -88,12 +88,11 @@ that you should be aware of. There are a few choices:
     + **autoCheckChildren** - Automatically check/uncheck children when parent toggled.
 - **contextMenu** - Array of choices (object with `text` property, `handler` function) for a custom context menu.
 - **data** - An array, promise, or callback function.
+- **deferredLoading** - Enable deferred loading. (See "Deferrals" section below.)
 - **dom**
-    + **autoLoadMore** - Automatically triggers "Load More" links on scroll. Used with `deferredRendering`.
+    + **autoLoadMore** - Automatically triggers "Load More" links on scroll. Used with deferrals.
     + **deferredRendering** - Only render nodes as the user clicks to display more. (See "Deferrals" section below.)
-    + **nodeHeight** - Height (in pixels) of your nodes. Used with `deferredRendering`, if `pagination.perPage` not provided.
-    + **pagination**
-        - **perPage** - How many nodes are rendered/loaded at once. Used with `deferredRendering`. Defaults to nodes which fit in the container.
+    + **nodeHeight** - Height (in pixels) of your nodes. Used with deferrals, if `pagination.limit` not provided.
     + **showCheckboxes** - Show checkbox inputs.
 - **dragTargets** - Array of other tree elements which accept drag/drop.
 - **editable** - Allow inline editing.
@@ -101,6 +100,10 @@ that you should be aware of. There are a few choices:
     + **add** - Allow user to add nodes.
     + **edit** -  Allow user to edit existing nodes.
     + **remove** - Allow user to remove nodes.
+- **nodes**
+    + **resetStateOnRestore** - Reset node state to defaults when restored.
+- **pagination**
+    + **limit** - How many nodes are rendered/loaded at once. Used with deferrals. Defaults to nodes which fit in the container.
 - **renderer** - Function which returns a custom renderer (see below).
 - **search** - Custom search callback (for external handling of entire search).
 - **selection**
@@ -245,14 +248,35 @@ use `tree.someMethod()`.
 
 ## Deferrals
 
+For those working with massive datasets, InspireTree offers several additional features to help reduce initial load burdens.
+
 ### Deferred Rendering
 
-Deferred Rendering breaks up nodes into "pages" which the user can click to display, allowing us to defer rendering
-of some nodes.
+Deferred Rendering progressively renders loaded nodes as the user scrolls or clicks a Load More link.
 
 To work properly, you need to enable `dom.deferredRendering` in the configuration.
 
 A "Load More" link will show at the bottom of each section which has more nodes than are initially allowed.
+
+# Deferred Loading
+
+Deferred Loading works exactly like deferred rendering, except nodes are loaded in paginated chunks.
+
+1. Enable `deferredLoading` in the config.
+2. Pass a count of total nodes to the `data` callback. This way, inspire tree knows how many nodes remain.
+
+```js
+data: function(node, resolve, reject) {
+    // nodes = subset of total nodes, 1000 = total rows
+    resolve(nodes, 1000);
+}
+```
+
+3. Set `pagination.limit` in the config if the default doesn't suit you.
+4. A fourth object, `pagination` is passed to the `data` callback. It contains the current limit/total for the context being loaded.
+If `node` is undefined, the pagination object refers to root level nodes, otherwise it refers to children of the `node`.
+
+*Note: Deferred rendering and loading may be used together but there's no reason to.*
 
 ## Custom Rendering
 

@@ -21,6 +21,9 @@ export function VArrayDirtyCompare(previousState, currentState) {
     else if (previousState.nodeCount !== currentState.nodeCount) {
         diff = true;
     }
+    else if (previousState.loading !== currentState.loading) {
+        diff = true;
+    }
     else {
         diff = _.find(currentState.nodes, 'itree.dirty');
     }
