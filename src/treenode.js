@@ -953,24 +953,20 @@ export class TreeNode {
      * @return {object} Removed tree node object.
      */
     remove() {
-        var node = this;
+        // Cache parent before we remove the node
+        var parent = this.getParent();
 
-        var parent;
-        if (node.hasParent()) {
-            parent = node.getParent();
-        }
+        // Remove self
+        this.context().remove(this);
 
-        var context = (parent ? parent.children : this._tree.model);
-        _.remove(context, { id: node.id });
-
+        // Refresh parent states
         if (parent) {
             parent.refreshIndeterminateState();
         }
 
-        var exported = node.toObject();
+        // Export/event
+        var exported = this.toObject();
         this._tree.emit('node.removed', exported);
-
-        this._tree.dom.applyChanges();
 
         return exported;
     }

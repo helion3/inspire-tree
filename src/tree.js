@@ -882,6 +882,17 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Removes a direct descendant node.
+     *
+     * @category Tree
+     * @param {TreeNode} node Node object.
+     * @return {TreeNodes} Array of node objects.
+     */
+    remove() {
+        return map(this, 'remove', arguments);
+    }
+
+    /**
      * Removes all nodes.
      *
      * @category Tree

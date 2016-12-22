@@ -783,7 +783,8 @@ export default class InspireDOM {
             editing: node.editing(),
             hasVisibleChildren: hasVisibleChildren,
             indeterminate: node.indeterminate(),
-            selected: node.selected()
+            selected: node.selected(),
+            text: node.text
         }, VStateCompare, function() {
             var contents = [];
 

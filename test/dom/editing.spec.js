@@ -14,7 +14,17 @@ describe('inline editing', function() {
             editable: true,
             data: [{
                 text: 'A',
-                id: 1
+                id: 1,
+                children: [{
+                    text: 'B',
+                    id: 2
+                }, {
+                    text: 'C',
+                    id: 3
+                }, {
+                    text: 'D',
+                    id: 4
+                }]
             }]
         });
     });
@@ -42,6 +52,26 @@ describe('inline editing', function() {
 
     it('disables edit mode', function() {
         expect(tree.node(1).editing()).to.be.false;
+    });
+
+    it('removes a node', function() {
+        expect($tree.find('li')).to.have.length(4);
+
+        var $node = $(tree.node(2).itree.ref.node);
+        $node.find('.icon-minus').click();
+
+        expect($tree.find('li')).to.have.length(3);
+    });
+
+    // Note: doing this better tests that we're not just removing from the end
+    it('removes a second node', function() {
+        expect($tree.find('li')).to.have.length(3);
+
+        var $node = $(tree.node(3).itree.ref.node);
+        $node.find('.icon-minus').click();
+        expect($tree.find('li')).to.have.length(2);
+
+        expect($tree.find('li:eq(1) a').text()).to.equal('D');
     });
 
     after(helpers.clearDOM);

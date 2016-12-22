@@ -739,6 +739,25 @@ export class TreeNodes extends Array {
     }
 
     /**
+     * Removes a node from this list.
+     *
+     * @category TreeNodes
+     * @param {TreeNode} node Node object.
+     * @return {TreeNodes} Resulting nodes.
+     */
+    remove(node) {
+        _.remove(this, { id: node.id });
+
+        if (this._context) {
+            this._context.markDirty();
+        }
+
+        this._tree.dom.applyChanges();
+
+        return this;
+    }
+
+    /**
      * Query for all soft-removed nodes.
      *
      * @category TreeNodes
