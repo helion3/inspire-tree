@@ -137,7 +137,7 @@ export default class InspireDOM {
 
         // Set pagination limits
         this.pagination = {
-            limit: this.getNodeslimit()
+            limit: this.getNodesLimit()
         };
 
         var limit = this.pagination.limit;
@@ -583,6 +583,8 @@ export default class InspireDOM {
      * @return {object} List Item node.
      */
     createLoadMoreNode(context) {
+        var dom = this;
+
         return new VCache({
             text: uuid()
         }, VStateCompare, function() {
@@ -591,7 +593,7 @@ export default class InspireDOM {
                     onclick: (event) => {
                         event.preventDefault();
 
-                        this.loadMore(context, event);
+                        dom.loadMore(context, event);
                     }
                 }, ['Load More'])
             ]);
@@ -615,7 +617,7 @@ export default class InspireDOM {
         // If rendering deferred, chunk the nodes client-side
         if (this._tree.config.dom.deferredRendering) {
             // Determine the limit. Either for our current context or for the root level
-            var limit = pagination.limit || this.getNodeslimit();
+            var limit = pagination.limit || this.getNodesLimit();
 
             // Slice the current nodes by this context's pagination
             renderNodes = _.slice(nodes, 0, limit);
@@ -629,7 +631,7 @@ export default class InspireDOM {
             var contents = [this.createListItemNodes(renderNodes)];
 
             // If deferred rendering and we have nodes remaining, show a Load More... link
-            if ((this._tree.config.dom.deferredRendering || this._tree.config.deferredLoading) && nodes.length < pagination.total) {
+            if ((this._tree.config.dom.deferredRendering || this._tree.config.deferredLoading) && pagination.limit < pagination.total) {
                 if (!this.loading) {
                     contents.push(this.createLoadMoreNode(context));
                 }
@@ -881,7 +883,7 @@ export default class InspireDOM {
      * @private
      * @return {integer} Node count
      */
-    getNodeslimit() {
+    getNodesLimit() {
         var limit = this._tree.config.pagination.limit;
         return limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
     }
@@ -945,17 +947,22 @@ export default class InspireDOM {
      * @return {Promise} Resolves with request results.
      */
     loadMore(context, event) {
+        if (this.loading) {
+            return;
+        }
+
         var pagination = this.getContextPagination(context);
         var promise;
 
         // Set loading flag, prevents repeat requests
         this.loading = true;
+        this.batch();
 
         // Mark this context as dirty since we'll update text/tree nodes
         _.invoke(context, 'markDirty');
 
         // Increment the pagination
-        pagination.limit += this.getNodeslimit();
+        pagination.limit += this.getNodesLimit();
 
         // Emit an event
         this._tree.emit('node.paginate', context, pagination, event);
@@ -968,17 +975,22 @@ export default class InspireDOM {
                 promise = this._tree.load(this._tree.config.data);
             }
         }
+        else {
+            this.loading = false;
+        }
 
-        this.applyChanges();
+        this.end();
 
         // Clear the loading flag
-        promise.then(() => {
-            this.loading = false;
-            this.applyChanges();
-        }).catch(function() {
-            this.loading = false;
-            this.applyChanges();
-        });
+        if (this._tree.config.deferredLoading) {
+            promise.then(() => {
+                this.loading = false;
+                this.applyChanges();
+            }).catch(function() {
+                this.loading = false;
+                this.applyChanges();
+            });
+        }
 
         return promise;
     }
