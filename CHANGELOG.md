@@ -1,5 +1,16 @@
 # Changes to Inspire Tree
 
+# 1.11
+
+- Added `Tree.isEventMuted(string eventName)`.
+- Added `TreeNodes.remove(TreeNode node)`.
+- Added deferred loading.
+- Added deferred rendering.
+- Added a pagination object as a fourth argument to data loader functions.
+- Added a `checked` state (and appropriate events). Checkboxes are driven from this state which may be controlled separately from `selected` states.
+- Fixed render issue due to node removal detection.
+- Fixed treating array of muted events as a boolean.
+
 # 1.10.6
 
 - Added `TreeNode.hasLoadedChildren` to determine if children of a node have been loaded yet.

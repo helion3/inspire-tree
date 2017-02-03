@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.10.6
+ * Inspire Tree v1.11.0
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -77,15 +77,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _collectionToModel = __webpack_require__(2);
 
-	var _eventemitter = __webpack_require__(13);
+	var _eventemitter = __webpack_require__(14);
 
-	var _es6Promise = __webpack_require__(7);
+	var _es6Promise = __webpack_require__(8);
 
-	var _standardizePromise = __webpack_require__(12);
+	var _standardizePromise = __webpack_require__(13);
 
 	var _treenode = __webpack_require__(6);
 
-	var _treenodes = __webpack_require__(11);
+	var _treenodes = __webpack_require__(12);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96,7 +96,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	// CSS
-	__webpack_require__(14);
+	__webpack_require__(15);
 
 	/**
 	 * Maps a method to the root TreeNodes collection.
@@ -142,7 +142,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Assign defaults
 	        tree.config = _.defaultsDeep({}, opts, {
 	            allowLoadEvents: [],
+	            checkbox: {
+	                autoCheckChildren: true
+	            },
 	            contextMenu: false,
+	            data: false,
+	            dom: {
+	                autoLoadMore: true,
+	                deferredRendering: false,
+	                nodeHeight: 25,
+	                showCheckboxes: false
+	            },
 	            dragTargets: false,
 	            editable: false,
 	            editing: {
@@ -152,6 +162,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            },
 	            nodes: {
 	                resetStateOnRestore: true
+	            },
+	            pagination: {
+	                limit: -1
 	            },
 	            renderer: false,
 	            search: false,
@@ -166,22 +179,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	            },
 	            showCheckboxes: false,
 	            sort: false,
-	            tabindex: -1
+	            tabindex: -1,
+	            target: false
 	        });
 
 	        // If checkbox mode, we must force auto-selecting children
 	        if (tree.config.selection.mode === 'checkbox') {
 	            tree.config.selection.autoSelectChildren = true;
-	            tree.config.selection.autoDeselect = false;
 
-	            if (!_.isBoolean(opts.showCheckboxes)) {
-	                tree.config.showCheckboxes = true;
+	            // If user didn't specify showCheckboxes,
+	            // but is using checkbox selection mode,
+	            // enable it automatically.
+	            if (!_.isBoolean(_.get(opts, 'dom.showCheckboxes'))) {
+	                tree.config.dom.showCheckboxes = true;
 	            }
+
+	            // In checkbox mode, checked=selected
+	            tree.on('node.checked', function (node) {
+	                if (!node.selected()) {
+	                    node.select(true);
+	                }
+	            });
+
+	            tree.on('node.selected', function (node) {
+	                if (!node.checked()) {
+	                    node.check(true);
+	                }
+	            });
+
+	            tree.on('node.unchecked', function (node) {
+	                if (node.selected()) {
+	                    node.deselect(true);
+	                }
+	            });
+
+	            tree.on('node.deselected', function (node) {
+	                if (node.checked()) {
+	                    node.uncheck(true);
+	                }
+	            });
 	        }
 
 	        // If auto-selecting children, we must force multiselect
 	        if (tree.config.selection.autoSelectChildren) {
 	            tree.config.selection.multiple = true;
+	            tree.config.selection.autoDeselect = false;
 	        }
 
 	        // Treat editable as full edit mode
@@ -201,6 +243,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            indeterminate: false,
 	            loading: false,
 	            removed: false,
+	            rendered: false,
 	            selectable: true,
 	            selected: false
 	        };
@@ -208,11 +251,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Cache some configs
 	        tree.allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
 	        tree.isDynamic = _.isFunction(tree.config.data);
+	        tree.usesNativeDOM = (true);
 
 	        // Override emitter so we can better control flow
 	        var emit = tree.emit;
-	        tree.emit = function () {
-	            if (!tree.muted()) {
+	        tree.emit = function (eventName) {
+	            if (!tree.isEventMuted(eventName)) {
 	                // Duck-type for a DOM event
 	                if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
 	                    var event = arguments[1];
@@ -230,7 +274,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // allows us to exclude this library from our build.
 	        // For those doing their own rendering, it's useless.
 	        if (true) {
-	            tree.dom = new (__webpack_require__(19))(tree);
+	            tree.dom = new (__webpack_require__(20))(tree);
 	        }
 
 	        // Validation
@@ -378,6 +422,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'canAutoDeselect',
 	        value: function canAutoDeselect() {
 	            return this.config.selection.autoDeselect && !this.preventDeselection;
+	        }
+
+	        /**
+	         * Query for all checked nodes.
+	         *
+	         * @category Tree
+	         * @param {boolean} full Retain full hiearchy.
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'checked',
+	        value: function checked() {
+	            return map(this, 'checked', arguments);
 	        }
 
 	        /**
@@ -828,6 +886,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
+	         * Check if an event is currently muted.
+	         *
+	         * @category Tree
+	         * @param {string} eventName Event name.
+	         * @return {boolean} If event is muted.
+	         */
+
+	    }, {
+	        key: 'isEventMuted',
+	        value: function isEventMuted(eventName) {
+	            if (_.isBoolean(this.muted())) {
+	                return this.muted();
+	            }
+
+	            return _.includes(this.muted(), eventName);
+	        }
+
+	        /**
 	         * Get the most recently selected node, if any.
 	         *
 	         * @category Tree
@@ -857,7 +933,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var tree = this;
 
 	            var promise = new _es6Promise.Promise(function (resolve, reject) {
-	                var complete = function complete(nodes) {
+	                var complete = function complete(nodes, totalNodes) {
+	                    tree.dom.pagination.total = nodes.length;
+
+	                    if (_.parseInt(totalNodes) > nodes.length) {
+	                        tree.dom.pagination.total = _.parseInt(totalNodes);
+	                    }
+
 	                    // Delay event for synchronous loader. Otherwise it fires
 	                    // before the user has a chance to listen.
 	                    if (!tree.initialized && _.isArray(nodes)) {
@@ -868,12 +950,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        tree.emit('data.loaded', nodes);
 	                    }
 
-	                    // Clear and call rendering on existing data
-	                    if (tree.model.length > 0) {
-	                        tree.removeAll();
-	                    }
-
-	                    tree.model = (0, _collectionToModel.collectionToModel)(tree, nodes);
+	                    // Concat newly loaded nodes
+	                    tree.model = tree.model.concat((0, _collectionToModel.collectionToModel)(tree, nodes));
 
 	                    if (tree.config.selection.require && !tree.selected().length) {
 	                        tree.selectFirstAvailableNode();
@@ -904,7 +982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                // Data loader requires a caller/callback
 	                else if (_.isFunction(loader)) {
-	                        var resp = loader(null, complete, reject);
+	                        var resp = loader(null, complete, reject, tree.dom.pagination);
 
 	                        // Loader returned its own object
 	                        if (resp) {
@@ -1033,7 +1111,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'reload',
 	        value: function reload() {
+	            this.removeAll();
+
 	            return this.load(this.opts.data || this.config.data);
+	        }
+
+	        /**
+	         * Removes a direct descendant node.
+	         *
+	         * @category Tree
+	         * @param {TreeNode} node Node object.
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'remove',
+	        value: function remove() {
+	            return map(this, 'remove', arguments);
 	        }
 
 	        /**
@@ -1434,7 +1528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _treenodes = __webpack_require__(11);
+	var _treenodes = __webpack_require__(12);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1506,7 +1600,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function objectToNode(tree, object, parent) {
 	    // Create or type-ensure ID
-	    object.id = object.id || _uuid2.default.v4();
+	    object.id = object.id || (0, _uuid2.default)();
 	    if (typeof object.id !== 'string') {
 	        object.id = object.id.toString();
 	    }
@@ -1528,6 +1622,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    state.selectable = typeof state.selectable === 'boolean' ? state.selectable : tree.defaultState.selectable;
 
 	    // Disabled by default
+	    state.checked = typeof state.checked === 'boolean' ? state.checked : false;
 	    state.editable = typeof state.editable === 'boolean' ? state.editable : tree.defaultState.editable;
 	    state.editing = typeof state.editing === 'boolean' ? state.editing : tree.defaultState.editing;
 	    state.focused = state.focused || tree.defaultState.focused;
@@ -1535,6 +1630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    state.indeterminate = state.indeterminate || tree.defaultState.indeterminate;
 	    state.loading = state.loading || tree.defaultState.loading;
 	    state.removed = state.removed || tree.defaultState.removed;
+	    state.rendered = state.rendered || tree.defaultState.rendered;
 	    state.selected = state.selected || tree.defaultState.selected;
 
 	    // Save parent, if any.
@@ -1771,53 +1867,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
+	var _baseStateChange = __webpack_require__(7);
+
 	var _collectionToModel = __webpack_require__(2);
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _es6Promise = __webpack_require__(7);
+	var _es6Promise = __webpack_require__(8);
 
-	var _recurseDown2 = __webpack_require__(10);
+	var _recurseDown2 = __webpack_require__(11);
 
-	var _standardizePromise = __webpack_require__(12);
+	var _standardizePromise = __webpack_require__(13);
 
-	var _treenodes = __webpack_require__(11);
+	var _treenodes = __webpack_require__(12);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	/**
-	 * Stores repetitive state change logic for most state methods.
-	 *
-	 * @private
-	 * @param {string} prop State property name.
-	 * @param {boolean} value New state value.
-	 * @param {string} verb Verb used for events.
-	 * @param {TreeNode} node Node object.
-	 * @param {string} deep Optional name of state method to call recursively.
-	 * @return {TreeNode} Node object.
-	 */
-	function baseStateChange(prop, value, verb, node, deep) {
-	    if (node.state(prop) !== value) {
-	        if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
-	            resetState(node);
-	        }
-
-	        node.state(prop, value);
-
-	        node._tree.emit('node.' + verb, node);
-
-	        if (deep && node.hasChildren()) {
-	            node.getChildren().invokeDeep(deep);
-	        }
-
-	        node.markDirty();
-	        node._tree.dom.applyChanges();
-	    }
-
-	    return node;
-	};
 
 	/**
 	 * Helper method to clone an ITree config object.
@@ -1841,21 +1907,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    return clone;
-	}
-
-	/**
-	 * Reset a node's state to the tree default.
-	 *
-	 * @private
-	 * @param {TreeNode} node Node object.
-	 * @returns {TreeNode} Node object.
-	 */
-	function resetState(node) {
-	    _.each(node._tree.defaultState, function (val, prop) {
-	        node.state(prop, val);
-	    });
-
-	    return node;
 	}
 
 	/**
@@ -1967,11 +2018,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function blur() {
 	            this.state('editing', false);
 
-	            return baseStateChange('focused', false, 'blurred', this);
+	            return (0, _baseStateChange.baseStateChange)('focused', false, 'blurred', this);
 	        }
 	    }, {
-	        key: 'clean',
+	        key: 'check',
 
+
+	        /**
+	         * Marks this node as checked.
+	         *
+	         * @category TreeNode
+	         * @param {boolean} shallow Skip auto-checking children.
+	         * @return {TreeNode} Node object.
+	         */
+	        value: function check(shallow) {
+	            this._tree.dom.batch();
+
+	            // Will we automatically apply state changes to our children
+	            var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+
+	            (0, _baseStateChange.baseStateChange)('checked', true, 'checked', this, deep);
+
+	            // Refresh parent
+	            if (this.hasParent()) {
+	                this.getParent().refreshIndeterminateState();
+	            }
+
+	            this._tree.dom.end();
+
+	            return this;
+	        }
+	    }, {
+	        key: 'checked',
+
+
+	        /**
+	         * Get whether this node is checked.
+	         *
+	         * @category TreeNode
+	         * @return {boolean} Get if node checked.
+	         */
+	        value: function checked() {
+	            return this.state('checked');
+	        }
 
 	        /**
 	         * Hides parents without any visible children.
@@ -1979,6 +2068,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @category TreeNode
 	         * @return {TreeNode} Node object.
 	         */
+
+	    }, {
+	        key: 'clean',
 	        value: function clean() {
 	            this.recurseUp(function (node) {
 	                if (node.hasParent()) {
@@ -2016,7 +2108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'collapse',
 	        value: function collapse() {
-	            return baseStateChange('collapsed', true, 'collapsed', this);
+	            return (0, _baseStateChange.baseStateChange)('collapsed', true, 'collapsed', this);
 	        }
 
 	        /**
@@ -2145,36 +2237,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * node, the node will remain in a selected state.
 	         *
 	         * @category TreeNode
-	         * @param {boolean} skipParentIndeterminate Skip refreshing parent indeterminate states.
+	         * @param {boolean} shallow Skip auto-deselecting children.
 	         * @return {TreeNode} Node object.
 	         */
-	        value: function deselect(skipParentIndeterminate) {
+	        value: function deselect(shallow) {
 	            if (this.selected() && (!this._tree.config.selection.require || this._tree.selected().length > 1)) {
-	                var node = this;
 	                this._tree.dom.batch();
 
+	                // Will we apply this state change to our children?
+	                var deep = !shallow && this._tree.config.selection.autoSelectChildren;
+
 	                this.state('indeterminate', false);
-	                baseStateChange('selected', false, 'deselected', this);
-
-	                // If children were auto-selected
-	                if (this._tree.config.selection.autoSelectChildren) {
-	                    // Deselect all children
-	                    if (node.hasChildren()) {
-	                        node.children.each(function (child) {
-	                            child.deselect(true);
-	                        });
-	                    }
-
-	                    if (node.hasParent()) {
-	                        // Set indeterminate state for parent
-	                        if (this._tree.config.showCheckboxes && !skipParentIndeterminate) {
-	                            node.getParent().refreshIndeterminateState();
-	                        } else {
-	                            // Deselect parent node
-	                            baseStateChange('selected', false, 'deselected', node.getParent());
-	                        }
-	                    }
-	                }
+	                (0, _baseStateChange.baseStateChange)('selected', false, 'deselected', this, deep);
 
 	                this._tree.dom.end();
 	            }
@@ -2453,7 +2527,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'hide',
 	        value: function hide() {
-	            var node = baseStateChange('hidden', true, 'hidden', this);
+	            var node = (0, _baseStateChange.baseStateChange)('hidden', true, 'hidden', this);
 
 	            // Update children
 	            if (node.hasChildren()) {
@@ -2555,7 +2629,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var node = this;
 
 	            return new _es6Promise.Promise(function (resolve, reject) {
-	                if (!node._tree.isDynamic || node.children !== true) {
+	                if (!node._tree.isDynamic || !_.isArrayLike(node.children) && node.children !== true) {
 	                    reject(new Error('Node does not have or support dynamic children.'));
 	                }
 
@@ -2563,10 +2637,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	                node.markDirty();
 	                node._tree.dom.applyChanges();
 
-	                var complete = function complete(results) {
+	                var complete = function complete(nodes, totalNodes) {
+	                    if (_.parseInt(totalNodes) > nodes.length) {
+	                        node.itree.pagination.total = _.parseInt(totalNodes);
+	                    }
+
 	                    node._tree.dom.batch();
 	                    node.state('loading', false);
-	                    node.children = (0, _collectionToModel.collectionToModel)(node._tree, results, node);
+
+	                    var model = (0, _collectionToModel.collectionToModel)(node._tree, nodes, node);
+	                    if (_.isArrayLike(node.children)) {
+	                        node.children = node.children.concat(model);
+	                    } else {
+	                        node.children = model;
+	                    }
 
 	                    // If using checkbox mode, share selection with newly loaded children
 	                    if (node._tree.config.selection.mode === 'checkbox' && node.selected()) {
@@ -2593,7 +2677,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    node._tree.emit('tree.loaderror', err);
 	                };
 
-	                var loader = node._tree.config.data(node, complete, error);
+	                var loader = node._tree.config.data(node, complete, error, node.itree.pagination);
 
 	                // Data loader is likely a promise
 	                if (_.isObject(loader)) {
@@ -2818,9 +2902,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * Updates the indeterminate state of this node.
 	         *
-	         * Only available when checkbox=true.
-	         * True if some, but not all children are selected.
-	         * False if no children are selected.
+	         * Only available when dom.showCheckboxes=true.
+	         * True if some, but not all children are checked.
+	         * False if no children are checked.
 	         *
 	         * @category TreeNode
 	         * @return {TreeNode} Node object.
@@ -2830,18 +2914,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'refreshIndeterminateState',
 	        value: function refreshIndeterminateState() {
 	            var node = this;
-	            var oldValue = node.state('indeterminate');
+	            var oldValue = node.indeterminate();
 	            node.state('indeterminate', false);
 
-	            if (this._tree.config.showCheckboxes) {
+	            if (this._tree.config.dom.showCheckboxes) {
 	                if (node.hasChildren()) {
 	                    var childrenCount = node.children.length;
 	                    var indeterminate = 0;
-	                    var selected = 0;
+	                    var checked = 0;
 
 	                    node.children.each(function (n) {
-	                        if (n.selected()) {
-	                            selected++;
+	                        if (n.checked()) {
+	                            checked++;
 	                        }
 
 	                        if (n.indeterminate()) {
@@ -2850,11 +2934,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    });
 
 	                    // Set selected if all children are
-	                    node.state('selected', selected === childrenCount);
+	                    if (checked === childrenCount) {
+	                        (0, _baseStateChange.baseStateChange)('checked', true, 'checked', node);
+	                    } else {
+	                        (0, _baseStateChange.baseStateChange)('checked', false, 'unchecked', node);
+	                    }
 
 	                    // Set indeterminate if any children are, or some children are selected
-	                    if (!node.selected()) {
-	                        node.state('indeterminate', indeterminate > 0 || childrenCount > 0 && selected > 0 && selected < childrenCount);
+	                    if (!node.checked()) {
+	                        node.state('indeterminate', indeterminate > 0 || childrenCount > 0 && checked > 0 && checked < childrenCount);
 	                    }
 	                }
 
@@ -2880,24 +2968,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'remove',
 	        value: function remove() {
-	            var node = this;
+	            // Cache parent before we remove the node
+	            var parent = this.getParent();
 
-	            var parent;
-	            if (node.hasParent()) {
-	                parent = node.getParent();
-	            }
+	            // Remove self
+	            this.context().remove(this);
 
-	            var context = parent ? parent.children : this._tree.model;
-	            _.remove(context, { id: node.id });
-
+	            // Refresh parent states
 	            if (parent) {
 	                parent.refreshIndeterminateState();
 	            }
 
-	            var exported = node.toObject();
+	            // Export/event
+	            var exported = this.toObject();
 	            this._tree.emit('node.removed', exported);
-
-	            this._tree.dom.applyChanges();
 
 	            return exported;
 	        }
@@ -2916,6 +3000,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
+	         * Get whether this node has been rendered.
+	         *
+	         * Will be false if deferred rendering is enable and the node has
+	         * not yet been loaded, or if a custom DOM renderer is used.
+	         *
+	         * @category TreeNode
+	         * @return {boolean} Get if node rendered.
+	         */
+
+	    }, {
+	        key: 'rendered',
+	        value: function rendered() {
+	            return this.state('rendered');
+	        }
+
+	        /**
 	         * Restore state if soft-removed.
 	         *
 	         * @category TreeNode
@@ -2925,19 +3025,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'restore',
 	        value: function restore() {
-	            return baseStateChange('removed', false, 'restored', this);
+	            return (0, _baseStateChange.baseStateChange)('removed', false, 'restored', this);
 	        }
 
 	        /**
 	         * Select this node.
 	         *
 	         * @category TreeNode
+	         * @param {boolean} shallow Skip auto-selecting children.
 	         * @return {TreeNode} Node object.
 	         */
 
 	    }, {
 	        key: 'select',
-	        value: function select() {
+	        value: function select(shallow) {
 	            var node = this;
 
 	            if (!node.selected() && node.selectable()) {
@@ -2951,25 +3052,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    node._tree.config.selection.require = oldVal;
 	                }
 
-	                node.state('selected', true);
+	                // Will we apply this state change to our children?
+	                var deep = !shallow && node._tree.config.selection.autoSelectChildren;
 
-	                if (node._tree.config.selection.autoSelectChildren) {
-	                    if (node.hasChildren()) {
-	                        node.children.recurseDown(function (child) {
-	                            baseStateChange('selected', true, 'selected', child);
-	                        });
-	                    }
-
-	                    if (node._tree.config.showCheckboxes && node.hasParent()) {
-	                        node.getParent().refreshIndeterminateState();
-	                    }
-	                }
+	                (0, _baseStateChange.baseStateChange)('selected', true, 'selected', this, deep);
 
 	                // Cache as the last selected node
 	                node._tree._lastSelectedNode = node;
-
-	                // Emit this event
-	                node._tree.emit('node.selected', node);
 
 	                // Mark hierarchy dirty and apply
 	                node.markDirty();
@@ -3034,7 +3123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'show',
 	        value: function show() {
-	            return baseStateChange('hidden', false, 'shown', this);
+	            return (0, _baseStateChange.baseStateChange)('hidden', false, 'shown', this);
 	        }
 
 	        /**
@@ -3057,7 +3146,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (typeof newVal !== 'undefined' && currentVal !== newVal) {
 	                // Update values
 	                this.itree.state[name] = newVal;
-	                this.markDirty();
+
+	                if (name !== 'rendered') {
+	                    this.markDirty();
+	                }
 
 	                // Emit an event
 	                this._tree.emit('node.state.changed', this, name, currentVal, newVal);
@@ -3078,7 +3170,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'softRemove',
 	        value: function softRemove() {
-	            return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
+	            return (0, _baseStateChange.baseStateChange)('removed', true, 'softremoved', this, 'softRemove');
+	        }
+
+	        /**
+	         * Toggles checked state.
+	         *
+	         * @category TreeNode
+	         * @return {TreeNode} Node object.
+	         */
+
+	    }, {
+	        key: 'toggleCheck',
+	        value: function toggleCheck() {
+	            return this.checked() ? this.uncheck() : this.check();
 	        }
 
 	        /**
@@ -3152,20 +3257,48 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
+	         * Unchecks this node.
+	         *
+	         * @category TreeNode
+	         * @param {boolean} shallow Skip auto-unchecking children.
+	         * @return {TreeNode} Node object.
+	         */
+
+	    }, {
+	        key: 'uncheck',
+	        value: function uncheck(shallow) {
+	            this._tree.dom.batch();
+
+	            // Will we apply this state change to our children?
+	            var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+
+	            (0, _baseStateChange.baseStateChange)('checked', false, 'unchecked', this, deep);
+
+	            // Refresh our parent
+	            if (this.hasParent()) {
+	                this.getParent().refreshIndeterminateState();
+	            }
+
+	            this._tree.dom.end();
+
+	            return this;
+	        }
+	    }, {
+	        key: 'visible',
+
+
+	        /**
 	         * Checks whether a node is visible to a user. Returns false
 	         * if it's hidden, or if any ancestor is hidden or collapsed.
 	         *
 	         * @category TreeNode
 	         * @return {boolean} Whether visible.
 	         */
-
-	    }, {
-	        key: 'visible',
 	        value: function visible() {
 	            var node = this;
 
 	            var isVisible = true;
-	            if (node.hidden() || node.removed()) {
+	            if (node.hidden() || node.removed() || this._tree.usesNativeDOM && !node.rendered()) {
 	                isVisible = false;
 	            } else if (node.hasParent()) {
 	                if (node.getParent().collapsed()) {
@@ -3186,6 +3319,67 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.baseStateChange = baseStateChange;
+	/**
+	 * Reset a node's state to the tree default.
+	 *
+	 * @private
+	 * @param {TreeNode} node Node object.
+	 * @returns {TreeNode} Node object.
+	 */
+	function resetState(node) {
+	    _.each(node._tree.defaultState, function (val, prop) {
+	        node.state(prop, val);
+	    });
+
+	    return node;
+	}
+
+	/**
+	 * Stores repetitive state change logic for most state methods.
+	 *
+	 * @private
+	 * @param {string} prop State property name.
+	 * @param {boolean} value New state value.
+	 * @param {string} verb Verb used for events.
+	 * @param {TreeNode} node Node object.
+	 * @param {string} deep Optional name of state method to call recursively.
+	 * @return {TreeNode} Node object.
+	 */
+	function baseStateChange(prop, value, verb, node, deep) {
+	    if (node.state(prop) !== value) {
+	        node._tree.dom.batch();
+
+	        if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
+	            resetState(node);
+	        }
+
+	        node.state(prop, value);
+
+	        node._tree.emit('node.' + verb, node);
+
+	        if (deep && node.hasChildren()) {
+	            node.children.recurseDown(function (child) {
+	                baseStateChange(prop, value, verb, child);
+	            });
+	        }
+
+	        node.markDirty();
+	        node._tree.dom.end();
+	    }
+
+	    return node;
+	};
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -3327,7 +3521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function attemptVertx() {
 	    try {
 	      var r = require;
-	      var vertx = __webpack_require__(9);
+	      var vertx = __webpack_require__(10);
 	      vertxNext = vertx.runOnLoop || vertx.runOnContext;
 	      return useVertxTimer();
 	    } catch (e) {
@@ -4347,10 +4541,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Promise;
 	});
 	//# sourceMappingURL=es6-promise.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), (function() { return this; }())))
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4536,13 +4730,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4558,7 +4752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _treenode = __webpack_require__(6);
 
-	var _treenodes = __webpack_require__(11);
+	var _treenodes = __webpack_require__(12);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -4594,7 +4788,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4614,9 +4808,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _es6Promise = __webpack_require__(7);
+	var _es6Promise = __webpack_require__(8);
 
-	var _recurseDown2 = __webpack_require__(10);
+	var _recurseDown2 = __webpack_require__(11);
 
 	var _treenode = __webpack_require__(6);
 
@@ -4820,6 +5014,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'blurDeep',
 	        value: function blurDeep() {
 	            return this.invokeDeep('blur');
+	        }
+
+	        /**
+	         * Query for all checked nodes.
+	         *
+	         * @category TreeNodes
+	         * @param {boolean} full Retain full hiearchy.
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'checked',
+	        value: function checked(full) {
+	            return baseStatePredicate.call(this, 'checked', full);
 	        }
 
 	        /**
@@ -5492,6 +5700,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
+	         * Removes a node from this list.
+	         *
+	         * @category TreeNodes
+	         * @param {TreeNode} node Node object.
+	         * @return {TreeNodes} Resulting nodes.
+	         */
+
+	    }, {
+	        key: 'remove',
+	        value: function remove(node) {
+	            _.remove(this, { id: node.id });
+
+	            if (this._context) {
+	                this._context.markDirty();
+	            }
+
+	            this._tree.dom.applyChanges();
+
+	            return this;
+	        }
+
+	        /**
 	         * Query for all soft-removed nodes.
 	         *
 	         * @category TreeNodes
@@ -5736,7 +5966,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5750,7 +5980,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
-	var _es6Promise = __webpack_require__(7);
+	var _es6Promise = __webpack_require__(8);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -5781,7 +6011,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -6510,18 +6740,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 	"use strict";
 
 /***/ },
-/* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
-/* 19 */
+/* 19 */,
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6538,17 +6768,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
-	var _virtualDom = __webpack_require__(20);
+	var _virtualDom = __webpack_require__(21);
 
-	var _DOMReference = __webpack_require__(55);
+	var _DOMReference = __webpack_require__(56);
 
-	var _VCache = __webpack_require__(56);
+	var _uuid = __webpack_require__(4);
 
-	var _VArrayDirtyCompare = __webpack_require__(57);
+	var _uuid2 = _interopRequireDefault(_uuid);
 
-	var _VDirtyCompare = __webpack_require__(58);
+	var _VCache = __webpack_require__(57);
+
+	var _VArrayDirtyCompare = __webpack_require__(58);
 
 	var _VStateCompare = __webpack_require__(59);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -6587,6 +6821,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._tree = tree;
 	        this.batching = 0;
 	        this.dropTargets = [];
+	        this.$scrollLayer;
 
 	        // Cache because we use in loops
 	        this.isDynamic = _.isFunction(this._tree.config.data);
@@ -6630,6 +6865,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function attach(target) {
 	            var dom = this;
 	            dom.$target = dom.getElement(target);
+	            dom.$scrollLayer = dom.getScrollableAncestor(dom.$target);
 
 	            if (!dom.$target) {
 	                throw new Error('No valid element to attach to.');
@@ -6687,6 +6923,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            });
 
+	            // Set pagination limits
+	            this.pagination = {
+	                limit: this.getNodesLimit()
+	            };
+
+	            var limit = this.pagination.limit;
+	            dom._tree.on('model.loaded', function () {
+	                // Set context-specific pagination
+	                dom._tree.nodes().recurseDown(function (node) {
+	                    if (node.children) {
+	                        node.itree.pagination = {
+	                            limit: limit,
+	                            total: node.hasChildren() ? node.children.length : -1
+	                        };
+	                    }
+	                });
+	            });
+
+	            dom._tree.on('node.added', function (node) {
+	                if (node.children) {
+	                    node.itree.pagination = {
+	                        limit: limit,
+	                        total: node.hasChildren() ? node.children.length : -1
+	                    };
+	                }
+	            });
+
+	            // Listen for scrolls for automatic loading
+	            if ((dom._tree.config.dom.deferredRendering || dom._tree.config.deferredLoading) && dom._tree.config.dom.autoLoadMore) {
+	                dom.$target.addEventListener('scroll', _.throttle(dom.scrollListener.bind(dom), 20));
+	            }
+
 	            dom.$target.inspireTree = dom._tree;
 	        }
 
@@ -6710,7 +6978,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Clear page text selection, primarily after a click event which
-	         * nativelt selects a range of text.
+	         * natively selects a range of text.
 	         *
 	         * @category DOM
 	         * @private
@@ -6757,19 +7025,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var dom = this;
 
 	            return new _VCache.VCache({
-	                selected: node.selected(),
+	                checked: node.checked(),
 	                indeterminate: node.indeterminate()
 	            }, _VStateCompare.VStateCompare, function () {
 	                return (0, _virtualDom.h)('input', {
 	                    attributes: {
 	                        type: 'checkbox'
 	                    },
-	                    checked: node.selected(),
+	                    checked: node.checked(),
 	                    indeterminate: node.indeterminate(),
 	                    onclick: function onclick(event) {
 	                        // Define our default handler
 	                        var handler = function handler() {
-	                            node.toggleSelect();
+	                            node.toggleCheck();
 	                        };
 
 	                        // Emit an event with our forwarded MouseEvent, node, and default handler
@@ -6843,16 +7111,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function createDraggableElement(element, event) {
 	            this.$dragNode = this.nodeFromTitleDOMElement(element);
 
-	            var offset = this.getAbsoluteOffset(element);
-	            var diffX = event.clientX - offset.left;
-	            var diffY = event.clientY - offset.top;
+	            var rect = element.getBoundingClientRect();
+	            var diffX = event.clientX - rect.left;
+	            var diffY = event.clientY - rect.top;
 
 	            this.dragHandleOffset = { left: diffX, top: diffY };
 
 	            this.$dragElement = element.cloneNode(true);
 	            this.$dragElement.className += ' dragging';
-	            this.$dragElement.style.top = offset.top + 'px';
-	            this.$dragElement.style.left = offset.left + 'px';
+	            this.$dragElement.style.top = rect.top + 'px';
+	            this.$dragElement.style.left = rect.left + 'px';
 	            this.$target.appendChild(this.$dragElement);
 	        }
 
@@ -6956,8 +7224,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var dom = this;
 
 	            return new _VCache.VCache({
-	                dirty: node.itree.dirty
-	            }, _VDirtyCompare.VDirtyCompare, function () {
+	                dirty: node.itree.dirty,
+	                text: node.text
+	            }, _VStateCompare.VStateCompare, function () {
+	                // Mark as rendered
+	                node.state('rendered', true);
+
 	                var attributes = node.itree.li.attributes || {};
 	                node.itree.ref = new _DOMReference.DOMReference();
 
@@ -7013,7 +7285,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                contents.push((0, _virtualDom.h)('div.wholerow'));
 
 	                if (node.hasChildren()) {
-	                    contents.push(dom.createOrderedList(node.children));
+	                    contents.push(dom.createOrderedList(node.children, node));
 	                } else if (dom.isDynamic && !node.hasLoadedChildren()) {
 	                    contents.push(dom.createEmptyListItemNode(true));
 	                } else if (dom.isDynamic) {
@@ -7024,7 +7296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // http://jsperf.com/object-keys-to-classnames
 	                var classNames = '.';
 	                var state = node.itree.state;
-	                _.each(Object.keys(state), function (key) {
+	                _.each(state, function (value, key) {
 	                    if (state[key]) {
 	                        classNames += '.' + key;
 	                    }
@@ -7080,16 +7352,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'createListItemNodes',
 	        value: function createListItemNodes(nodes) {
-	            var dom = this;
-	            var domNodes = [];
+	            var _this = this;
 
-	            _.each(nodes, function (node) {
+	            return _.map(nodes, function (node) {
 	                // We can't just remove the node if soft-removed
 	                // https://github.com/Matt-Esch/virtual-dom/issues/333
-	                domNodes.push(dom.createListItemNode(node));
+	                return _this.createListItemNode(node);
 	            });
+	        }
 
-	            return domNodes;
+	        /**
+	         * Creates a list item node when a dynamic node returns no children.
+	         *
+	         * Cannot be clicked or expanded.
+	         *
+	         * @private
+	         * @param {boolean} unloaded If data has yet to load.
+	         * @return {object} List Item node.
+	         */
+
+	    }, {
+	        key: 'createLoadingTextNode',
+	        value: function createLoadingTextNode() {
+	            return new _VCache.VCache({
+	                text: (0, _uuid2.default)()
+	            }, _VStateCompare.VStateCompare, function () {
+	                return (0, _virtualDom.h)('li.leaf', [(0, _virtualDom.h)('span.title.icon.icon-more', ['Loading...'])]);
+	            });
+	        }
+
+	        /**
+	         * Creates an anchor that loads more nodes when clicked.
+	         *
+	         * Cannot be selected or expanded.
+	         *
+	         * @private
+	         * @param {TreeNode} context Parent node or undefined for root.
+	         * @return {object} List Item node.
+	         */
+
+	    }, {
+	        key: 'createLoadMoreNode',
+	        value: function createLoadMoreNode(context) {
+	            var dom = this;
+
+	            return new _VCache.VCache({
+	                text: (0, _uuid2.default)()
+	            }, _VStateCompare.VStateCompare, function () {
+	                return (0, _virtualDom.h)('li.leaf.detached', [(0, _virtualDom.h)('a.title.icon.icon-more.load-more', {
+	                    onclick: function onclick(event) {
+	                        event.preventDefault();
+
+	                        dom.loadMore(context, event);
+	                    }
+	                }, ['Load More'])]);
+	            });
 	        }
 
 	        /**
@@ -7097,20 +7414,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * provided data nodes.
 	         *
 	         * @private
-	         * @param {array} nodes Data nodes.
+	         * @param {TreeNodes} nodes Data nodes.
+	         * @param {TreeNode} context Parent node, if any.
 	         * @return {object} Oredered List node.
 	         */
 
 	    }, {
 	        key: 'createOrderedList',
-	        value: function createOrderedList(nodes) {
-	            var dom = this;
+	        value: function createOrderedList(nodes, context) {
+	            var _this2 = this;
+
+	            var opts = {};
+	            var renderNodes = nodes;
+	            var pagination = this.getContextPagination(context);
+
+	            // If rendering deferred, chunk the nodes client-side
+	            if (this._tree.config.dom.deferredRendering) {
+	                // Determine the limit. Either for our current context or for the root level
+	                var limit = pagination.limit || this.getNodesLimit();
+
+	                // Slice the current nodes by this context's pagination
+	                renderNodes = _.slice(nodes, 0, limit);
+	            }
 
 	            return new _VCache.VCache({
-	                nodes: nodes,
-	                nodeCount: nodes.length
+	                nodes: renderNodes,
+	                nodeCount: renderNodes.length,
+	                loading: this.loading
 	            }, _VArrayDirtyCompare.VArrayDirtyCompare, function () {
-	                return (0, _virtualDom.h)('ol', dom.createListItemNodes(nodes));
+	                var contents = [_this2.createListItemNodes(renderNodes)];
+
+	                // If deferred rendering and we have nodes remaining, show a Load More... link
+	                if ((_this2._tree.config.dom.deferredRendering || _this2._tree.config.deferredLoading) && pagination.limit < pagination.total) {
+	                    if (!_this2.loading) {
+	                        contents.push(_this2.createLoadMoreNode(context));
+	                    } else {
+	                        contents.push(_this2.createLoadingTextNode());
+	                    }
+	                }
+
+	                return (0, _virtualDom.h)('ol', opts, contents);
 	            });
 	        }
 
@@ -7138,7 +7481,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var attributes = node.itree.a.attributes || {};
 	                var classNames = ['title', 'icon'];
 
-	                if (!dom._tree.config.showCheckboxes) {
+	                if (!dom._tree.config.dom.showCheckboxes) {
 	                    var folder = node.expanded() ? 'icon-folder-open' : 'icon-folder';
 	                    classNames.push(current.state.icon || (hasVisibleChildren ? folder : 'icon-file-empty'));
 	                }
@@ -7254,12 +7597,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var hasVisibleChildren = !dom.isDynamic ? node.hasVisibleChildren() : Boolean(node.children);
 
 	            return new _VCache.VCache({
+	                checked: node.checked(),
 	                collapsed: node.collapsed(),
 	                dirty: node.itree.dirty,
 	                editing: node.editing(),
 	                hasVisibleChildren: hasVisibleChildren,
 	                indeterminate: node.indeterminate(),
-	                selected: node.selected()
+	                selected: node.selected(),
+	                text: node.text
 	            }, _VStateCompare.VStateCompare, function () {
 	                var contents = [];
 
@@ -7267,7 +7612,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    contents.push(dom.createToggleAnchor(node));
 	                }
 
-	                if (dom._tree.config.showCheckboxes) {
+	                if (dom._tree.config.dom.showCheckboxes) {
 	                    contents.push(dom.createCheckbox(node));
 	                }
 
@@ -7320,33 +7665,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
-	         * Calculcates the absolute offset values of an element.
+	         * Get the pagination for the given context node, or root if undefined.
 	         *
-	         * @private
-	         * @param {HTMLElement} element HTML Element.
-	         * @return {object} Object with top/left values.
+	         * @param {TreeNode} context Context node.
+	         * @return {object} Pagination configuration object.
 	         */
 
 	    }, {
-	        key: 'getAbsoluteOffset',
-	        value: function getAbsoluteOffset(element) {
-	            var x = 0;
-	            var y = 0;
-
-	            while (element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop)) {
-	                x += element.offsetLeft - element.scrollLeft;
-	                y += element.offsetTop - element.scrollTop;
-	                element = element.offsetParent;
-	            }
-
-	            // IE10 stores scroll values on documentElement instead.
-	            // Due to unit testing, document may not always exist
-	            if (typeof document !== 'undefined') {
-	                x -= document.documentElement.scrollLeft;
-	                y -= document.documentElement.scrollTop;
-	            }
-
-	            return { top: y, left: x };
+	        key: 'getContextPagination',
+	        value: function getContextPagination(context) {
+	            return context ? _.get(context, 'itree.pagination') : this.pagination;
 	        }
 
 	        /**
@@ -7375,6 +7703,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            return $element;
+	        }
+
+	        /**
+	         * Get the max nodes per "page" we'll allow. Defaults to how many nodes can fit.
+	         *
+	         * @private
+	         * @return {integer} Node count
+	         */
+
+	    }, {
+	        key: 'getNodesLimit',
+	        value: function getNodesLimit() {
+	            var limit = this._tree.config.pagination.limit;
+	            return limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
 	        }
 
 	        /**
@@ -7431,6 +7773,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    default:
 	                }
 	            }
+	        }
+
+	        /**
+	         * Loads/renders additional nodes for a given context, or the root.
+	         *
+	         * @private
+	         * @param {TreeNode} context Parent node, or none for root.
+	         * @param {Event} event Click or scroll event which triggered this call.
+	         * @return {Promise} Resolves with request results.
+	         */
+
+	    }, {
+	        key: 'loadMore',
+	        value: function loadMore(context, event) {
+	            var _this3 = this;
+
+	            if (this.loading) {
+	                return;
+	            }
+
+	            var pagination = this.getContextPagination(context);
+	            var promise;
+
+	            // Set loading flag, prevents repeat requests
+	            this.loading = true;
+	            this.batch();
+
+	            // Mark this context as dirty since we'll update text/tree nodes
+	            _.invoke(context, 'markDirty');
+
+	            // Increment the pagination
+	            pagination.limit += this.getNodesLimit();
+
+	            // Emit an event
+	            this._tree.emit('node.paginate', context, pagination, event);
+
+	            if (this._tree.config.deferredLoading) {
+	                if (context) {
+	                    promise = context.loadChildren();
+	                } else {
+	                    promise = this._tree.load(this._tree.config.data);
+	                }
+	            } else {
+	                this.loading = false;
+	            }
+
+	            this.end();
+
+	            // Clear the loading flag
+	            if (this._tree.config.deferredLoading) {
+	                promise.then(function () {
+	                    _this3.loading = false;
+	                    _this3.applyChanges();
+	                }).catch(function () {
+	                    this.loading = false;
+	                    this.applyChanges();
+	                });
+	            }
+
+	            return promise;
 	        }
 
 	        /**
@@ -7604,45 +8006,81 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'renderNodes',
 	        value: function renderNodes(nodes) {
-	            var dom = this;
-
-	            if (dom.rendering) {
+	            if (this.rendering) {
 	                return;
 	            }
 
-	            dom.rendering = true;
+	            this.rendering = true;
 
-	            var newOl = dom.createOrderedList(nodes || dom._tree.nodes());
+	            var newOl = this.createOrderedList(nodes || this._tree.nodes());
 
-	            if (!dom.rootNode) {
-	                dom.rootNode = (0, _virtualDom.create)(newOl);
-	                dom.$target.appendChild(this.rootNode);
+	            if (!this.rootNode) {
+	                this.rootNode = (0, _virtualDom.create)(newOl);
+	                this.$target.appendChild(this.rootNode);
 
-	                if (dom._tree.config.editing.add) {
-	                    dom.$target.appendChild((0, _virtualDom.create)(new _VCache.VCache({}, _VArrayDirtyCompare.VArrayDirtyCompare, function () {
+	                if (this._tree.config.editing.add) {
+	                    this.$target.appendChild((0, _virtualDom.create)(new _VCache.VCache({}, _VArrayDirtyCompare.VArrayDirtyCompare, function () {
 	                        return (0, _virtualDom.h)('a.btn.icon.icon-plus', {
 	                            attributes: {
 	                                title: 'Add a new root node'
 	                            },
 	                            onclick: function onclick() {
-	                                dom._tree.focused().blur();
+	                                this._tree.focused().blur();
 
-	                                dom._tree.addNode(blankNode());
+	                                this._tree.addNode(blankNode());
 	                            }
 	                        });
 	                    })));
 	                }
 	            } else {
-	                var patches = (0, _virtualDom.diff)(dom.ol, newOl);
-	                dom.rootNode = (0, _virtualDom.patch)(dom.rootNode, patches);
+	                var patches = (0, _virtualDom.diff)(this.ol, newOl);
+	                this.rootNode = (0, _virtualDom.patch)(this.rootNode, patches);
 	            }
 
-	            dom.ol = newOl;
-	            dom.rendering = false;
+	            this.ol = newOl;
+	            this.rendering = false;
 	        }
 	    }, {
-	        key: 'scrollSelectedIntoView',
+	        key: 'scrollListener',
 
+
+	        /**
+	         * Listens for scroll events, to automatically trigger
+	         * Load More links when they're scrolled into view.
+	         *
+	         * @category DOM
+	         * @private
+	         * @param {Event} event Scroll event.
+	         * @return {void}
+	         */
+	        value: function scrollListener(event) {
+	            var _this4 = this;
+
+	            if (!this.rendering && !this.loading) {
+	                // Get the bounding rect of the scroll layer
+	                var rect = this.$scrollLayer.getBoundingClientRect();
+
+	                // Find all load-more links
+	                var links = document.querySelectorAll('.load-more');
+	                _.each(links, function (link) {
+	                    // Look for load-more links which overlap our "viewport"
+	                    var r = link.getBoundingClientRect();
+	                    var overlap = !(rect.right < r.left || rect.left > r.right || rect.bottom < r.top || rect.top > r.bottom);
+
+	                    if (overlap) {
+	                        // Auto-trigger Load More links
+	                        var context;
+
+	                        var $parent = link.parentNode.parentNode.parentNode;
+	                        if ($parent.tagName === 'LI') {
+	                            context = _this4._tree.node($parent.getAttribute('data-uid'));
+	                        }
+
+	                        _this4.loadMore(context, event);
+	                    }
+	                });
+	            }
+	        }
 
 	        /**
 	         * Scroll the first selected node into view.
@@ -7651,16 +8089,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         * @return {void}
 	         */
+
+	    }, {
+	        key: 'scrollSelectedIntoView',
 	        value: function scrollSelectedIntoView() {
 	            var $tree = document.querySelector('.inspire-tree');
 	            var $selected = $tree.querySelector('.selected');
 
-	            if ($selected) {
-	                var $container = this.getScrollableAncestor($tree);
-
-	                if ($container) {
-	                    $container.scrollTop = $selected.offsetTop;
-	                }
+	            if ($selected && dom.$scrollLayer) {
+	                dom.$scrollLayer.scrollTop = $selected.offsetTop;
 	            }
 	        }
 	    }]);
@@ -7672,17 +8109,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var diff = __webpack_require__(21);
-	var patch = __webpack_require__(34);
-	var h = __webpack_require__(43);
-	var create = __webpack_require__(54);
-	var VNode = __webpack_require__(45);
-	var VText = __webpack_require__(46);
+	var diff = __webpack_require__(22);
+	var patch = __webpack_require__(35);
+	var h = __webpack_require__(44);
+	var create = __webpack_require__(55);
+	var VNode = __webpack_require__(46);
+	var VText = __webpack_require__(47);
 
 	module.exports = {
 	    diff: diff,
@@ -7694,31 +8131,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var diff = __webpack_require__(22);
-
-	module.exports = diff;
-
-/***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var isArray = __webpack_require__(23);
+	var diff = __webpack_require__(23);
 
-	var VPatch = __webpack_require__(24);
-	var isVNode = __webpack_require__(26);
-	var isVText = __webpack_require__(27);
-	var isWidget = __webpack_require__(28);
-	var isThunk = __webpack_require__(29);
-	var handleThunk = __webpack_require__(30);
+	module.exports = diff;
 
-	var diffProps = __webpack_require__(31);
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var isArray = __webpack_require__(24);
+
+	var VPatch = __webpack_require__(25);
+	var isVNode = __webpack_require__(27);
+	var isVText = __webpack_require__(28);
+	var isWidget = __webpack_require__(29);
+	var isThunk = __webpack_require__(30);
+	var handleThunk = __webpack_require__(31);
+
+	var diffProps = __webpack_require__(32);
 
 	module.exports = diff;
 
@@ -8114,7 +8551,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8129,12 +8566,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var version = __webpack_require__(25);
+	var version = __webpack_require__(26);
 
 	VirtualPatch.NONE = 0;
 	VirtualPatch.VTEXT = 1;
@@ -8158,7 +8595,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	VirtualPatch.prototype.type = "VirtualPatch";
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8166,12 +8603,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = "2";
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var version = __webpack_require__(25);
+	var version = __webpack_require__(26);
 
 	module.exports = isVirtualNode;
 
@@ -8180,12 +8617,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var version = __webpack_require__(25);
+	var version = __webpack_require__(26);
 
 	module.exports = isVirtualText;
 
@@ -8194,7 +8631,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8206,7 +8643,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8218,15 +8655,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var isVNode = __webpack_require__(26);
-	var isVText = __webpack_require__(27);
-	var isWidget = __webpack_require__(28);
-	var isThunk = __webpack_require__(29);
+	var isVNode = __webpack_require__(27);
+	var isVText = __webpack_require__(28);
+	var isWidget = __webpack_require__(29);
+	var isThunk = __webpack_require__(30);
 
 	module.exports = handleThunk;
 
@@ -8263,13 +8700,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var isObject = __webpack_require__(32);
-	var isHook = __webpack_require__(33);
+	var isObject = __webpack_require__(33);
+	var isHook = __webpack_require__(34);
 
 	module.exports = diffProps;
 
@@ -8328,7 +8765,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8340,7 +8777,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8352,27 +8789,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var patch = __webpack_require__(35);
-
-	module.exports = patch;
-
-/***/ },
 /* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var document = __webpack_require__(36);
-	var isArray = __webpack_require__(23);
+	var patch = __webpack_require__(36);
 
-	var render = __webpack_require__(38);
-	var domIndex = __webpack_require__(40);
-	var patchOp = __webpack_require__(41);
+	module.exports = patch;
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var document = __webpack_require__(37);
+	var isArray = __webpack_require__(24);
+
+	var render = __webpack_require__(39);
+	var domIndex = __webpack_require__(41);
+	var patchOp = __webpack_require__(42);
 	module.exports = patch;
 
 	function patch(rootNode, patches, renderOptions) {
@@ -8444,13 +8881,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 
 	var topLevel = typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : {};
-	var minDoc = __webpack_require__(37);
+	var minDoc = __webpack_require__(38);
 
 	if (typeof document !== 'undefined') {
 	    module.exports = document;
@@ -8466,25 +8903,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var document = __webpack_require__(36);
+	var document = __webpack_require__(37);
 
-	var applyProperties = __webpack_require__(39);
+	var applyProperties = __webpack_require__(40);
 
-	var isVNode = __webpack_require__(26);
-	var isVText = __webpack_require__(27);
-	var isWidget = __webpack_require__(28);
-	var handleThunk = __webpack_require__(30);
+	var isVNode = __webpack_require__(27);
+	var isVText = __webpack_require__(28);
+	var isWidget = __webpack_require__(29);
+	var handleThunk = __webpack_require__(31);
 
 	module.exports = createElement;
 
@@ -8523,13 +8960,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var isObject = __webpack_require__(32);
-	var isHook = __webpack_require__(33);
+	var isObject = __webpack_require__(33);
+	var isHook = __webpack_require__(34);
 
 	module.exports = applyProperties;
 
@@ -8624,7 +9061,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -8715,17 +9152,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var applyProperties = __webpack_require__(39);
+	var applyProperties = __webpack_require__(40);
 
-	var isWidget = __webpack_require__(28);
-	var VPatch = __webpack_require__(24);
+	var isWidget = __webpack_require__(29);
+	var VPatch = __webpack_require__(25);
 
-	var updateWidget = __webpack_require__(42);
+	var updateWidget = __webpack_require__(43);
 
 	module.exports = applyPatch;
 
@@ -8872,12 +9309,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var isWidget = __webpack_require__(28);
+	var isWidget = __webpack_require__(29);
 
 	module.exports = updateWidget;
 
@@ -8894,34 +9331,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var h = __webpack_require__(44);
+	var h = __webpack_require__(45);
 
 	module.exports = h;
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var isArray = __webpack_require__(23);
+	var isArray = __webpack_require__(24);
 
-	var VNode = __webpack_require__(45);
-	var VText = __webpack_require__(46);
-	var isVNode = __webpack_require__(26);
-	var isVText = __webpack_require__(27);
-	var isWidget = __webpack_require__(28);
-	var isHook = __webpack_require__(33);
-	var isVThunk = __webpack_require__(29);
+	var VNode = __webpack_require__(46);
+	var VText = __webpack_require__(47);
+	var isVNode = __webpack_require__(27);
+	var isVText = __webpack_require__(28);
+	var isWidget = __webpack_require__(29);
+	var isHook = __webpack_require__(34);
+	var isVThunk = __webpack_require__(30);
 
-	var parseTag = __webpack_require__(47);
-	var softSetHook = __webpack_require__(49);
-	var evHook = __webpack_require__(50);
+	var parseTag = __webpack_require__(48);
+	var softSetHook = __webpack_require__(50);
+	var evHook = __webpack_require__(51);
 
 	module.exports = h;
 
@@ -9033,16 +9470,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var version = __webpack_require__(25);
-	var isVNode = __webpack_require__(26);
-	var isWidget = __webpack_require__(28);
-	var isThunk = __webpack_require__(29);
-	var isVHook = __webpack_require__(33);
+	var version = __webpack_require__(26);
+	var isVNode = __webpack_require__(27);
+	var isWidget = __webpack_require__(29);
+	var isThunk = __webpack_require__(30);
+	var isVHook = __webpack_require__(34);
 
 	module.exports = VirtualNode;
 
@@ -9112,12 +9549,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	VirtualNode.prototype.type = "VirtualNode";
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var version = __webpack_require__(25);
+	var version = __webpack_require__(26);
 
 	module.exports = VirtualText;
 
@@ -9129,12 +9566,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	VirtualText.prototype.type = "VirtualText";
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var split = __webpack_require__(48);
+	var split = __webpack_require__(49);
 
 	var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
 	var notClassId = /^\.|#/;
@@ -9188,7 +9625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9307,7 +9744,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9329,12 +9766,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EvStore = __webpack_require__(51);
+	var EvStore = __webpack_require__(52);
 
 	module.exports = EvHook;
 
@@ -9361,12 +9798,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var OneVersionConstraint = __webpack_require__(52);
+	var OneVersionConstraint = __webpack_require__(53);
 
 	var MY_VERSION = '7';
 	OneVersionConstraint('ev-store', MY_VERSION);
@@ -9386,12 +9823,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Individual = __webpack_require__(53);
+	var Individual = __webpack_require__(54);
 
 	module.exports = OneVersion;
 
@@ -9409,7 +9846,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
@@ -9432,17 +9869,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var createElement = __webpack_require__(38);
+	var createElement = __webpack_require__(39);
 
 	module.exports = createElement;
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9479,7 +9916,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9538,7 +9975,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9567,37 +10004,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	function VArrayDirtyCompare(previousState, currentState) {
 	    var diff = false;
 
-	    if (previousState.nodeCount !== currentState.nodeCount) {
+	    if (currentState.force) {
+	        diff = true;
+	    } else if (previousState.nodeCount !== currentState.nodeCount) {
+	        diff = true;
+	    } else if (previousState.loading !== currentState.loading) {
 	        diff = true;
 	    } else {
 	        diff = _.find(currentState.nodes, 'itree.dirty');
 	    }
 
 	    return diff;
-	};
-
-/***/ },
-/* 58 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	/**
-	 * Returns whether or not a state is marked as dirty.
-	 *
-	 * @private
-	 * @category DOM
-	 * @param {object} previousState Previous state.
-	 * @param {object} currentState  Current state.
-	 * @return {boolean} State is dirty.
-	 */
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.VDirtyCompare = VDirtyCompare;
-	function VDirtyCompare(previousState, currentState) {
-	  return currentState.dirty;
 	};
 
 /***/ },
@@ -9632,7 +10049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    if (!isDirty) {
 	        _.each(currentState, function (val, key) {
-	            if (val !== previousState[key]) {
+	            if (key !== 'dirty' && val !== previousState[key]) {
 	                isDirty = true;
 	                return false;
 	            }

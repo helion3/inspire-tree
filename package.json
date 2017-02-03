@@ -1,12 +1,12 @@
 {
   "name": "inspire-tree",
-  "version": "1.10.6",
+  "version": "1.11.0",
   "description": "Inspired JavaScript Tree UI Component",
   "repository": "https://github.com/helion3/inspire-tree",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "babel-core": "^6.9.1",
+    "babel-core": "^6.22.1",
     "babel-loader": "^6.2.7",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-lodash": "^3.2.0",
