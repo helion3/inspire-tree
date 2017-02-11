@@ -715,10 +715,12 @@ export default class InspireTree extends EventEmitter2 {
 
         var promise = new Promise(function(resolve, reject) {
             var complete = function(nodes, totalNodes) {
-                tree.dom.pagination.total = nodes.length;
+                if (_.get(tree, 'dom.pagination')) {
+                    tree.dom.pagination.total = nodes.length;
 
-                if (_.parseInt(totalNodes) > nodes.length) {
-                    tree.dom.pagination.total = _.parseInt(totalNodes);
+                    if (_.parseInt(totalNodes) > nodes.length) {
+                        tree.dom.pagination.total = _.parseInt(totalNodes);
+                    }
                 }
 
                 // Delay event for synchronous loader. Otherwise it fires
@@ -765,7 +767,7 @@ export default class InspireTree extends EventEmitter2 {
 
             // Data loader requires a caller/callback
             else if (_.isFunction(loader)) {
-                var resp = loader(null, complete, reject, tree.dom.pagination);
+                var resp = loader(null, complete, reject, _.get(tree, 'dom.pagination'));
 
                 // Loader returned its own object
                 if (resp) {

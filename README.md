@@ -266,7 +266,7 @@ Deferred Loading works exactly like deferred rendering, except nodes are loaded 
 2. Pass a count of total nodes to the `data` callback. This way, inspire tree knows how many nodes remain.
 
 ```js
-data: function(node, resolve, reject) {
+data: function(node, resolve, reject, pagination) {
     // nodes = subset of total nodes, 1000 = total rows
     resolve(nodes, 1000);
 }
