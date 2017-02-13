@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 1.11.1
+
+- Fixes pagination issue when using custom DOM.
+
 # 1.11
 
 - Added `Tree.isEventMuted(string eventName)`.

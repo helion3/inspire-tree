@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.11.0
+ * Inspire Tree v1.11.1
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -77,15 +77,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _collectionToModel = __webpack_require__(2);
 
-	var _eventemitter = __webpack_require__(14);
+	var _eventemitter = __webpack_require__(17);
 
-	var _es6Promise = __webpack_require__(8);
+	var _es6Promise = __webpack_require__(11);
 
-	var _standardizePromise = __webpack_require__(13);
+	var _standardizePromise = __webpack_require__(16);
 
-	var _treenode = __webpack_require__(6);
+	var _treenode = __webpack_require__(9);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(15);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96,7 +96,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	// CSS
-	__webpack_require__(15);
+	__webpack_require__(18);
 
 	/**
 	 * Maps a method to the root TreeNodes collection.
@@ -934,10 +934,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            var promise = new _es6Promise.Promise(function (resolve, reject) {
 	                var complete = function complete(nodes, totalNodes) {
-	                    tree.dom.pagination.total = nodes.length;
+	                    if (_.get(tree, 'dom.pagination')) {
+	                        tree.dom.pagination.total = nodes.length;
 
-	                    if (_.parseInt(totalNodes) > nodes.length) {
-	                        tree.dom.pagination.total = _.parseInt(totalNodes);
+	                        if (_.parseInt(totalNodes) > nodes.length) {
+	                            tree.dom.pagination.total = _.parseInt(totalNodes);
+	                        }
 	                    }
 
 	                    // Delay event for synchronous loader. Otherwise it fires
@@ -982,7 +984,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                // Data loader requires a caller/callback
 	                else if (_.isFunction(loader)) {
-	                        var resp = loader(null, complete, reject, tree.dom.pagination);
+	                        var resp = loader(null, complete, reject, _.get(tree, 'dom.pagination'));
 
 	                        // Loader returned its own object
 	                        if (resp) {
@@ -1528,7 +1530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(15);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1580,7 +1582,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _uuid2 = _interopRequireDefault(_uuid);
 
-	var _treenode = __webpack_require__(6);
+	var _treenode = __webpack_require__(9);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1661,24 +1663,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var v1 = __webpack_require__(5);
+	var v4 = __webpack_require__(8);
+
+	var uuid = v4;
+	uuid.v1 = v1;
+	uuid.v4 = v4;
+
+	module.exports = uuid;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	// Unique ID creation requires a high quality random # generator.  We feature
 	// detect to determine the best RNG source, normalizing to a function that
 	// returns 128-bits of randomness, since that's what's usually required
-	var _rng = __webpack_require__(5);
-
-	// Maps for number <-> hex string conversion
-	var _byteToHex = [];
-	var _hexToByte = {};
-	for (var i = 0; i < 256; ++i) {
-	  _byteToHex[i] = (i + 0x100).toString(16).substr(1);
-	  _hexToByte[_byteToHex[i]] = i;
-	}
-
-	function buff_to_string(buf, offset) {
-	  var i = offset || 0;
-	  var bth = _byteToHex;
-	  return bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]];
-	}
+	var rng = __webpack_require__(6);
+	var bytesToUuid = __webpack_require__(7);
 
 	// **`v1()` - Generate time-based UUID**
 	//
@@ -1686,7 +1690,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// and http://docs.python.org/library/uuid.html
 
 	// random #'s we need to init node and clockseq
-	var _seedBytes = _rng();
+	var _seedBytes = rng();
 
 	// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
 	var _nodeId = [_seedBytes[0] | 0x01, _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]];
@@ -1771,14 +1775,85 @@ return /******/ (function(modules) { // webpackBootstrap
 	    b[i + n] = node[n];
 	  }
 
-	  return buf ? buf : buff_to_string(b);
+	  return buf ? buf : bytesToUuid(b);
 	}
 
-	// **`v4()` - Generate random UUID**
+	module.exports = v1;
 
-	// See https://github.com/broofa/node-uuid for API details
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
+
+	// Unique ID creation requires a high quality random # generator.  In the
+	// browser this is a little complicated due to unknown quality of Math.random()
+	// and inconsistent support for the `crypto` API.  We do the best we can via
+	// feature-detection
+	var rng;
+
+	var crypto = global.crypto || global.msCrypto; // for IE 11
+	if (crypto && crypto.getRandomValues) {
+	  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+	  var rnds8 = new Uint8Array(16);
+	  rng = function whatwgRNG() {
+	    crypto.getRandomValues(rnds8);
+	    return rnds8;
+	  };
+	}
+
+	if (!rng) {
+	  // Math.random()-based (RNG)
+	  //
+	  // If all else fails, use Math.random().  It's fast, but is of unspecified
+	  // quality.
+	  var rnds = new Array(16);
+	  rng = function rng() {
+	    for (var i = 0, r; i < 16; i++) {
+	      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+	      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+	    }
+
+	    return rnds;
+	  };
+	}
+
+	module.exports = rng;
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * Convert array of 16 byte values to UUID string format of the form:
+	 * XXXXXXXX-XXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+	 */
+	var byteToHex = [];
+	for (var i = 0; i < 256; ++i) {
+	  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+	}
+
+	function bytesToUuid(buf, offset) {
+	  var i = offset || 0;
+	  var bth = byteToHex;
+	  return bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + '-' + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]] + bth[buf[i++]];
+	}
+
+	module.exports = bytesToUuid;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var rng = __webpack_require__(6);
+	var bytesToUuid = __webpack_require__(7);
+
 	function v4(options, buf, offset) {
-	  // Deprecated - 'format' argument, as supported in v1.2
 	  var i = buf && offset || 0;
 
 	  if (typeof options == 'string') {
@@ -1787,7 +1862,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  options = options || {};
 
-	  var rnds = options.random || (options.rng || _rng)();
+	  var rnds = options.random || (options.rng || rng)();
 
 	  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
 	  rnds[6] = rnds[6] & 0x0f | 0x40;
@@ -1800,56 +1875,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 
-	  return buf || buff_to_string(rnds);
+	  return buf || bytesToUuid(rnds);
 	}
 
-	// Export public API
-	var uuid = v4;
-	uuid.v1 = v1;
-	uuid.v4 = v4;
-
-	module.exports = uuid;
+	module.exports = v4;
 
 /***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
-
-	var rng;
-
-	var crypto = global.crypto || global.msCrypto; // for IE 11
-	if (crypto && crypto.getRandomValues) {
-	  // WHATWG crypto-based RNG - http://wiki.whatwg.org/wiki/Crypto
-	  // Moderately fast, high quality
-	  var _rnds8 = new Uint8Array(16);
-	  rng = function whatwgRNG() {
-	    crypto.getRandomValues(_rnds8);
-	    return _rnds8;
-	  };
-	}
-
-	if (!rng) {
-	  // Math.random()-based (RNG)
-	  //
-	  // If all else fails, use Math.random().  It's fast, but is of unspecified
-	  // quality.
-	  var _rnds = new Array(16);
-	  rng = function rng() {
-	    for (var i = 0, r; i < 16; i++) {
-	      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-	      _rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
-	    }
-
-	    return _rnds;
-	  };
-	}
-
-	module.exports = rng;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 6 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1867,19 +1899,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
-	var _baseStateChange = __webpack_require__(7);
+	var _baseStateChange = __webpack_require__(10);
 
 	var _collectionToModel = __webpack_require__(2);
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _es6Promise = __webpack_require__(8);
+	var _es6Promise = __webpack_require__(11);
 
-	var _recurseDown2 = __webpack_require__(11);
+	var _recurseDown2 = __webpack_require__(14);
 
-	var _standardizePromise = __webpack_require__(13);
+	var _standardizePromise = __webpack_require__(16);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(15);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -3318,7 +3350,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 7 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -3379,7 +3411,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 8 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global) {'use strict';
@@ -3521,7 +3553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function attemptVertx() {
 	    try {
 	      var r = require;
-	      var vertx = __webpack_require__(10);
+	      var vertx = __webpack_require__(13);
 	      vertxNext = vertx.runOnLoop || vertx.runOnContext;
 	      return useVertxTimer();
 	    } catch (e) {
@@ -4541,10 +4573,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Promise;
 	});
 	//# sourceMappingURL=es6-promise.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), (function() { return this; }())))
 
 /***/ },
-/* 9 */
+/* 12 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -4730,13 +4762,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 10 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 11 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4750,9 +4782,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
-	var _treenode = __webpack_require__(6);
+	var _treenode = __webpack_require__(9);
 
-	var _treenodes = __webpack_require__(12);
+	var _treenodes = __webpack_require__(15);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -4788,7 +4820,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 12 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4808,11 +4840,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _objectToNode = __webpack_require__(3);
 
-	var _es6Promise = __webpack_require__(8);
+	var _es6Promise = __webpack_require__(11);
 
-	var _recurseDown2 = __webpack_require__(11);
+	var _recurseDown2 = __webpack_require__(14);
 
-	var _treenode = __webpack_require__(6);
+	var _treenode = __webpack_require__(9);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -5966,7 +5998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	;
 
 /***/ },
-/* 13 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5980,7 +6012,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _ = _interopRequireWildcard(_lodash);
 
-	var _es6Promise = __webpack_require__(8);
+	var _es6Promise = __webpack_require__(11);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -6011,7 +6043,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 14 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -6740,7 +6772,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ },
-/* 15 */
+/* 18 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
