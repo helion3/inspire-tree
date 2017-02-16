@@ -649,10 +649,10 @@ export default class InspireDOM {
      *
      * @private
      * @param {object} node Node object.
-     * @param {boolean} hasVisibleChildren If this node has visible children.
+     * @param {boolean} hasOrWillHaveChildren If this node has children.
      * @return {object} Anchor node.
      */
-    createTitleAnchor(node, hasVisibleChildren) {
+    createTitleAnchor(node, hasOrWillHaveChildren) {
         var dom = this;
 
         return new VCache({
@@ -660,14 +660,14 @@ export default class InspireDOM {
             expanded: node.expanded(),
             icon: node.itree.icon,
             text: node.text,
-            hasVisibleChildren: hasVisibleChildren
+            hasOrWillHaveChildren: hasOrWillHaveChildren
         }, VStateCompare, function(previous, current) {
             var attributes = node.itree.a.attributes || {};
             var classNames = ['title', 'icon'];
 
             if (!dom._tree.config.dom.showCheckboxes) {
                 var folder = node.expanded() ? 'icon-folder-open' : 'icon-folder';
-                classNames.push(current.state.icon || (hasVisibleChildren ? folder : 'icon-file-empty'));
+                classNames.push(current.state.icon || (hasOrWillHaveChildren ? folder : 'icon-file-empty'));
             }
 
             attributes.tabindex = 1;
@@ -798,7 +798,7 @@ export default class InspireDOM {
                 contents.push(dom.createCheckbox(node));
             }
 
-            contents.push(dom.createTitleAnchor(node, hasVisibleChildren));
+            contents.push(dom.createTitleAnchor(node, Boolean(node.children)));
 
             return h('div.title-wrap', contents);
         });

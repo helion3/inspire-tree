@@ -105,7 +105,9 @@ that you should be aware of. There are a few choices:
 - **pagination**
     + **limit** - How many nodes are rendered/loaded at once. Used with deferrals. Defaults to nodes which fit in the container.
 - **renderer** - Function which returns a custom renderer (see below).
-- **search** - Custom search callback (for external handling of entire search).
+- **search**
+    + **matcher** - Custom search executor (for custom/external handling of entire search). Must be a function which accepts a `query` and resolve/reject arguments.
+    + **matchProcessor** - Custom handler for search matches. Must be a function which accepts a `TreeNodes` argument.
 - **selection**
     + **allow** - Dynamically determine `selectable` boolean for a node.
     + **autoDeselect** - Prevent automatic deselection.

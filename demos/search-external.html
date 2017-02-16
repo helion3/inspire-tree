@@ -22,9 +22,9 @@
         ], function($, _, InspireTree) {
             var tree = new InspireTree({
                 target: '.tree',
-                data: $.getJSON('sample-data/root.json'),
+                data: $.getJSON('sample-data/search.json'),
                 search: function(query, resolve, reject) {
-                    var promise = $.getJSON('sample-data/root.json');
+                    var promise = $.getJSON('sample-data/search.json');
                     promise.then(function(results) {
                         var matches = _.filter(results, function(result) {
                             return new RegExp(query, 'i').test(result.text);

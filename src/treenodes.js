@@ -99,9 +99,12 @@ export class TreeNodes extends Array {
 
         var treeNodes = this;
         if (_.isArray(array) || array instanceof TreeNodes) {
-            _.each(array, function(node) {
+            _.each(array, (node) => {
                 if (node instanceof TreeNode) {
                     treeNodes.push(node.clone());
+                }
+                else {
+                    treeNodes.addNode(node);
                 }
             });
         }
@@ -662,6 +665,17 @@ export class TreeNodes extends Array {
      */
     loading(full) {
         return baseStatePredicate.call(this, 'loading', full);
+    }
+
+    /**
+     * Query for all nodes which matched the last search.
+     *
+     * @category TreeNodes
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    matched(full) {
+        return baseStatePredicate.call(this, 'matched', full);
     }
 
     /**

@@ -25,4 +25,9 @@
     .selected > .title-wrap:hover + .wholerow {
         background: $tree-row-selected-color;
     }
+
+    .matched > .wholerow,
+    .matched > .title-wrap:hover + .wholerow {
+        background: $tree-row-matched-color;
+    }
 }

@@ -76,7 +76,10 @@ export default class InspireTree extends EventEmitter2 {
                 limit: -1
             },
             renderer: false,
-            search: false,
+            search: {
+                executor: false,
+                resultCallback: false
+            },
             selection: {
                 allow: _.noop,
                 autoDeselect: true,
@@ -142,6 +145,14 @@ export default class InspireTree extends EventEmitter2 {
             tree.config.editing.remove = true;
         }
 
+        // Support simple config for search
+        if (_.isFunction(opts.search)) {
+            tree.config.search = {
+                matcher: opts.search,
+                matchProcessor: false
+            };
+        }
+
         // Init the default state for nodes
         tree.defaultState = {
             collapsed: true,
@@ -151,6 +162,7 @@ export default class InspireTree extends EventEmitter2 {
             hidden: false,
             indeterminate: false,
             loading: false,
+            matched: false,
             removed: false,
             rendered: false,
             selectable: true,
@@ -665,17 +677,6 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
-     * Check if an object is a TreeNode.
-     *
-     * @category Tree
-     * @param {object} object Object
-     * @return {boolean} If object is a TreeNode.
-     */
-    isNode(object) {
-        return (object instanceof TreeNode);
-    }
-
-    /**
      * Check if an event is currently muted.
      *
      * @category Tree
@@ -688,6 +689,28 @@ export default class InspireTree extends EventEmitter2 {
         }
 
         return _.includes(this.muted(), eventName);
+    }
+
+    /**
+     * Check if an object is a TreeNode.
+     *
+     * @category Tree
+     * @param {object} object Object
+     * @return {boolean} If object is a TreeNode.
+     */
+    isNode(object) {
+        return (object instanceof TreeNode);
+    }
+
+    /**
+     * Check if an object is a TreeNodes array.
+     *
+     * @category Tree
+     * @param {object} object Object
+     * @return {boolean} If object is a TreeNodes array.
+     */
+    isTreeNodes(object) {
+        return (object instanceof TreeNodes);
     }
 
     /**
@@ -802,6 +825,17 @@ export default class InspireTree extends EventEmitter2 {
      */
     loading() {
         return map(this, 'loading', arguments);
+    }
+
+    /**
+     * Query for all nodes matched in the last search.
+     *
+     * @category Tree
+     * @param {boolean} full Retain full hiearchy.
+     * @return {TreeNodes} Array of node objects.
+     */
+    matched() {
+        return map(this, 'matched', arguments);
     }
 
     /*
@@ -947,70 +981,87 @@ export default class InspireTree extends EventEmitter2 {
      */
     search(query) {
         var tree = this;
-        var matches = new TreeNodes(this);
-
-        var custom = tree.config.search;
-        if (_.isFunction(custom)) {
-            return custom(
-                query,
-                function resolver(nodes) {
-                    tree.dom.batch();
-
-                    tree.hideDeep();
-                    _.each(nodes, function(node) {
-                        tree.addNode(node);
-                    });
-
-                    tree.dom.end();
-                },
-                function rejecter(err) {
-                    tree.emit('tree.loaderror', err);
-                }
-            );
-        }
+        var customMatcher = tree.config.search.matcher;
+        var customMatchProcessor = tree.config.search.matchProcessor;
 
         // Don't search if query empty
         if (!query || (_.isString(query) && _.isEmpty(query))) {
             return tree.clearSearch();
         }
 
-        if (_.isString(query)) {
-            query = new RegExp(query, 'i');
-        }
-
-        var predicate;
-        if (_.isRegExp(query)) {
-            predicate = function(node) {
-                return query.test(node.text);
-            };
-        }
-        else {
-            predicate = query;
-        }
-
         tree.dom.batch();
 
-        tree.model.recurseDown(function(node) {
-            if (!node.removed()) {
-                var match = predicate(node);
-                var wasHidden = node.hidden();
-                node.state('hidden', !match);
-
-                // If hidden state will change
-                if (wasHidden !== node.hidden()) {
-                    node.markDirty();
-                }
-
-                if (match) {
-                    matches.push(node);
-                    node.expandParents();
-                }
-            }
+        // Reset states
+        tree.recurseDown((node) => {
+            node.state('hidden', true);
+            node.state('matched', false);
         });
 
         tree.dom.end();
 
-        return matches;
+        // Query nodes for any matching the query
+        var matcher = _.isFunction(customMatcher) ? customMatcher : (query, resolve) => {
+            var matches = new TreeNodes(this._tree);
+
+            // Convery the query into a usable predicate
+            if (_.isString(query)) {
+                query = new RegExp(query, 'i');
+            }
+
+            var predicate;
+            if (_.isRegExp(query)) {
+                predicate = function(node) {
+                    return query.test(node.text);
+                };
+            }
+            else {
+                predicate = query;
+            }
+
+            // Recurse down and find all matches
+            tree.model.recurseDown((node) => {
+                if (!node.removed()) {
+                    if (predicate(node)) {
+                        // Return as a match
+                        matches.push(node);
+                    }
+                }
+            });
+
+            resolve(matches);
+        };
+
+        // Process all matching nodes.
+        var matchProcessor = _.isFunction(customMatchProcessor) ? customMatchProcessor : (matches) => {
+            matches.each((node) => {
+                node.show().state('matched', true);
+
+                node.expandParents().collapse();
+
+                if (node.hasChildren()) {
+                    node.children.showDeep();
+                }
+            });
+        };
+
+        // Wrap the search matcher with a promise since it could require async requests
+        return new Promise(function(resolve, reject) {
+            // Execute the matcher and pipe results to the processor
+            matcher(query, (matches) => {
+                // Convert to a TreeNodes array if we're receiving external nodes
+                if (!tree.isTreeNodes(matches)) {
+                    matches = tree.nodes(_.map(matches, 'id'));
+                }
+
+                tree.dom.batch();
+
+                matchProcessor(matches);
+
+                tree.dom.end();
+
+                resolve(matches);
+            }, reject);
+        });
     }
 
     /**

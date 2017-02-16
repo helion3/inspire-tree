@@ -736,6 +736,16 @@ export class TreeNode {
     }
 
     /**
+     * Get whether this node was matched during the last search.
+     *
+     * @category TreeNode
+     * @return {boolean} Get if node matched.
+     */
+    matched() {
+        return this.state('matched');
+    }
+
+    /**
      * Find the next visible sibling of our ancestor. Continues
      * seeking up the tree until a valid node is found or we
      * reach the root node.

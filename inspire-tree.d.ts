@@ -16,6 +16,20 @@ declare module "inspire-tree" {
     }
 
     /**
+     * Represents a processor for nodes matched during search.
+     */
+    interface MatchProcessor {
+        (matches: TreeNodes): any;
+    }
+
+    /**
+     * Represents a search matcher which is given resolve/reject callbacks.
+     */
+    interface SearchMatcher {
+        (query: string, resolve: any, reject: any): any;
+    }
+
+    /**
      * Represents the copy.to middleman structure.
      */
     interface Copy {
@@ -50,7 +64,10 @@ declare module "inspire-tree" {
             limit?: number;
         };
         renderer?: any;
-        search?: string|RegExp|NodeIteratee;
+        search?: {
+            matcher: SearchMatcher;
+            matchProcess: MatchProcessor;
+        };
         selection?: {
             allow?: NodeIteratee;
             autoDeselect?: boolean;
@@ -108,9 +125,11 @@ declare module "inspire-tree" {
         invokeDeep(methods: string|Array<string>): TreeNodes;
         isEventMuted(eventName: string): boolean;
         isNode(object: any): boolean;
+        isTreeNode(object: any): boolean;
         lastSelectedNode(): TreeNode;
         load(loader: Promise<TreeNodes>): any;
         loading(full?: boolean): TreeNodes;
+        matched(full?: boolean): TreeNodes;
         mute(events: Array<string>): InspireTree;
         muted(): boolean;
         node(id: string|number): TreeNode;
@@ -178,6 +197,7 @@ declare module "inspire-tree" {
         invoke(methods: string|Array<string>): TreeNodes;
         invokeDeep(methods: string|Array<string>): TreeNodes;
         loading(full?: boolean): TreeNodes;
+        matched(full?: boolean): TreeNodes;
         node(id: string|number): TreeNode;
         nodes(ids?: Array<string>|Array<number>): TreeNodes;
         recurseDown(iteratee: NodeIteratee): TreeNodes;
@@ -239,6 +259,7 @@ declare module "inspire-tree" {
         lastDeepestVisibleChild(): TreeNode;
         loadChildren(): Promise<TreeNodes>;
         loading(): boolean;
+        matched(): TreeNodes;
         markDirty(): TreeNode;
         nextVisibleAncestralSiblingNode(): TreeNode;
         nextVisibleChildNode(): TreeNode;
