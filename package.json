@@ -17,7 +17,7 @@
     "docdown": "^0.7.2",
     "es6-promise": "^4.0.4",
     "eslint": "^3.10.2",
-    "eventemitter2": "^2.2.0",
+    "eventemitter2": "^3.0.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.10.0",
     "jquery": "^3.0.0",
