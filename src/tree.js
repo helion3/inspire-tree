@@ -77,8 +77,8 @@ export default class InspireTree extends EventEmitter2 {
             },
             renderer: false,
             search: {
-                executor: false,
-                resultCallback: false
+                matcher: false,
+                matchProcessor: false
             },
             selection: {
                 allow: _.noop,
