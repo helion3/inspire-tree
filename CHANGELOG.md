@@ -1,5 +1,19 @@
 # Changes to Inspire Tree
 
+# 1.12
+
+- Added a new `matched` state to tree nodes, indicating they match a search predicate.
+- Added `Tree.matched`, `TreeNodes.matched`, and `TreeNode.matched` methods.
+- Added `Tree.isTreeNodes`.
+- Added a `.wholerow` background color for matched nodes.
+- Added support for a `search.matchProcessor` callback to customize how matched nodes are treated.
+- Added support for a `search.matcher` callback for use when `search` is an object. Otherwise the function can be assigned to `search` directly.
+
+**Breaking Changes**
+
+- `tree.search` now returns a Promise, which when resolved, provides a TreeNodes array of matched nodes.
+This means internal and external searches are now handled consistently.
+
 # 1.11.1
 
 - Fixes pagination issue when using custom DOM.

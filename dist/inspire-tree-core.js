@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.11.1
+ * Inspire Tree v1.12.0
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -167,7 +167,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                limit: -1
 	            },
 	            renderer: false,
-	            search: false,
+	            search: {
+	                matcher: false,
+	                matchProcessor: false
+	            },
 	            selection: {
 	                allow: _.noop,
 	                autoDeselect: true,
@@ -233,6 +236,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            tree.config.editing.remove = true;
 	        }
 
+	        // Support simple config for search
+	        if (_.isFunction(opts.search)) {
+	            tree.config.search = {
+	                matcher: opts.search,
+	                matchProcessor: false
+	            };
+	        }
+
 	        // Init the default state for nodes
 	        tree.defaultState = {
 	            collapsed: true,
@@ -242,6 +253,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            hidden: false,
 	            indeterminate: false,
 	            loading: false,
+	            matched: false,
 	            removed: false,
 	            rendered: false,
 	            selectable: true,
@@ -872,20 +884,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
-	         * Check if an object is a TreeNode.
-	         *
-	         * @category Tree
-	         * @param {object} object Object
-	         * @return {boolean} If object is a TreeNode.
-	         */
-
-	    }, {
-	        key: 'isNode',
-	        value: function isNode(object) {
-	            return object instanceof _treenode.TreeNode;
-	        }
-
-	        /**
 	         * Check if an event is currently muted.
 	         *
 	         * @category Tree
@@ -901,6 +899,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            return _.includes(this.muted(), eventName);
+	        }
+
+	        /**
+	         * Check if an object is a TreeNode.
+	         *
+	         * @category Tree
+	         * @param {object} object Object
+	         * @return {boolean} If object is a TreeNode.
+	         */
+
+	    }, {
+	        key: 'isNode',
+	        value: function isNode(object) {
+	            return object instanceof _treenode.TreeNode;
+	        }
+
+	        /**
+	         * Check if an object is a TreeNodes array.
+	         *
+	         * @category Tree
+	         * @param {object} object Object
+	         * @return {boolean} If object is a TreeNodes array.
+	         */
+
+	    }, {
+	        key: 'isTreeNodes',
+	        value: function isTreeNodes(object) {
+	            return object instanceof _treenodes.TreeNodes;
 	        }
 
 	        /**
@@ -1020,6 +1046,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'loading',
 	        value: function loading() {
 	            return map(this, 'loading', arguments);
+	        }
+
+	        /**
+	         * Query for all nodes matched in the last search.
+	         *
+	         * @category Tree
+	         * @param {boolean} full Retain full hiearchy.
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'matched',
+	        value: function matched() {
+	            return map(this, 'matched', arguments);
 	        }
 
 	        /*
@@ -1199,66 +1239,89 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'search',
 	        value: function search(query) {
+	            var _this2 = this;
+
 	            var tree = this;
-	            var matches = new _treenodes.TreeNodes(this);
-
-	            var custom = tree.config.search;
-	            if (_.isFunction(custom)) {
-	                return custom(query, function resolver(nodes) {
-	                    tree.dom.batch();
-
-	                    tree.hideDeep();
-	                    _.each(nodes, function (node) {
-	                        tree.addNode(node);
-	                    });
-
-	                    tree.dom.end();
-	                }, function rejecter(err) {
-	                    tree.emit('tree.loaderror', err);
-	                });
-	            }
+	            var customMatcher = tree.config.search.matcher;
+	            var customMatchProcessor = tree.config.search.matchProcessor;
 
 	            // Don't search if query empty
 	            if (!query || _.isString(query) && _.isEmpty(query)) {
 	                return tree.clearSearch();
 	            }
 
-	            if (_.isString(query)) {
-	                query = new RegExp(query, 'i');
-	            }
-
-	            var predicate;
-	            if (_.isRegExp(query)) {
-	                predicate = function predicate(node) {
-	                    return query.test(node.text);
-	                };
-	            } else {
-	                predicate = query;
-	            }
-
 	            tree.dom.batch();
 
-	            tree.model.recurseDown(function (node) {
-	                if (!node.removed()) {
-	                    var match = predicate(node);
-	                    var wasHidden = node.hidden();
-	                    node.state('hidden', !match);
-
-	                    // If hidden state will change
-	                    if (wasHidden !== node.hidden()) {
-	                        node.markDirty();
-	                    }
-
-	                    if (match) {
-	                        matches.push(node);
-	                        node.expandParents();
-	                    }
-	                }
+	            // Reset states
+	            tree.recurseDown(function (node) {
+	                node.state('hidden', true);
+	                node.state('matched', false);
 	            });
 
 	            tree.dom.end();
 
-	            return matches;
+	            // Query nodes for any matching the query
+	            var matcher = _.isFunction(customMatcher) ? customMatcher : function (query, resolve) {
+	                var matches = new _treenodes.TreeNodes(_this2._tree);
+
+	                // Convery the query into a usable predicate
+	                if (_.isString(query)) {
+	                    query = new RegExp(query, 'i');
+	                }
+
+	                var predicate;
+	                if (_.isRegExp(query)) {
+	                    predicate = function predicate(node) {
+	                        return query.test(node.text);
+	                    };
+	                } else {
+	                    predicate = query;
+	                }
+
+	                // Recurse down and find all matches
+	                tree.model.recurseDown(function (node) {
+	                    if (!node.removed()) {
+	                        if (predicate(node)) {
+	                            // Return as a match
+	                            matches.push(node);
+	                        }
+	                    }
+	                });
+
+	                resolve(matches);
+	            };
+
+	            // Process all matching nodes.
+	            var matchProcessor = _.isFunction(customMatchProcessor) ? customMatchProcessor : function (matches) {
+	                matches.each(function (node) {
+	                    node.show().state('matched', true);
+
+	                    node.expandParents().collapse();
+
+	                    if (node.hasChildren()) {
+	                        node.children.showDeep();
+	                    }
+	                });
+	            };
+
+	            // Wrap the search matcher with a promise since it could require async requests
+	            return new _es6Promise.Promise(function (resolve, reject) {
+	                // Execute the matcher and pipe results to the processor
+	                matcher(query, function (matches) {
+	                    // Convert to a TreeNodes array if we're receiving external nodes
+	                    if (!tree.isTreeNodes(matches)) {
+	                        matches = tree.nodes(_.map(matches, 'id'));
+	                    }
+
+	                    tree.dom.batch();
+
+	                    matchProcessor(matches);
+
+	                    tree.dom.end();
+
+	                    resolve(matches);
+	                }, reject);
+	            });
 	        }
 
 	        /**
@@ -2751,6 +2814,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            return this;
+	        }
+
+	        /**
+	         * Get whether this node was matched during the last search.
+	         *
+	         * @category TreeNode
+	         * @return {boolean} Get if node matched.
+	         */
+
+	    }, {
+	        key: 'matched',
+	        value: function matched() {
+	            return this.state('matched');
 	        }
 
 	        /**
@@ -4977,6 +5053,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _.each(array, function (node) {
 	                if (node instanceof _treenode.TreeNode) {
 	                    treeNodes.push(node.clone());
+	                } else {
+	                    treeNodes.addNode(node);
 	                }
 	            });
 	        }
@@ -5646,6 +5724,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'loading',
 	        value: function loading(full) {
 	            return baseStatePredicate.call(this, 'loading', full);
+	        }
+
+	        /**
+	         * Query for all nodes which matched the last search.
+	         *
+	         * @category TreeNodes
+	         * @param {boolean} full Retain full hiearchy.
+	         * @return {TreeNodes} Array of node objects.
+	         */
+
+	    }, {
+	        key: 'matched',
+	        value: function matched(full) {
+	            return baseStatePredicate.call(this, 'matched', full);
 	        }
 
 	        /**
