@@ -28,6 +28,10 @@ describe('Tree.search', function() {
         expect(tree.search('fox').then).to.be.a('function');
     });
 
+    it('returns a promise for empty search', function() {
+        expect(tree.search('').then).to.be.a('function');
+    });
+
     it('returns matches for a string query', function(done) {
         tree.search('fox').then(function(matches) {
             expect(matches).to.have.length(1);
@@ -66,6 +70,8 @@ describe('Tree.search', function() {
 
     it('clears the search', function() {
         tree.clearSearch();
+
+        expect(tree.matched()).to.have.length(0);
 
         expect(tree.node(1).hidden()).to.be.false;
         expect(tree.node(2).hidden()).to.be.false;
