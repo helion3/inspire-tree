@@ -347,12 +347,13 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
-     * Shows all nodes and collapses parents.
+     * Clears matched nodes, shows all nodes and collapses parents.
      *
      * @category Tree
      * @return {Tree} Tree instance.
      */
     clearSearch() {
+        this.matched().state('matched', false);
         return this.showDeep().collapseDeep().tree();
     }
 
@@ -986,7 +987,7 @@ export default class InspireTree extends EventEmitter2 {
 
         // Don't search if query empty
         if (!query || (_.isString(query) && _.isEmpty(query))) {
-            return tree.clearSearch();
+            return Promise.resolve(tree.clearSearch());
         }
 
         tree.dom.batch();
