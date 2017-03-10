@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 1.12.1
+
+- Fixed an "add root node" button on click error.
+- Fixed `clearSearch` to reset `matched` state on nodes.
+- Updated `clearSearch` to return a promise, fixing `search` return type for empty searches.
+
+
 # 1.12
 
 - Added a new `matched` state to tree nodes, indicating they match a search predicate.

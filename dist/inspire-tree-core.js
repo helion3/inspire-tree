@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.12.0
+ * Inspire Tree v1.12.1
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -464,7 +464,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
-	         * Shows all nodes and collapses parents.
+	         * Clears matched nodes, shows all nodes and collapses parents.
 	         *
 	         * @category Tree
 	         * @return {Tree} Tree instance.
@@ -473,6 +473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'clearSearch',
 	        value: function clearSearch() {
+	            this.matched().state('matched', false);
 	            return this.showDeep().collapseDeep().tree();
 	        }
 
@@ -1247,7 +1248,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Don't search if query empty
 	            if (!query || _.isString(query) && _.isEmpty(query)) {
-	                return tree.clearSearch();
+	                return _es6Promise.Promise.resolve(tree.clearSearch());
 	            }
 
 	            tree.dom.batch();
@@ -3499,7 +3500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
 	 *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
-	 * @version   4.0.5
+	 * @version   4.1.0
 	 */
 
 	(function (global, factory) {
@@ -3806,6 +3807,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      if (then$$ === GET_THEN_ERROR) {
 	        _reject(promise, GET_THEN_ERROR.error);
+	        GET_THEN_ERROR.error = null;
 	      } else if (then$$ === undefined) {
 	        fulfill(promise, maybeThenable);
 	      } else if (isFunction(then$$)) {
@@ -3926,7 +3928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (value === TRY_CATCH_ERROR) {
 	        failed = true;
 	        error = value.error;
-	        value = null;
+	        value.error = null;
 	      } else {
 	        succeeded = true;
 	      }
@@ -6407,7 +6409,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (--ttl === 0) {
 	        self.off(event, listener);
 	      }
-	      fn.apply(this, arguments);
+	      return fn.apply(this, arguments);
 	    }
 
 	    listener._origin = fn;
@@ -6598,6 +6600,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }promises.push(handler.apply(this, args));
 	      }
 	    } else if (handler && handler.length) {
+	      handler = handler.slice();
 	      if (al > 3) {
 	        args = new Array(al - 1);
 	        for (j = 1; j < al; j++) {
