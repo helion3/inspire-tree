@@ -1164,7 +1164,7 @@ export default class InspireDOM {
                         attributes: {
                             title: 'Add a new root node'
                         },
-                        onclick: function() {
+                        onclick: () => {
                             this._tree.focused().blur();
 
                             this._tree.addNode(blankNode());
