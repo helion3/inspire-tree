@@ -19,6 +19,7 @@
     "eslint": "^3.17.1",
     "eventemitter2": "^4.0.0",
     "extract-text-webpack-plugin": "^1.0.1",
+    "extract-text-webpack-plugin": "^2.1.0",
     "file-loader": "^0.10.1",
     "jquery": "^3.0.0",
     "karma": "^1.5.0",
@@ -34,13 +35,13 @@
     "node-sass": "^4.1.1",
     "phantomjs-prebuilt": "^2.1.6",
     "postcss-loader": "^1.3.3",
-    "sass-loader": "^6.0.1",
+    "sass-loader": "^6.0.3",
     "sinon": "^2.1.0",
     "style-loader": "^0.13.2",
     "svg-inline-loader": "^0.7.1",
     "uuid": "^3.0.0",
     "virtual-dom": "^2.1.1",
-    "webpack": "^1.13.3"
+    "webpack": "^2.2.1"
   },
   "scripts": {
     "docs": "./scripts/docs.js",

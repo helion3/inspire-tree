@@ -34,7 +34,16 @@ var plugins = [
     new webpack.DefinePlugin({
         DOM: !Boolean(EXCLUDE_DOM)
     }),
-    new webpack.BannerPlugin(banner)
+    new webpack.BannerPlugin(banner),
+    new webpack.LoaderOptionsPlugin({
+        options: {
+            context: __dirname,
+                postcss: [
+                    autoprefixer({ browsers: ['last 2 versions'] })
+                ]
+            }
+        }
+    )
 ];
 
 if (PROD) {
@@ -97,23 +106,19 @@ module.exports = {
         library: 'InspireTree',
         libraryTarget: 'umd'
     },
-    resolve: {
-        extensions: ['', '.ts', '.js']
-    },
     module: {
-        loaders: [{
+        rules: [{
             loader: 'babel-loader' + (BUNDLE ? '?plugins[]=lodash' : '')
         }, {
             test: /\.scss$/,
-            loader: ExtractTextPlugin.extract('style-loader', sassLoaders.join('!'))
+            loader: ExtractTextPlugin.extract(sassLoaders.join('!'))
         }, {
             test: /\.css$/,
             loader: 'style-loader!css-loader'
         }, {
             test: /\.gif/,
-            loader: 'file'
+            loader: 'file-loader'
         }]
     },
-    plugins: plugins,
-    postcss: [autoprefixer({ browsers: ['last 2 versions'] })]
+    plugins: plugins
 };
