@@ -164,6 +164,7 @@ tree.on('node.click', function(event, node) {
 - **node.deselected** - `(TreeNode node)` - Node deselected.
 - **node.dropin** - `(TreeNode node)` - Tree has received a new node via drop.
 - **node.dropout** - `(TreeNode node), (Element elem)` - Node dropped into a valid target.
+- **node.edited** - `(TreeNode node), (string oldValue), (string newValue)` - Node text was altered via inline editing.
 - **node.expanded** - `(TreeNode node)` - Node expanded.
 - **node.focused** - `(TreeNode node)` - Node focused.
 - **node.hidden** - `(TreeNode node)` - Node hidden.

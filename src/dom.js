@@ -332,6 +332,8 @@ export default class InspireDOM {
             var input = new DOMReference();
 
             var save = function() {
+                var originalText = node.text;
+
                 // Update the text
                 node.set('text', input.node.value);
 
@@ -339,6 +341,10 @@ export default class InspireDOM {
                 node.state('editing', false);
                 node.markDirty();
                 dom.applyChanges();
+
+                if (originalText !== node.text) {
+                    dom._tree.emit('node.edited', node, originalText, node.text);
+                }
             };
 
             return h('form', {
