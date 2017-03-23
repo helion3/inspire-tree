@@ -1,11 +1,16 @@
 # Changes to Inspire Tree
 
+# 1.12.2
+
+- Added `node.edited` event.
+- Upgraded to EventEmitter2 4.0.
+- Upgraded build system to webpack 2, which slightly reduces build filesize.
+
 # 1.12.1
 
 - Fixed an "add root node" button on click error.
 - Fixed `clearSearch` to reset `matched` state on nodes.
 - Updated `clearSearch` to return a promise, fixing `search` return type for empty searches.
-
 
 # 1.12
 
