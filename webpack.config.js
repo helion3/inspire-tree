@@ -9,7 +9,7 @@ var pkgConfig = require('./package.json');
 var PROD = process.env.PROD || false;
 
 // Which dir are we building to?
-var DIR = process.env.DIR || 'build';
+var DIR = path.join(__dirname, process.env.DIR || 'build');
 
 // Should we bundle lodash?
 var BUNDLE = process.env.BUNDLE || false;
