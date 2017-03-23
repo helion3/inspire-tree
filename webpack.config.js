@@ -38,12 +38,11 @@ var plugins = [
     new webpack.LoaderOptionsPlugin({
         options: {
             context: __dirname,
-                postcss: [
-                    autoprefixer({ browsers: ['last 2 versions'] })
-                ]
-            }
+            postcss: [
+                autoprefixer({ browsers: ['last 2 versions'] })
+            ]
         }
-    )
+    })
 ];
 
 if (PROD) {
