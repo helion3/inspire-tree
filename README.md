@@ -130,7 +130,7 @@ that you should be aware of. There are a few choices:
 - **li.attributes** - Custom attributes for this node's root `li`.
 - **itree** - An object used to describe initial tree values:
 	+ **icon** - Custom icon for the anchor.
-	+ **state.collasped** - Set initial collapsed state.
+	+ **state.collapsed** - Set initial collapsed state.
     + **state.focused** - Node has UI focus.
 	+ **state.hidden** - Set initial visibility.
     + **state.loading** - Dynamic load of children in progress.
