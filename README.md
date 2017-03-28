@@ -41,7 +41,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 ### Installation
 
-- Node: `npm install -save inspire-tree` or
+- Node: `npm install --save inspire-tree` or
 - Bower `bower install --save inspire-tree`
 
 The `dist` directory contains several versions:
