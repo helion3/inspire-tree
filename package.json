@@ -57,6 +57,7 @@
     "img",
     "src",
     "*.json",
+    "*.ts",
     "LICENSE",
     "README.md"
   ]
