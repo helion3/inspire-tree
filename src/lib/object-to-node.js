@@ -34,6 +34,10 @@ export function objectToNode(tree, object, parent) {
     var a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
 
+    var pagination = itree.pagination = {};
+    pagination.limit = tree.config.pagination.limit;
+    pagination.total = _.isArray(object.children) ? object.children.length : -1;
+
     var state = itree.state = itree.state || {};
 
     // Enabled by default

@@ -135,36 +135,20 @@ export default class InspireDOM {
             }
         });
 
-        // Set pagination limits
-        this.pagination = {
-            limit: this.getNodesLimit()
-        };
+        if (this._tree.config.dom.deferredRendering || this._tree.config.deferredLoading) {
+            // Force valid pagination limit
+            var limit = this._tree.config.pagination.limit;
+            this._tree.config.pagination.limit = limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
 
-        var limit = this.pagination.limit;
-        dom._tree.on('model.loaded', () => {
-            // Set context-specific pagination
-            dom._tree.nodes().recurseDown(function(node) {
-                if (node.children) {
-                    node.itree.pagination = {
-                        limit: limit,
-                        total: node.hasChildren() ? node.children.length : -1
-                    };
-                }
-            });
-        });
+            // Set pagination limits
+            this.pagination = {
+                limit: this._tree.config.pagination.limit
+            };
 
-        dom._tree.on('node.added', (node) => {
-            if (node.children) {
-                node.itree.pagination = {
-                    limit: limit,
-                    total: node.hasChildren() ? node.children.length : -1
-                };
+            // Listen for scrolls for automatic loading
+            if (this._tree.config.dom.autoLoadMore) {
+                this.$target.addEventListener('scroll', _.throttle(this.scrollListener.bind(this), 20));
             }
-        });
-
-        // Listen for scrolls for automatic loading
-        if ((dom._tree.config.dom.deferredRendering || dom._tree.config.deferredLoading) && dom._tree.config.dom.autoLoadMore) {
-            dom.$target.addEventListener('scroll', _.throttle(dom.scrollListener.bind(dom), 20));
         }
 
         dom.$target.inspireTree = dom._tree;
@@ -625,7 +609,7 @@ export default class InspireDOM {
         // If rendering deferred, chunk the nodes client-side
         if (this._tree.config.dom.deferredRendering) {
             // Determine the limit. Either for our current context or for the root level
-            var limit = pagination.limit || this.getNodesLimit();
+            var limit = pagination.limit || this._tree.config.pagination.limit;
 
             // Slice the current nodes by this context's pagination
             renderNodes = _.slice(nodes, 0, limit);
@@ -886,17 +870,6 @@ export default class InspireDOM {
     }
 
     /**
-     * Get the max nodes per "page" we'll allow. Defaults to how many nodes can fit.
-     *
-     * @private
-     * @return {integer} Node count
-     */
-    getNodesLimit() {
-        var limit = this._tree.config.pagination.limit;
-        return limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
-    }
-
-    /**
      * Helper method to find a scrollable ancestor element.
      *
      * @param  {HTMLElement} $element Starting element.
@@ -970,9 +943,8 @@ export default class InspireDOM {
         _.invoke(context, 'markDirty');
 
         // Increment the pagination
-        pagination.limit += this.getNodesLimit();
+        pagination.limit += this._tree.config.pagination.limit;
 
-        // Emit an event
         this._tree.emit('node.paginate', context, pagination, event);
 
         if (this._tree.config.deferredLoading) {
