@@ -17,7 +17,7 @@ describe('Deferred Loading', function() {
                 pagination: {
                     limit: 2
                 },
-                data: function(node, resolve, reject, pagination) {
+                data: function(node, resolve) {
                     resolve([{
                         text: 'A'
                     }, {
@@ -69,7 +69,7 @@ describe('Deferred Loading', function() {
                 pagination: {
                     limit: 2
                 },
-                data: function(node, resolve, reject, pagination) {
+                data: function(node, resolve) {
                     resolve([{
                         text: 'A',
                         children: true

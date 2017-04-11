@@ -476,7 +476,7 @@ export default class InspireDOM {
                 if (!node.hasLoadedChildren()) {
                     contents.push(dom.createEmptyListItemNode(true));
                 }
-                else  {
+                else {
                     contents.push(dom.createEmptyListItemNode());
                 }
             }

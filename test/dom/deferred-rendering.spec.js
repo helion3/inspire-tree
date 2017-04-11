@@ -2,7 +2,6 @@
 
 describe('Deferred Rendering', function() {
     var $tree;
-    var tree;
 
     before(function() {
         helpers.clearDOM();
@@ -10,7 +9,7 @@ describe('Deferred Rendering', function() {
 
         $tree = $('.tree');
 
-        tree = new InspireTree({
+        new InspireTree({
             target: $tree,
             dom: {
                 autoLoadMore: false,
@@ -24,7 +23,7 @@ describe('Deferred Rendering', function() {
 
                 for (var i = 0; i < 6; i++) {
                     nodes.push({
-                        text: 'Node ' +  i
+                        text: 'Node ' + i
                     });
                 }
 

@@ -2,7 +2,6 @@
 
 describe('Dynamic Loading', function() {
     var $tree;
-    var tree;
 
     beforeEach(function() {
         helpers.clearDOM();
@@ -10,7 +9,7 @@ describe('Dynamic Loading', function() {
 
         $tree = $('.tree');
 
-        tree = new InspireTree({
+        new InspireTree({
             target: $tree,
             data: function(node, resolve) {
                 resolve([{
