@@ -2715,10 +2715,6 @@ kew@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/kew/-/kew-0.7.0.tgz#79d93d2d33363d6fdd2970b335d9141ad591d79b"
 
-key-codes@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/key-codes/-/key-codes-0.0.1.tgz#f26186cd6e4bf229e9210cd1517ff2adee01d904"
-
 kind-of@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-2.0.1.tgz#018ec7a4ce7e3a86cb9141be519d24c8faa981b5"
