@@ -488,11 +488,13 @@ export default class InspireDOM {
             if (node.hasChildren()) {
                 contents.push(dom.createOrderedList(node.children, node));
             }
-            else if (dom.isDynamic && !node.hasLoadedChildren()) {
-                contents.push(dom.createEmptyListItemNode(true));
-            }
-            else if (dom.isDynamic) {
-                contents.push(dom.createEmptyListItemNode());
+            else if (dom.isDynamic && node.children) {
+                if (!node.hasLoadedChildren()) {
+                    contents.push(dom.createEmptyListItemNode(true));
+                }
+                else  {
+                    contents.push(dom.createEmptyListItemNode());
+                }
             }
 
             // Add classes for any enabled states
