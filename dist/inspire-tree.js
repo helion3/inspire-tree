@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.12.2
+ * Inspire Tree v1.12.3
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -4168,6 +4168,10 @@ function objectToNode(tree, object, parent) {
     var a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
 
+    var pagination = itree.pagination = {};
+    pagination.limit = tree.config.pagination.limit;
+    pagination.total = _.isArray(object.children) ? object.children.length : -1;
+
     var state = itree.state = itree.state || {};
 
     // Enabled by default
@@ -5712,36 +5716,20 @@ var InspireDOM = function () {
                 }
             });
 
-            // Set pagination limits
-            this.pagination = {
-                limit: this.getNodesLimit()
-            };
+            if (this._tree.config.dom.deferredRendering || this._tree.config.deferredLoading) {
+                // Force valid pagination limit
+                var limit = this._tree.config.pagination.limit;
+                this._tree.config.pagination.limit = limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
 
-            var limit = this.pagination.limit;
-            dom._tree.on('model.loaded', function () {
-                // Set context-specific pagination
-                dom._tree.nodes().recurseDown(function (node) {
-                    if (node.children) {
-                        node.itree.pagination = {
-                            limit: limit,
-                            total: node.hasChildren() ? node.children.length : -1
-                        };
-                    }
-                });
-            });
+                // Set pagination limits
+                this.pagination = {
+                    limit: this._tree.config.pagination.limit
+                };
 
-            dom._tree.on('node.added', function (node) {
-                if (node.children) {
-                    node.itree.pagination = {
-                        limit: limit,
-                        total: node.hasChildren() ? node.children.length : -1
-                    };
+                // Listen for scrolls for automatic loading
+                if (this._tree.config.dom.autoLoadMore) {
+                    this.$target.addEventListener('scroll', _.throttle(this.scrollListener.bind(this), 20));
                 }
-            });
-
-            // Listen for scrolls for automatic loading
-            if ((dom._tree.config.dom.deferredRendering || dom._tree.config.deferredLoading) && dom._tree.config.dom.autoLoadMore) {
-                dom.$target.addEventListener('scroll', _.throttle(dom.scrollListener.bind(dom), 20));
             }
 
             dom.$target.inspireTree = dom._tree;
@@ -6081,10 +6069,12 @@ var InspireDOM = function () {
 
                 if (node.hasChildren()) {
                     contents.push(dom.createOrderedList(node.children, node));
-                } else if (dom.isDynamic && !node.hasLoadedChildren()) {
-                    contents.push(dom.createEmptyListItemNode(true));
-                } else if (dom.isDynamic) {
-                    contents.push(dom.createEmptyListItemNode());
+                } else if (dom.isDynamic && node.children) {
+                    if (!node.hasLoadedChildren()) {
+                        contents.push(dom.createEmptyListItemNode(true));
+                    } else {
+                        contents.push(dom.createEmptyListItemNode());
+                    }
                 }
 
                 // Add classes for any enabled states
@@ -6226,7 +6216,7 @@ var InspireDOM = function () {
             // If rendering deferred, chunk the nodes client-side
             if (this._tree.config.dom.deferredRendering) {
                 // Determine the limit. Either for our current context or for the root level
-                var limit = pagination.limit || this.getNodesLimit();
+                var limit = pagination.limit || this._tree.config.pagination.limit;
 
                 // Slice the current nodes by this context's pagination
                 renderNodes = _.slice(nodes, 0, limit);
@@ -6501,20 +6491,6 @@ var InspireDOM = function () {
         }
 
         /**
-         * Get the max nodes per "page" we'll allow. Defaults to how many nodes can fit.
-         *
-         * @private
-         * @return {integer} Node count
-         */
-
-    }, {
-        key: 'getNodesLimit',
-        value: function getNodesLimit() {
-            var limit = this._tree.config.pagination.limit;
-            return limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this._tree.config.dom.nodeHeight);
-        }
-
-        /**
          * Helper method to find a scrollable ancestor element.
          *
          * @param  {HTMLElement} $element Starting element.
@@ -6599,9 +6575,8 @@ var InspireDOM = function () {
             _.invoke(context, 'markDirty');
 
             // Increment the pagination
-            pagination.limit += this.getNodesLimit();
+            pagination.limit += this._tree.config.pagination.limit;
 
-            // Emit an event
             this._tree.emit('node.paginate', context, pagination, event);
 
             if (this._tree.config.deferredLoading) {

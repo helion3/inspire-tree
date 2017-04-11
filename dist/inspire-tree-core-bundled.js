@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.12.2
+ * Inspire Tree v1.12.3
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -5518,6 +5518,10 @@ var _assign2 = __webpack_require__(157);
 
 var _assign3 = _interopRequireDefault(_assign2);
 
+var _isArray2 = __webpack_require__(0);
+
+var _isArray3 = _interopRequireDefault(_isArray2);
+
 exports.objectToNode = objectToNode;
 
 var _collectionToModel = __webpack_require__(31);
@@ -5558,6 +5562,10 @@ function objectToNode(tree, object, parent) {
 
     var a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
+
+    var pagination = itree.pagination = {};
+    pagination.limit = tree.config.pagination.limit;
+    pagination.total = (0, _isArray3.default)(object.children) ? object.children.length : -1;
 
     var state = itree.state = itree.state || {};
 

@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 1.12.3
+
+- Fixed `Cannot set property 'total' of undefined` for nested lists when using deferred loading.
+- Fixed empty OL rendering for lists without children when using function data loader.
+- Added typescript definition to npm package.json file list.
+- Added several tests.
+
 # 1.12.2
 
 - Added `node.edited` event.
