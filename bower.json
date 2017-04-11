@@ -21,6 +21,5 @@
   ],
   "private": false,
   "devDependencies": {
-    "angular": "~1.4.7"
   }
 }
