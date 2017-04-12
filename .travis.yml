@@ -3,6 +3,7 @@ node_js:
   - "7"
   - "6"
 before_install:
+  - gem install scss-lint
   - npm install -g webpack yarn
   - yarn -V
 install:
