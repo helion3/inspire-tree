@@ -1,5 +1,5 @@
 /*!
- * Inspire Tree v1.12.3
+ * Inspire Tree v1.12.4
  * https://github.com/helion3/inspire-tree
  * 
  * Copyright 2015 Helion3, and other contributors
@@ -6868,8 +6868,8 @@ var InspireDOM = function () {
             var $tree = document.querySelector('.inspire-tree');
             var $selected = $tree.querySelector('.selected');
 
-            if ($selected && dom.$scrollLayer) {
-                dom.$scrollLayer.scrollTop = $selected.offsetTop;
+            if ($selected && this.$scrollLayer) {
+                this.$scrollLayer.scrollTop = $selected.offsetTop;
             }
         }
     }]);

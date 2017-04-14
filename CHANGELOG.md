@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 1.12.4
+
+- Fixed incorrect `this` assignment in dom.scrollSelectedIntoView.
+
 # 1.12.3
 
 - Fixed `Cannot set property 'total' of undefined` for nested lists when using deferred loading.
