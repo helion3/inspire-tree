@@ -1209,8 +1209,8 @@ export default class InspireDOM {
         var $tree = document.querySelector('.inspire-tree');
         var $selected = $tree.querySelector('.selected');
 
-        if ($selected && dom.$scrollLayer) {
-            dom.$scrollLayer.scrollTop = $selected.offsetTop;
+        if ($selected && this.$scrollLayer) {
+            this.$scrollLayer.scrollTop = $selected.offsetTop;
         }
     }
 }
