@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('Tree.emit', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: []
         });
     });
@@ -18,6 +16,4 @@ describe('Tree.emit', function() {
     });
 
     // Note: logic isn't covered since it's an external library
-
-    after(helpers.clearDOM);
 });

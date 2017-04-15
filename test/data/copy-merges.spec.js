@@ -1,15 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('Modification', function() {
     var tree1;
     var tree2;
 
     before(function() {
-        helpers.createTreeContainer();
-        helpers.createTreeContainer('tree2');
-
         tree1 = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'A',
                 id: 1
@@ -24,7 +21,6 @@ describe('Modification', function() {
         });
 
         tree2 = new InspireTree({
-            target: '.tree2',
             data: []
         });
     });
@@ -188,6 +184,4 @@ describe('Modification', function() {
 
         tree2.removeAll();
     });
-
-    after(helpers.clearDOM);
 });

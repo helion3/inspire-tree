@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.recurseUp', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -53,6 +47,4 @@ describe('TreeNode.prototype.recurseUp', function() {
 
         expect(count).to.equal(1);
     });
-
-    after(helpers.clearDOM);
 });

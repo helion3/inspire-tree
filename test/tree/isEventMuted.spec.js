@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('Tree.isEventMuted', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: []
         });
     });
@@ -37,6 +35,4 @@ describe('Tree.isEventMuted', function() {
         expect(tree.muted()).to.be.true;
         expect(tree.isEventMuted('node.selected')).to.be.true;
     });
-
-    after(helpers.clearDOM);
 });

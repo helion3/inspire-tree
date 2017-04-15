@@ -1,13 +1,11 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('Tree.search', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'fox',
                 id: 1
@@ -37,7 +35,7 @@ describe('Tree.search', function() {
             expect(matches).to.have.length(1);
 
             done();
-        });
+        }).catch(done);
     });
 
     it('returns a match for a regex query', function(done) {
@@ -45,7 +43,7 @@ describe('Tree.search', function() {
             expect(matches).to.have.length(1);
 
             done();
-        });
+        }).catch(done);
     });
 
     it('returns matches for a custom matching function', function(done) {
@@ -57,7 +55,7 @@ describe('Tree.search', function() {
             expect(matches).to.have.length(3);
 
             done();
-        });
+        }).catch(done);
     });
 
     it('hides non-matches', function() {
@@ -111,12 +109,11 @@ describe('Tree.search', function() {
             expect(matches).to.have.length(0);
 
             done();
-        });
+        }).catch(done);
     });
 
     it('uses a custom matcher', function() {
         tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'fox',
                 id: 1
@@ -154,7 +151,6 @@ describe('Tree.search', function() {
 
     it('uses a custom match processor', function() {
         tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'fox',
                 id: 1
@@ -179,6 +175,4 @@ describe('Tree.search', function() {
         expect(tree.node(1).checked()).to.be.true;
         expect(tree.node(2).checked()).to.be.false;
     });
-
-    after(helpers.clearDOM);
 });

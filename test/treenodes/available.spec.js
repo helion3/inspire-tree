@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.available', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
                 id: 1,
@@ -38,6 +36,4 @@ describe('TreeNodes.prototype.available', function() {
     it('returns only available nodes from a treenodes subset', function() {
         expect(tree.nodes().deepest().available()).to.have.length(1);
     });
-
-    after(helpers.clearDOM);
 });

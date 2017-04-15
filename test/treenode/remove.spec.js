@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.remove', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1
@@ -29,6 +23,4 @@ describe('TreeNode.prototype.remove', function() {
 
         expect(tree.nodes()).to.have.length(0);
     });
-
-    after(helpers.clearDOM);
 });

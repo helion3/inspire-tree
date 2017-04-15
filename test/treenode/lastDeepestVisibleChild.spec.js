@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.lastDeepestVisibleChild', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
                 id: 1,
@@ -33,6 +31,4 @@ describe('TreeNode.prototype.lastDeepestVisibleChild', function() {
     it('returns last deepest child node', function() {
         expect(tree.node(1).lastDeepestVisibleChild().text).to.equal('B');
     });
-
-    after(helpers.clearDOM);
 });

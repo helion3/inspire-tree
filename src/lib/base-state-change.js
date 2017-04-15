@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 /**
  * Reset a node's state to the tree default.
  *
@@ -6,7 +8,7 @@
  * @returns {TreeNode} Node object.
  */
 function resetState(node) {
-    _.each(node._tree.defaultState, function(val, prop) {
+    _.each(node._tree.defaultState, (val, prop) => {
         node.state(prop, val);
     });
 
@@ -27,7 +29,7 @@ function resetState(node) {
  */
 export function baseStateChange(prop, value, verb, node, deep) {
     if (node.state(prop) !== value) {
-        node._tree.dom.batch();
+        node._tree.batch();
 
         if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
             resetState(node);
@@ -44,7 +46,7 @@ export function baseStateChange(prop, value, verb, node, deep) {
         }
 
         node.markDirty();
-        node._tree.dom.end();
+        node._tree.end();
     }
 
     return node;

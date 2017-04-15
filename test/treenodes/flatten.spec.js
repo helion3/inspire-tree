@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.flatten', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -41,6 +35,4 @@ describe('TreeNodes.prototype.flatten', function() {
     it('returns matches for custom booleans', function() {
         expect(tree.nodes().flatten('customBool')).to.have.length(1);
     });
-
-    after(helpers.clearDOM);
 });

@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.deepest', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
                 id: 1,
@@ -38,6 +36,4 @@ describe('TreeNodes.prototype.deepest', function() {
         expect(deepest).to.have.length(2);
         expect(deepest[0].text).to.equal('B');
     });
-
-    after(helpers.clearDOM);
 });

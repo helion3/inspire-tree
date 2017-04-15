@@ -9,9 +9,6 @@ import { standardizePromise } from './lib/standardize-promise';
 import { TreeNode } from './treenode';
 import { TreeNodes } from './treenodes';
 
-// CSS
-require('./scss/tree.scss');
-
 /**
  * Maps a method to the root TreeNodes collection.
  *
@@ -35,16 +32,15 @@ export default class InspireTree extends EventEmitter2 {
     constructor(opts) {
         super();
 
-        var tree = this;
+        let tree = this;
 
         // Init properties
         tree._lastSelectedNode;
         tree._muted = false;
         tree.allowsLoadEvents = false;
-        tree.dom = false;
+        tree.batching = 0;
         tree.initialized = false;
         tree.isDynamic = false;
-        tree.model = new TreeNodes(tree);
         tree.opts = opts;
         tree.preventDeselection = false;
 
@@ -56,13 +52,6 @@ export default class InspireTree extends EventEmitter2 {
             },
             contextMenu: false,
             data: false,
-            dom: {
-                autoLoadMore: true,
-                deferredRendering: false,
-                nodeHeight: 25,
-                showCheckboxes: false
-            },
-            dragTargets: false,
             editable: false,
             editing: {
                 add: false,
@@ -90,42 +79,33 @@ export default class InspireTree extends EventEmitter2 {
                 require: false
             },
             showCheckboxes: false,
-            sort: false,
-            tabindex: -1,
-            target: false
+            sort: false
         });
 
         // If checkbox mode, we must force auto-selecting children
         if (tree.config.selection.mode === 'checkbox') {
             tree.config.selection.autoSelectChildren = true;
 
-            // If user didn't specify showCheckboxes,
-            // but is using checkbox selection mode,
-            // enable it automatically.
-            if (!_.isBoolean(_.get(opts, 'dom.showCheckboxes'))) {
-                tree.config.dom.showCheckboxes = true;
-            }
-
             // In checkbox mode, checked=selected
-            tree.on('node.checked', function(node) {
+            tree.on('node.checked', (node) => {
                 if (!node.selected()) {
                     node.select(true);
                 }
             });
 
-            tree.on('node.selected', function(node) {
+            tree.on('node.selected', (node) => {
                 if (!node.checked()) {
                     node.check(true);
                 }
             });
 
-            tree.on('node.unchecked', function(node) {
+            tree.on('node.unchecked', (node) => {
                 if (node.selected()) {
                     node.deselect(true);
                 }
             });
 
-            tree.on('node.deselected', function(node) {
+            tree.on('node.deselected', (node) => {
                 if (node.checked()) {
                     node.uncheck(true);
                 }
@@ -172,17 +152,16 @@ export default class InspireTree extends EventEmitter2 {
         // Cache some configs
         tree.allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
         tree.isDynamic = _.isFunction(tree.config.data);
-        tree.usesNativeDOM = DOM;
 
         // Override emitter so we can better control flow
-        var emit = tree.emit;
+        let emit = tree.emit;
         tree.emit = function(eventName) {
             if (!tree.isEventMuted(eventName)) {
                 // Duck-type for a DOM event
                 if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
-                    var event = arguments[1];
+                    let event = arguments[1];
                     event.treeDefaultPrevented = false;
-                    event.preventTreeDefault = function() {
+                    event.preventTreeDefault = () => {
                         event.treeDefaultPrevented = true;
                     };
                 }
@@ -191,37 +170,14 @@ export default class InspireTree extends EventEmitter2 {
             }
         };
 
-        // Webpack has a DOM boolean that when false,
-        // allows us to exclude this library from our build.
-        // For those doing their own rendering, it's useless.
-        if (DOM) {
-            tree.dom = new (require('./dom'))(tree);
-        }
-
-        // Validation
-        if (tree.dom && (!_.isObject(opts) || !opts.target)) {
-            throw new TypeError('Property "target" is required, either an element or a selector.');
-        }
-
-        // Load custom/empty renderer
-        if (!tree.dom) {
-            var renderer = _.isFunction(tree.config.renderer) ? tree.config.renderer(tree) : {};
-            tree.dom = _.defaults(renderer, {
-                applyChanges: _.noop,
-                attach: _.noop,
-                batch: _.noop,
-                end: _.noop
-            });
-        }
-
-        // Connect to our target DOM element
-        tree.dom.attach(tree.config.target);
+        // Init the model
+        tree.model = new TreeNodes(tree);
 
         // Load initial user data
         if (tree.config.data) {
-            tree.load(tree.config.data).catch(function(err) {
+            tree.load(tree.config.data).catch((err) => {
                 // Proxy initial errors. At this point we should never consume them
-                setTimeout(function() {
+                setTimeout(() => {
                     throw err;
                 });
             });
@@ -251,17 +207,35 @@ export default class InspireTree extends EventEmitter2 {
      * @return {TreeNodes} Added node objects.
      */
     addNodes(nodes) {
-        var tree = this;
-        tree.dom.batch();
+        this.batch();
 
-        var newNodes = new TreeNodes(this);
-        _.each(nodes, function(node) {
-            newNodes.push(tree.addNode(node));
+        let newNodes = new TreeNodes(this);
+        _.each(nodes, (node) => {
+            newNodes.push(this.addNode(node));
         });
 
-        tree.dom.end();
+        this.end();
 
         return newNodes;
+    }
+
+    /**
+     * Release any pending data changes to any listeners.
+     *
+     * Will skip rendering as long as any calls
+     * to `batch` have yet to be resolved,
+     *
+     * @category Tree
+     * @private
+     * @return {void}
+     */
+    applyChanges() {
+        // Never rerender when until batch complete
+        if (this.batching > 0) {
+            return;
+        }
+
+        this.emit('changes.applied');
     }
 
     /**
@@ -273,6 +247,21 @@ export default class InspireTree extends EventEmitter2 {
      */
     available() {
         return map(this, 'available', arguments);
+    }
+
+    /**
+     * Batch multiple changes for any listeners (i.e. DOM)
+     *
+     * @category Tree
+     * @private
+     * @return {void}
+     */
+    batch() {
+        if (this.batching < 0) {
+            this.batching = 0;
+        }
+
+        this.batching++;
     }
 
     /**
@@ -303,14 +292,15 @@ export default class InspireTree extends EventEmitter2 {
      * @return {array} Array with two TreeNode objects.
      */
     boundingNodes() {
-        var pathMap = _.transform(arguments, function(map, node) {
+        let pathMap = _.transform(arguments, (map, node) => {
             map[node.indexPath().replace(/\./g, '')] = node;
         }, {});
 
-        var paths = _.sortBy(Object.keys(pathMap));
+        let [head, ...tail] = _.sortBy(Object.keys(pathMap));
+
         return [
-            _.get(pathMap, _.head(paths)),
-            _.get(pathMap, _.tail(paths))
+            _.get(pathMap, head),
+            _.get(pathMap, tail)
         ];
     }
 
@@ -509,6 +499,21 @@ export default class InspireTree extends EventEmitter2 {
         this.preventDeselection = false;
 
         return this;
+    }
+
+    /**
+     * Release the current batch.
+     *
+     * @category Tree
+     * @private
+     * @return {void}
+     */
+    end() {
+        this.batching--;
+
+        if (this.batching === 0) {
+            this.applyChanges();
+        }
     }
 
     /**
@@ -735,52 +740,46 @@ export default class InspireTree extends EventEmitter2 {
      * tree.load($.getJSON('nodes.json'));
      */
     load(loader) {
-        var tree = this;
-
-        var promise = new Promise(function(resolve, reject) {
-            var complete = function(nodes, totalNodes) {
-                if (_.get(tree, 'dom.pagination')) {
-                    tree.dom.pagination.total = nodes.length;
-
-                    if (_.parseInt(totalNodes) > nodes.length) {
-                        tree.dom.pagination.total = _.parseInt(totalNodes);
-                    }
-                }
-
+        let promise = new Promise((resolve, reject) => {
+            let complete = (nodes, totalNodes) => {
                 // Delay event for synchronous loader. Otherwise it fires
                 // before the user has a chance to listen.
-                if (!tree.initialized && _.isArray(nodes)) {
-                    setTimeout(function() {
-                        tree.emit('data.loaded', nodes);
+                if (!this.initialized && _.isArray(nodes)) {
+                    setTimeout(() => {
+                        this.emit('data.loaded', nodes);
                     });
                 }
                 else {
-                    tree.emit('data.loaded', nodes);
+                    this.emit('data.loaded', nodes);
                 }
 
                 // Concat newly loaded nodes
-                tree.model = tree.model.concat(collectionToModel(tree, nodes));
+                this.model = this.model.concat(collectionToModel(this, nodes));
 
-                if (tree.config.selection.require && !tree.selected().length) {
-                    tree.selectFirstAvailableNode();
+                // Set pagination
+                this.model._pagination.total = nodes.length;
+                if (_.parseInt(totalNodes) > nodes.length) {
+                    this.model._pagination.total = _.parseInt(totalNodes);
                 }
+
+                if (this.config.selection.require && !this.selected().length) {
+                    this.selectFirstAvailableNode();
+                }
+
+                var init = () => {
+                    this.emit('model.loaded', this.model);
+
+                    resolve(this.model);
+
+                    this.applyChanges();
+                };
 
                 // Delay event for synchronous loader
-                if (!tree.initialized && _.isArray(nodes)) {
-                    setTimeout(function() {
-                        tree.emit('model.loaded', tree.model);
-                    });
+                if (!this.initialized && _.isArray(nodes)) {
+                    setTimeout(init);
                 }
                 else {
-                    tree.emit('model.loaded', tree.model);
-                }
-
-                resolve(tree.model);
-
-                tree.dom.applyChanges();
-
-                if (_.isFunction(tree.dom.scrollSelectedIntoView)) {
-                    tree.dom.scrollSelectedIntoView();
+                    init();
                 }
             };
 
@@ -791,7 +790,7 @@ export default class InspireTree extends EventEmitter2 {
 
             // Data loader requires a caller/callback
             else if (_.isFunction(loader)) {
-                var resp = loader(null, complete, reject, _.get(tree, 'dom.pagination'));
+                let resp = loader(null, complete, reject, this.pagination());
 
                 // Loader returned its own object
                 if (resp) {
@@ -810,8 +809,8 @@ export default class InspireTree extends EventEmitter2 {
         });
 
         // Copy to event listeners
-        promise.catch(function(err) {
-            tree.emit('data.loaderror', err);
+        promise.catch((err) => {
+            this.emit('data.loaderror', err);
         });
 
         return promise;
@@ -826,6 +825,17 @@ export default class InspireTree extends EventEmitter2 {
      */
     loading() {
         return map(this, 'loading', arguments);
+    }
+
+    /**
+     * Loads additional nodes for the root context.
+     *
+     * @category Tree
+     * @param {Event} event Click or scroll event if DOM interaction triggered this call.
+     * @return {Promise} Resolves with request results.
+     */
+    loadMore() {
+        return map(this, 'loadMore', arguments);
     }
 
     /**
@@ -886,11 +896,21 @@ export default class InspireTree extends EventEmitter2 {
      * @return {TreeNodes} Array of node objects.
      * @example
      *
-     * var all = tree.nodes()
-     * var some = tree.nodes([1, 2, 3])
+     * let all = tree.nodes()
+     * let some = tree.nodes([1, 2, 3])
      */
     nodes() {
         return map(this, 'nodes', arguments);
+    }
+
+    /**
+     * Get the root TreeNodes pagination.
+     *
+     * @category Tree
+     * @return {object} Pagination configuration object.
+     */
+    pagination() {
+        return map(this, 'pagination', arguments);
     }
 
     /**
@@ -937,7 +957,7 @@ export default class InspireTree extends EventEmitter2 {
      */
     removeAll() {
         this.model = new TreeNodes(this);
-        this.dom.applyChanges();
+        this.applyChanges();
 
         return this;
     }
@@ -981,37 +1001,35 @@ export default class InspireTree extends EventEmitter2 {
      * @return {TreeNodes} Array of matching node objects.
      */
     search(query) {
-        var tree = this;
-        var customMatcher = tree.config.search.matcher;
-        var customMatchProcessor = tree.config.search.matchProcessor;
+        let { matcher, matchProcessor } = this.config.search;
 
         // Don't search if query empty
         if (!query || (_.isString(query) && _.isEmpty(query))) {
-            return Promise.resolve(tree.clearSearch());
+            return Promise.resolve(this.clearSearch());
         }
 
-        tree.dom.batch();
+        this.batch();
 
         // Reset states
-        tree.recurseDown((node) => {
+        this.recurseDown((node) => {
             node.state('hidden', true);
             node.state('matched', false);
         });
 
-        tree.dom.end();
+        this.end();
 
         // Query nodes for any matching the query
-        var matcher = _.isFunction(customMatcher) ? customMatcher : (query, resolve) => {
-            var matches = new TreeNodes(this._tree);
+        matcher = _.isFunction(matcher) ? matcher : (query, resolve) => {
+            let matches = new TreeNodes(this);
 
             // Convery the query into a usable predicate
             if (_.isString(query)) {
                 query = new RegExp(query, 'i');
             }
 
-            var predicate;
+            let predicate;
             if (_.isRegExp(query)) {
-                predicate = function(node) {
+                predicate = (node) => {
                     return query.test(node.text);
                 };
             }
@@ -1020,7 +1038,7 @@ export default class InspireTree extends EventEmitter2 {
             }
 
             // Recurse down and find all matches
-            tree.model.recurseDown((node) => {
+            this.model.recurseDown((node) => {
                 if (!node.removed()) {
                     if (predicate(node)) {
                         // Return as a match
@@ -1033,7 +1051,7 @@ export default class InspireTree extends EventEmitter2 {
         };
 
         // Process all matching nodes.
-        var matchProcessor = _.isFunction(customMatchProcessor) ? customMatchProcessor : (matches) => {
+        matchProcessor = _.isFunction(matchProcessor) ? matchProcessor : (matches) => {
             matches.each((node) => {
                 node.show().state('matched', true);
 
@@ -1046,19 +1064,19 @@ export default class InspireTree extends EventEmitter2 {
         };
 
         // Wrap the search matcher with a promise since it could require async requests
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             // Execute the matcher and pipe results to the processor
             matcher(query, (matches) => {
                 // Convert to a TreeNodes array if we're receiving external nodes
-                if (!tree.isTreeNodes(matches)) {
-                    matches = tree.nodes(_.map(matches, 'id'));
+                if (!this.isTreeNodes(matches)) {
+                    matches = this.nodes(_.map(matches, 'id'));
                 }
 
-                tree.dom.batch();
+                this.batch();
 
                 matchProcessor(matches);
 
-                tree.dom.end();
+                this.end();
 
                 resolve(matches);
             }, reject);
@@ -1096,20 +1114,16 @@ export default class InspireTree extends EventEmitter2 {
      * @return {Tree} Tree instance.
      */
     selectBetween(startNode, endNode) {
-        this.dom.batch();
+        this.batch();
 
-        var node = startNode.nextVisibleNode();
-        while (node) {
-            if (node.id === endNode.id) {
-                break;
-            }
-
+        let node = startNode.nextVisibleNode();
+        while (node.id !== endNode.id) {
             node.select();
 
             node = node.nextVisibleNode();
         }
 
-        this.dom.end();
+        this.end();
 
         return this;
     };
@@ -1142,7 +1156,7 @@ export default class InspireTree extends EventEmitter2 {
      * @return {TreeNode} Selected node object.
      */
     selectFirstAvailableNode() {
-        var node = this.model.filter('available').get(0);
+        let node = this.model.filter('available').get(0);
         if (node) {
             node.select();
         }

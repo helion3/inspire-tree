@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('Tree.canAutoDeselect', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             selection: {
                 autoDeselect: false
             },
@@ -36,6 +30,4 @@ describe('Tree.canAutoDeselect', function() {
         tree.config.selection.autoDeselect = true;
         expect(tree.canAutoDeselect()).to.be.true;
     });
-
-    after(helpers.clearDOM);
 });

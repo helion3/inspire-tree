@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.loadChildren', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             selection: {
                 mode: 'checkbox'
             },
@@ -46,12 +44,10 @@ describe('TreeNode.prototype.loadChildren', function() {
             expect(node.hasLoadedChildren()).to.be.true;
             expect(node.selected()).to.be.true;
             done();
-        });
+        }).catch(done);
     });
 
     it('shares checked states', function() {
         expect(tree.node(2).selected()).to.be.true;
     });
-
-    after(helpers.clearDOM);
 });

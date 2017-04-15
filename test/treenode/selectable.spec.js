@@ -1,15 +1,10 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.selectable', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
             selection: {
@@ -19,7 +14,6 @@ describe('TreeNode.prototype.selectable', function() {
                     }
                 }
             },
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1
@@ -64,6 +58,4 @@ describe('TreeNode.prototype.selectable', function() {
     it('returns false for unselectable node when using selection.allow', function() {
         expect(tree.node(3).selectable()).to.be.false;
     });
-
-    after(helpers.clearDOM);
 });

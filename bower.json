@@ -1,6 +1,6 @@
 {
   "name": "inspire-tree",
-  "version": "1.12.4",
+  "version": "2.0.0-beta.3",
   "homepage": "https://github.com/helion3/inspire-tree",
   "authors": [
     "Mike Botsko <botsko@gmail.com>"
@@ -9,15 +9,14 @@
   "license": "MIT",
   "main": "dist/inspire-tree.min.js",
   "ignore": [
-    "demos",
     "hooks",
     "scripts",
     "test",
     ".*",
-    "index.html",
     "karma*",
     "package.json",
-    "webpack*"
+    "rollup*",
+    "yarn.lock"
   ],
   "private": false,
   "devDependencies": {

@@ -1,17 +1,22 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.uncheck', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
-                id: 1
+                id: 1,
+                children: [{
+                    text: 'AA',
+                    id: 11
+                }, {
+                    text: 'AB',
+                    id: 12
+                }]
             }, {
                 text: 'B',
                 id: 2
@@ -24,7 +29,7 @@ describe('TreeNode.prototype.uncheck', function() {
     });
 
     it('unchecks the node', function() {
-        var node = tree.node(1);
+        var node = tree.node(2);
         node.check();
         expect(node.checked()).to.be.true;
 
@@ -32,5 +37,16 @@ describe('TreeNode.prototype.uncheck', function() {
         expect(node.checked()).to.be.false;
     });
 
-    after(helpers.clearDOM);
+    it('unchecks child nodes', function() {
+        var node = tree.node(1);
+        node.check();
+        node.children.each((child) => {
+            expect(child.checked()).to.be.true;
+        });
+
+        node.uncheck();
+        node.children.each((child) => {
+            expect(child.checked()).to.be.false;
+        });
+    });
 });

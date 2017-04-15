@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.hasLoadedChildren', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: '.tree',
             data: function(node, resolve) {
                 if (!node) {
                     resolve([{
@@ -49,26 +43,17 @@ describe('TreeNode.prototype.hasLoadedChildren', function() {
         expect(tree.node(2).hasLoadedChildren()).to.be.false;
     });
 
-    it('shows loading node', function() {
-        tree.node(3).expand();
-        expect($tree.find('[data-uid=3] .leaf .title').text()).to.equal('Loading...');
+    it('returns true for a node which has loaded with an empty result', function(done) {
+        tree.node(2).expand().then(function() {
+            expect(tree.node(2).hasLoadedChildren()).to.be.true;
+            done();
+        }).catch(done);
     });
 
-    it('shows empty node', function() {
-        tree.node(2).expand();
-        expect($tree.find('[data-uid=2] .leaf .title').text()).to.equal('No Results');
-    });
-
-    it('returns true for a node which has loaded with an empty result', function() {
-        expect(tree.node(2).hasLoadedChildren()).to.be.true;
-    });
-
-    it('returns true for a node which has loaded with children', function(done) {
+    it('returns true for a node which has loaded children', function(done) {
         tree.node(1).expand().then(function() {
             expect(tree.node(1).hasLoadedChildren()).to.be.true;
             done();
-        });
+        }).catch(done);
     });
-
-    after(helpers.clearDOM);
 });

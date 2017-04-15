@@ -21,9 +21,9 @@ function baseStatePredicate(state, full) {
     }
 
     // Cache a state predicate function
-    var fn = getPredicateFunction(state);
+    let fn = getPredicateFunction(state);
 
-    return this.flatten(function(node) {
+    return this.flatten((node) => {
         // Never include removed nodes unless specifically requested
         if (state !== 'removed' && node.removed()) {
             return false;
@@ -46,17 +46,17 @@ function baseStatePredicate(state, full) {
 function baseInvoke(nodes, methods, args, deep) {
     methods = _.castArray(methods);
 
-    nodes._tree.dom.batch();
+    nodes._tree.batch();
 
-    nodes[deep ? 'recurseDown' : 'each'](function(node) {
-        _.each(methods, function(method) {
+    nodes[deep ? 'recurseDown' : 'each']((node) => {
+        _.each(methods, (method) => {
             if (_.isFunction(node[method])) {
                 node[method].apply(node, args);
             }
         });
     });
 
-    nodes._tree.dom.end();
+    nodes._tree.end();
 
     return nodes;
 }
@@ -69,9 +69,9 @@ function baseInvoke(nodes, methods, args, deep) {
  * @return {function} Predicate function.
  */
 function getPredicateFunction(predicate) {
-    var fn = predicate;
+    let fn = predicate;
     if (_.isString(predicate)) {
-        fn = function(node) {
+        fn = (node) => {
             return _.isFunction(node[predicate]) ? node[predicate]() : node[predicate];
         };
     }
@@ -94,17 +94,26 @@ export class TreeNodes extends Array {
     constructor(tree, array) {
         super();
 
+        if (_.get(tree, 'constructor.name') !== 'InspireTree') {
+            throw new TypeError('Invalid tree instance.');
+        }
+
         this._tree = tree;
         this.length = 0;
 
-        var treeNodes = this;
+        // Init pagination
+        this._pagination = {
+            limit: tree.config.pagination.limit,
+            total: 0
+        };
+
         if (_.isArray(array) || array instanceof TreeNodes) {
             _.each(array, (node) => {
                 if (node instanceof TreeNode) {
-                    treeNodes.push(node.clone());
+                    this.push(node.clone());
                 }
                 else {
-                    treeNodes.addNode(node);
+                    this.addNode(node);
                 }
             });
         }
@@ -121,7 +130,7 @@ export class TreeNodes extends Array {
      */
     addNode(object) {
         // Base insertion index
-        var index = this.length;
+        let index = this.length;
 
         // If tree is sorted, insert in correct position
         if (this._tree.config.sort) {
@@ -234,10 +243,10 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Resulting node array.
      */
     concat(nodes) {
-        var newNodes = new TreeNodes(this._tree);
+        let newNodes = new TreeNodes(this._tree);
         newNodes._context = this._context;
 
-        var pusher = function(node) {
+        let pusher = (node) => {
             if (node instanceof TreeNode) {
                 newNodes.push(node);
             }
@@ -245,6 +254,9 @@ export class TreeNodes extends Array {
 
         _.each(this, pusher);
         _.each(nodes, pusher);
+
+        // Copy pagination limit
+        newNodes._pagination.limit = this._pagination.limit;
 
         return newNodes;
     }
@@ -269,8 +281,6 @@ export class TreeNodes extends Array {
      * @return {object} Methods to perform action on copied nodes.
      */
     copy(hierarchy) {
-        var nodes = this;
-
         return {
 
             /**
@@ -280,14 +290,14 @@ export class TreeNodes extends Array {
              * @param {object} dest Destination Inspire Tree.
              * @return {array} Array of new nodes.
              */
-            to: function(dest) {
+            to: (dest) => {
                 if (!_.isFunction(dest.addNodes)) {
                     throw new Error('Destination must be an Inspire Tree instance.');
                 }
 
-                var newNodes = new TreeNodes(this._tree);
+                let newNodes = new TreeNodes(this._tree);
 
-                _.each(nodes, function(node) {
+                _.each(this, (node) => {
                     newNodes.push(node.copy(hierarchy).to(dest));
                 });
 
@@ -303,9 +313,9 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     deepest() {
-        var matches = new TreeNodes(this._tree);
+        let matches = new TreeNodes(this._tree);
 
-        this.recurseDown(function(node) {
+        this.recurseDown((node) => {
             if (!node.children) {
                 matches.push(node);
             }
@@ -397,23 +407,21 @@ export class TreeNodes extends Array {
      * @return {Promise} Promise resolved only when all children have loaded and expanded.
      */
     expandDeep() {
-        var nodes = this;
+        return new Promise((resolve) => {
+            let waitCount = 0;
 
-        return new Promise(function(resolve) {
-            var waitCount = 0;
-
-            var done = function() {
+            let done = () => {
                 if (--waitCount === 0) {
-                    resolve(nodes);
+                    resolve(this);
                 }
             };
 
-            nodes.recurseDown(function(node) {
+            this.recurseDown((node) => {
                 waitCount++;
 
                 // Ignore nodes without children
                 if (node.children) {
-                    node.expand().catch(done).then(function() {
+                    node.expand().catch(done).then(() => {
                         // Manually trigger expansion on newly loaded children
                         node.children.expandDeep().catch(done).then(done);
                     });
@@ -446,10 +454,10 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     extract(predicate) {
-        var flat = this.flatten(predicate);
-        var matches = new TreeNodes(this._tree);
+        let flat = this.flatten(predicate);
+        let matches = new TreeNodes(this._tree);
 
-        _.each(flat, function(node) {
+        _.each(flat, (node) => {
             matches.addNode(node.copyHierarchy());
         });
 
@@ -464,10 +472,10 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     filter(predicate) {
-        var fn = getPredicateFunction(predicate);
-        var matches = new TreeNodes(this._tree);
+        let fn = getPredicateFunction(predicate);
+        let matches = new TreeNodes(this._tree);
 
-        _.each(this, function(node) {
+        _.each(this, (node) => {
             if (fn(node)) {
                 matches.push(node);
             }
@@ -485,10 +493,10 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Flat array of matching nodes.
      */
     flatten(predicate) {
-        var flat = new TreeNodes(this._tree);
+        let flat = new TreeNodes(this._tree);
 
-        var fn = getPredicateFunction(predicate);
-        this.recurseDown(function(node) {
+        let fn = getPredicateFunction(predicate);
+        this.recurseDown((node) => {
             if (fn(node)) {
                 flat.push(node);
             }
@@ -573,7 +581,7 @@ export class TreeNodes extends Array {
         // If node has a pre-existing ID
         if (object.id) {
             // Is it already in the tree?
-            var existingNode = this.node(object.id);
+            let existingNode = this.node(object.id);
             if (existingNode) {
                 existingNode.restore().show();
 
@@ -586,7 +594,7 @@ export class TreeNodes extends Array {
                     }
 
                     // Copy each child (using addNode, which uses insertAt)
-                    _.each(object.children, function(child) {
+                    _.each(object.children, (child) => {
                         existingNode.children.addNode(child);
                     });
                 }
@@ -597,7 +605,7 @@ export class TreeNodes extends Array {
                 }
 
                 existingNode.markDirty();
-                this._tree.dom.applyChanges();
+                this._tree.applyChanges();
 
                 // Node merged, return it.
                 return existingNode;
@@ -605,7 +613,7 @@ export class TreeNodes extends Array {
         }
 
         // Node is new, insert at given location.
-        var node = this._tree.isNode(object) ? object : objectToNode(this._tree, object);
+        let node = this._tree.isNode(object) ? object : objectToNode(this._tree, object);
 
         // Grab remaining nodes
         this.splice(index, 0, node);
@@ -627,7 +635,7 @@ export class TreeNodes extends Array {
             this.invoke('markDirty');
         }
 
-        this._tree.dom.applyChanges();
+        this._tree.applyChanges();
 
         return node;
     }
@@ -668,6 +676,69 @@ export class TreeNodes extends Array {
     }
 
     /**
+     * Loads additional nodes for this context.
+     *
+     * @category TreeNodes
+     * @param {Event} event Click or scroll event if DOM interaction triggered this call.
+     * @return {Promise} Resolves with request results.
+     */
+    loadMore(event) {
+        // Never refire if node is loading
+        if (this._loading) {
+            return Promise.reject(new Error('Pending loadMore call must complete before being invoked again.'));
+        }
+
+        let promise;
+
+        // If no records remain, immediately resolve
+        if (this._pagination.limit === this._pagination.total) {
+            return Promise.resolve();
+        }
+
+        // Set loading flag, prevents repeat requests
+        this._loading = true;
+        this._tree.batch();
+
+        // Mark this context as dirty since we'll update text/tree nodes
+        _.invoke(this._context, 'markDirty');
+
+        // Increment the pagination
+        this._pagination.limit += this._tree.config.pagination.limit;
+
+        // Emit an event
+        this._tree.emit('node.paginated', this._context || this._tree, this.pagination, event);
+
+        if (this._tree.config.deferredLoading) {
+            if (this._context) {
+                promise = this._context.loadChildren();
+            }
+            else {
+                promise = this._tree.load(this._tree.config.data);
+            }
+        }
+        else {
+            this._loading = false;
+
+            promise = Promise.resolve();
+        }
+
+        this._tree.end();
+
+        // Clear the loading flag
+        if (this._tree.config.deferredLoading) {
+            promise.then(() => {
+                this._loading = false;
+                this._tree.applyChanges();
+            }).catch(() => {
+                this._loading = false;
+                this._tree.applyChanges();
+            });
+        }
+
+        return promise;
+    }
+
+    /**
      * Query for all nodes which matched the last search.
      *
      * @category TreeNodes
@@ -686,13 +757,13 @@ export class TreeNodes extends Array {
      * @return {TreeNode} Node object.
      */
     node(id) {
-        var match;
+        let match;
 
         if (_.isNumber(id)) {
             id = id.toString();
         }
 
-        this.recurseDown(function(node) {
+        this.recurseDown((node) => {
             if (node.id === id) {
                 match = node;
 
@@ -711,15 +782,15 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      * @example
      *
-     * var all = tree.nodes()
-     * var some = tree.nodes([1, 2, 3])
+     * let all = tree.nodes()
+     * let some = tree.nodes([1, 2, 3])
      */
     nodes(refs) {
-        var results;
+        let results;
 
         if (_.isArray(refs)) {
             // Ensure incoming IDs are strings
-            refs = _.map(refs, function(element) {
+            refs = _.map(refs, (element) => {
                 if (_.isNumber(element)) {
                     element = element.toString();
                 }
@@ -729,7 +800,7 @@ export class TreeNodes extends Array {
 
             results = new TreeNodes(this._tree);
 
-            this.recurseDown(function(node) {
+            this.recurseDown((node) => {
                 if (refs.indexOf(node.id) > -1) {
                     results.push(node);
                 }
@@ -737,6 +808,16 @@ export class TreeNodes extends Array {
         }
 
         return _.isArray(refs) ? results : this;
+    }
+
+    /**
+     * Get the pagination.
+     *
+     * @category TreeNodes
+     * @return {object} Pagination configuration object.
+     */
+    pagination() {
+        return this._pagination;
     }
 
     /**
@@ -766,7 +847,7 @@ export class TreeNodes extends Array {
             this._context.markDirty();
         }
 
-        this._tree.dom.applyChanges();
+        this._tree.applyChanges();
 
         return this;
     }
@@ -884,20 +965,19 @@ export class TreeNodes extends Array {
      * @return {TreeNodes} Array of node obejcts.
      */
     sort(sorter) {
-        var nodes = this;
         sorter = sorter || this._tree.config.sort;
 
         // Only apply sort if one provided
         if (sorter) {
-            var sorted = _.sortBy(nodes, sorter);
+            let sorted = _.sortBy(this, sorter);
 
-            nodes.length = 0;
-            _.each(sorted, function(node) {
-                nodes.push(node);
+            this.length = 0;
+            _.each(sorted, (node) => {
+                this.push(node);
             });
         }
 
-        return nodes;
+        return this;
     }
 
     /**
@@ -941,9 +1021,9 @@ export class TreeNodes extends Array {
      * @return {array} Array of node objects.
      */
     toArray() {
-        var array = [];
+        let array = [];
 
-        _.each(this, function(node) {
+        _.each(this, (node) => {
             array.push(node.toObject());
         });
 

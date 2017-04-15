@@ -1,18 +1,12 @@
-'use strict';
+var InspireTree = require('../../build/inspire-tree');
+var sinon = require('sinon');
 
 describe('config.allowLoadEvents', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             allowLoadEvents: ['selected'],
             data: []
         });
@@ -35,6 +29,4 @@ describe('config.allowLoadEvents', function() {
 
         callback.should.have.been.called;
     });
-
-    after(helpers.clearDOM);
 });

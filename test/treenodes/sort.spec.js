@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.sort', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'D',
                 id: 1
@@ -48,7 +42,6 @@ describe('TreeNodes.prototype.sort', function() {
     it('sorts children alphabetically', function() {
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             sort: 'text',
             data: [{
                 text: 'D',
@@ -68,6 +61,4 @@ describe('TreeNodes.prototype.sort', function() {
         expect(nodes[1].text).to.equal('B');
         expect(nodes[2].text).to.equal('Z');
     });
-
-    after(helpers.clearDOM);
 });

@@ -1,15 +1,16 @@
+sudo: required
+dist: trusty
 language: node_js
 node_js:
   - "7"
   - "6"
 before_install:
-  - gem install scss-lint
-  - npm install -g webpack yarn
+  - npm install -g rollup yarn
   - yarn -V
 install:
   - yarn install
 before_script:
-  - webpack
+  - rollup -c
 script:
   - npm test
   - npm run lint

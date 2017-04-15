@@ -5,5 +5,4 @@ test
 .*
 index.html
 bower.json
-karma*
-webpack*
+rollup*

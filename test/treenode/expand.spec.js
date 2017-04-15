@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.expand', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -31,27 +25,13 @@ describe('TreeNode.prototype.expand', function() {
         expect(tree.node(1).expand().then).to.be.a('function');
     });
 
-    it('expands children via click', function() {
+    it('collapses children', function() {
         var node = tree.node(1);
-        node.collapse();
-
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('collapsed')).to.be.true;
-
-        $node.find('> div .toggle').click();
-        expect($node.hasClass('collapsed')).to.be.false;
-    });
-
-    it('expands children via api', function() {
-        var node = tree.node(1);
-        node.collapse();
-
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('collapsed')).to.be.true;
 
         node.expand();
-        expect($node.hasClass('collapsed')).to.be.false;
-    });
+        expect(node.collapsed()).to.be.false;
 
-    after(helpers.clearDOM);
+        node.collapse();
+        expect(node.collapsed()).to.be.true;
+    });
 });

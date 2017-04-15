@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.checked', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             editable: true,
             data: [{
                 text: 'A',
@@ -31,6 +29,4 @@ describe('TreeNodes.prototype.checked', function() {
         tree.node(1).check();
         expect(tree.checked()).to.have.length(2);
     });
-
-    after(helpers.clearDOM);
 });

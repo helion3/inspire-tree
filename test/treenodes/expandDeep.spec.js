@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.expandDeep', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: []
         });
     });
@@ -25,6 +19,4 @@ describe('TreeNodes.prototype.expandDeep', function() {
     it('returns a promise', function() {
         expect(tree.expandDeep().then).to.be.a('function');
     });
-
-    after(helpers.clearDOM);
 });

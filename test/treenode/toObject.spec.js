@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.toObject', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'A',
                 id: 1,
@@ -30,6 +28,4 @@ describe('TreeNode.prototype.toObject', function() {
     it('returns children as a native array', function() {
         expect(Array.isArray(tree.node(1).toObject().children)).to.be.true;
     });
-
-    after(helpers.clearDOM);
 });

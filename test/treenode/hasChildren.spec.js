@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.hasChildren', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -35,6 +29,4 @@ describe('TreeNode.prototype.hasChildren', function() {
     it('returns false for child node', function() {
         expect(tree.node(2).hasChildren()).to.be.false;
     });
-
-    after(helpers.clearDOM);
 });

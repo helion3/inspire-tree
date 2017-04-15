@@ -1,4 +1,5 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('Tree.reload', function() {
     var tree;
@@ -7,11 +8,7 @@ describe('Tree.reload', function() {
     }];
 
     beforeEach(function() {
-        helpers.clearDOM();
-        helpers.createTreeContainer();
-
         tree = new InspireTree({
-            target: '.tree',
             data: data
         });
     });
@@ -25,6 +22,4 @@ describe('Tree.reload', function() {
 
         expect(tree.nodes()).to.have.length(2);
     });
-
-    after(helpers.clearDOM);
 });

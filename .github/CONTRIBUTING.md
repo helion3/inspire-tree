@@ -10,7 +10,6 @@ Clone the repository, and get yourself setup:
 Live-compile source changes as you develop:
 
 - `npm run watch`
-- or `EXCLUDE_DOM=1 npm run watch` for core-only builds.
 
 When needed, lint your code. Will happen automatically on commit.
 
@@ -22,7 +21,7 @@ Run tests:
 
 ## License
 
-InspireTree is available under the MIT license. The license can be found in LICENSE.txt.
+InspireTree is available under the MIT license. The license can be found in LICENSE.
 
 Contributions must be licensed under the MIT license.
 

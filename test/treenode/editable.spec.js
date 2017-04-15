@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.editable', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
                 id: 1
@@ -31,7 +29,6 @@ describe('TreeNode.prototype.editable', function() {
     it('returns true when editable', function() {
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             editable: true,
             data: [{
                 text: 'A',
@@ -45,6 +42,4 @@ describe('TreeNode.prototype.editable', function() {
         node.state('editable', false);
         expect(node.editing()).to.be.false;
     });
-
-    after(helpers.clearDOM);
 });

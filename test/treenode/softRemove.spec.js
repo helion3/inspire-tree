@@ -1,21 +1,15 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.softRemove', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
             nodes: {
                 resetStateOnRestore: false
             },
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -32,13 +26,9 @@ describe('TreeNode.prototype.softRemove', function() {
 
     it('soft removes node', function() {
         var node = tree.node(1);
-
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('hidden')).to.be.false;
         expect(node.removed()).to.be.false;
 
         node.softRemove();
-        expect($node.hasClass('hidden')).to.be.true;
         expect(node.removed()).to.be.true;
     });
 
@@ -61,6 +51,4 @@ describe('TreeNode.prototype.softRemove', function() {
         tree.node(1).restore();
         expect(tree.selected()).to.have.length(1);
     });
-
-    after(helpers.clearDOM);
 });

@@ -1,14 +1,11 @@
-'use strict';
+var chai = require('chai');
+var expect = chai.expect;
+var InspireTree = require('../../build/inspire-tree');
+var sinon = require('sinon');
 
 describe('Tree.load', function() {
-    beforeEach(function() {
-        helpers.clearDOM();
-        helpers.createTreeContainer();
-    });
-
     it('loads data via array', function() {
         var tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'Test'
             }]
@@ -19,7 +16,6 @@ describe('Tree.load', function() {
 
     it('loads data via callback', function() {
         var tree = new InspireTree({
-            target: '.tree',
             data: function(node, resolve) {
                 resolve([{
                     text: 'Test'
@@ -32,23 +28,23 @@ describe('Tree.load', function() {
 
     it('loads data via promise', function(done) {
         var tree = new InspireTree({
-            target: '.tree',
-            data: $.getJSON('/base/demos/sample-data/root.json')
+            data: new Promise(function(resolve) {
+                resolve([{
+                    text: 'Test'
+                }]);
+            })
         });
 
         tree.on('data.loaded', function(nodes) {
-            expect(nodes).to.have.length(2);
+            expect(nodes).to.have.length(1);
             done();
         });
 
-        tree.on('data.loaderror', function(err) {
-            done(err);
-        });
+        tree.on('data.loaderror', done);
     });
 
     it('returns a promise', function() {
         var tree = new InspireTree({
-            target: '.tree',
             data: []
         });
 
@@ -57,7 +53,6 @@ describe('Tree.load', function() {
 
     it('loads child node data dynamically', function() {
         var tree = new InspireTree({
-            target: '.tree',
             data: function(node, resolve) {
                 if (!node) {
                     resolve([{
@@ -87,7 +82,6 @@ describe('Tree.load', function() {
 
     it('applies custom sorter', function() {
         var tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'C'
             }, {
@@ -108,7 +102,6 @@ describe('Tree.load', function() {
         var callback = sinon.spy();
 
         var tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'A'
             }]
@@ -121,6 +114,4 @@ describe('Tree.load', function() {
             done();
         });
     });
-
-    after(helpers.clearDOM);
 });

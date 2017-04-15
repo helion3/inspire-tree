@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.collapseDeep', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
                 children: [{
@@ -35,6 +33,4 @@ describe('TreeNodes.prototype.collapseDeep', function() {
         tree.collapseDeep();
         expect(node.expanded()).to.be.false;
     });
-
-    after(helpers.clearDOM);
 });

@@ -1,14 +1,13 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
+var _ = require('lodash');
 
 describe('Tree.muted', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: []
         });
     });
@@ -41,6 +40,4 @@ describe('Tree.muted', function() {
         tree.unmute('node.clicked');
         expect(tree.muted()).to.be.false;
     });
-
-    after(helpers.clearDOM);
 });

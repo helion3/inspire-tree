@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.nextVisibleAncestralSiblingNode', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
                 children: [{
@@ -31,6 +29,4 @@ describe('TreeNode.prototype.nextVisibleAncestralSiblingNode', function() {
     it('returns second root node', function() {
         expect(tree.node(2).nextVisibleAncestralSiblingNode().text).to.equal('B');
     });
-
-    after(helpers.clearDOM);
 });

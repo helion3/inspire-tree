@@ -15,10 +15,10 @@ import { TreeNodes } from '../treenodes';
  * @return {boolean} Cease iteration.
  */
 export function recurseDown(obj, iteratee) {
-    var res;
+    let res;
 
     if (obj instanceof TreeNodes) {
-        _.each(obj, function(node) {
+        _.each(obj, (node) => {
             res = recurseDown(node, iteratee);
 
             return res;

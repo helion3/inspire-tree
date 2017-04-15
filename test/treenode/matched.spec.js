@@ -1,13 +1,11 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.matched', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         tree = new InspireTree({
-            target: '.tree',
             data: [{
                 text: 'fox',
                 id: 1
@@ -31,6 +29,4 @@ describe('TreeNode.prototype.matched', function() {
     it('returns false for non-matching nodes', function() {
         expect(tree.node(2).matched()).to.be.false;
     });
-
-    after(helpers.clearDOM);
 });

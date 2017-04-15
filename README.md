@@ -28,27 +28,24 @@ our need for one - the only existing solution which met our *feature* needs was 
 - Solid coverage by automated tests.
 - Built for IE10+.
 
-### DOM Renderer
-
-- Can be replaced with a custom renderer (see details below) for native framework support.
-- Virtual DOM for blazing fast change rendering.
-- Valid HTML structure.
-- Clean and easy-to-override CSS.
-- Modular SASS for custom compilation.
-- Keyboard navigation.
-- Custom context menu (optional).
-- Drag and Drop between tree instances (optional).
-
 ### Installation
 
 - Node: `npm install --save inspire-tree` or
 - Bower `bower install --save inspire-tree`
 
-The `dist` directory contains several versions:
+### DOM Rendering
 
-- `bundled` - Includes stripped-down version of lodash, has no external dependencies.
-- `core` - Excludes DOM rendering logic, for those using a custom renderer.
-- `min` - Minified source for production use.
+This package contains the core API only. Our DOM rendering engine is offered through a separate package because
+some users prefer to implement rendering in their existing framework of choice (like Angular, React, Vue, etc).
+
+Inspire Tree DOM uses a virtual DOM to achieve high-performance rendering.
+
+To install:
+
+- Node: `npm install --save inspire-tree-dom` or
+- Bower `bower install --save inspire-tree-dom`
+
+*Note:* InspireTreeDOM offers additional configuration options and events. Please be sure to read the [README](https://github.com/helion3/inspire-tree-dom).
 
 ## Usage
 
@@ -56,14 +53,23 @@ In most use-cases you need to provide a target DOM element and a source of data:
 
 ```js
 var tree = new InspireTree({
-    target: '.tree',
     data: $.getJSON('sample-data.json')
 });
 ```
 
 Data objects must have at least a `text` property. Additional properties are listed below in "Node Configuration".
 
-If you're using a custom DOM renderer (see below), the `target` property is optional.
+## Usage with Inspire Tree DOM
+
+If you're using our DOM rendering, you need to pass in two arguments: the tree instance, and a DOM target:
+
+```js
+new InspireTreeDOM(tree, {
+    target: '.tree'
+});
+```
+
+For more information regarding InspireTreeDOM, see the [README](https://github.com/helion3/inspire-tree-dom).
 
 ### Data Loading and Initialization Errors
 
@@ -89,12 +95,6 @@ that you should be aware of. There are a few choices:
 - **contextMenu** - Array of choices (object with `text` property, `handler` function) for a custom context menu.
 - **data** - An array, promise, or callback function.
 - **deferredLoading** - Enable deferred loading. (See "Deferrals" section below.)
-- **dom**
-    + **autoLoadMore** - Automatically triggers "Load More" links on scroll. Used with deferrals.
-    + **deferredRendering** - Only render nodes as the user clicks to display more. (See "Deferrals" section below.)
-    + **nodeHeight** - Height (in pixels) of your nodes. Used with deferrals, if `pagination.limit` not provided.
-    + **showCheckboxes** - Show checkbox inputs.
-- **dragTargets** - Array of other tree elements which accept drag/drop.
 - **editable** - Allow inline editing.
 - **editing** (defaults to true if `editable` is true)
     + **add** - Allow user to add nodes.
@@ -116,10 +116,7 @@ that you should be aware of. There are a few choices:
     + **mode** - `default` or `checkbox`. Checkbox mode auto-selects children, doesn't auto deselect.
     + **multiple** - Allow multiple nodes to be selected at a time.
     + **require** - Require at least one selected node.
-- **showCheckboxes** - Show checkboxes in DOM. (Defaults to true if `selection.mode` === 'checkbox').
 - **sort** - Property to sort by, or a custom sort function.
-- **tabindex** - Define a tab index for the tree container (used for key nav).
-- **target** - An Element, selector, or jQuery object.
 
 ## Node Configuration
 
@@ -134,7 +131,9 @@ that you should be aware of. There are a few choices:
     + **state.focused** - Node has UI focus.
 	+ **state.hidden** - Set initial visibility.
     + **state.loading** - Dynamic load of children in progress.
+    + **state.matched** - Node was matched by a search.
     + **state.removed** - Soft removed. Never shown until restored.
+    + **state.rendered** - Whether node has been rendered. Not set automatically unless used with InspireTreeDOM.
     + **state.selectable** - Allow selection.
 	+ **state.selected** - Set initial selection.
 
@@ -143,8 +142,8 @@ that you should be aware of. There are a few choices:
 Events are triggered to inform you of changes or user interaction. Listeners are always registered on `tree.on`. Methods available in our event system are described at [EventEmitter2](https://github.com/asyncly/EventEmitter2).
 
 ```js
-tree.on('node.click', function(event, node) {
-    // node clicked!
+tree.on('node.added', function(event, node) {
+    // node added!
 });
 ```
 
@@ -157,18 +156,13 @@ tree.on('node.click', function(event, node) {
 - **node.added** - `(TreeNode node)` - Node added.
 - **node.blurred** - `(TreeNode node)` - Node lost focus.
 - **node.checked** - `(TreeNode node)` - Node checked.
-- **node.click** - `(Event event, TreeNode node)` - User clicked node.
 - **node.collapsed** - `(TreeNode node)` - Node collapsed.
-- **node.contextmenu** - `(Event event, TreeNode node)` - User right-clicked node.
-- **node.dblclick** - `(Event event, TreeNode node)` - User double-clicked node.
 - **node.deselected** - `(TreeNode node)` - Node deselected.
-- **node.dropin** - `(TreeNode node)` - Tree has received a new node via drop.
-- **node.dropout** - `(TreeNode node), (Element elem)` - Node dropped into a valid target.
 - **node.edited** - `(TreeNode node), (string oldValue), (string newValue)` - Node text was altered via inline editing.
 - **node.expanded** - `(TreeNode node)` - Node expanded.
 - **node.focused** - `(TreeNode node)` - Node focused.
 - **node.hidden** - `(TreeNode node)` - Node hidden.
-- **node.paginate** - `(TreeNode context), (Object pagination) (Event event)` - Nodes were paginated. Context is undefined when for the root level.
+- **node.paginated** - `(TreeNode context), (Object pagination) (Event event)` - Nodes were paginated. Context is undefined when for the root level.
 - **node.property.changed** - `(TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue)` - A node's root property has changed.
 - **node.removed** - `(object node)` - Node removed.
 - **node.restored** - `(TreeNode node)` - Node restored.
@@ -177,30 +171,6 @@ tree.on('node.click', function(event, node) {
 - **node.shown** - `(TreeNode node)` - Node shown.
 - **node.softremoved** - `(TreeNode node)` - Node soft removed.
 - **node.unchecked** - `(TreeNode node)` - Node unchecked.
-
-#### Overriding DOM Events
-
-In rare cases, you may need to override our default DOM event handlers. To assist with this, those events provide a `preventTreeDefault` method.
-
-```js
-tree.on('node.click', function(event, node) {
-    event.preventTreeDefault(); // Cancels default listener
-});
-```
-
-In these cases, it will be up to you to ensure any further logic has been implemented.
-
-However, the original handler is passed as an argument, which still allows you to execute it when you're ready.
-
-```js
-tree.on('node.click', function(event, node, handler) {
-    event.preventTreeDefault(); // Cancels default listener
-    // do some custom logic
-    handler(); // call the original tree logic
-});
-```
-
-Only DOM-based events support this: *node.click, node.dblclick, node.contextmenu*
 
 ## API Basics
 
@@ -253,13 +223,7 @@ use `tree.someMethod()`.
 
 For those working with massive datasets, InspireTree offers several additional features to help reduce initial load burdens.
 
-### Deferred Rendering
-
-Deferred Rendering progressively renders loaded nodes as the user scrolls or clicks a Load More link.
-
-To work properly, you need to enable `dom.deferredRendering` in the configuration.
-
-A "Load More" link will show at the bottom of each section which has more nodes than are initially allowed.
+For Deferred Rendering, see the InspireTreeDOM package.
 
 # Deferred Loading
 
@@ -288,36 +252,14 @@ If `node` is undefined, the pagination object refers to root level nodes, otherw
 - Angular: [Source](https://github.com/helion3/inspire-tree-angular-demo) - [Demo](http://inspire-tree.com/angular)
 - Angular2: [Source](https://github.com/helion3/inspire-tree-angular2-demo)
 
-While Inspire Tree comes with a super-fast virtual DOM engine for element rendering, there are times
+While Inspire Tree provides a super-fast virtual DOM engine for element rendering, there are times
 when you need your own. Useful for integrating with existing engines like Angular, React, etc.
 
-1. Use only the `inspire-tree-core.js` file. This **excludes** our DOM code.
-2. Set the `renderer` option to a function which returns an object with the following methods. If/how you implement them
-depends on your rendering engine.
+All you need is this core API package, and to listen to the `changes.applied` event.
 
-- **applyChanges** - Called when *core* has altered something which will impact rendering.
-- **attach** - Called on load to attach to a given HTML element.
-- **batch** - Pause live rendering because multiple changes are coming.
-- **end** - Batch changes are done, rendering may resume.
+Inspire Tree offers data change batching and fires the `changes.applied` event when multiple changes are complete.
 
-Again, you may not need to implement these depending on how you render the data.
-
-Your custom rendering function will be given the `tree` instance as an argument.
-
-```js
-var tree = new InspireTree({
-    target: '.tree',
-    data: [],
-    renderer: function(tree) {
-        return {
-            applyChanges: function() {},
-            attach: function() {},
-            batch: function() {},
-            end: function() {}
-        }
-    }
-});
-```
+When the event emits, you may trigger an updated render through your existing view layer.
 
 ## Terminology
 

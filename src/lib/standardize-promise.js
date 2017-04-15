@@ -11,7 +11,7 @@ import { Promise } from 'es6-promise';
  * @returns {Promise} Promise
  */
 export function standardizePromise(promise) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         if (!_.isObject(promise)) {
             return reject(new Error('Invalid Promise'));
         }

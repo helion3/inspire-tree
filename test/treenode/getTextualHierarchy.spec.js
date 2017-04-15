@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.getTextualHierarchy', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -44,6 +38,4 @@ describe('TreeNode.prototype.getTextualHierarchy', function() {
         expect(parents[1]).to.equal('AA');
         expect(parents[2]).to.equal('AAA');
     });
-
-    after(helpers.clearDOM);
 });

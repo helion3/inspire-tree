@@ -43,13 +43,6 @@ declare module "inspire-tree" {
         allowLoadEvents?: Array<string>;
         contextMenu?: boolean;
         data?: Array<any>|Promise<any>|DataResolver;
-        dom?: {
-            autoLoadMore?: boolean;
-            deferredRendering?: boolean;
-            nodeHeight?: number;
-            showCheckboxes?: boolean;
-        };
-        dragTargets?: Array<string>;
         deferredLoading?: boolean;
         editable?: boolean;
         editing?: {
@@ -78,8 +71,14 @@ declare module "inspire-tree" {
             require?: boolean;
         };
         sort?: string;
-        tabindex?: number;
-        target?: HTMLElement;
+    }
+
+    /**
+     * Represents a TreeNodes pagination configuration object.
+     */
+    interface Pagination {
+        limit: number;
+        total: number;
     }
 
     class InspireTree {
@@ -134,6 +133,7 @@ declare module "inspire-tree" {
         muted(): boolean;
         node(id: string|number): TreeNode;
         nodes(ids?: Array<string>|Array<number>): TreeNodes;
+        pagination(): Pagination;
         recurseDown(iteratee: NodeIteratee): TreeNodes;
         reload(): Promise<TreeNodes>;
         removeAll(): InspireTree;
@@ -200,6 +200,7 @@ declare module "inspire-tree" {
         matched(full?: boolean): TreeNodes;
         node(id: string|number): TreeNode;
         nodes(ids?: Array<string>|Array<number>): TreeNodes;
+        pagination(): Pagination;
         recurseDown(iteratee: NodeIteratee): TreeNodes;
         removed(full?: boolean): TreeNodes;
         restore(): TreeNodes;
@@ -265,6 +266,7 @@ declare module "inspire-tree" {
         nextVisibleChildNode(): TreeNode;
         nextVisibleNode(): TreeNode;
         nextVisibleSiblingNode(): TreeNode;
+        pagination(): Pagination;
         previousVisibleNode(): TreeNode;
         previousVisibleSiblingNode(): TreeNode;
         recurseDown(iteratee: NodeIteratee): TreeNode;

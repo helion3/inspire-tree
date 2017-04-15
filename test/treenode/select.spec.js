@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.select', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1
@@ -27,16 +21,6 @@ describe('TreeNode.prototype.select', function() {
         expect(tree.node(1).select).to.be.a('function');
     });
 
-    it('select via click', function() {
-        var node = tree.node(1);
-
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('selected')).to.be.false;
-
-        $node.find('> div .title').click();
-        expect($node.hasClass('selected')).to.be.true;
-    });
-
     it('deselects other nodes on node change', function() {
         tree.node(2).select();
 
@@ -45,13 +29,9 @@ describe('TreeNode.prototype.select', function() {
 
     it('select via api', function() {
         var node = tree.node(1);
-
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('selected')).to.be.false;
+        expect(node.selected()).to.be.false;
 
         node.select();
-        expect($node.hasClass('selected')).to.be.true;
+        expect(node.selected()).to.be.true;
     });
-
-    after(helpers.clearDOM);
 });

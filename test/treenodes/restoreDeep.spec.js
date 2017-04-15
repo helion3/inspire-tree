@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.restore', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 text: 'A',
                 id: 1,
@@ -42,6 +40,4 @@ describe('TreeNodes.prototype.restore', function() {
         tree.restoreDeep();
         expect(tree.removed()).to.have.length(0);
     });
-
-    after(helpers.clearDOM);
 });

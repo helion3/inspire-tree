@@ -1,21 +1,17 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNodes.prototype.insertAt', function() {
     var tree;
     var tree2;
 
     before(function() {
-        helpers.createTreeContainer();
-        helpers.createTreeContainer('tree2');
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: []
         });
 
         tree2 = new InspireTree({
-            target: '.tree2',
             data: []
         });
     });
@@ -68,6 +64,4 @@ describe('TreeNodes.prototype.insertAt', function() {
         expect(tree.nodes()[1].id).to.equal('3');
         expect(tree.nodes()[2].id).to.equal('2');
     });
-
-    after(helpers.clearDOM);
 });

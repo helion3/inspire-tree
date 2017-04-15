@@ -1,14 +1,13 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
+var sinon = require('sinon');
 
 describe('Tree.mute', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             data: [{
                 id: 1,
                 text: 'A'
@@ -40,6 +39,4 @@ describe('Tree.mute', function() {
 
         tree.unmute();
     });
-
-    after(helpers.clearDOM);
 });

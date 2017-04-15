@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.hasVisibleChildren', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -52,6 +46,4 @@ describe('TreeNode.prototype.hasVisibleChildren', function() {
 
         expect(tree.node(1).hasVisibleChildren()).to.be.true;
     });
-
-    after(helpers.clearDOM);
 });

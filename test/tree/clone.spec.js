@@ -1,14 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('Tree.clone', function() {
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
         // Create tree
         tree = new InspireTree({
-            target: $('.tree'),
             selection: {
                 autoDeselect: false
             },
@@ -27,6 +25,4 @@ describe('Tree.clone', function() {
     });
 
     // Note: logic is covered by copy-merges spec
-
-    after(helpers.clearDOM);
 });

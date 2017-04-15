@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.copyHierarchy', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -45,6 +39,4 @@ describe('TreeNode.prototype.copyHierarchy', function() {
         expect(hierarchy.id).to.equal('1');
         expect(hierarchy.children).to.be.undefined;
     });
-
-    after(helpers.clearDOM);
 });

@@ -2,7 +2,7 @@
 
 import * as _ from 'lodash';
 import { collectionToModel } from './collection-to-model';
-import uuid from 'uuid';
+import uuidV4 from 'uuid/v4';
 import { TreeNode } from '../treenode';
 
 /**
@@ -19,24 +19,25 @@ import { TreeNode } from '../treenode';
  */
 export function objectToNode(tree, object, parent) {
     // Create or type-ensure ID
-    object.id = object.id || uuid();
+    object.id = object.id || uuidV4();
     if (typeof object.id !== 'string') {
         object.id = object.id.toString();
     }
 
     // High-performance default assignments
-    var itree = object.itree = object.itree || {};
+    let itree = object.itree = object.itree || {};
     itree.icon = itree.icon || false;
+    itree.dirty = false;
 
-    var li = itree.li = itree.li || {};
+    let li = itree.li = itree.li || {};
     li.attributes = li.attributes || {};
 
-    var a = itree.a = itree.a || {};
+    let a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
 
     var pagination = itree.pagination = {};
     pagination.limit = tree.config.pagination.limit;
-    pagination.total = _.isArray(object.children) ? object.children.length : -1;
+    pagination.total = _.isArray(object.children) ? object.children.length : 0;
 
     var state = itree.state = itree.state || {};
 
@@ -68,7 +69,7 @@ export function objectToNode(tree, object, parent) {
 
     // Fire events for pre-set states, if enabled
     if (tree.allowsLoadEvents) {
-        _.each(tree.config.allowLoadEvents, function(eventName) {
+        _.each(tree.config.allowLoadEvents, (eventName) => {
             if (state[eventName]) {
                 tree.emit('node.' + eventName, object);
             }

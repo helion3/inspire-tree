@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.hide', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1,
@@ -29,15 +23,9 @@ describe('TreeNode.prototype.hide', function() {
 
     it('hides node', function() {
         var node = tree.node(1);
-
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('hidden')).to.be.false;
         expect(node.hidden()).to.be.false;
 
         node.hide();
-        expect($node.hasClass('hidden')).to.be.true;
         expect(node.hidden()).to.be.true;
     });
-
-    after(helpers.clearDOM);
 });

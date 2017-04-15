@@ -1,7 +1,7 @@
 {
-    "presets": ["es2015"],
+    "presets": ["es2015-rollup"],
     "plugins": [
-        "add-module-exports",
+        "babel-plugin-transform-object-rest-spread",
         ["babel-plugin-transform-builtin-extend", {
             "globals": ["Array"],
             "approximate": true

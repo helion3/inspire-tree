@@ -21,11 +21,11 @@ import { TreeNodes } from './treenodes';
  * @return {object} Cloned ITree.
  */
 function cloneItree(itree, excludeKeys) {
-    var clone = {};
+    let clone = {};
     excludeKeys = _.castArray(excludeKeys);
     excludeKeys.push('ref');
 
-    _.each(itree, function(v, k) {
+    _.each(itree, (v, k) => {
         if (!_.includes(excludeKeys, k)) {
             clone[k] = _.cloneDeep(v);
         }
@@ -43,31 +43,30 @@ function cloneItree(itree, excludeKeys) {
  */
 export class TreeNode {
     constructor(tree, source, excludeKeys) {
-        var node = this;
-        node._tree = tree;
+        this._tree = tree;
 
         if (source instanceof TreeNode) {
             excludeKeys = _.castArray(excludeKeys);
             excludeKeys.push('_tree');
 
             // Iterate manually for better perf
-            _.each(source, function(value, key) {
+            _.each(source, (value, key) => {
                 // Skip vars
                 if (!_.includes(excludeKeys, key)) {
                     if (_.isObject(value)) {
                         if (value instanceof TreeNodes) {
-                            node[key] = value.clone();
+                            this[key] = value.clone();
                         }
                         else if (key === 'itree') {
-                            node[key] = cloneItree(value);
+                            this[key] = cloneItree(value);
                         }
                         else {
-                            node[key] = _.cloneDeep(value);
+                            this[key] = _.cloneDeep(value);
                         }
                     }
                     else {
                         // Copy primitives
-                        node[key] = value;
+                        this[key] = value;
                     }
                 }
             });
@@ -98,13 +97,13 @@ export class TreeNode {
      * @return {TreeNodes} Array of node objects.
      */
     addChildren(children) {
-        var nodes = new TreeNodes();
+        let nodes = new TreeNodes(this._tree);
 
-        this._tree.dom.batch();
+        this._tree.batch();
         _.each(children, (child) => {
             nodes.push(this.addChild(child));
         });
-        this._tree.dom.end();
+        this._tree.end();
 
         return nodes;
     }
@@ -139,19 +138,22 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     check(shallow) {
-        this._tree.dom.batch();
+        this._tree.batch();
 
         // Will we automatically apply state changes to our children
-        var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+        let deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
 
         baseStateChange('checked', true, 'checked', this, deep);
+
+        // Reset indeterminate state
+        this.state('indeterminate', false);
 
         // Refresh parent
         if (this.hasParent()) {
             this.getParent().refreshIndeterminateState();
         }
 
-        this._tree.dom.end();
+        this._tree.end();
 
         return this;
     };
@@ -173,9 +175,9 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     clean() {
-        this.recurseUp(function(node) {
+        this.recurseUp((node) => {
             if (node.hasParent()) {
-                var parent = node.getParent();
+                let parent = node.getParent();
                 if (!parent.hasVisibleChildren()) {
                     parent.hide();
                 }
@@ -234,7 +236,7 @@ export class TreeNode {
      * @return {object} Property "to" for defining destination.
      */
     copy(hierarchy) {
-        var node = this;
+        let node = this;
 
         if (hierarchy) {
             node = node.copyHierarchy();
@@ -249,7 +251,7 @@ export class TreeNode {
              * @param {object} dest Destination Inspire Tree.
              * @return {object} New node object.
              */
-            to: function(dest) {
+            to: (dest) => {
                 if (!_.isFunction(dest.addNode)) {
                     throw new Error('Destination must be an Inspire Tree instance.');
                 }
@@ -267,23 +269,22 @@ export class TreeNode {
      * @return {TreeNode} Root node object with hierarchy.
      */
     copyHierarchy(excludeNode) {
-        var node = this;
-        var nodes = [];
-        var parents = node.getParents();
+        let nodes = [];
+        let parents = this.getParents();
 
         // Remove old hierarchy data
-        _.each(parents, function(node) {
+        _.each(parents, (node) => {
             nodes.push(node.toObject(excludeNode));
         });
 
         parents = nodes.reverse();
 
         if (!excludeNode) {
-            var clone = node.toObject(true);
+            let clone = this.toObject(true);
 
             // Filter out hidden children
-            if (node.hasChildren()) {
-                clone.children = node.children.filter(function(n) {
+            if (this.hasChildren()) {
+                clone.children = this.children.filter((n) => {
                     return !n.state('hidden');
                 }).toArray();
 
@@ -293,11 +294,11 @@ export class TreeNode {
             nodes.push(clone);
         }
 
-        var hierarchy = nodes[0];
-        var pointer = hierarchy;
-        var l = nodes.length;
-        _.each(nodes, function(parent, key) {
-            var children = [];
+        let hierarchy = nodes[0];
+        let pointer = hierarchy;
+        let l = nodes.length;
+        _.each(nodes, (parent, key) => {
+            let children = [];
 
             if (key + 1 < l) {
                 children.push(nodes[key + 1]);
@@ -322,15 +323,14 @@ export class TreeNode {
      */
     deselect(shallow) {
         if (this.selected() && (!this._tree.config.selection.require || this._tree.selected().length > 1)) {
-            this._tree.dom.batch();
+            this._tree.batch();
 
             // Will we apply this state change to our children?
-            var deep = !shallow && this._tree.config.selection.autoSelectChildren;
+            let deep = !shallow && this._tree.config.selection.autoSelectChildren;
 
-            this.state('indeterminate', false);
             baseStateChange('selected', false, 'deselected', this, deep);
 
-            this._tree.dom.end();
+            this._tree.end();
         }
 
         return this;
@@ -363,10 +363,10 @@ export class TreeNode {
      * @return {Promise} Promise resolved on successful load and expand of children.
      */
     expand() {
-        var node = this;
+        let node = this;
 
-        return new Promise(function(resolve, reject) {
-            var allow = (node.hasChildren() || (node._tree.isDynamic && node.children === true));
+        return new Promise((resolve, reject) => {
+            let allow = (node.hasChildren() || (node._tree.isDynamic && node.children === true));
 
             if (allow && (node.collapsed() || node.hidden())) {
                 node.state('collapsed', false);
@@ -379,7 +379,7 @@ export class TreeNode {
                 }
                 else {
                     node.markDirty();
-                    node._tree.dom.applyChanges();
+                    node._tree.applyChanges();
                     resolve(node);
                 }
             }
@@ -408,7 +408,7 @@ export class TreeNode {
      */
     expandParents() {
         if (this.hasParent()) {
-            this.getParent().recurseUp(function(node) {
+            this.getParent().recurseUp((node) => {
                 node.expand();
             });
         }
@@ -423,23 +423,21 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     focus() {
-        var node = this;
-
-        if (!node.focused()) {
+        if (!this.focused()) {
             // Batch selection changes
-            this._tree.dom.batch();
+            this._tree.batch();
             this._tree.blurDeep();
-            node.state('focused', true);
+            this.state('focused', true);
 
             // Emit this event
-            this._tree.emit('node.focused', node);
+            this._tree.emit('node.focused', this);
 
             // Mark hierarchy dirty and apply
-            node.markDirty();
-            this._tree.dom.end();
+            this.markDirty();
+            this._tree.end();
         }
 
-        return node;
+        return this;
     }
 
     /**
@@ -480,10 +478,10 @@ export class TreeNode {
      * @return {TreeNodes} Node objects.
      */
     getParents() {
-        var parents = new TreeNodes(this._tree);
+        let parents = new TreeNodes(this._tree);
 
         if (this.hasParent()) {
-            this.getParent().recurseUp(function(node) {
+            this.getParent().recurseUp((node) => {
                 parents.push(node);
             });
         }
@@ -499,9 +497,9 @@ export class TreeNode {
      * @return {array} Array of node texts.
      */
     getTextualHierarchy() {
-        var paths = [];
+        let paths = [];
 
-        this.recurseUp(function(node) {
+        this.recurseUp((node) => {
             paths.unshift(node.text);
         });
 
@@ -545,7 +543,7 @@ export class TreeNode {
      * @return {boolean} If visible children.
      */
     hasVisibleChildren() {
-        var hasVisibleChildren = false;
+        let hasVisibleChildren = false;
 
         if (this.hasChildren()) {
             hasVisibleChildren = (this.children.filter('available').length > 0);
@@ -561,7 +559,7 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     hide() {
-        var node = baseStateChange('hidden', true, 'hidden', this);
+        let node = baseStateChange('hidden', true, 'hidden', this);
 
         // Update children
         if (node.hasChildren()) {
@@ -588,9 +586,9 @@ export class TreeNode {
      * @return {string} Index path
      */
     indexPath() {
-        var indices = [];
+        let indices = [];
 
-        this.recurseUp(function(node) {
+        this.recurseUp((node) => {
             indices.push(_.indexOf(node.context(), node));
         });
 
@@ -614,14 +612,14 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     lastDeepestVisibleChild() {
-        var found;
+        let found;
 
         if (this.hasChildren() && !this.collapsed()) {
-            found = _.findLast(this.children, function(node) {
+            found = _.findLast(this.children, (node) => {
                 return node.visible();
             });
 
-            var res = found.lastDeepestVisibleChild();
+            let res = found.lastDeepestVisibleChild();
             if (res) {
                 found = res;
             }
@@ -645,59 +643,59 @@ export class TreeNode {
      * @return {Promise} Promise resolving children nodes.
      */
     loadChildren() {
-        var node = this;
-
-        return new Promise(function(resolve, reject) {
-            if (!node._tree.isDynamic || (!_.isArrayLike(node.children) && node.children !== true)) {
+        return new Promise((resolve, reject) => {
+            if (!this._tree.isDynamic || (!_.isArrayLike(this.children) && this.children !== true)) {
                 reject(new Error('Node does not have or support dynamic children.'));
             }
 
-            node.state('loading', true);
-            node.markDirty();
-            node._tree.dom.applyChanges();
+            this.state('loading', true);
+            this.markDirty();
+            this._tree.applyChanges();
 
-            var complete = function(nodes, totalNodes) {
-                if (_.parseInt(totalNodes) > nodes.length) {
-                    node.itree.pagination.total = _.parseInt(totalNodes);
-                }
+            let complete = (nodes, totalNodes) => {
+                this._tree.batch();
+                this.state('loading', false);
 
-                node._tree.dom.batch();
-                node.state('loading', false);
-
-                var model = collectionToModel(node._tree, nodes, node);
-                if (_.isArrayLike(node.children)) {
-                    node.children = node.children.concat(model);
+                let model = collectionToModel(this._tree, nodes, this);
+                if (_.isArrayLike(this.children)) {
+                    this.children = this.children.concat(model);
                 }
                 else {
-                    node.children = model;
+                    this.children = model;
+                }
+
+                if (_.parseInt(totalNodes) > nodes.length) {
+                    this.children._pagination.total = _.parseInt(totalNodes);
                 }
 
                 // If using checkbox mode, share selection with newly loaded children
-                if (node._tree.config.selection.mode === 'checkbox' && node.selected()) {
-                    node.children.select();
+                if (this._tree.config.selection.mode === 'checkbox' && this.selected()) {
+                    this.children.select();
                 }
 
-                node.markDirty();
-                node._tree.dom.end();
+                this.markDirty();
+                this._tree.end();
 
-                resolve(node.children);
+                resolve(this.children);
 
-                node._tree.emit('children.loaded', node);
+                this._tree.emit('children.loaded', this);
             };
 
-            var error = function(err) {
-                node.state('loading', false);
-                node.children = new TreeNodes(node._tree);
-                node.children._context = node;
-                node.markDirty();
-                node._tree.dom.applyChanges();
+            let error = (err) => {
+                this.state('loading', false);
+                this.children = new TreeNodes(this._tree);
+                this.children._context = this;
+                this.markDirty();
+                this._tree.applyChanges();
 
                 reject(err);
 
-                node._tree.emit('tree.loaderror', err);
+                this._tree.emit('tree.loaderror', err);
             };
 
-            var loader = node._tree.config.data(node, complete, error, node.itree.pagination);
+            var pagination = this._tree.isTreeNodes(this.children) ? this.children.pagination() : null;
+
+            let loader = this._tree.config.data(this, complete, error, pagination);
 
             // Data loader is likely a promise
             if (_.isObject(loader)) {
@@ -714,6 +712,21 @@ export class TreeNode {
      */
     loading() {
         return this.state('loading');
+    }
+
+    /**
+     * Loads additional child nodes.
+     *
+     * @category Tree
+     * @param {Event} event Click or scroll event if DOM interaction triggered this call.
+     * @return {Promise} Resolves with request results.
+     */
+    loadMore() {
+        if (!this.children || this.children === true) {
+            return Promise.reject(new Error('Children have not yet been loaded.'));
+        }
+
+        return this.children.loadMore();
     }
 
     /**
@@ -754,10 +767,10 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     nextVisibleAncestralSiblingNode() {
-        var next;
+        let next;
 
         if (this.hasParent()) {
-            var parent = this.getParent();
+            let parent = this.getParent();
             next = parent.nextVisibleSiblingNode();
 
             if (!next) {
@@ -775,11 +788,10 @@ export class TreeNode {
      * @return {TreeNode} Node object, if any.
      */
     nextVisibleChildNode() {
-        var startingNode = this;
-        var next;
+        let next;
 
-        if (startingNode.hasChildren()) {
-            next = _.find(startingNode.children, function(child) {
+        if (this.hasChildren()) {
+            next = _.find(this.children, (child) => {
                 return child.visible();
             });
         }
@@ -794,20 +806,19 @@ export class TreeNode {
      * @return {TreeNode} Node object if any.
      */
     nextVisibleNode() {
-        var startingNode = this;
-        var next;
+        let next;
 
         // 1. Any visible children
-        next = startingNode.nextVisibleChildNode();
+        next = this.nextVisibleChildNode();
 
         // 2. Any Siblings
         if (!next) {
-            next = startingNode.nextVisibleSiblingNode();
+            next = this.nextVisibleSiblingNode();
         }
 
         // 3. Find sibling of ancestor(s)
         if (!next) {
-            next = startingNode.nextVisibleAncestralSiblingNode();
+            next = this.nextVisibleAncestralSiblingNode();
         }
 
         return next;
@@ -820,13 +831,22 @@ export class TreeNode {
      * @return {TreeNode} Node object, if any.
      */
     nextVisibleSiblingNode() {
-        var startingNode = this;
-        var context = (startingNode.hasParent() ? startingNode.getParent().children : this._tree.nodes());
-        var i = _.findIndex(context, { id: startingNode.id });
+        let context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
+        let i = _.findIndex(context, { id: this.id });
 
-        return _.find(_.slice(context, i + 1), function(node) {
+        return _.find(_.slice(context, i + 1), (node) => {
             return node.visible();
         });
+    }
+
+    /**
+     * Get pagination object for this tree node.
+     *
+     * @category TreeNode
+     * @return {object} Pagination configuration object.
+     */
+    pagination() {
+        return _.get(this, 'children._pagination');
     }
 
     /**
@@ -836,11 +856,10 @@ export class TreeNode {
      * @return {TreeNode} Node object, if any.
      */
     previousVisibleNode() {
-        var startingNode = this;
-        var prev;
+        let prev;
 
         // 1. Any Siblings
-        prev = startingNode.previousVisibleSiblingNode();
+        prev = this.previousVisibleSiblingNode();
 
         // 2. If that sibling has children though, go there
         if (prev && prev.hasChildren() && !prev.collapsed()) {
@@ -848,8 +867,8 @@ export class TreeNode {
         }
 
         // 3. Parent
-        if (!prev && startingNode.hasParent()) {
-            prev = startingNode.getParent();
+        if (!prev && this.hasParent()) {
+            prev = this.getParent();
         }
 
         return prev;
@@ -862,9 +881,9 @@ export class TreeNode {
      * @return {TreeNode} Node object, if any.
      */
     previousVisibleSiblingNode() {
-        var context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
-        var i = _.findIndex(context, { id: this.id });
-        return _.findLast(_.slice(context, 0, i), function(node) {
+        let context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
+        let i = _.findIndex(context, { id: this.id });
+        return _.findLast(_.slice(context, 0, i), (node) => {
             return node.visible();
         });
     }
@@ -890,7 +909,7 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     recurseUp(iteratee) {
-        var result = iteratee(this);
+        let result = iteratee(this);
 
         if (result !== false && this.hasParent()) {
             this.getParent().recurseUp(iteratee);
@@ -902,7 +921,6 @@ export class TreeNode {
     /**
      * Updates the indeterminate state of this node.
      *
-     * Only available when dom.showCheckboxes=true.
      * True if some, but not all children are checked.
      * False if no children are checked.
      *
@@ -910,50 +928,47 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     refreshIndeterminateState() {
-        var node = this;
-        var oldValue = node.indeterminate();
-        node.state('indeterminate', false);
+        let oldValue = this.indeterminate();
+        this.state('indeterminate', false);
 
-        if (this._tree.config.dom.showCheckboxes) {
-            if (node.hasChildren()) {
-                var childrenCount = node.children.length;
-                var indeterminate = 0;
-                var checked = 0;
+        if (this.hasChildren()) {
+            let childrenCount = this.children.length;
+            let indeterminate = 0;
+            let checked = 0;
 
-                node.children.each(function(n) {
-                    if (n.checked()) {
-                        checked++;
-                    }
-
-                    if (n.indeterminate()) {
-                        indeterminate++;
-                    }
-                });
-
-                // Set selected if all children are
-                if (checked === childrenCount) {
-                    baseStateChange('checked', true, 'checked', node);
-                }
-                else {
-                    baseStateChange('checked', false, 'unchecked', node);
+            this.children.each((n) => {
+                if (n.checked()) {
+                    checked++;
                 }
 
-                // Set indeterminate if any children are, or some children are selected
-                if (!node.checked()) {
-                    node.state('indeterminate', indeterminate > 0 || (childrenCount > 0 && checked > 0 && checked < childrenCount));
+                if (n.indeterminate()) {
+                    indeterminate++;
                 }
+            });
+
+            // Set selected if all children are
+            if (checked === childrenCount) {
+                baseStateChange('checked', true, 'checked', this);
+            }
+            else {
+                baseStateChange('checked', false, 'unchecked', this);
             }
 
-            if (node.hasParent()) {
-                node.getParent().refreshIndeterminateState();
-            }
-
-            if (oldValue !== node.state('indeterminate')) {
-                node.markDirty();
+            // Set indeterminate if any children are, or some children are selected
+            if (!this.checked()) {
+                this.state('indeterminate', indeterminate > 0 || (childrenCount > 0 && checked > 0 && checked < childrenCount));
             }
         }
 
-        return node;
+        if (this.hasParent()) {
+            this.getParent().refreshIndeterminateState();
+        }
+
+        if (oldValue !== this.state('indeterminate')) {
+            this.markDirty();
+        }
+
+        return this;
     }
 
     /**
@@ -964,7 +979,7 @@ export class TreeNode {
      */
     remove() {
         // Cache parent before we remove the node
-        var parent = this.getParent();
+        let parent = this.getParent();
 
         // Remove self
         this.context().remove(this);
@@ -972,11 +987,17 @@ export class TreeNode {
         // Refresh parent states
         if (parent) {
             parent.refreshIndeterminateState();
+            parent.markDirty();
         }
 
+        let pagination = parent ? parent.pagination() : this._tree.pagination();
+        pagination.total--;
+
         // Export/event
-        var exported = this.toObject();
-        this._tree.emit('node.removed', exported);
+        let exported = this.toObject();
+        this._tree.emit('node.removed', exported, parent);
+
+        this._tree.applyChanges();
 
         return exported;
     }
@@ -1022,33 +1043,31 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     select(shallow) {
-        var node = this;
-
-        if (!node.selected() && node.selectable()) {
+        if (!this.selected() && this.selectable()) {
             // Batch selection changes
-            node._tree.dom.batch();
+            this._tree.batch();
 
-            if (node._tree.canAutoDeselect()) {
-                var oldVal = node._tree.config.selection.require;
-                node._tree.config.selection.require = false;
-                node._tree.deselectDeep();
-                node._tree.config.selection.require = oldVal;
+            if (this._tree.canAutoDeselect()) {
+                let oldVal = this._tree.config.selection.require;
+                this._tree.config.selection.require = false;
+                this._tree.deselectDeep();
+                this._tree.config.selection.require = oldVal;
             }
 
             // Will we apply this state change to our children?
-            var deep = !shallow && node._tree.config.selection.autoSelectChildren;
+            let deep = !shallow && this._tree.config.selection.autoSelectChildren;
 
             baseStateChange('selected', true, 'selected', this, deep);
 
             // Cache as the last selected node
-            node._tree._lastSelectedNode = node;
+            this._tree._lastSelectedNode = this;
 
             // Mark hierarchy dirty and apply
-            node.markDirty();
-            node._tree.dom.end();
+            this.markDirty();
+            this._tree.end();
         }
 
-        return node;
+        return this;
     }
 
     /**
@@ -1058,7 +1077,7 @@ export class TreeNode {
      * @return {boolean} If node selectable.
      */
     selectable() {
-        var allow = this._tree.config.selection.allow(this);
+        let allow = this._tree.config.selection.allow(this);
         return typeof allow === 'boolean' ? allow : this.state('selectable');
     }
 
@@ -1083,6 +1102,8 @@ export class TreeNode {
     set(property, value) {
         this[property] = value;
         this.markDirty();
+
+        this._tree.applyChanges();
 
         return this;
     }
@@ -1109,7 +1130,7 @@ export class TreeNode {
      * @return {boolean} Current value on read, old value on set.
      */
     state(name, newVal) {
-        var currentVal = this.itree.state[name];
+        let currentVal = this.itree.state[name];
 
         if (typeof newVal !== 'undefined' && currentVal !== newVal) {
             // Update values
@@ -1168,7 +1189,7 @@ export class TreeNode {
         this.state('editing', !this.state('editing'));
 
         this.markDirty();
-        this._tree.dom.applyChanges();
+        this._tree.applyChanges();
 
         return this;
     }
@@ -1191,9 +1212,9 @@ export class TreeNode {
      * @return {object} Node object.
      */
     toObject(excludeChildren) {
-        var object = {};
+        let object = {};
 
-        _.each(this, function(v, k) {
+        _.each(this, (v, k) => {
             if (k !== '_tree' && k !== 'children' && k !== 'itree') {
                 object[k] = v;
             }
@@ -1214,19 +1235,22 @@ export class TreeNode {
      * @return {TreeNode} Node object.
      */
     uncheck(shallow) {
-        this._tree.dom.batch();
+        this._tree.batch();
 
         // Will we apply this state change to our children?
-        var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+        let deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
 
         baseStateChange('checked', false, 'unchecked', this, deep);
+
+        // Reset indeterminate state
+        this.state('indeterminate', false);
 
         // Refresh our parent
         if (this.hasParent()) {
             this.getParent().refreshIndeterminateState();
         }
 
-        this._tree.dom.end();
+        this._tree.end();
 
         return this;
     };
@@ -1239,18 +1263,16 @@ export class TreeNode {
      * @return {boolean} Whether visible.
      */
     visible() {
-        var node = this;
-
-        var isVisible = true;
-        if (node.hidden() || node.removed() || (this._tree.usesNativeDOM && !node.rendered())) {
+        let isVisible = true;
+        if (this.hidden() || this.removed() || (this._tree.usesNativeDOM && !this.rendered())) {
             isVisible = false;
         }
-        else if (node.hasParent()) {
-            if (node.getParent().collapsed()) {
+        else if (this.hasParent()) {
+            if (this.getParent().collapsed()) {
                 isVisible = false;
             }
             else {
-                isVisible = node.getParent().visible();
+                isVisible = this.getParent().visible();
             }
         }
         else {

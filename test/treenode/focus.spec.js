@@ -1,18 +1,12 @@
-'use strict';
+var expect = require('chai').expect;
+var InspireTree = require('../../build/inspire-tree');
 
 describe('TreeNode.prototype.focus', function() {
-    var $tree;
     var tree;
 
     before(function() {
-        helpers.createTreeContainer();
-
-        // Query DOM
-        $tree = $('.tree');
-
         // Create tree
         tree = new InspireTree({
-            target: $tree,
             data: [{
                 text: 'A',
                 id: 1
@@ -27,14 +21,11 @@ describe('TreeNode.prototype.focus', function() {
         expect(tree.node(1).focus).to.be.a('function');
     });
 
-    it('focus via browser focus', function() {
+    it('focuses a node', function() {
         var node = tree.node(1);
+        node.focus();
 
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('focused')).to.be.false;
-
-        $node.find('> div .title').focus();
-        expect($node.hasClass('focused')).to.be.true;
+        expect(node.focused()).to.be.true;
     });
 
     it('blurs other nodes on node change', function() {
@@ -42,16 +33,4 @@ describe('TreeNode.prototype.focus', function() {
 
         expect(tree.node(1).focused()).to.be.false;
     });
-
-    it('focus via api', function() {
-        var node = tree.node(1);
-
-        var $node = $('[data-uid="' + node.id + '"]');
-        expect($node.hasClass('focused')).to.be.false;
-
-        node.focus();
-        expect($node.hasClass('focused')).to.be.true;
-    });
-
-    after(helpers.clearDOM);
 });
