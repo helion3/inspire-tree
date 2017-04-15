@@ -26,7 +26,7 @@ We've ported our DOM rendering to [Inferno](https://infernojs.org/), and are see
 - Moved DOM code into a new package, [inspire-tree-dom](https://github.com/helion3/inspire-tree-dom).
 - Rewrote the DOM engine with Inferno, replacing virtual-dom.
 
-While there are no official API changes, the `node.itree.ref.node` Element reference is now just `node.itree.ref.node`.
+While there are no official API changes, the `node.itree.ref.node` Element reference is now just `node.itree.ref`.
 
 - We're no longer bundling lodash. If you're not using a bundler like Webpack, Browserify, or rollup,
 you'll need to include it as a dependency.
