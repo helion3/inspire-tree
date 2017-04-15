@@ -51,15 +51,17 @@ To install:
 
 ## Usage
 
-In most use-cases you need to provide a target DOM element and a source of data:
+At the very least you must provide data source
 
 ```js
 var tree = new InspireTree({
-    data: $.getJSON('sample-data.json')
+    data: [{
+        text: 'A node'
+    }]
 });
 ```
 
-Data objects must have at least a `text` property. Additional properties are listed below in "Node Configuration".
+Node objects must have at least a `text` property. Additional properties are listed below in "Node Configuration".
 
 ## Usage with Inspire Tree DOM
 
