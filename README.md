@@ -14,7 +14,6 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Robust API.
 - Events everywhere.
-- No required external dependencies.
 - Load data directly, via promises, or callbacks.
 - Load child nodes upfront or dynamically (or a mix of both).
 - Tri-state checkboxes (optional).
@@ -32,6 +31,9 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 - Node: `npm install --save inspire-tree` or
 - Bower `bower install --save inspire-tree`
+
+If you're using InspireTree in a browser environment, and are **not** using a module bundler like
+Webpack, Browserify, rollup, etc, you'll need to ensure [lodash](https://lodash.com/) is available.
 
 ### DOM Rendering
 
