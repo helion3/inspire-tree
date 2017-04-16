@@ -1,7 +1,9 @@
-/* Inspire Tree v2.0.0-beta.4
+/* Inspire Tree
+ * @version 2.0.0
  * https://github.com/helion3/inspire-tree
- * Copyright 2015 Helion3, and other contributors
- * Licensed under MIT. https://github.com/helion3/inspire-tree/blob/master/LICENSE
+ * @copyright Copyright 2015 Helion3, and other contributors
+ * @license Licensed under MIT
+ *          see https://github.com/helion3/inspire-tree/blob/master/LICENSE
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash')) :
