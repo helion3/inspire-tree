@@ -13,10 +13,12 @@ const pkgConfig = require('./package.json');
 const DIST = process.env.DIST || false;
 const MIN = process.env.MIN || false;
 
-var banner = `/* Inspire Tree v${pkgConfig.version}
+var banner = `/* Inspire Tree
+ * @version ${pkgConfig.version}
  * ${pkgConfig.repository}
- * Copyright 2015 Helion3, and other contributors
- * Licensed under MIT. ${pkgConfig.repository}/blob/master/LICENSE
+ * @copyright Copyright 2015 Helion3, and other contributors
+ * @license Licensed under MIT
+ *          see ${pkgConfig.repository}/blob/master/LICENSE
  */`;
 
 let plugins = [
@@ -37,7 +39,11 @@ let plugins = [
 ];
 
 if (MIN) {
-    plugins.push(uglify());
+    plugins.push(uglify({
+        output: {
+            comments: /@license/
+        }
+    }));
     plugins.push(gzip());
 }
 
