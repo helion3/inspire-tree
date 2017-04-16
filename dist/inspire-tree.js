@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 2.0.0
+ * @version 2.0.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -169,9 +169,7 @@ var es6Promise = createCommonjsModule(function (module, exports) {
  */
 
 (function (global, factory) {
-    'object' === 'object' && 'object' !== 'undefined' ? module.exports = factory() :
-    typeof undefined === 'function' && undefined.amd ? undefined(factory) :
-    (global.ES6Promise = factory());
+    module.exports = factory();
 }(commonjsGlobal, (function () { 'use strict';
 
 function objectOrFunction(x) {
@@ -1317,6 +1315,7 @@ Promise.Promise = Promise;
 return Promise;
 
 })));
+
 });
 
 var es6Promise_1 = es6Promise.Promise;
@@ -1351,30 +1350,7 @@ var createClass = function () {
 
 
 
-var get$2 = function get$2(object, property, receiver) {
-  if (object === null) object = Function.prototype;
-  var desc = Object.getOwnPropertyDescriptor(object, property);
 
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent === null) {
-      return undefined;
-    } else {
-      return get$2(parent, property, receiver);
-    }
-  } else if ("value" in desc) {
-    return desc.value;
-  } else {
-    var getter = desc.get;
-
-    if (getter === undefined) {
-      return undefined;
-    }
-
-    return getter.call(receiver);
-  }
-};
 
 var inherits = function (subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
@@ -1412,27 +1388,6 @@ var possibleConstructorReturn = function (self, call) {
 
 
 
-var set$1 = function set$1(object, property, value, receiver) {
-  var desc = Object.getOwnPropertyDescriptor(object, property);
-
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent !== null) {
-      set$1(parent, property, value, receiver);
-    }
-  } else if ("value" in desc && desc.writable) {
-    desc.value = value;
-  } else {
-    var setter = desc.set;
-
-    if (setter !== undefined) {
-      setter.call(receiver, value);
-    }
-  }
-
-  return value;
-};
 
 
 
@@ -1446,7 +1401,8 @@ var set$1 = function set$1(object, property, value, receiver) {
 
 
 
-var toArray$1 = function (arr) {
+
+var toArray = function (arr) {
   return Array.isArray(arr) ? arr : Array.from(arr);
 };
 
@@ -1566,7 +1522,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
         var _this = possibleConstructorReturn(this, (TreeNodes.__proto__ || Object.getPrototypeOf(TreeNodes)).call(this));
 
-        if (_.get(tree, 'constructor.name') !== 'InspireTree') {
+        if (_.isFunction(_.get(tree, 'isTree')) && !tree.isTree(tree)) {
             throw new TypeError('Invalid tree instance.');
         }
 
@@ -1877,7 +1833,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'each',
-        value: function each(iteratee) {
+        value: function each$$1(iteratee) {
             _.each(this, iteratee);
 
             return this;
@@ -2083,7 +2039,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'get',
-        value: function get(index) {
+        value: function get$$1(index) {
             return this[index];
         }
 
@@ -2226,7 +2182,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'invoke',
-        value: function invoke(methods, args) {
+        value: function invoke$$1(methods, args) {
             return baseInvoke(this, methods, args);
         }
 
@@ -2429,8 +2385,8 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'recurseDown',
-        value: function recurseDown(iteratee) {
-            recurseDown$1(this, iteratee);
+        value: function recurseDown$$1(iteratee) {
+            recurseDown(this, iteratee);
 
             return this;
         }
@@ -2445,7 +2401,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'remove',
-        value: function remove(node) {
+        value: function remove$$1(node) {
             _.remove(this, { id: node.id });
 
             if (this._context) {
@@ -2672,7 +2628,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'toArray',
-        value: function toArray() {
+        value: function toArray$$1() {
             var array = [];
 
             _.each(this, function (node) {
@@ -2709,12 +2665,12 @@ var TreeNodes = function (_extendableBuiltin2) {
  * @param {function} iteratee Iteratee function
  * @return {boolean} Cease iteration.
  */
-function recurseDown$1(obj, iteratee) {
+function recurseDown(obj, iteratee) {
     var res = void 0;
 
     if (obj instanceof TreeNodes) {
         _.each(obj, function (node) {
-            res = recurseDown$1(node, iteratee);
+            res = recurseDown(node, iteratee);
 
             return res;
         });
@@ -2723,7 +2679,7 @@ function recurseDown$1(obj, iteratee) {
 
         // Recurse children
         if (res !== false && obj.hasChildren()) {
-            res = recurseDown$1(obj.children, iteratee);
+            res = recurseDown(obj.children, iteratee);
         }
     }
 
@@ -3787,8 +3743,8 @@ var TreeNode = function () {
 
     }, {
         key: 'recurseDown',
-        value: function recurseDown(iteratee) {
-            recurseDown$1(this, iteratee);
+        value: function recurseDown$$1(iteratee) {
+            recurseDown(this, iteratee);
 
             return this;
         }
@@ -3877,7 +3833,7 @@ var TreeNode = function () {
 
     }, {
         key: 'remove',
-        value: function remove() {
+        value: function remove$$1() {
             // Cache parent before we remove the node
             var parent = this.getParent();
 
@@ -4020,7 +3976,7 @@ var TreeNode = function () {
 
     }, {
         key: 'set',
-        value: function set(property, value) {
+        value: function set$$1(property, value) {
             this[property] = value;
             this.markDirty();
 
@@ -5434,7 +5390,7 @@ var InspireTree = function (_EventEmitter) {
             }, {});
 
             var _$sortBy = _.sortBy(Object.keys(pathMap)),
-                _$sortBy2 = toArray$1(_$sortBy),
+                _$sortBy2 = toArray(_$sortBy),
                 head = _$sortBy2[0],
                 tail = _$sortBy2.slice(1);
 
@@ -5645,7 +5601,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'each',
-        value: function each() {
+        value: function each$$1() {
             return map$1(this, 'each', arguments);
         }
 
@@ -5820,7 +5776,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'get',
-        value: function get() {
+        value: function get$$1() {
             return map$1(this, 'get', arguments);
         }
 
@@ -5903,7 +5859,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'invoke',
-        value: function invoke() {
+        value: function invoke$$1() {
             return map$1(this, 'invoke', arguments);
         }
 
@@ -5943,6 +5899,7 @@ var InspireTree = function (_EventEmitter) {
          * Check if an object is a TreeNode.
          *
          * @category Tree
+         * @deprecated
          * @param {object} object Object
          * @return {boolean} If object is a TreeNode.
          */
@@ -5951,6 +5908,34 @@ var InspireTree = function (_EventEmitter) {
         key: 'isNode',
         value: function isNode(object) {
             return object instanceof TreeNode;
+        }
+
+        /**
+         * Check if an object is a Tree.
+         *
+         * @category Tree
+         * @param {object} object Object
+         * @return {boolean} If object is a Tree.
+         */
+
+    }, {
+        key: 'isTree',
+        value: function isTree(object) {
+            return object instanceof InspireTree;
+        }
+
+        /**
+         * Check if an object is a TreeNode.
+         *
+         * @category Tree
+         * @param {object} object Object
+         * @return {boolean} If object is a TreeNode.
+         */
+
+    }, {
+        key: 'isTreeNode',
+        value: function isTreeNode(object) {
+            return this.isNode(object);
         }
 
         /**
@@ -6229,7 +6214,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'remove',
-        value: function remove() {
+        value: function remove$$1() {
             return map$1(this, 'remove', arguments);
         }
 
@@ -6579,7 +6564,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'toArray',
-        value: function toArray() {
+        value: function toArray$$1() {
             return map$1(this, 'toArray', arguments);
         }
 
