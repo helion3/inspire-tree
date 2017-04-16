@@ -94,7 +94,7 @@ export class TreeNodes extends Array {
     constructor(tree, array) {
         super();
 
-        if (_.get(tree, 'constructor.name') !== 'InspireTree') {
+        if (_.isFunction(_.get(tree, 'isTree')) && !tree.isTree(tree)) {
             throw new TypeError('Invalid tree instance.');
         }
 

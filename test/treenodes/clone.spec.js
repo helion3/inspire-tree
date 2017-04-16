@@ -26,7 +26,8 @@ describe('TreeNodes.prototype.clone', function() {
         var original = tree.nodes();
         var clone = original.clone();
 
-        expect(clone.constructor.name).to.equal('TreeNodes');
+
+        expect(tree.isTreeNodes(clone)).to.be.true;
         expect(clone).to.have.length(1);
         expect(clone[0].children).to.have.length(1);
     });

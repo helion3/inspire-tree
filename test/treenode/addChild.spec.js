@@ -40,7 +40,7 @@ describe('TreeNode.prototype.addChild', function() {
             text: 'A'
         });
 
-        expect(child.constructor.name).to.equal('TreeNode');
+        expect(tree.isNode(child)).to.be.true;
         expect(child.hasParent()).to.be.true;
     });
 

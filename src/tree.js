@@ -709,6 +709,17 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Check if an object is a Tree.
+     *
+     * @category Tree
+     * @param {object} object Object
+     * @return {boolean} If object is a Tree.
+     */
+    isTree(object) {
+        return (object instanceof InspireTree);
+    }
+
+    /**
      * Check if an object is a TreeNodes array.
      *
      * @category Tree

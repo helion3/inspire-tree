@@ -24,7 +24,7 @@ describe('TreeNodes.prototype.concat', function() {
         var clone = original.clone();
         var combined = clone.concat(original);
 
-        expect(combined.constructor.name).to.equal('TreeNodes');
+        expect(tree.isTreeNodes(combined)).to.be.true;
         expect(original).to.have.length(1);
         expect(clone).to.have.length(1);
         expect(combined).to.have.length(2);
