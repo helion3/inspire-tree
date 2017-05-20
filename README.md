@@ -29,8 +29,8 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 ### Installation
 
-- Node: `npm install --save inspire-tree` or
-- Bower `bower install --save inspire-tree`
+- Yarn: `yarn install --save-dev inspire-tree` or
+- NPM `npm install --save-dev inspire-tree`
 
 If you're using InspireTree in a browser environment, and are **not** using a module bundler like
 Webpack, Browserify, rollup, etc, you'll need to ensure [lodash](https://lodash.com/) is available.
@@ -44,8 +44,8 @@ Inspire Tree DOM uses a virtual DOM to achieve high-performance rendering.
 
 To install:
 
-- Node: `npm install --save inspire-tree-dom` or
-- Bower `bower install --save inspire-tree-dom`
+- Yarn: `npm install --save-dev inspire-tree-dom` or
+- NPM `npm install --save-dev inspire-tree-dom`
 
 *Note:* InspireTreeDOM offers additional configuration options and events. Please be sure to read the [README](https://github.com/helion3/inspire-tree-dom).
 
