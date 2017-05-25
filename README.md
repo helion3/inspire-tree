@@ -29,7 +29,7 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 ### Installation
 
-- Yarn: `yarn install --save-dev inspire-tree` or
+- Yarn: `yarn add --dev inspire-tree` or
 - NPM `npm install --save-dev inspire-tree`
 
 If you're using InspireTree in a browser environment, and are **not** using a module bundler like
