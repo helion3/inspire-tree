@@ -10,7 +10,7 @@
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.19.0",
     "babel-preset-es2015-rollup": "^3.0.0",
-    "chai": "^3.4.1",
+    "chai": "^4.0.0",
     "docdown": "^0.7.2",
     "es6-promise": "^4.1.0",
     "eslint": "^3.19.0",
