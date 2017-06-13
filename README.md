@@ -44,7 +44,7 @@ Inspire Tree DOM uses a virtual DOM to achieve high-performance rendering.
 
 To install:
 
-- Yarn: `npm install --save-dev inspire-tree-dom` or
+- Yarn: `yarn add --dev inspire-tree-dom` or
 - NPM `npm install --save-dev inspire-tree-dom`
 
 *Note:* InspireTreeDOM offers additional configuration options and events. Please be sure to read the [README](https://github.com/helion3/inspire-tree-dom).
