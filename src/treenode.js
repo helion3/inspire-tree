@@ -109,6 +109,16 @@ export class TreeNode {
     }
 
     /**
+     * Ensure this node allows dynamic children.
+     *
+     * @private
+     * @return {boolean} If tree/node allows dynamic children.
+     */
+    allowDynamicLoad() {
+        return this._tree.isDynamic && (_.isArrayLike(this.children) || this.children === true);
+    }
+
+    /**
      * Get if node available.
      *
      * @category TreeNode
@@ -644,8 +654,8 @@ export class TreeNode {
      */
     loadChildren() {
         return new Promise((resolve, reject) => {
-            if (!this._tree.isDynamic || (!_.isArrayLike(this.children) && this.children !== true)) {
-                reject(new Error('Node does not have or support dynamic children.'));
+            if (!this.allowDynamicLoad()) {
+                return reject(new Error('Node does not have or support dynamic children.'));
             }
 
             this.state('loading', true);
@@ -969,6 +979,29 @@ export class TreeNode {
         }
 
         return this;
+    }
+
+    /**
+     * Removes all current children and re-executes a loadChildren call.
+     *
+     * @category TreeNode
+     * @return {Promise} Promise resolved on load.
+     */
+    reload() {
+        return new Promise((resolve, reject) => {
+            if (!this.allowDynamicLoad()) {
+                return reject(new Error('Node or tree does not support dynamic children.'));
+            }
+
+            // Reset children
+            this.children = true;
+
+            // Collapse
+            this.collapse();
+
+            // Load and the proxy the promise
+            this.loadChildren().then(resolve).catch(reject);
+        });
     }
 
     /**
