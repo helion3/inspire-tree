@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 2.0.3
+
+- Addressed incorrect version in distribution file banners.
+
 # 2.0.2
 
 - Added `TreeNode.reload` method.
