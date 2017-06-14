@@ -1,5 +1,15 @@
 # Changes to Inspire Tree
 
+# 2.0.2
+
+- Added `TreeNode.reload` method.
+- Removed bower support.
+
+# 2.0.1
+
+- Added `isTreeNode` alias to (and deprecated) `isNode`.
+- Fixed uglify-incompatible instance checks.
+
 # 2.0.0
 
 2.0 is an overhaul (and improvement) with how we manage and build InspireTree. The API has *not* changed aside from some

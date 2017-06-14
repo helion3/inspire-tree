@@ -169,7 +169,9 @@ var es6Promise = createCommonjsModule(function (module, exports) {
  */
 
 (function (global, factory) {
-    module.exports = factory();
+    'object' === 'object' && 'object' !== 'undefined' ? module.exports = factory() :
+    typeof undefined === 'function' && undefined.amd ? undefined(factory) :
+    (global.ES6Promise = factory());
 }(commonjsGlobal, (function () { 'use strict';
 
 function objectOrFunction(x) {
@@ -1315,7 +1317,6 @@ Promise.Promise = Promise;
 return Promise;
 
 })));
-
 });
 
 var es6Promise_1 = es6Promise.Promise;
@@ -1350,7 +1351,30 @@ var createClass = function () {
 
 
 
+var get$2 = function get$2(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
 
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get$2(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
 
 var inherits = function (subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
@@ -1388,6 +1412,27 @@ var possibleConstructorReturn = function (self, call) {
 
 
 
+var set$1 = function set$1(object, property, value, receiver) {
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent !== null) {
+      set$1(parent, property, value, receiver);
+    }
+  } else if ("value" in desc && desc.writable) {
+    desc.value = value;
+  } else {
+    var setter = desc.set;
+
+    if (setter !== undefined) {
+      setter.call(receiver, value);
+    }
+  }
+
+  return value;
+};
 
 
 
@@ -1401,8 +1446,7 @@ var possibleConstructorReturn = function (self, call) {
 
 
 
-
-var toArray = function (arr) {
+var toArray$1 = function (arr) {
   return Array.isArray(arr) ? arr : Array.from(arr);
 };
 
@@ -1833,7 +1877,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'each',
-        value: function each$$1(iteratee) {
+        value: function each(iteratee) {
             _.each(this, iteratee);
 
             return this;
@@ -2039,7 +2083,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'get',
-        value: function get$$1(index) {
+        value: function get(index) {
             return this[index];
         }
 
@@ -2182,7 +2226,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'invoke',
-        value: function invoke$$1(methods, args) {
+        value: function invoke(methods, args) {
             return baseInvoke(this, methods, args);
         }
 
@@ -2385,8 +2429,8 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'recurseDown',
-        value: function recurseDown$$1(iteratee) {
-            recurseDown(this, iteratee);
+        value: function recurseDown(iteratee) {
+            recurseDown$1(this, iteratee);
 
             return this;
         }
@@ -2401,7 +2445,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'remove',
-        value: function remove$$1(node) {
+        value: function remove(node) {
             _.remove(this, { id: node.id });
 
             if (this._context) {
@@ -2628,7 +2672,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'toArray',
-        value: function toArray$$1() {
+        value: function toArray() {
             var array = [];
 
             _.each(this, function (node) {
@@ -2665,12 +2709,12 @@ var TreeNodes = function (_extendableBuiltin2) {
  * @param {function} iteratee Iteratee function
  * @return {boolean} Cease iteration.
  */
-function recurseDown(obj, iteratee) {
+function recurseDown$1(obj, iteratee) {
     var res = void 0;
 
     if (obj instanceof TreeNodes) {
         _.each(obj, function (node) {
-            res = recurseDown(node, iteratee);
+            res = recurseDown$1(node, iteratee);
 
             return res;
         });
@@ -2679,7 +2723,7 @@ function recurseDown(obj, iteratee) {
 
         // Recurse children
         if (res !== false && obj.hasChildren()) {
-            res = recurseDown(obj.children, iteratee);
+            res = recurseDown$1(obj.children, iteratee);
         }
     }
 
@@ -2820,6 +2864,19 @@ var TreeNode = function () {
             this._tree.end();
 
             return nodes;
+        }
+
+        /**
+         * Ensure this node allows dynamic children.
+         *
+         * @private
+         * @return {boolean} If tree/node allows dynamic children.
+         */
+
+    }, {
+        key: 'allowDynamicLoad',
+        value: function allowDynamicLoad() {
+            return this._tree.isDynamic && (_.isArrayLike(this.children) || this.children === true);
         }
 
         /**
@@ -3457,8 +3514,8 @@ var TreeNode = function () {
             var _this3 = this;
 
             return new es6Promise_1(function (resolve, reject) {
-                if (!_this3._tree.isDynamic || !_.isArrayLike(_this3.children) && _this3.children !== true) {
-                    reject(new Error('Node does not have or support dynamic children.'));
+                if (!_this3.allowDynamicLoad()) {
+                    return reject(new Error('Node does not have or support dynamic children.'));
                 }
 
                 _this3.state('loading', true);
@@ -3743,8 +3800,8 @@ var TreeNode = function () {
 
     }, {
         key: 'recurseDown',
-        value: function recurseDown$$1(iteratee) {
-            recurseDown(this, iteratee);
+        value: function recurseDown(iteratee) {
+            recurseDown$1(this, iteratee);
 
             return this;
         }
@@ -3825,6 +3882,34 @@ var TreeNode = function () {
         }
 
         /**
+         * Removes all current children and re-executes a loadChildren call.
+         *
+         * @category TreeNode
+         * @return {Promise} Promise resolved on load.
+         */
+
+    }, {
+        key: 'reload',
+        value: function reload() {
+            var _this4 = this;
+
+            return new es6Promise_1(function (resolve, reject) {
+                if (!_this4.allowDynamicLoad()) {
+                    return reject(new Error('Node or tree does not support dynamic children.'));
+                }
+
+                // Reset children
+                _this4.children = true;
+
+                // Collapse
+                _this4.collapse();
+
+                // Load and the proxy the promise
+                _this4.loadChildren().then(resolve).catch(reject);
+            });
+        }
+
+        /**
          * Remove a node from the tree.
          *
          * @category TreeNode
@@ -3833,7 +3918,7 @@ var TreeNode = function () {
 
     }, {
         key: 'remove',
-        value: function remove$$1() {
+        value: function remove() {
             // Cache parent before we remove the node
             var parent = this.getParent();
 
@@ -3976,7 +4061,7 @@ var TreeNode = function () {
 
     }, {
         key: 'set',
-        value: function set$$1(property, value) {
+        value: function set(property, value) {
             this[property] = value;
             this.markDirty();
 
@@ -5390,7 +5475,7 @@ var InspireTree = function (_EventEmitter) {
             }, {});
 
             var _$sortBy = _.sortBy(Object.keys(pathMap)),
-                _$sortBy2 = toArray(_$sortBy),
+                _$sortBy2 = toArray$1(_$sortBy),
                 head = _$sortBy2[0],
                 tail = _$sortBy2.slice(1);
 
@@ -5601,7 +5686,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'each',
-        value: function each$$1() {
+        value: function each() {
             return map$1(this, 'each', arguments);
         }
 
@@ -5776,7 +5861,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'get',
-        value: function get$$1() {
+        value: function get() {
             return map$1(this, 'get', arguments);
         }
 
@@ -5859,7 +5944,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'invoke',
-        value: function invoke$$1() {
+        value: function invoke() {
             return map$1(this, 'invoke', arguments);
         }
 
@@ -6214,7 +6299,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'remove',
-        value: function remove$$1() {
+        value: function remove() {
             return map$1(this, 'remove', arguments);
         }
 
@@ -6564,7 +6649,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'toArray',
-        value: function toArray$$1() {
+        value: function toArray() {
             return map$1(this, 'toArray', arguments);
         }
 
