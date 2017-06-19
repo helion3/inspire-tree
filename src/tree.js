@@ -782,7 +782,8 @@ export default class InspireTree extends EventEmitter2 {
                 // Concat only if loading is deferred
                 if (this.config.deferredLoading) {
                     this.model = this.model.concat(newModel);
-                } else {
+                }
+                else {
                     this.model = newModel;
                 }
 
