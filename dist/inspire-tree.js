@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 2.0.3
+ * @version 2.0.4
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -32,7 +32,7 @@ var rng;
 var crypto = commonjsGlobal.crypto || commonjsGlobal.msCrypto; // for IE 11
 if (crypto && crypto.getRandomValues) {
   // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
-  var rnds8 = new Uint8Array(16);
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
   rng = function whatwgRNG() {
     crypto.getRandomValues(rnds8);
     return rnds8;
@@ -44,7 +44,7 @@ if (!rng) {
   //
   // If all else fails, use Math.random().  It's fast, but is of unspecified
   // quality.
-  var  rnds = new Array(16);
+  var rnds = new Array(16);
   rng = function() {
     for (var i = 0, r; i < 16; i++) {
       if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
@@ -59,7 +59,7 @@ var rngBrowser = rng;
 
 /**
  * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
  */
 var byteToHex = [];
 for (var i = 0; i < 256; ++i) {
@@ -69,7 +69,7 @@ for (var i = 0; i < 256; ++i) {
 function bytesToUuid(buf, offset) {
   var i = offset || 0;
   var bth = byteToHex;
-  return  bth[buf[i++]] + bth[buf[i++]] +
+  return bth[buf[i++]] + bth[buf[i++]] +
           bth[buf[i++]] + bth[buf[i++]] + '-' +
           bth[buf[i++]] + bth[buf[i++]] + '-' +
           bth[buf[i++]] + bth[buf[i++]] + '-' +
@@ -6078,8 +6078,15 @@ var InspireTree = function (_EventEmitter) {
                         _this3.emit('data.loaded', nodes);
                     }
 
-                    // Concat newly loaded nodes
-                    _this3.model = _this3.model.concat(collectionToModel(_this3, nodes));
+                    // Parse newly-loaded nodes
+                    var newModel = collectionToModel(_this3, nodes);
+
+                    // Concat only if loading is deferred
+                    if (_this3.config.deferredLoading) {
+                        _this3.model = _this3.model.concat(newModel);
+                    } else {
+                        _this3.model = newModel;
+                    }
 
                     // Set pagination
                     _this3.model._pagination.total = nodes.length;

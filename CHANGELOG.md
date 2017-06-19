@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 2.0.4
+
+- Clears existing data on `load` when not using deferred loading. Was broken with 1.11.
+
 # 2.0.3
 
 - Addressed incorrect version in distribution file banners.
