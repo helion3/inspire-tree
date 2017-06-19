@@ -665,7 +665,7 @@ export class TreeNode {
             let complete = (nodes, totalNodes) => {
                 // A little type-safety for silly situations
                 if (!_.isArrayLike(nodes)) {
-                    return resolve([]);
+                    return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
                 }
 
                 this._tree.batch();

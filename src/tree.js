@@ -767,7 +767,7 @@ export default class InspireTree extends EventEmitter2 {
             let complete = (nodes, totalNodes) => {
                 // A little type-safety for silly situations
                 if (!_.isArrayLike(nodes)) {
-                    return resolve([]);
+                    return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
                 }
 
                 // Delay event for synchronous loader. Otherwise it fires

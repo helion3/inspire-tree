@@ -67,8 +67,10 @@ describe('TreeNode.prototype.loadChildren', function() {
             }
         });
 
-        tree.node(1).loadChildren().then(function() {
+        tree.node(1).loadChildren().catch(function(err) {
+            expect(err instanceof TypeError).to.be.true;
+
             done();
-        }).catch(done);
+        });
     });
 });

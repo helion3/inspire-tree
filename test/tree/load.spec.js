@@ -66,9 +66,11 @@ describe('Tree.load', function() {
 
         tree.load(function(node, resolve) {
             resolve();
-        }).then(function() {
+        }).catch(function(err) {
+            expect(err instanceof TypeError).to.be.true;
+
             done();
-        }).catch(done);
+        });
     });
 
     it('returns a promise', function() {
