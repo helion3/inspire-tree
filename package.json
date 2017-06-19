@@ -20,13 +20,13 @@
     "mocha": "^3.4.2",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",
-    "rollup-plugin-gzip": "^1.1.0",
+    "rollup-plugin-gzip": "^1.2.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "rollup-watch": "^4.0.0",
     "sinon": "^2.3.4",
     "sinon-chai": "^2.11.0",
-    "uuid": "^3.0.0"
+    "uuid": "^3.1.0"
   },
   "scripts": {
     "build": "rollup -c",
