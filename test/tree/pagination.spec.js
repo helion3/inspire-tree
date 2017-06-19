@@ -37,4 +37,21 @@ describe('Tree.prototype.pagination', function() {
             expect(pagination.total).to.equal(10);
         });
     });
+
+    it('does not clear existing data when deferred loading is used', function() {
+        var tree = new InspireTree({
+            deferredLoading: true,
+            data: function(node, resolve) {
+                resolve([{
+                    text: 'Test'
+                }], 2);
+            }
+        });
+
+        tree.load([{
+            text: 'Test2'
+        }]);
+
+        expect(tree.nodes()).to.have.length(2);
+    });
 });

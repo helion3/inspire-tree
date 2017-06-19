@@ -14,6 +14,22 @@ describe('Tree.load', function() {
         expect(tree.nodes()).to.have.length(1);
     });
 
+    it('clears existing data when deferred loading is not used', function() {
+        var tree = new InspireTree({
+            data: function(node, resolve) {
+                resolve([{
+                    text: 'Test'
+                }]);
+            }
+        });
+
+        tree.load([{
+            text: 'Test2'
+        }]);
+
+        expect(tree.nodes()).to.have.length(1);
+    });
+
     it('loads data via callback', function() {
         var tree = new InspireTree({
             data: function(node, resolve) {

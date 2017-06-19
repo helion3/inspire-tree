@@ -776,8 +776,15 @@ export default class InspireTree extends EventEmitter2 {
                     this.emit('data.loaded', nodes);
                 }
 
-                // Concat newly loaded nodes
-                this.model = this.model.concat(collectionToModel(this, nodes));
+                // Parse newly-loaded nodes
+                var newModel = collectionToModel(this, nodes);
+
+                // Concat only if loading is deferred
+                if (this.config.deferredLoading) {
+                    this.model = this.model.concat(newModel);
+                } else {
+                    this.model = newModel;
+                }
 
                 // Set pagination
                 this.model._pagination.total = nodes.length;
