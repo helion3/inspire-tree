@@ -59,6 +59,18 @@ describe('Tree.load', function() {
         tree.on('data.loaderror', done);
     });
 
+    it('doesn\'t error with an invalid nodes array', function(done) {
+        var tree = new InspireTree({
+            data: []
+        });
+
+        tree.load(function(node, resolve) {
+            resolve();
+        }).then(function() {
+            done();
+        }).catch(done);
+    });
+
     it('returns a promise', function() {
         var tree = new InspireTree({
             data: []

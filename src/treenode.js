@@ -663,6 +663,11 @@ export class TreeNode {
             this._tree.applyChanges();
 
             let complete = (nodes, totalNodes) => {
+                // A little type-safety for silly situations
+                if (!_.isArrayLike(nodes)) {
+                    return resolve([]);
+                }
+
                 this._tree.batch();
                 this.state('loading', false);
 

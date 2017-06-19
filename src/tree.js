@@ -765,9 +765,14 @@ export default class InspireTree extends EventEmitter2 {
     load(loader) {
         let promise = new Promise((resolve, reject) => {
             let complete = (nodes, totalNodes) => {
+                // A little type-safety for silly situations
+                if (!_.isArrayLike(nodes)) {
+                    return resolve([]);
+                }
+
                 // Delay event for synchronous loader. Otherwise it fires
                 // before the user has a chance to listen.
-                if (!this.initialized && _.isArray(nodes)) {
+                if (!this.initialized && _.isArrayLike(nodes)) {
                     setTimeout(() => {
                         this.emit('data.loaded', nodes);
                     });

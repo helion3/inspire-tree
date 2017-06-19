@@ -50,4 +50,25 @@ describe('TreeNode.prototype.loadChildren', function() {
     it('shares checked states', function() {
         expect(tree.node(2).selected()).to.be.true;
     });
+
+    it('doesn\'t error with an invalid nodes array', function(done) {
+        var tree = new InspireTree({
+            data: function(node, resolve) {
+                if (!node) {
+                    resolve([{
+                        text: 'A',
+                        id: 1,
+                        children: true
+                    }]);
+                }
+                else {
+                    resolve();
+                }
+            }
+        });
+
+        tree.node(1).loadChildren().then(function() {
+            done();
+        }).catch(done);
+    });
 });
