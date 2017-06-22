@@ -77,13 +77,11 @@ For more information regarding InspireTreeDOM, see the [README](https://github.c
 
 ### Data Loading and Initialization Errors
 
-When you define a data loader in the InspireTree constructor, the promise isn't accessible, and this can consume errors
-that you should be aware of. There are a few choices:
+If `data` was provided to the constructor, the InspireTree constructor will load it. If an error occurs, it
+will be caught in a promise that's cached as `tree._loader.promise`. This allows you to track the promise returned,
+which can't be returned from the InspireTree constructor.
 
-- If `data` was provided to the constructor, InspireTree will automatically throw any errors. However, errors from
-  future calls will only be available through the `load()` method's promise or the `data.loaderror` event.
-- Listen to the `data.loaderror` event. All load errors, including initial errors, emit this event.
-- Load the data after tree initialization: `tree.load(data).catch(function(err) { ... })`.
+Any calls to `load`-related methods can use the returned promise normally.
 
 ## API Docs
 

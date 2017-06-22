@@ -175,12 +175,7 @@ export default class InspireTree extends EventEmitter2 {
 
         // Load initial user data
         if (tree.config.data) {
-            tree.load(tree.config.data).catch((err) => {
-                // Proxy initial errors. At this point we should never consume them
-                setTimeout(() => {
-                    throw err;
-                });
-            });
+            tree.load(tree.config.data);
         }
 
         tree.initialized = true;
@@ -848,6 +843,11 @@ export default class InspireTree extends EventEmitter2 {
         promise.catch((err) => {
             this.emit('data.loaderror', err);
         });
+
+        // Cache to allow access after tree instantiation
+        this._loader = {
+            promise: promise
+        };
 
         return promise;
     }

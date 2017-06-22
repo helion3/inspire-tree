@@ -144,4 +144,18 @@ describe('Tree.load', function() {
             done();
         });
     });
+
+    it('triggers promise on instantiation load error', function(done) {
+        var tree = new InspireTree({
+            data: function(node, resolve, reject) {
+                reject(new Error('Fake'));
+            }
+        });
+
+        tree._loader.promise.catch(function(err) {
+            expect(err.message).to.equal('Fake');
+
+            done();
+        });
+    });
 });
