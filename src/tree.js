@@ -885,6 +885,19 @@ export default class InspireTree extends EventEmitter2 {
         return map(this, 'matched', arguments);
     }
 
+    /**
+     * Moves the node at a given index to a new index.
+     *
+     * @category Tree
+     * @param {int} index Current index.
+     * @param {int} newIndex New index.
+     * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
+     * @return {TreeNode} Node object.
+     */
+    move() {
+        return map(this, 'move', arguments);
+    }
+
     /*
      * Pause events.
      *

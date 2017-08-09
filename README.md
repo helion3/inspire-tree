@@ -164,6 +164,7 @@ tree.on('node.added', function(event, node) {
 - **node.expanded** - `(TreeNode node)` - Node expanded.
 - **node.focused** - `(TreeNode node)` - Node focused.
 - **node.hidden** - `(TreeNode node)` - Node hidden.
+- **node.moved** - `(TreeNode node, TreeNodes source, int oldIndex, TreeNodes target, int newIndex)` - Node moved.
 - **node.paginated** - `(TreeNode context), (Object pagination) (Event event)` - Nodes were paginated. Context is undefined when for the root level.
 - **node.property.changed** - `(TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue)` - A node's root property has changed.
 - **node.removed** - `(object node)` - Node removed.

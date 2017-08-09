@@ -750,6 +750,28 @@ export class TreeNodes extends Array {
     }
 
     /**
+     * Moves the node at a given index to a new index.
+     *
+     * @category TreeNodes
+     * @param {int} index Current index.
+     * @param {int} newIndex New index.
+     * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
+     * @return {TreeNode} Node object.
+     */
+    move(index, newIndex, target = this) {
+        this._tree.batch();
+
+        var oldNode = this[index].remove();
+        var node = target.insertAt(newIndex, oldNode);
+
+        this._tree.emit('node.moved', node, this, index, target, newIndex);
+
+        this._tree.end();
+
+        return node;
+    }
+
+    /**
      * Get a node.
      *
      * @category TreeNodes
