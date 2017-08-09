@@ -136,6 +136,7 @@ declare module "inspire-tree" {
         load(loader: Promise<TreeNodes>): any;
         loading(full?: boolean): TreeNodes;
         matched(full?: boolean): TreeNodes;
+        move(index: number, newIndex: number, target: TreeNodes): TreeNode;
         mute(events: Array<string>): InspireTree;
         muted(): boolean;
         node(id: string|number): TreeNode;
@@ -227,6 +228,7 @@ declare module "inspire-tree" {
         invokeDeep(methods: string|Array<string>): TreeNodes;
         loading(full?: boolean): TreeNodes;
         matched(full?: boolean): TreeNodes;
+        move(index: number, newIndex: number, target: TreeNodes): TreeNode;
         node(id: string|number): TreeNode;
         nodes(ids?: Array<string>|Array<number>): TreeNodes;
         pagination(): Pagination;
