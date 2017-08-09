@@ -63,7 +63,7 @@ export function objectToNode(tree, object, parent) {
     // Wrap
     object = _.assign(new TreeNode(tree), object);
 
-    if (object.hasChildren()) {
+    if (_.isArrayLike(object.children)) {
         object.children = collectionToModel(tree, object.children, object);
     }
 
