@@ -732,7 +732,7 @@ export class TreeNode {
     /**
      * Loads additional child nodes.
      *
-     * @category Tree
+     * @category TreeNode
      * @param {Event} event Click or scroll event if DOM interaction triggered this call.
      * @return {Promise} Resolves with request results.
      */

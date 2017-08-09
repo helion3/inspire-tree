@@ -1,5 +1,3 @@
-/// <reference types="es6-promise" />
-
 declare module "inspire-tree" {
     /**
      * Represents a generic callback which receives a single TreeNode argument.
@@ -34,6 +32,15 @@ declare module "inspire-tree" {
      */
     interface Copy {
         to(dest: any): any;
+    }
+
+    // Copied from EventEmitter2 to avoid imports, see below
+    type eventNS = string[];
+    interface Listener {
+        (...values: any[]): void;
+    }
+    interface EventAndListener {
+        (event: string | string[], ...values: any[]): void;
     }
 
     /**
@@ -156,6 +163,28 @@ declare module "inspire-tree" {
         toArray(): Array<any>;
         unmute(events: Array<string>): InspireTree;
         visible(full?: boolean): TreeNodes;
+
+        // Inherited from EventEmitter2.
+        // These are manually defined because otherwise we'd have to make
+        // the eventemitter2 module a dependency purely for the typings which
+        // simply be spam for a majority of users
+        emit(event: string | string[], ...values: any[]): boolean;
+        emitAsync(event: string | string[], ...values: any[]): Promise<any[]>;
+        addListener(event: string, listener: Listener): this;
+        on(event: string | string[], listener: Listener): this;
+        prependListener(event: string | string[], listener: Listener): this;
+        once(event: string | string[], listener: Listener): this;
+        prependOnceListener(event: string | string[], listener: Listener): this;
+        many(event: string | string[], timesToListen: number, listener: Listener): this;
+        prependMany(event: string | string[], timesToListen: number, listener: Listener): this;
+        onAny(listener: EventAndListener): this;
+        prependAny(listener: EventAndListener): this;
+        offAny(listener: Listener): this;
+        removeListener(event: string | string[], listener: Listener): this;
+        off(event: string, listener: Listener): this;
+        removeAllListeners(event?: string | eventNS): this;
+        setMaxListeners(n: number): void;
+        eventNames(): string[];
     }
 
     interface TreeNodes {
