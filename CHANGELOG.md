@@ -1,5 +1,14 @@
 # Changes to Inspire Tree
 
+# 2.0.5
+
+- Added `TreeNodes.move`.
+- Added `TreeNodes.swap` and `TreeNode.swap`.
+- Added event-related methods to typescript definition file.
+- Fixed empty arrays not being converted to TreeNodes instances.
+- Cached initial load promise on the tree rather than throwing its error.
+- Added safety check for invalid arrays on data load.
+
 # 2.0.4
 
 - Clears existing data on `load` when not using deferred loading. Was broken with 1.11.
