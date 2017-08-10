@@ -94,10 +94,9 @@ Any calls to `load`-related methods can use the returned promise normally.
 - **allowLoadEvents** - Array of state-change events to fire for pre-set states.
 - **checkbox**
     + **autoCheckChildren** - Automatically check/uncheck children when parent toggled.
-- **contextMenu** - Array of choices (object with `text` property, `handler` function) for a custom context menu.
 - **data** - An array, promise, or callback function.
 - **deferredLoading** - Enable deferred loading. (See "Deferrals" section below.)
-- **editable** - Allow inline editing.
+- **editable** - Allow inline editing (requires inspire-tree-dom).
 - **editing** (defaults to true if `editable` is true)
     + **add** - Allow user to add nodes.
     + **edit** -  Allow user to edit existing nodes.
