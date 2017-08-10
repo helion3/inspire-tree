@@ -2340,6 +2340,33 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
+         * Moves the node at a given index to a new index.
+         *
+         * @category TreeNodes
+         * @param {int} index Current index.
+         * @param {int} newIndex New index.
+         * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
+         * @return {TreeNode} Node object.
+         */
+
+    }, {
+        key: 'move',
+        value: function move(index, newIndex) {
+            var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
+
+            this._tree.batch();
+
+            var oldNode = this[index].remove();
+            var node = target.insertAt(newIndex, oldNode);
+
+            this._tree.emit('node.moved', node, this, index, target, newIndex);
+
+            this._tree.end();
+
+            return node;
+        }
+
+        /**
          * Get a node.
          *
          * @category TreeNodes
@@ -2648,6 +2675,51 @@ var TreeNodes = function (_extendableBuiltin2) {
         key: 'stateDeep',
         value: function stateDeep() {
             return this.invokeDeep('state', arguments);
+        }
+
+        /**
+         * Swaps two node positions.
+         *
+         * @category TreeNodes
+         * @param {TreeNode} node1 Node 1.
+         * @param {TreeNode} node2 Node 2.
+         * @return {TreeNodes} Array of node objects.
+         */
+
+    }, {
+        key: 'swap',
+        value: function swap(node1, node2) {
+            this._tree.batch();
+
+            var n1Context = node1.context();
+            var n2Context = node2.context();
+
+            // Cache. Note: n2Index is only usable once
+            var n1Index = n1Context.indexOf(node1);
+            var n2Index = n2Context.indexOf(node2);
+
+            // If contexts match, we can simply re-assign them
+            if (n1Context === n2Context) {
+                this[n1Index] = node2;
+                this[n2Index] = node1;
+
+                // Emit move events for each node
+                this._tree.emit('node.moved', node1, n1Context, n1Index, n2Context, n2Index);
+                this._tree.emit('node.moved', node2, n2Context, n2Index, n1Context, n1Index);
+            } else {
+                // Otherwise, we have to move between contexts
+                // Move node 1 to node 2's index
+                n1Context.move(n1Index, n2Context.indexOf(node2), n2Context);
+
+                // Move node 2 to node 1s original index
+                n2Context.move(n2Context.indexOf(node2), n1Index, n1Context);
+            }
+
+            this._tree.end();
+
+            this._tree.emit('node.swapped', node1, n1Context, n1Index, node2, n2Context, n2Index);
+
+            return this;
         }
 
         /**
@@ -3523,6 +3595,11 @@ var TreeNode = function () {
                 _this3._tree.applyChanges();
 
                 var complete = function complete(nodes, totalNodes) {
+                    // A little type-safety for silly situations
+                    if (!_.isArrayLike(nodes)) {
+                        return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
+                    }
+
                     _this3._tree.batch();
                     _this3.state('loading', false);
 
@@ -3589,7 +3666,7 @@ var TreeNode = function () {
         /**
          * Loads additional child nodes.
          *
-         * @category Tree
+         * @category TreeNode
          * @param {Event} event Click or scroll event if DOM interaction triggered this call.
          * @return {Promise} Resolves with request results.
          */
@@ -4116,6 +4193,22 @@ var TreeNode = function () {
         }
 
         /**
+         * Swaps position with the given node.
+         *
+         * @category TreeNode
+         * @param {TreeNode} node Node.
+         * @return {TreeNode} Node objects.
+         */
+
+    }, {
+        key: 'swap',
+        value: function swap(node) {
+            this.context().swap(this, node);
+
+            return this;
+        }
+
+        /**
          * Mark this node as "removed" without actually removing it.
          *
          * Expand/show methods will never reveal this node until restored.
@@ -4332,7 +4425,7 @@ function objectToNode(tree, object, parent) {
     // Wrap
     object = _.assign(new TreeNode(tree), object);
 
-    if (object.hasChildren()) {
+    if (_.isArrayLike(object.children)) {
         object.children = collectionToModel(tree, object.children, object);
     }
 
@@ -5325,12 +5418,7 @@ var InspireTree = function (_EventEmitter) {
 
         // Load initial user data
         if (tree.config.data) {
-            tree.load(tree.config.data).catch(function (err) {
-                // Proxy initial errors. At this point we should never consume them
-                setTimeout(function () {
-                    throw err;
-                });
-            });
+            tree.load(tree.config.data);
         }
 
         tree.initialized = true;
@@ -6068,9 +6156,14 @@ var InspireTree = function (_EventEmitter) {
 
             var promise = new es6Promise_1(function (resolve, reject) {
                 var complete = function complete(nodes, totalNodes) {
+                    // A little type-safety for silly situations
+                    if (!_.isArrayLike(nodes)) {
+                        return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
+                    }
+
                     // Delay event for synchronous loader. Otherwise it fires
                     // before the user has a chance to listen.
-                    if (!_this3.initialized && _.isArray(nodes)) {
+                    if (!_this3.initialized && _.isArrayLike(nodes)) {
                         setTimeout(function () {
                             _this3.emit('data.loaded', nodes);
                         });
@@ -6142,6 +6235,11 @@ var InspireTree = function (_EventEmitter) {
                 _this3.emit('data.loaderror', err);
             });
 
+            // Cache to allow access after tree instantiation
+            this._loader = {
+                promise: promise
+            };
+
             return promise;
         }
 
@@ -6185,6 +6283,22 @@ var InspireTree = function (_EventEmitter) {
         key: 'matched',
         value: function matched() {
             return map$1(this, 'matched', arguments);
+        }
+
+        /**
+         * Moves the node at a given index to a new index.
+         *
+         * @category Tree
+         * @param {int} index Current index.
+         * @param {int} newIndex New index.
+         * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
+         * @return {TreeNode} Node object.
+         */
+
+    }, {
+        key: 'move',
+        value: function move() {
+            return map$1(this, 'move', arguments);
         }
 
         /*
@@ -6645,6 +6759,21 @@ var InspireTree = function (_EventEmitter) {
         key: 'stateDeep',
         value: function stateDeep() {
             return map$1(this, 'stateDeep', arguments);
+        }
+
+        /**
+         * Swaps two node positions.
+         *
+         * @category Tree
+         * @param {TreeNode} node1 Node 1.
+         * @param {TreeNode} node2 Node 2.
+         * @return {TreeNodes} Array of node objects.
+         */
+
+    }, {
+        key: 'swap',
+        value: function swap() {
+            return map$1(this, 'swap', arguments);
         }
 
         /**

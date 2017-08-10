@@ -1186,6 +1186,19 @@ export class TreeNode {
     }
 
     /**
+     * Swaps position with the given node.
+     *
+     * @category TreeNode
+     * @param {TreeNode} node Node.
+     * @return {TreeNode} Node objects.
+     */
+    swap(node) {
+        this.context().swap(this, node);
+
+        return this;
+    }
+
+    /**
      * Mark this node as "removed" without actually removing it.
      *
      * Expand/show methods will never reveal this node until restored.

@@ -161,6 +161,7 @@ declare module "inspire-tree" {
         sort(sorter: string|NodeIteratee): TreeNodes;
         state(key: string, val: boolean): TreeNodes;
         stateDeep(key: string, val: boolean): TreeNodes;
+        swap(node1: TreeNode, node2: TreeNode): TreeNodes;
         toArray(): Array<any>;
         unmute(events: Array<string>): InspireTree;
         visible(full?: boolean): TreeNodes;
@@ -247,6 +248,7 @@ declare module "inspire-tree" {
         sort(sorter: string|NodeIteratee): TreeNodes;
         state(key: string, val: boolean): TreeNodes;
         stateDeep(key: string, val: boolean): TreeNodes;
+        swap(node1: TreeNode, node2: TreeNode): TreeNodes;
         tree(): InspireTree;
         toArray(): Array<any>;
         visible(full?: boolean): TreeNodes;

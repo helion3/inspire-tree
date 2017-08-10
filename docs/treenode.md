@@ -11,13 +11,6 @@
 
 <!-- div -->
 
-## `Tree`
-* <a href="#loadMore">`loadMore`</a>
-
-<!-- /div -->
-
-<!-- div -->
-
 ## `TreeNode`
 * <a href="#addChild">`addChild`</a>
 * <a href="#addChildren">`addChildren`</a>
@@ -54,6 +47,7 @@
 * <a href="#indexPath">`indexPath`</a>
 * <a href="#lastDeepestVisibleChild">`lastDeepestVisibleChild`</a>
 * <a href="#loadChildren">`loadChildren`</a>
+* <a href="#loadMore">`loadMore`</a>
 * <a href="#loading">`loading`</a>
 * <a href="#markDirty">`markDirty`</a>
 * <a href="#matched">`matched`</a>
@@ -79,6 +73,7 @@
 * <a href="#show">`show`</a>
 * <a href="#softRemove">`softRemove`</a>
 * <a href="#state">`state`</a>
+* <a href="#swap">`swap`</a>
 * <a href="#toObject">`toObject`</a>
 * <a href="#toggleCheck">`toggleCheck`</a>
 * <a href="#toggleCollapse">`toggleCollapse`</a>
@@ -106,26 +101,6 @@ Sets a destination.
 
 #### Arguments
 1. `dest` *(object)*: Destination Inspire Tree.
-
----
-
-<!-- /div -->
-
-<!-- /div -->
-
-<!-- div -->
-
-## `“Tree” Methods`
-
-<!-- div -->
-
-<h3 id="loadMore"><a href="#loadMore">#</a>&nbsp;<code>loadMore(event)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L734 "View in source") [&#x24C9;][1]
-
-Loads additional child nodes.
-
-#### Arguments
-1. `event` *(Event)*: Click or scroll event if DOM interaction triggered this call.
 
 ---
 
@@ -562,8 +537,22 @@ On error, pass the Error to `reject`.
 
 <!-- div -->
 
+<h3 id="loadMore"><a href="#loadMore">#</a>&nbsp;<code>loadMore(event)</code></h3>
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L739 "View in source") [&#x24C9;][1]
+
+Loads additional child nodes.
+
+#### Arguments
+1. `event` *(Event)*: Click or scroll event if DOM interaction triggered this call.
+
+---
+
+<!-- /div -->
+
+<!-- div -->
+
 <h3 id="loading"><a href="#loading">#</a>&nbsp;<code>loading()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L723 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L728 "View in source") [&#x24C9;][1]
 
 Get whether this node is loading child data.
 
@@ -574,7 +563,7 @@ Get whether this node is loading child data.
 <!-- div -->
 
 <h3 id="markDirty"><a href="#markDirty">#</a>&nbsp;<code>markDirty()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L749 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L754 "View in source") [&#x24C9;][1]
 
 Mark a node as dirty, rebuilding this node in the virtual DOM
 and rerendering to the live DOM, next time applyChanges is called.
@@ -586,7 +575,7 @@ and rerendering to the live DOM, next time applyChanges is called.
 <!-- div -->
 
 <h3 id="matched"><a href="#matched">#</a>&nbsp;<code>matched()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L767 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L772 "View in source") [&#x24C9;][1]
 
 Get whether this node was matched during the last search.
 
@@ -597,7 +586,7 @@ Get whether this node was matched during the last search.
 <!-- div -->
 
 <h3 id="nextVisibleAncestralSiblingNode"><a href="#nextVisibleAncestralSiblingNode">#</a>&nbsp;<code>nextVisibleAncestralSiblingNode()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L779 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L784 "View in source") [&#x24C9;][1]
 
 Find the next visible sibling of our ancestor. Continues
 seeking up the tree until a valid node is found or we
@@ -610,7 +599,7 @@ reach the root node.
 <!-- div -->
 
 <h3 id="nextVisibleChildNode"><a href="#nextVisibleChildNode">#</a>&nbsp;<code>nextVisibleChildNode()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L800 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L805 "View in source") [&#x24C9;][1]
 
 Find next visible child node.
 
@@ -621,7 +610,7 @@ Find next visible child node.
 <!-- div -->
 
 <h3 id="nextVisibleNode"><a href="#nextVisibleNode">#</a>&nbsp;<code>nextVisibleNode()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L818 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L823 "View in source") [&#x24C9;][1]
 
 Get the next visible node.
 
@@ -632,7 +621,7 @@ Get the next visible node.
 <!-- div -->
 
 <h3 id="nextVisibleSiblingNode"><a href="#nextVisibleSiblingNode">#</a>&nbsp;<code>nextVisibleSiblingNode()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L843 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L848 "View in source") [&#x24C9;][1]
 
 Find the next visible sibling node.
 
@@ -643,7 +632,7 @@ Find the next visible sibling node.
 <!-- div -->
 
 <h3 id="pagination"><a href="#pagination">#</a>&nbsp;<code>pagination()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L858 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L863 "View in source") [&#x24C9;][1]
 
 Get pagination object for this tree node.
 
@@ -654,7 +643,7 @@ Get pagination object for this tree node.
 <!-- div -->
 
 <h3 id="previousVisibleNode"><a href="#previousVisibleNode">#</a>&nbsp;<code>previousVisibleNode()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L868 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L873 "View in source") [&#x24C9;][1]
 
 Find the previous visible node.
 
@@ -665,7 +654,7 @@ Find the previous visible node.
 <!-- div -->
 
 <h3 id="previousVisibleSiblingNode"><a href="#previousVisibleSiblingNode">#</a>&nbsp;<code>previousVisibleSiblingNode()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L893 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L898 "View in source") [&#x24C9;][1]
 
 Find the previous visible sibling node.
 
@@ -676,7 +665,7 @@ Find the previous visible sibling node.
 <!-- div -->
 
 <h3 id="recurseDown"><a href="#recurseDown">#</a>&nbsp;<code>recurseDown(iteratee)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L908 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L913 "View in source") [&#x24C9;][1]
 
 Iterate down node and any children.
 
@@ -690,7 +679,7 @@ Iterate down node and any children.
 <!-- div -->
 
 <h3 id="recurseUp"><a href="#recurseUp">#</a>&nbsp;<code>recurseUp(iteratee)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L921 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L926 "View in source") [&#x24C9;][1]
 
 Iterate up a node and its parents.
 
@@ -704,7 +693,7 @@ Iterate up a node and its parents.
 <!-- div -->
 
 <h3 id="refreshIndeterminateState"><a href="#refreshIndeterminateState">#</a>&nbsp;<code>refreshIndeterminateState()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L940 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L945 "View in source") [&#x24C9;][1]
 
 Updates the indeterminate state of this node.
 <br>
@@ -719,7 +708,7 @@ False if no children are checked.
 <!-- div -->
 
 <h3 id="reload"><a href="#reload">#</a>&nbsp;<code>reload()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L990 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L995 "View in source") [&#x24C9;][1]
 
 Removes all current children and re-executes a loadChildren call.
 
@@ -730,7 +719,7 @@ Removes all current children and re-executes a loadChildren call.
 <!-- div -->
 
 <h3 id="remove"><a href="#remove">#</a>&nbsp;<code>remove()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1013 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1018 "View in source") [&#x24C9;][1]
 
 Remove a node from the tree.
 
@@ -741,7 +730,7 @@ Remove a node from the tree.
 <!-- div -->
 
 <h3 id="removed"><a href="#removed">#</a>&nbsp;<code>removed()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1044 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1049 "View in source") [&#x24C9;][1]
 
 Get whether this node is soft-removed.
 
@@ -752,7 +741,7 @@ Get whether this node is soft-removed.
 <!-- div -->
 
 <h3 id="rendered"><a href="#rendered">#</a>&nbsp;<code>rendered()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1057 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1062 "View in source") [&#x24C9;][1]
 
 Get whether this node has been rendered.
 <br>
@@ -767,7 +756,7 @@ not yet been loaded, or if a custom DOM renderer is used.
 <!-- div -->
 
 <h3 id="restore"><a href="#restore">#</a>&nbsp;<code>restore()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1067 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1072 "View in source") [&#x24C9;][1]
 
 Restore state if soft-removed.
 
@@ -778,7 +767,7 @@ Restore state if soft-removed.
 <!-- div -->
 
 <h3 id="select"><a href="#select">#</a>&nbsp;<code>select(shallow)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1078 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1083 "View in source") [&#x24C9;][1]
 
 Select this node.
 
@@ -792,7 +781,7 @@ Select this node.
 <!-- div -->
 
 <h3 id="selectable"><a href="#selectable">#</a>&nbsp;<code>selectable()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1112 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1117 "View in source") [&#x24C9;][1]
 
 Get if node selectable.
 
@@ -803,7 +792,7 @@ Get if node selectable.
 <!-- div -->
 
 <h3 id="selected"><a href="#selected">#</a>&nbsp;<code>selected()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1123 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1128 "View in source") [&#x24C9;][1]
 
 Get whether this node is selected.
 
@@ -814,7 +803,7 @@ Get whether this node is selected.
 <!-- div -->
 
 <h3 id="set"><a href="#set">#</a>&nbsp;<code>set(property, value)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1135 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1140 "View in source") [&#x24C9;][1]
 
 Set a root property on this node.
 
@@ -829,7 +818,7 @@ Set a root property on this node.
 <!-- div -->
 
 <h3 id="show"><a href="#show">#</a>&nbsp;<code>show()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1150 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1155 "View in source") [&#x24C9;][1]
 
 Show this node.
 
@@ -840,7 +829,7 @@ Show this node.
 <!-- div -->
 
 <h3 id="softRemove"><a href="#softRemove">#</a>&nbsp;<code>softRemove()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1191 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1209 "View in source") [&#x24C9;][1]
 
 Mark this node as "removed" without actually removing it.
 <br>
@@ -854,7 +843,7 @@ Expand/show methods will never reveal this node until restored.
 <!-- div -->
 
 <h3 id="state"><a href="#state">#</a>&nbsp;<code>state(name, newVal)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1165 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1170 "View in source") [&#x24C9;][1]
 
 Get or set a state value.
 <br>
@@ -872,8 +861,22 @@ setting selected=false will not trigger any deselection logic.
 
 <!-- div -->
 
+<h3 id="swap"><a href="#swap">#</a>&nbsp;<code>swap(node)</code></h3>
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1195 "View in source") [&#x24C9;][1]
+
+Swaps position with the given node.
+
+#### Arguments
+1. `node` *(TreeNode)*: Node.
+
+---
+
+<!-- /div -->
+
+<!-- div -->
+
 <h3 id="toObject"><a href="#toObject">#</a>&nbsp;<code>toObject(excludeChildren)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1247 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1265 "View in source") [&#x24C9;][1]
 
 Export this node as a native Object.
 
@@ -887,7 +890,7 @@ Export this node as a native Object.
 <!-- div -->
 
 <h3 id="toggleCheck"><a href="#toggleCheck">#</a>&nbsp;<code>toggleCheck()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1201 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1219 "View in source") [&#x24C9;][1]
 
 Toggles checked state.
 
@@ -898,7 +901,7 @@ Toggles checked state.
 <!-- div -->
 
 <h3 id="toggleCollapse"><a href="#toggleCollapse">#</a>&nbsp;<code>toggleCollapse()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1211 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1229 "View in source") [&#x24C9;][1]
 
 Toggles collapsed state.
 
@@ -909,7 +912,7 @@ Toggles collapsed state.
 <!-- div -->
 
 <h3 id="toggleEditing"><a href="#toggleEditing">#</a>&nbsp;<code>toggleEditing()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1221 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1239 "View in source") [&#x24C9;][1]
 
 Toggles editing state.
 
@@ -920,7 +923,7 @@ Toggles editing state.
 <!-- div -->
 
 <h3 id="toggleSelect"><a href="#toggleSelect">#</a>&nbsp;<code>toggleSelect()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1236 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1254 "View in source") [&#x24C9;][1]
 
 Toggles selected state.
 
@@ -931,7 +934,7 @@ Toggles selected state.
 <!-- div -->
 
 <h3 id="uncheck"><a href="#uncheck">#</a>&nbsp;<code>uncheck(shallow)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1270 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1288 "View in source") [&#x24C9;][1]
 
 Unchecks this node.
 
@@ -945,7 +948,7 @@ Unchecks this node.
 <!-- div -->
 
 <h3 id="visible"><a href="#visible">#</a>&nbsp;<code>visible()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1298 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1316 "View in source") [&#x24C9;][1]
 
 Checks whether a node is visible to a user. Returns false
 if it's hidden, or if any ancestor is hidden or collapsed.

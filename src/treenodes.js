@@ -1027,6 +1027,49 @@ export class TreeNodes extends Array {
     }
 
     /**
+     * Swaps two node positions.
+     *
+     * @category TreeNodes
+     * @param {TreeNode} node1 Node 1.
+     * @param {TreeNode} node2 Node 2.
+     * @return {TreeNodes} Array of node objects.
+     */
+    swap(node1, node2) {
+        this._tree.batch();
+
+        var n1Context = node1.context();
+        var n2Context = node2.context();
+
+        // Cache. Note: n2Index is only usable once
+        var n1Index = n1Context.indexOf(node1);
+        var n2Index = n2Context.indexOf(node2);
+
+        // If contexts match, we can simply re-assign them
+        if (n1Context === n2Context) {
+            this[n1Index] = node2;
+            this[n2Index] = node1;
+
+            // Emit move events for each node
+            this._tree.emit('node.moved', node1, n1Context, n1Index, n2Context, n2Index);
+            this._tree.emit('node.moved', node2, n2Context, n2Index, n1Context, n1Index);
+        }
+        else {
+            // Otherwise, we have to move between contexts
+            // Move node 1 to node 2's index
+            n1Context.move(n1Index, n2Context.indexOf(node2), n2Context);
+
+            // Move node 2 to node 1s original index
+            n2Context.move(n2Context.indexOf(node2), n1Index, n1Context);
+        }
+
+        this._tree.end();
+
+        this._tree.emit('node.swapped', node1, n1Context, n1Index, node2, n2Context, n2Index);
+
+        return this;
+    }
+
+    /**
      * Chained method for returning a chain to the tree context.
      *
      * @category TreeNodes

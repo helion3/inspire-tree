@@ -1281,6 +1281,18 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Swaps two node positions.
+     *
+     * @category Tree
+     * @param {TreeNode} node1 Node 1.
+     * @param {TreeNode} node2 Node 2.
+     * @return {TreeNodes} Array of node objects.
+     */
+    swap() {
+        return map(this, 'swap', arguments);
+    }
+
+    /**
      * Returns a native Array of nodes.
      *
      * @category Tree
