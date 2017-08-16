@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var InspireTree = require('../../build/inspire-tree');
 
-describe('TreeNodes.prototype.sort', function() {
+describe('TreeNodes.prototype.sortBy', function() {
     var tree;
 
     before(function() {
@@ -19,8 +19,8 @@ describe('TreeNodes.prototype.sort', function() {
     });
 
     it('exists', function() {
-        expect(tree.nodes().sort).to.be.a('function');
-        expect(tree.sort).to.be.a('function');
+        expect(tree.nodes().sortBy).to.be.a('function');
+        expect(tree.sortBy).to.be.a('function');
     });
 
     it('sorts alphabetically', function() {
@@ -30,7 +30,7 @@ describe('TreeNodes.prototype.sort', function() {
         expect(nodes[2].text).to.equal('a');
 
         // Sort
-        tree.nodes().sort('text');
+        tree.nodes().sortBy('text');
 
         // Check original model
         nodes = tree.nodes();

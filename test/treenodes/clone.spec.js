@@ -27,7 +27,7 @@ describe('TreeNodes.prototype.clone', function() {
         var clone = original.clone();
 
 
-        expect(tree.isTreeNodes(clone)).to.be.true;
+        expect(InspireTree.isTreeNodes(clone)).to.be.true;
         expect(clone).to.have.length(1);
         expect(clone[0].children).to.have.length(1);
     });

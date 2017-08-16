@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var InspireTree = require('../../build/inspire-tree');
 
-describe('Tree.isNode', function() {
+describe('TreeNode.prototype.toString', function() {
     var tree;
 
     before(function() {
@@ -15,14 +15,10 @@ describe('Tree.isNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.isNode).to.be.a('function');
+        expect(tree.node(1).toString).to.be.a('function');
     });
 
-    it('returns false a node-like object', function() {
-        expect(tree.isNode({ text: 'A' })).to.be.false;
-    });
-
-    it('returns true for a node', function() {
-        expect(tree.isNode(tree.node(1))).to.be.true;
+    it('returns text content as a string', function() {
+        expect(tree.node(1).toString()).to.equal('A');
     });
 });

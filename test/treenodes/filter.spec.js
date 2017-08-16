@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var InspireTree = require('../../build/inspire-tree');
 
-describe('TreeNodes.prototype.filter', function() {
+describe('TreeNodes.prototype.filterBy', function() {
     var tree;
 
     before(function() {
@@ -18,14 +18,14 @@ describe('TreeNodes.prototype.filter', function() {
     });
 
     it('exists', function() {
-        expect(tree.nodes().filter).to.be.a('function');
-        expect(tree.filter).to.be.a('function');
+        expect(tree.nodes().filterBy).to.be.a('function');
+        expect(tree.filterBy).to.be.a('function');
     });
 
 
     it('returns matches for custom booleans', function() {
         tree.node(2).select();
 
-        expect(tree.filter('selected')).to.have.length(1);
+        expect(tree.filterBy('selected')).to.have.length(1);
     });
 });

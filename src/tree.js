@@ -4,6 +4,7 @@
 import * as _ from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
 import { EventEmitter2 } from 'eventemitter2';
+import { objectToNode } from './lib/object-to-node';
 import { Promise } from 'es6-promise';
 import { standardizePromise } from './lib/standardize-promise';
 import { TreeNode } from './treenode';
@@ -408,6 +409,17 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Creates a TreeNode without adding it. If the obj is already a TreeNode it's returned without modification.
+     *
+     * @category Tree
+     * @param {object} obj Source node object.
+     * @return {TreeNode} Node object.
+     */
+    createNode(obj) {
+        return InspireTree.isTreeNode(obj) ? obj : objectToNode(this, obj);
+    }
+
+    /**
      * Returns deepest nodes from this array.
      *
      * @category Tree
@@ -460,6 +472,17 @@ export default class InspireTree extends EventEmitter2 {
      */
     each() {
         return map(this, 'each', arguments);
+    }
+
+    /**
+     * Returns whether every root node passes the given test.
+     *
+     * @category Tree
+     * @param {function} tester Test each node in this collection,
+     * @return {boolean} True if every node passes the test.
+     */
+    every() {
+        return map(this, 'every', arguments);
     }
 
     /**
@@ -560,11 +583,22 @@ export default class InspireTree extends EventEmitter2 {
      * Returns nodes which match a predicate.
      *
      * @category Tree
-     * @param {string|function} predicate State flag or custom function.
+     * @param {function} predicate Test function.
      * @return {TreeNodes} Array of node objects.
      */
     filter() {
         return map(this, 'filter', arguments);
+    }
+
+    /**
+     * Returns nodes which match a predicate.
+     *
+     * @category Tree
+     * @param {string|function} predicate State flag or custom function.
+     * @return {TreeNodes} Array of node objects.
+     */
+    filterBy() {
+        return map(this, 'filterBy', arguments);
     }
 
     /**
@@ -588,6 +622,17 @@ export default class InspireTree extends EventEmitter2 {
      */
     focused() {
         return map(this, 'focused', arguments);
+    }
+
+    /**
+     * Iterate every TreeNode in this collection.
+     *
+     * @category Tree
+     * @param {function} iteratee Iteratee invoke for each node.
+     * @return {TreeNodes} Array of node objects.
+     */
+    forEach() {
+        return map(this, 'each', arguments);
     }
 
     /**
@@ -644,6 +689,17 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Get the array index of the given root node.
+     *
+     * @category Tree
+     * @param {TreeNode} node Root tree node.
+     * @return {int} Index of the node.
+     */
+    indexOf() {
+        return map(this, 'indexOf', arguments);
+    }
+
+    /**
      * Insert a new node at a given position.
      *
      * @category Tree
@@ -693,18 +749,6 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
-     * Check if an object is a TreeNode.
-     *
-     * @category Tree
-     * @deprecated
-     * @param {object} object Object
-     * @return {boolean} If object is a TreeNode.
-     */
-    isNode(object) {
-        return (object instanceof TreeNode);
-    }
-
-    /**
      * Check if an object is a Tree.
      *
      * @category Tree
@@ -719,22 +763,33 @@ export default class InspireTree extends EventEmitter2 {
      * Check if an object is a TreeNode.
      *
      * @category Tree
-     * @param {object} object Object
+     * @param {object} obj Object
      * @return {boolean} If object is a TreeNode.
      */
-    isTreeNode(object) {
-        return this.isNode(object);
+    static isTreeNode(obj) {
+        return obj instanceof TreeNode;
     }
 
     /**
      * Check if an object is a TreeNodes array.
      *
      * @category Tree
-     * @param {object} object Object
+     * @param {object} obj Object
      * @return {boolean} If object is a TreeNodes array.
      */
-    isTreeNodes(object) {
-        return (object instanceof TreeNodes);
+    static isTreeNodes(obj) {
+        return obj instanceof TreeNodes;
+    }
+
+    /**
+     * Returns a string from root node objects.
+     *
+     * @category Tree
+     * @param {string} separator Separator, defaults to a comma
+     * @return {string} Strings from root node objects.
+     */
+    join() {
+        return map(this, 'join', arguments);
     }
 
     /**
@@ -875,6 +930,17 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Creates a new collection after passing every node through iteratee.
+     *
+     * @category Tree
+     * @param {function} iteratee Node iteratee.
+     * @return {TreeNodes} New array of node objects.
+     */
+    map() {
+        return map(this, 'map', arguments);
+    }
+
+    /**
      * Query for all nodes matched in the last search.
      *
      * @category Tree
@@ -963,6 +1029,27 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Pops the last node off the root collection.
+     *
+     * @category Tree
+     * @return {TreeNode} Node object.
+     */
+    pop() {
+        return map(this, 'pop', arguments);
+    }
+
+    /**
+     * Adds a TreeNode to the end of the root collection.
+     *
+     * @category Tree
+     * @param {TreeNode} node Node object.
+     * @return {int} The new length
+     */
+    push() {
+        return map(this, 'push', arguments);
+    }
+
+    /**
      * Base recursion function for a collection or node.
      *
      * Returns false if execution should cease.
@@ -973,6 +1060,28 @@ export default class InspireTree extends EventEmitter2 {
      */
     recurseDown() {
         return map(this, 'recurseDown', arguments);
+    }
+
+    /**
+     * Reduces root nodes.
+     *
+     * @category Tree
+     * @param {function} iteratee Iteratee function
+     * @return {any} Resulting data.
+     */
+    reduce() {
+        return map(this, 'reduce', arguments);
+    }
+
+    /**
+     * Right-reduces root nodes.
+     *
+     * @category Tree
+     * @param {function} iteratee Iteratee function
+     * @return {any} Resulting data.
+     */
+    reduceRight() {
+        return map(this, 'reduceRight', arguments);
     }
 
     /**
@@ -1040,6 +1149,16 @@ export default class InspireTree extends EventEmitter2 {
      */
     restoreDeep() {
         return map(this, 'restoreDeep', arguments);
+    }
+
+    /**
+     * Reduces root nodes.
+     *
+     * @category Tree
+     * @return {TreeNodes} Reversed array of node objects.
+     */
+    reverse() {
+        return map(this, 'reverse', arguments);
     }
 
     /**
@@ -1117,7 +1236,7 @@ export default class InspireTree extends EventEmitter2 {
             // Execute the matcher and pipe results to the processor
             matcher(query, (matches) => {
                 // Convert to a TreeNodes array if we're receiving external nodes
-                if (!this.isTreeNodes(matches)) {
+                if (!InspireTree.isTreeNodes(matches)) {
                     matches = this.nodes(_.map(matches, 'id'));
                 }
 
@@ -1205,13 +1324,23 @@ export default class InspireTree extends EventEmitter2 {
      * @return {TreeNode} Selected node object.
      */
     selectFirstAvailableNode() {
-        let node = this.model.filter('available').get(0);
+        let node = this.model.filterBy('available').get(0);
         if (node) {
             node.select();
         }
 
         return node;
     };
+
+    /**
+     * Shifts the first node off the root collection.
+     *
+     * @category Tree
+     * @return {TreeNode} Node object.
+     */
+    shift() {
+        return map(this, 'shift', arguments);
+    }
 
     /**
      * Show children in this collection.
@@ -1234,6 +1363,19 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Returns a shallow copy of a portion of root nodes into a new array
+     * object selected from begin to end (end not included)
+     *
+     * @category Tree
+     * @param {int} begin Starting index.
+     * @param {int} end End index.
+     * @return {Array} Array of selected subset.
+     */
+    slice() {
+        return map(this, 'slice', arguments);
+    }
+
+    /**
      * Soft-remove children in this collection.
      *
      * @category Tree
@@ -1241,6 +1383,28 @@ export default class InspireTree extends EventEmitter2 {
      */
     softRemove() {
         return map(this, 'softRemove', arguments);
+    }
+
+    /**
+     * Returns whether at least one root node passes the given test.
+     *
+     * @category Tree
+     * @param {function} tester Test each node in this collection,
+     * @return {boolean} True if at least one node passes the test.
+     */
+    some() {
+        return map(this, 'some', arguments);
+    }
+
+    /**
+     * Sorts root nodes in-place.
+     *
+     * @category Tree
+     * @param {function} compareFn Comparison function.
+     * @return {TreeNodes} Root array of node objects.
+     */
+    sort() {
+        return map(this, 'sort', arguments);
     }
 
     /**
@@ -1252,8 +1416,21 @@ export default class InspireTree extends EventEmitter2 {
      * @param {string|function} sorter Sort function or property name.
      * @return {TreeNodes} Array of node obejcts.
      */
-    sort() {
-        return map(this, 'sort', arguments);
+    sortBy() {
+        return map(this, 'sortBy', arguments);
+    }
+
+    /**
+     * Removes and adds new TreeNodes into the root collection.
+     *
+     * @category Tree
+     * @param {int} start Starting index.
+     * @param {int} deleteCount Count of nodes to delete.
+     * @param {TreeNode} node Node(s) to insert.
+     * @return {Array} Array of selected subset.
+     */
+    splice() {
+        return map(this, 'slice', arguments);
     }
 
     /**
@@ -1303,6 +1480,16 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Returns a string from root node objects.
+     *
+     * @category Tree
+     * @return {string} Strings from root node objects.
+     */
+    toString() {
+        return map(this, 'toString', arguments);
+    }
+
+    /**
      * Resume events.
      *
      * @category Tree
@@ -1323,6 +1510,16 @@ export default class InspireTree extends EventEmitter2 {
 
         return this;
     };
+
+    /**
+     * Adds a TreeNode to the start of the root collection.
+     *
+     * @category Tree
+     * @return {number} The new length
+     */
+    unshift() {
+        return map(this, 'unshift', arguments);
+    }
 
     /**
      * Query for all visible nodes.

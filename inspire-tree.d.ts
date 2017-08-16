@@ -88,83 +88,28 @@ declare module "inspire-tree" {
         total: number;
     }
 
-    class InspireTree {
-        addNode(node: any): TreeNode;
+    class InspireTree extends TreeNodes {
         addNodes(node: Array<any>): TreeNodes;
-        available(): TreeNodes;
-        blur(): TreeNodes;
-        blurDeep(): TreeNodes;
         boundingNodes(): Array<TreeNode>;
         canAutoDeselect(): boolean;
-        checked(): TreeNodes;
-        clean(): TreeNodes;
         clearSearch(): InspireTree;
-        clone(): TreeNodes;
-        collapse(): TreeNodes;
-        collapsed(full?: boolean): TreeNodes;
-        collapseDeep(): TreeNodes;
-        concat(nodes: TreeNodes): TreeNodes;
         constructor(opts: Config);
-        copy(hierarchy?: boolean): Copy;
-        deepest(): TreeNodes;
-        deselect(): TreeNodes;
-        deselectDeep(): TreeNodes;
+        createNode(obj: any): TreeNode;
         disableDeselection(): InspireTree;
-        each(iteratee: NodeIteratee): TreeNodes;
-        editable(full?: boolean): TreeNodes;
-        editing(full?: boolean): TreeNodes;
         enableDeselection(): InspireTree;
-        expand(): TreeNodes;
-        expanded(full?: boolean): TreeNodes;
-        expandDeep(): TreeNodes;
-        extract(predicate: string|NodeIteratee): TreeNodes;
-        filter(predicate: string|NodeIteratee): TreeNodes;
-        flatten(predicate: string|NodeIteratee): TreeNodes;
-        focused(full?: boolean): TreeNodes;
-        get(index: number): TreeNode;
-        hidden(full?: boolean): TreeNodes;
-        hide(): TreeNodes;
-        hideDeep(): TreeNodes;
-        indeterminate(full?: boolean): TreeNodes;
-        insertAt(index: number, object: any): TreeNode;
-        invoke(methods: string|Array<string>): TreeNodes;
-        invokeDeep(methods: string|Array<string>): TreeNodes;
         isEventMuted(eventName: string): boolean;
-        isNode(object: any): boolean;
-        isTreeNode(object: any): boolean;
+        static isTreeNode(object: any): boolean;
+        static isTreeNodes(object: any): boolean;
         lastSelectedNode(): TreeNode;
         load(loader: Promise<TreeNodes>): any;
-        loading(full?: boolean): TreeNodes;
-        matched(full?: boolean): TreeNodes;
-        move(index: number, newIndex: number, target: TreeNodes): TreeNode;
         mute(events: Array<string>): InspireTree;
         muted(): boolean;
-        node(id: string|number): TreeNode;
-        nodes(ids?: Array<string>|Array<number>): TreeNodes;
-        pagination(): Pagination;
-        recurseDown(iteratee: NodeIteratee): TreeNodes;
         reload(): Promise<TreeNodes>;
         removeAll(): InspireTree;
-        removed(full?: boolean): TreeNodes;
-        restore(): TreeNodes;
-        restoreDeep(): TreeNodes;
         search(query: string|RegExp|NodeIteratee): TreeNodes;
-        select(): TreeNodes;
-        selectable(full?: boolean): TreeNodes;
-        selectBetween(start: TreeNode, end: TreeNode): InspireTree;
-        selectDeep(): TreeNodes;
-        selected(full?: boolean): TreeNodes;
         selectFirstAvailableNode(): TreeNode;
-        show(): TreeNodes;
-        showDeep(): TreeNodes;
-        softRemove(): TreeNodes;
-        sort(sorter: string|NodeIteratee): TreeNodes;
-        state(key: string, val: boolean): TreeNodes;
-        stateDeep(key: string, val: boolean): TreeNodes;
-        swap(node1: TreeNode, node2: TreeNode): TreeNodes;
         toArray(): Array<any>;
         unmute(events: Array<string>): InspireTree;
-        visible(full?: boolean): TreeNodes;
 
         // Inherited from EventEmitter2.
         // These are manually defined because otherwise we'd have to make
@@ -189,7 +134,7 @@ declare module "inspire-tree" {
         eventNames(): string[];
     }
 
-    interface TreeNodes {
+    class TreeNodes extends Array<TreeNode> {
         addNode(node: any): TreeNode;
         available(): TreeNodes;
         blur(): TreeNodes;
@@ -200,7 +145,6 @@ declare module "inspire-tree" {
         collapse(): TreeNodes;
         collapsed(full?: boolean): TreeNodes;
         collapseDeep(): TreeNodes;
-        concat(nodes: TreeNodes): TreeNodes;
         constructor(tree: InspireTree);
         constructor(tree: InspireTree, array: Array<any>|TreeNodes);
         context(): TreeNode;
@@ -216,7 +160,7 @@ declare module "inspire-tree" {
         expandDeep(): TreeNodes;
         expandParents(): TreeNodes;
         extract(predicate: string|NodeIteratee): TreeNodes;
-        filter(predicate: string|NodeIteratee): TreeNodes;
+        filterBy(predicate: string|NodeIteratee): TreeNodes;
         flatten(predicate: string|NodeIteratee): TreeNodes;
         focused(full?: boolean): TreeNodes;
         get(index: number): TreeNode;
@@ -245,7 +189,7 @@ declare module "inspire-tree" {
         show(): TreeNodes;
         showDeep(): TreeNodes;
         softRemove(): TreeNodes;
-        sort(sorter: string|NodeIteratee): TreeNodes;
+        sortBy(sorter: string|NodeIteratee): TreeNodes;
         state(key: string, val: boolean): TreeNodes;
         stateDeep(key: string, val: boolean): TreeNodes;
         swap(node1: TreeNode, node2: TreeNode): TreeNodes;
@@ -254,7 +198,7 @@ declare module "inspire-tree" {
         visible(full?: boolean): TreeNodes;
     }
 
-    interface TreeNode {
+    class TreeNode {
         addChild(node: any): TreeNode;
         addChildren(nodes: Array<any>): TreeNodes;
         available(): boolean;
@@ -321,6 +265,7 @@ declare module "inspire-tree" {
         toggleCollapse(): TreeNode;
         toggleEditing(): TreeNode;
         toggleSelect(): TreeNode;
+        toString(): string;
         toObject(excludeChildren?: boolean): any;
         uncheck(shallow?: boolean): TreeNode;
         visible(): boolean;

@@ -15,14 +15,14 @@ describe('Tree.isTreeNode', function() {
     });
 
     it('exists', function() {
-        expect(tree.isTreeNode).to.be.a('function');
+        expect(InspireTree.isTreeNode).to.be.a('function');
     });
 
     it('returns false a node-like object', function() {
-        expect(tree.isTreeNode({ text: 'A' })).to.be.false;
+        expect(InspireTree.isTreeNode({ text: 'A' })).to.be.false;
     });
 
     it('returns true for a node', function() {
-        expect(tree.isTreeNode(tree.node(1))).to.be.true;
+        expect(InspireTree.isTreeNode(tree.node(1))).to.be.true;
     });
 });

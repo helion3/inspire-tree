@@ -12,14 +12,14 @@ describe('Tree.isTreeNodes', function() {
     });
 
     it('exists', function() {
-        expect(tree.isTreeNodes).to.be.a('function');
+        expect(InspireTree.isTreeNodes).to.be.a('function');
     });
 
     it('returns false an array', function() {
-        expect(tree.isTreeNodes([])).to.be.false;
+        expect(InspireTree.isTreeNodes([])).to.be.false;
     });
 
     it('returns true for a node array', function() {
-        expect(tree.isTreeNodes(tree.nodes())).to.be.true;
+        expect(InspireTree.isTreeNodes(tree.nodes())).to.be.true;
     });
 });

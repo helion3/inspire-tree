@@ -294,7 +294,7 @@ export class TreeNode {
 
             // Filter out hidden children
             if (this.hasChildren()) {
-                clone.children = this.children.filter((n) => {
+                clone.children = this.children.filterBy((n) => {
                     return !n.state('hidden');
                 }).toArray();
 
@@ -556,7 +556,7 @@ export class TreeNode {
         let hasVisibleChildren = false;
 
         if (this.hasChildren()) {
-            hasVisibleChildren = (this.children.filter('available').length > 0);
+            hasVisibleChildren = (this.children.filterBy('available').length > 0);
         }
 
         return hasVisibleChildren;
@@ -708,7 +708,7 @@ export class TreeNode {
                 this._tree.emit('tree.loaderror', err);
             };
 
-            var pagination = this._tree.isTreeNodes(this.children) ? this.children.pagination() : null;
+            var pagination = this._tree.constructor.isTreeNodes(this.children) ? this.children.pagination() : null;
 
             let loader = this._tree.config.data(this, complete, error, pagination);
 
@@ -1276,6 +1276,15 @@ export class TreeNode {
         }
 
         return object;
+    }
+
+    /**
+     * Get the text content of this tree node.
+     *
+     * @return {string} Text content.
+     */
+    toString() {
+        return this.text;
     }
 
     /**

@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
-var InspireTree = require('../../build/inspire-tree');
+var InspireTree = require('../../../build/inspire-tree');
 
-describe('TreeNodes.prototype.concat', function() {
+describe('TreeNodes extends Array.prototype.concat', function() {
     var tree;
 
     before(function() {
@@ -24,7 +24,7 @@ describe('TreeNodes.prototype.concat', function() {
         var clone = original.clone();
         var combined = clone.concat(original);
 
-        expect(tree.isTreeNodes(combined)).to.be.true;
+        expect(InspireTree.isTreeNodes(combined)).to.be.true;
         expect(original).to.have.length(1);
         expect(clone).to.have.length(1);
         expect(combined).to.have.length(2);

@@ -465,13 +465,24 @@ export class TreeNodes extends Array {
     }
 
     /**
+     * Iterate every TreeNode in this collection.
+     *
+     * @category TreeNodes
+     * @param {function} iteratee Iteratee invoke for each node.
+     * @return {TreeNodes} Array of node objects.
+     */
+    forEach(iteratee) {
+        return this.each(iteratee);
+    }
+
+    /**
      * Returns nodes which match a predicate.
      *
      * @category TreeNodes
      * @param {string|function} predicate State flag or custom function.
      * @return {TreeNodes} Array of node objects.
      */
-    filter(predicate) {
+    filterBy(predicate) {
         let fn = getPredicateFunction(predicate);
         let matches = new TreeNodes(this._tree);
 
@@ -613,7 +624,7 @@ export class TreeNodes extends Array {
         }
 
         // Node is new, insert at given location.
-        let node = this._tree.isNode(object) ? object : objectToNode(this._tree, object);
+        let node = this._tree.constructor.isTreeNode(object) ? object : objectToNode(this._tree, object);
 
         // Grab remaining nodes
         this.splice(index, 0, node);
@@ -865,9 +876,7 @@ export class TreeNodes extends Array {
     remove(node) {
         _.remove(this, { id: node.id });
 
-        if (this._context) {
-            this._context.markDirty();
-        }
+        _.invoke(this._context, 'markDirty');
 
         this._tree.applyChanges();
 
@@ -986,7 +995,7 @@ export class TreeNodes extends Array {
      * @param {string|function} sorter Sort function or property name.
      * @return {TreeNodes} Array of node obejcts.
      */
-    sort(sorter) {
+    sortBy(sorter) {
         sorter = sorter || this._tree.config.sort;
 
         // Only apply sort if one provided

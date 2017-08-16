@@ -198,9 +198,14 @@ tree.node('a-unique-id').select();
 
 **TreeNodes**
 
-Multiple `TreeNode`s are contained within an Array-like object.
+Multiple `TreeNode`s are contained within an Array-like object. The `TreeNodes` class extends `Array`, but we currently
+only provide official tests/support for Array prototype methods available in all of our target browsers.
 
-`TreeNodes` maps several TreeNode methods so you can invoke them on all nodes in the collection, or recursively
+However, there are a few exceptions:
+
+- `lastIndexOf` cannot be applied because nodes may not be duplicated. Use `indexOf`.
+
+`TreeNodes` maps several `TreeNode` methods so you can invoke them on all nodes in the collection, or recursively
 down the nodes and their children.
 
 *Expands only root nodes inside this collection:*
