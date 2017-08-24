@@ -1079,7 +1079,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Chained method for returning a chain to the tree context.
+     * Get the tree this collection ultimately belongs to.
      *
      * @category TreeNodes
      * @return {[type]} [description]

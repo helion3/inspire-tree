@@ -97,6 +97,7 @@ declare module "inspire-tree" {
         createNode(obj: any): TreeNode;
         disableDeselection(): InspireTree;
         enableDeselection(): InspireTree;
+        id: string;
         isEventMuted(eventName: string): boolean;
         static isTreeNode(object: any): boolean;
         static isTreeNodes(object: any): boolean;
@@ -267,6 +268,7 @@ declare module "inspire-tree" {
         toggleSelect(): TreeNode;
         toString(): string;
         toObject(excludeChildren?: boolean): any;
+        tree(): InspireTree;
         uncheck(shallow?: boolean): TreeNode;
         visible(): boolean;
     }

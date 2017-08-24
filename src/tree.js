@@ -9,6 +9,7 @@ import { Promise } from 'es6-promise';
 import { standardizePromise } from './lib/standardize-promise';
 import { TreeNode } from './treenode';
 import { TreeNodes } from './treenodes';
+import uuidV4 from 'uuid/v4';
 
 /**
  * Maps a method to the root TreeNodes collection.
@@ -40,6 +41,7 @@ export default class InspireTree extends EventEmitter2 {
         tree._muted = false;
         tree.allowsLoadEvents = false;
         tree.batching = 0;
+        tree.id = uuidV4();
         tree.initialized = false;
         tree.isDynamic = false;
         tree.opts = opts;

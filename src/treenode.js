@@ -1288,6 +1288,16 @@ export class TreeNode {
     }
 
     /**
+     * Get the tree this node ultimately belongs to.
+     *
+     * @category TreeNode
+     * @return {InspireTree} Tree instance.
+     */
+    tree() {
+        return this.context().tree();
+    }
+
+    /**
      * Unchecks this node.
      *
      * @category TreeNode
