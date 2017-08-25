@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 2.0.6
+
+- Added `isLoadEvent` boolean to state events. `true` only when event fires on load and is in `allowLoadEvents` config.
+
 # 2.0.5
 
 - Added `TreeNodes.move`.

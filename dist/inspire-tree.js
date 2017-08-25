@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 2.0.5
+ * @version 2.0.6
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -144,7 +144,7 @@ function baseStateChange(prop, value, verb, node, deep) {
 
         node.state(prop, value);
 
-        node._tree.emit('node.' + verb, node);
+        node._tree.emit('node.' + verb, node, false);
 
         if (deep && node.hasChildren()) {
             node.children.recurseDown(function (child) {
@@ -165,17 +165,16 @@ var es6Promise = createCommonjsModule(function (module, exports) {
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   4.1.0
+ * @version   4.1.1
  */
 
 (function (global, factory) {
-    'object' === 'object' && 'object' !== 'undefined' ? module.exports = factory() :
-    typeof undefined === 'function' && undefined.amd ? undefined(factory) :
-    (global.ES6Promise = factory());
+	module.exports = factory();
 }(commonjsGlobal, (function () { 'use strict';
 
 function objectOrFunction(x) {
-  return typeof x === 'function' || typeof x === 'object' && x !== null;
+  var type = typeof x;
+  return x !== null && (type === 'object' || type === 'function');
 }
 
 function isFunction$$1(x) {
@@ -183,12 +182,12 @@ function isFunction$$1(x) {
 }
 
 var _isArray = undefined;
-if (!Array.isArray) {
+if (Array.isArray) {
+  _isArray = Array.isArray;
+} else {
   _isArray = function (x) {
     return Object.prototype.toString.call(x) === '[object Array]';
   };
-} else {
-  _isArray = Array.isArray;
 }
 
 var isArray$$1 = _isArray;
@@ -376,7 +375,7 @@ function then(onFulfillment, onRejection) {
   @return {Promise} a promise that will become fulfilled with the given
   `value`
 */
-function resolve(object) {
+function resolve$1(object) {
   /*jshint validthis:true */
   var Constructor = this;
 
@@ -385,7 +384,7 @@ function resolve(object) {
   }
 
   var promise = new Constructor(noop$$1);
-  _resolve(promise, object);
+  resolve(promise, object);
   return promise;
 }
 
@@ -416,24 +415,24 @@ function getThen(promise) {
   }
 }
 
-function tryThen(then, value, fulfillmentHandler, rejectionHandler) {
+function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
   try {
-    then.call(value, fulfillmentHandler, rejectionHandler);
+    then$$1.call(value, fulfillmentHandler, rejectionHandler);
   } catch (e) {
     return e;
   }
 }
 
-function handleForeignThenable(promise, thenable, then) {
+function handleForeignThenable(promise, thenable, then$$1) {
   asap(function (promise) {
     var sealed = false;
-    var error = tryThen(then, thenable, function (value) {
+    var error = tryThen(then$$1, thenable, function (value) {
       if (sealed) {
         return;
       }
       sealed = true;
       if (thenable !== value) {
-        _resolve(promise, value);
+        resolve(promise, value);
       } else {
         fulfill(promise, value);
       }
@@ -443,12 +442,12 @@ function handleForeignThenable(promise, thenable, then) {
       }
       sealed = true;
 
-      _reject(promise, reason);
+      reject(promise, reason);
     }, 'Settle: ' + (promise._label || ' unknown promise'));
 
     if (!sealed && error) {
       sealed = true;
-      _reject(promise, error);
+      reject(promise, error);
     }
   }, promise);
 }
@@ -457,36 +456,36 @@ function handleOwnThenable(promise, thenable) {
   if (thenable._state === FULFILLED) {
     fulfill(promise, thenable._result);
   } else if (thenable._state === REJECTED) {
-    _reject(promise, thenable._result);
+    reject(promise, thenable._result);
   } else {
     subscribe(thenable, undefined, function (value) {
-      return _resolve(promise, value);
+      return resolve(promise, value);
     }, function (reason) {
-      return _reject(promise, reason);
+      return reject(promise, reason);
     });
   }
 }
 
-function handleMaybeThenable(promise, maybeThenable, then$$) {
-  if (maybeThenable.constructor === promise.constructor && then$$ === then && maybeThenable.constructor.resolve === resolve) {
+function handleMaybeThenable(promise, maybeThenable, then$$1) {
+  if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
     handleOwnThenable(promise, maybeThenable);
   } else {
-    if (then$$ === GET_THEN_ERROR) {
-      _reject(promise, GET_THEN_ERROR.error);
+    if (then$$1 === GET_THEN_ERROR) {
+      reject(promise, GET_THEN_ERROR.error);
       GET_THEN_ERROR.error = null;
-    } else if (then$$ === undefined) {
+    } else if (then$$1 === undefined) {
       fulfill(promise, maybeThenable);
-    } else if (isFunction$$1(then$$)) {
-      handleForeignThenable(promise, maybeThenable, then$$);
+    } else if (isFunction$$1(then$$1)) {
+      handleForeignThenable(promise, maybeThenable, then$$1);
     } else {
       fulfill(promise, maybeThenable);
     }
   }
 }
 
-function _resolve(promise, value) {
+function resolve(promise, value) {
   if (promise === value) {
-    _reject(promise, selfFulfillment());
+    reject(promise, selfFulfillment());
   } else if (objectOrFunction(value)) {
     handleMaybeThenable(promise, value, getThen(value));
   } else {
@@ -515,7 +514,7 @@ function fulfill(promise, value) {
   }
 }
 
-function _reject(promise, reason) {
+function reject(promise, reason) {
   if (promise._state !== PENDING) {
     return;
   }
@@ -600,7 +599,7 @@ function invokeCallback(settled, promise, callback, detail) {
     }
 
     if (promise === value) {
-      _reject(promise, cannotReturnOwn());
+      reject(promise, cannotReturnOwn());
       return;
     }
   } else {
@@ -611,25 +610,25 @@ function invokeCallback(settled, promise, callback, detail) {
   if (promise._state !== PENDING) {
     // noop
   } else if (hasCallback && succeeded) {
-      _resolve(promise, value);
+      resolve(promise, value);
     } else if (failed) {
-      _reject(promise, error);
+      reject(promise, error);
     } else if (settled === FULFILLED) {
       fulfill(promise, value);
     } else if (settled === REJECTED) {
-      _reject(promise, value);
+      reject(promise, value);
     }
 }
 
 function initializePromise(promise, resolver) {
   try {
     resolver(function resolvePromise(value) {
-      _resolve(promise, value);
+      resolve(promise, value);
     }, function rejectPromise(reason) {
-      _reject(promise, reason);
+      reject(promise, reason);
     });
   } catch (e) {
-    _reject(promise, e);
+    reject(promise, e);
   }
 }
 
@@ -645,7 +644,7 @@ function makePromise(promise) {
   promise._subscribers = [];
 }
 
-function Enumerator(Constructor, input) {
+function Enumerator$1(Constructor, input) {
   this._instanceConstructor = Constructor;
   this.promise = new Constructor(noop$$1);
 
@@ -654,7 +653,6 @@ function Enumerator(Constructor, input) {
   }
 
   if (isArray$$1(input)) {
-    this._input = input;
     this.length = input.length;
     this._remaining = input.length;
 
@@ -664,13 +662,13 @@ function Enumerator(Constructor, input) {
       fulfill(this.promise, this._result);
     } else {
       this.length = this.length || 0;
-      this._enumerate();
+      this._enumerate(input);
       if (this._remaining === 0) {
         fulfill(this.promise, this._result);
       }
     }
   } else {
-    _reject(this.promise, validationError());
+    reject(this.promise, validationError());
   }
 }
 
@@ -678,20 +676,17 @@ function validationError() {
   return new Error('Array Methods must be provided an Array');
 }
 
-Enumerator.prototype._enumerate = function () {
-  var length = this.length;
-  var _input = this._input;
-
-  for (var i = 0; this._state === PENDING && i < length; i++) {
-    this._eachEntry(_input[i], i);
+Enumerator$1.prototype._enumerate = function (input) {
+  for (var i = 0; this._state === PENDING && i < input.length; i++) {
+    this._eachEntry(input[i], i);
   }
 };
 
-Enumerator.prototype._eachEntry = function (entry, i) {
+Enumerator$1.prototype._eachEntry = function (entry, i) {
   var c = this._instanceConstructor;
-  var resolve$$ = c.resolve;
+  var resolve$$1 = c.resolve;
 
-  if (resolve$$ === resolve) {
+  if (resolve$$1 === resolve$1) {
     var _then = getThen(entry);
 
     if (_then === then && entry._state !== PENDING) {
@@ -699,28 +694,28 @@ Enumerator.prototype._eachEntry = function (entry, i) {
     } else if (typeof _then !== 'function') {
       this._remaining--;
       this._result[i] = entry;
-    } else if (c === Promise) {
+    } else if (c === Promise$2) {
       var promise = new c(noop$$1);
       handleMaybeThenable(promise, entry, _then);
       this._willSettleAt(promise, i);
     } else {
-      this._willSettleAt(new c(function (resolve$$) {
-        return resolve$$(entry);
+      this._willSettleAt(new c(function (resolve$$1) {
+        return resolve$$1(entry);
       }), i);
     }
   } else {
-    this._willSettleAt(resolve$$(entry), i);
+    this._willSettleAt(resolve$$1(entry), i);
   }
 };
 
-Enumerator.prototype._settledAt = function (state, i, value) {
+Enumerator$1.prototype._settledAt = function (state, i, value) {
   var promise = this.promise;
 
   if (promise._state === PENDING) {
     this._remaining--;
 
     if (state === REJECTED) {
-      _reject(promise, value);
+      reject(promise, value);
     } else {
       this._result[i] = value;
     }
@@ -731,7 +726,7 @@ Enumerator.prototype._settledAt = function (state, i, value) {
   }
 };
 
-Enumerator.prototype._willSettleAt = function (promise, i) {
+Enumerator$1.prototype._willSettleAt = function (promise, i) {
   var enumerator = this;
 
   subscribe(promise, undefined, function (value) {
@@ -788,8 +783,8 @@ Enumerator.prototype._willSettleAt = function (promise, i) {
   fulfilled, or rejected if any of them become rejected.
   @static
 */
-function all(entries) {
-  return new Enumerator(this, entries).promise;
+function all$1(entries) {
+  return new Enumerator$1(this, entries).promise;
 }
 
 /**
@@ -857,7 +852,7 @@ function all(entries) {
   @return {Promise} a promise which settles in the same way as the first passed
   promise to settle.
 */
-function race(entries) {
+function race$1(entries) {
   /*jshint validthis:true */
   var Constructor = this;
 
@@ -909,11 +904,11 @@ function race(entries) {
   Useful for tooling.
   @return {Promise} a promise rejected with the given `reason`.
 */
-function reject(reason) {
+function reject$1(reason) {
   /*jshint validthis:true */
   var Constructor = this;
   var promise = new Constructor(noop$$1);
-  _reject(promise, reason);
+  reject(promise, reason);
   return promise;
 }
 
@@ -1028,27 +1023,27 @@ function needsNew() {
   Useful for tooling.
   @constructor
 */
-function Promise(resolver) {
+function Promise$2(resolver) {
   this[PROMISE_ID] = nextId();
   this._result = this._state = undefined;
   this._subscribers = [];
 
   if (noop$$1 !== resolver) {
     typeof resolver !== 'function' && needsResolver();
-    this instanceof Promise ? initializePromise(this, resolver) : needsNew();
+    this instanceof Promise$2 ? initializePromise(this, resolver) : needsNew();
   }
 }
 
-Promise.all = all;
-Promise.race = race;
-Promise.resolve = resolve;
-Promise.reject = reject;
-Promise._setScheduler = setScheduler;
-Promise._setAsap = setAsap;
-Promise._asap = asap;
+Promise$2.all = all$1;
+Promise$2.race = race$1;
+Promise$2.resolve = resolve$1;
+Promise$2.reject = reject$1;
+Promise$2._setScheduler = setScheduler;
+Promise$2._setAsap = setAsap;
+Promise$2._asap = asap;
 
-Promise.prototype = {
-  constructor: Promise,
+Promise$2.prototype = {
+  constructor: Promise$2,
 
   /**
     The primary way of interacting with a promise is through its `then` method,
@@ -1277,7 +1272,8 @@ Promise.prototype = {
   }
 };
 
-function polyfill() {
+/*global self*/
+function polyfill$1() {
     var local = undefined;
 
     if (typeof commonjsGlobal !== 'undefined') {
@@ -1307,16 +1303,18 @@ function polyfill() {
         }
     }
 
-    local.Promise = Promise;
+    local.Promise = Promise$2;
 }
 
 // Strange compat..
-Promise.polyfill = polyfill;
-Promise.Promise = Promise;
+Promise$2.polyfill = polyfill$1;
+Promise$2.Promise = Promise$2;
 
-return Promise;
+return Promise$2;
 
 })));
+
+
 });
 
 var es6Promise_1 = es6Promise.Promise;
@@ -1351,30 +1349,7 @@ var createClass = function () {
 
 
 
-var get$2 = function get$2(object, property, receiver) {
-  if (object === null) object = Function.prototype;
-  var desc = Object.getOwnPropertyDescriptor(object, property);
 
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent === null) {
-      return undefined;
-    } else {
-      return get$2(parent, property, receiver);
-    }
-  } else if ("value" in desc) {
-    return desc.value;
-  } else {
-    var getter = desc.get;
-
-    if (getter === undefined) {
-      return undefined;
-    }
-
-    return getter.call(receiver);
-  }
-};
 
 var inherits = function (subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
@@ -1412,27 +1387,6 @@ var possibleConstructorReturn = function (self, call) {
 
 
 
-var set$1 = function set$1(object, property, value, receiver) {
-  var desc = Object.getOwnPropertyDescriptor(object, property);
-
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent !== null) {
-      set$1(parent, property, value, receiver);
-    }
-  } else if ("value" in desc && desc.writable) {
-    desc.value = value;
-  } else {
-    var setter = desc.set;
-
-    if (setter !== undefined) {
-      setter.call(receiver, value);
-    }
-  }
-
-  return value;
-};
 
 
 
@@ -1446,7 +1400,8 @@ var set$1 = function set$1(object, property, value, receiver) {
 
 
 
-var toArray$1 = function (arr) {
+
+var toArray = function (arr) {
   return Array.isArray(arr) ? arr : Array.from(arr);
 };
 
@@ -1877,7 +1832,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'each',
-        value: function each(iteratee) {
+        value: function each$$1(iteratee) {
             _.each(this, iteratee);
 
             return this;
@@ -2083,7 +2038,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'get',
-        value: function get(index) {
+        value: function get$$1(index) {
             return this[index];
         }
 
@@ -2226,7 +2181,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'invoke',
-        value: function invoke(methods, args) {
+        value: function invoke$$1(methods, args) {
             return baseInvoke(this, methods, args);
         }
 
@@ -2456,8 +2411,8 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'recurseDown',
-        value: function recurseDown(iteratee) {
-            recurseDown$1(this, iteratee);
+        value: function recurseDown$$1(iteratee) {
+            recurseDown(this, iteratee);
 
             return this;
         }
@@ -2472,7 +2427,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'remove',
-        value: function remove(node) {
+        value: function remove$$1(node) {
             _.remove(this, { id: node.id });
 
             if (this._context) {
@@ -2744,7 +2699,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
     }, {
         key: 'toArray',
-        value: function toArray() {
+        value: function toArray$$1() {
             var array = [];
 
             _.each(this, function (node) {
@@ -2781,12 +2736,12 @@ var TreeNodes = function (_extendableBuiltin2) {
  * @param {function} iteratee Iteratee function
  * @return {boolean} Cease iteration.
  */
-function recurseDown$1(obj, iteratee) {
+function recurseDown(obj, iteratee) {
     var res = void 0;
 
     if (obj instanceof TreeNodes) {
         _.each(obj, function (node) {
-            res = recurseDown$1(node, iteratee);
+            res = recurseDown(node, iteratee);
 
             return res;
         });
@@ -2795,7 +2750,7 @@ function recurseDown$1(obj, iteratee) {
 
         // Recurse children
         if (res !== false && obj.hasChildren()) {
-            res = recurseDown$1(obj.children, iteratee);
+            res = recurseDown(obj.children, iteratee);
         }
     }
 
@@ -3877,8 +3832,8 @@ var TreeNode = function () {
 
     }, {
         key: 'recurseDown',
-        value: function recurseDown(iteratee) {
-            recurseDown$1(this, iteratee);
+        value: function recurseDown$$1(iteratee) {
+            recurseDown(this, iteratee);
 
             return this;
         }
@@ -3995,7 +3950,7 @@ var TreeNode = function () {
 
     }, {
         key: 'remove',
-        value: function remove() {
+        value: function remove$$1() {
             // Cache parent before we remove the node
             var parent = this.getParent();
 
@@ -4138,7 +4093,7 @@ var TreeNode = function () {
 
     }, {
         key: 'set',
-        value: function set(property, value) {
+        value: function set$$1(property, value) {
             this[property] = value;
             this.markDirty();
 
@@ -4433,7 +4388,7 @@ function objectToNode(tree, object, parent) {
     if (tree.allowsLoadEvents) {
         _.each(tree.config.allowLoadEvents, function (eventName) {
             if (state[eventName]) {
-                tree.emit('node.' + eventName, object);
+                tree.emit('node.' + eventName, object, true);
             }
         });
     }
@@ -5563,7 +5518,7 @@ var InspireTree = function (_EventEmitter) {
             }, {});
 
             var _$sortBy = _.sortBy(Object.keys(pathMap)),
-                _$sortBy2 = toArray$1(_$sortBy),
+                _$sortBy2 = toArray(_$sortBy),
                 head = _$sortBy2[0],
                 tail = _$sortBy2.slice(1);
 
@@ -5774,7 +5729,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'each',
-        value: function each() {
+        value: function each$$1() {
             return map$1(this, 'each', arguments);
         }
 
@@ -5949,7 +5904,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'get',
-        value: function get() {
+        value: function get$$1() {
             return map$1(this, 'get', arguments);
         }
 
@@ -6032,7 +5987,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'invoke',
-        value: function invoke() {
+        value: function invoke$$1() {
             return map$1(this, 'invoke', arguments);
         }
 
@@ -6420,7 +6375,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'remove',
-        value: function remove() {
+        value: function remove$$1() {
             return map$1(this, 'remove', arguments);
         }
 
@@ -6785,7 +6740,7 @@ var InspireTree = function (_EventEmitter) {
 
     }, {
         key: 'toArray',
-        value: function toArray() {
+        value: function toArray$$1() {
             return map$1(this, 'toArray', arguments);
         }
 
