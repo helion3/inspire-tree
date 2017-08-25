@@ -48,14 +48,16 @@ if (MIN) {
 }
 
 export default {
-    entry: path.join('src', 'tree.js'),
-    dest: path.join(DIST ? 'dist' : 'build', 'inspire-tree' + (MIN ? '.min' : '') + '.js'),
-    format: 'umd',
-    moduleName: 'InspireTree',
+    input: path.join('src', 'tree.js'),
     external: ['lodash'],
-    banner: banner,
-    globals: {
-        lodash: '_'
-    },
-    plugins: plugins
+    plugins: plugins,
+    output: {
+        file: path.join(DIST ? 'dist' : 'build', 'inspire-tree' + (MIN ? '.min' : '') + '.js'),
+        format: 'umd',
+        name: 'InspireTree',
+        banner: banner,
+        globals: {
+            lodash: '_'
+        }
+    }
 };
