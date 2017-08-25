@@ -155,23 +155,23 @@ tree.on('node.added', function(event, node) {
 - **data.loaderror** - `(Error err)` - Loading failed.
 - **model.loaded** - `(Array nodes)` - Data has been parsed into an internal model.
 - **node.added** - `(TreeNode node)` - Node added.
-- **node.blurred** - `(TreeNode node)` - Node lost focus.
-- **node.checked** - `(TreeNode node)` - Node checked.
+- **node.blurred** - `(TreeNode node, bool isLoadEvent)` - Node lost focus.
+- **node.checked** - `(TreeNode node, bool isLoadEvent)` - Node checked.
 - **node.collapsed** - `(TreeNode node)` - Node collapsed.
 - **node.deselected** - `(TreeNode node)` - Node deselected.
 - **node.edited** - `(TreeNode node), (string oldValue), (string newValue)` - Node text was altered via inline editing.
-- **node.expanded** - `(TreeNode node)` - Node expanded.
-- **node.focused** - `(TreeNode node)` - Node focused.
-- **node.hidden** - `(TreeNode node)` - Node hidden.
+- **node.expanded** - `(TreeNode node, bool isLoadEvent)` - Node expanded.
+- **node.focused** - `(TreeNode node, bool isLoadEvent)` - Node focused.
+- **node.hidden** - `(TreeNode node, bool isLoadEvent)` - Node hidden.
 - **node.moved** - `(TreeNode node, TreeNodes source, int oldIndex, TreeNodes target, int newIndex)` - Node moved.
 - **node.paginated** - `(TreeNode context), (Object pagination) (Event event)` - Nodes were paginated. Context is undefined when for the root level.
 - **node.property.changed** - `(TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue)` - A node's root property has changed.
 - **node.removed** - `(object node)` - Node removed.
 - **node.restored** - `(TreeNode node)` - Node restored.
-- **node.selected** - `(TreeNode node)` - Node selected.
+- **node.selected** - `(TreeNode node, bool isLoadEvent)` - Node selected.
 - **node.state.changed** - `(TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue)` - A node state boolean has changed.
 - **node.shown** - `(TreeNode node)` - Node shown.
-- **node.softremoved** - `(TreeNode node)` - Node soft removed.
+- **node.softremoved** - `(TreeNode node, bool isLoadEvent)` - Node soft removed.
 - **node.unchecked** - `(TreeNode node)` - Node unchecked.
 
 ## API Basics

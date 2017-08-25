@@ -71,7 +71,7 @@ export function objectToNode(tree, object, parent) {
     if (tree.allowsLoadEvents) {
         _.each(tree.config.allowLoadEvents, (eventName) => {
             if (state[eventName]) {
-                tree.emit('node.' + eventName, object);
+                tree.emit('node.' + eventName, object, true);
             }
         });
     }

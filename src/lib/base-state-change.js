@@ -37,7 +37,7 @@ export function baseStateChange(prop, value, verb, node, deep) {
 
         node.state(prop, value);
 
-        node._tree.emit('node.' + verb, node);
+        node._tree.emit('node.' + verb, node, false);
 
         if (deep && node.hasChildren()) {
             node.children.recurseDown((child) => {
