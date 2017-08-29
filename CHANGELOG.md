@@ -1,5 +1,19 @@
 # Changes to Inspire Tree
 
+# 3.0.0
+
+- Added `createNode` method for creating a node, without adding it.
+- Added `TreeNode.tree` method.
+- Implemented tests and support for inherited Array prototype methods (excluding those not available in IE10+).
+- Updated typescript definition file to include Array methods.
+
+**Breaking Changes**
+
+- Removed `isNode` alias of `isTreeNode`.
+- `isTreeNode` and `isTreeNodes` are now static methods.
+- Renamed `filter` to `filterBy` to avoid overriding `Array.filter`.
+- Renamed `sort` to `sortBy` to avoid overriding `Array.sort`.
+
 # 2.0.6
 
 - Added `isLoadEvent` boolean to state events. `true` only when event fires on load and is in `allowLoadEvents` config.

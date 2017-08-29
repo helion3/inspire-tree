@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 2.0.6
+ * @version 3.0.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -1968,6 +1968,20 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
+         * Iterate every TreeNode in this collection.
+         *
+         * @category TreeNodes
+         * @param {function} iteratee Iteratee invoke for each node.
+         * @return {TreeNodes} Array of node objects.
+         */
+
+    }, {
+        key: 'forEach',
+        value: function forEach(iteratee) {
+            return this.each(iteratee);
+        }
+
+        /**
          * Returns nodes which match a predicate.
          *
          * @category TreeNodes
@@ -1976,8 +1990,8 @@ var TreeNodes = function (_extendableBuiltin2) {
          */
 
     }, {
-        key: 'filter',
-        value: function filter(predicate) {
+        key: 'filterBy',
+        value: function filterBy(predicate) {
             var fn = getPredicateFunction(predicate);
             var matches = new TreeNodes(this._tree);
 
@@ -2143,7 +2157,7 @@ var TreeNodes = function (_extendableBuiltin2) {
             }
 
             // Node is new, insert at given location.
-            var node = this._tree.isNode(object) ? object : objectToNode(this._tree, object);
+            var node = this._tree.constructor.isTreeNode(object) ? object : objectToNode(this._tree, object);
 
             // Grab remaining nodes
             this.splice(index, 0, node);
@@ -2430,9 +2444,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         value: function remove$$1(node) {
             _.remove(this, { id: node.id });
 
-            if (this._context) {
-                this._context.markDirty();
-            }
+            _.invoke(this._context, 'markDirty');
 
             this._tree.applyChanges();
 
@@ -2583,8 +2595,8 @@ var TreeNodes = function (_extendableBuiltin2) {
          */
 
     }, {
-        key: 'sort',
-        value: function sort(sorter) {
+        key: 'sortBy',
+        value: function sortBy$$1(sorter) {
             var _this5 = this;
 
             sorter = sorter || this._tree.config.sort;
@@ -2678,7 +2690,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Chained method for returning a chain to the tree context.
+         * Get the tree this collection ultimately belongs to.
          *
          * @category TreeNodes
          * @return {[type]} [description]
@@ -3115,7 +3127,7 @@ var TreeNode = function () {
 
                 // Filter out hidden children
                 if (this.hasChildren()) {
-                    clone.children = this.children.filter(function (n) {
+                    clone.children = this.children.filterBy(function (n) {
                         return !n.state('hidden');
                     }).toArray();
 
@@ -3423,7 +3435,7 @@ var TreeNode = function () {
             var hasVisibleChildren = false;
 
             if (this.hasChildren()) {
-                hasVisibleChildren = this.children.filter('available').length > 0;
+                hasVisibleChildren = this.children.filterBy('available').length > 0;
             }
 
             return hasVisibleChildren;
@@ -3594,7 +3606,7 @@ var TreeNode = function () {
                     _this3._tree.emit('tree.loaderror', err);
                 };
 
-                var pagination = _this3._tree.isTreeNodes(_this3.children) ? _this3.children.pagination() : null;
+                var pagination = _this3._tree.constructor.isTreeNodes(_this3.children) ? _this3.children.pagination() : null;
 
                 var loader = _this3._tree.config.data(_this3, complete, error, pagination);
 
@@ -4259,6 +4271,31 @@ var TreeNode = function () {
             }
 
             return object;
+        }
+
+        /**
+         * Get the text content of this tree node.
+         *
+         * @return {string} Text content.
+         */
+
+    }, {
+        key: 'toString',
+        value: function toString() {
+            return this.text;
+        }
+
+        /**
+         * Get the tree this node ultimately belongs to.
+         *
+         * @category TreeNode
+         * @return {InspireTree} Tree instance.
+         */
+
+    }, {
+        key: 'tree',
+        value: function tree() {
+            return this.context().tree();
         }
 
         /**
@@ -5211,7 +5248,7 @@ var eventemitter2_1 = eventemitter2.EventEmitter2;
  * @param {arguments} args Proxied arguments.
  * @return {mixed} Proxied return value.
  */
-function map$1(tree, method, args) {
+function _map(tree, method, args) {
     return tree.model[method].apply(tree.model, args);
 }
 
@@ -5237,6 +5274,7 @@ var InspireTree = function (_EventEmitter) {
         tree._muted = false;
         tree.allowsLoadEvents = false;
         tree.batching = 0;
+        tree.id = v4_1();
         tree.initialized = false;
         tree.isDynamic = false;
         tree.opts = opts;
@@ -5394,7 +5432,7 @@ var InspireTree = function (_EventEmitter) {
     createClass(InspireTree, [{
         key: 'addNode',
         value: function addNode() {
-            return map$1(this, 'addNode', arguments);
+            return _map(this, 'addNode', arguments);
         }
 
         /**
@@ -5455,7 +5493,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'available',
         value: function available() {
-            return map$1(this, 'available', arguments);
+            return _map(this, 'available', arguments);
         }
 
         /**
@@ -5486,7 +5524,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'blur',
         value: function blur() {
-            return map$1(this, 'blur', arguments);
+            return _map(this, 'blur', arguments);
         }
 
         /**
@@ -5499,7 +5537,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'blurDeep',
         value: function blurDeep() {
-            return map$1(this, 'blurDeep', arguments);
+            return _map(this, 'blurDeep', arguments);
         }
 
         /**
@@ -5550,7 +5588,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'checked',
         value: function checked() {
-            return map$1(this, 'checked', arguments);
+            return _map(this, 'checked', arguments);
         }
 
         /**
@@ -5563,7 +5601,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'clean',
         value: function clean() {
-            return map$1(this, 'clean', arguments);
+            return _map(this, 'clean', arguments);
         }
 
         /**
@@ -5592,7 +5630,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'clone',
         value: function clone() {
-            return map$1(this, 'clone', arguments);
+            return _map(this, 'clone', arguments);
         }
 
         /**
@@ -5605,7 +5643,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'collapse',
         value: function collapse() {
-            return map$1(this, 'collapse', arguments);
+            return _map(this, 'collapse', arguments);
         }
 
         /**
@@ -5619,7 +5657,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'collapsed',
         value: function collapsed() {
-            return map$1(this, 'collapsed', arguments);
+            return _map(this, 'collapsed', arguments);
         }
 
         /**
@@ -5632,7 +5670,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'collapseDeep',
         value: function collapseDeep() {
-            return map$1(this, 'collapseDeep', arguments);
+            return _map(this, 'collapseDeep', arguments);
         }
 
         /**
@@ -5646,7 +5684,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'concat',
         value: function concat() {
-            return map$1(this, 'concat', arguments);
+            return _map(this, 'concat', arguments);
         }
 
         /**
@@ -5660,7 +5698,21 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'copy',
         value: function copy() {
-            return map$1(this, 'copy', arguments);
+            return _map(this, 'copy', arguments);
+        }
+
+        /**
+         * Creates a TreeNode without adding it. If the obj is already a TreeNode it's returned without modification.
+         *
+         * @category Tree
+         * @param {object} obj Source node object.
+         * @return {TreeNode} Node object.
+         */
+
+    }, {
+        key: 'createNode',
+        value: function createNode(obj) {
+            return InspireTree.isTreeNode(obj) ? obj : objectToNode(this, obj);
         }
 
         /**
@@ -5673,7 +5725,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'deepest',
         value: function deepest() {
-            return map$1(this, 'deepest', arguments);
+            return _map(this, 'deepest', arguments);
         }
 
         /**
@@ -5686,7 +5738,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'deselect',
         value: function deselect() {
-            return map$1(this, 'deselect', arguments);
+            return _map(this, 'deselect', arguments);
         }
 
         /**
@@ -5699,7 +5751,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'deselectDeep',
         value: function deselectDeep() {
-            return map$1(this, 'deselectDeep', arguments);
+            return _map(this, 'deselectDeep', arguments);
         }
 
         /**
@@ -5730,7 +5782,21 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'each',
         value: function each$$1() {
-            return map$1(this, 'each', arguments);
+            return _map(this, 'each', arguments);
+        }
+
+        /**
+         * Returns whether every root node passes the given test.
+         *
+         * @category Tree
+         * @param {function} tester Test each node in this collection,
+         * @return {boolean} True if every node passes the test.
+         */
+
+    }, {
+        key: 'every',
+        value: function every() {
+            return _map(this, 'every', arguments);
         }
 
         /**
@@ -5744,7 +5810,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'editable',
         value: function editable() {
-            return map$1(this, 'editable', arguments);
+            return _map(this, 'editable', arguments);
         }
 
         /**
@@ -5758,7 +5824,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'editing',
         value: function editing() {
-            return map$1(this, 'editing', arguments);
+            return _map(this, 'editing', arguments);
         }
 
         /**
@@ -5804,7 +5870,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'expand',
         value: function expand() {
-            return map$1(this, 'expand', arguments);
+            return _map(this, 'expand', arguments);
         }
 
         /**
@@ -5818,7 +5884,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'expandDeep',
         value: function expandDeep() {
-            return map$1(this, 'expandDeep', arguments);
+            return _map(this, 'expandDeep', arguments);
         }
 
         /**
@@ -5831,7 +5897,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'expanded',
         value: function expanded() {
-            return map$1(this, 'expanded', arguments);
+            return _map(this, 'expanded', arguments);
         }
 
         /**
@@ -5848,7 +5914,21 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'extract',
         value: function extract() {
-            return map$1(this, 'extract', arguments);
+            return _map(this, 'extract', arguments);
+        }
+
+        /**
+         * Returns nodes which match a predicate.
+         *
+         * @category Tree
+         * @param {function} predicate Test function.
+         * @return {TreeNodes} Array of node objects.
+         */
+
+    }, {
+        key: 'filter',
+        value: function filter() {
+            return _map(this, 'filter', arguments);
         }
 
         /**
@@ -5860,9 +5940,9 @@ var InspireTree = function (_EventEmitter) {
          */
 
     }, {
-        key: 'filter',
-        value: function filter() {
-            return map$1(this, 'filter', arguments);
+        key: 'filterBy',
+        value: function filterBy() {
+            return _map(this, 'filterBy', arguments);
         }
 
         /**
@@ -5877,7 +5957,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'flatten',
         value: function flatten() {
-            return map$1(this, 'flatten', arguments);
+            return _map(this, 'flatten', arguments);
         }
 
         /**
@@ -5891,7 +5971,21 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'focused',
         value: function focused() {
-            return map$1(this, 'focused', arguments);
+            return _map(this, 'focused', arguments);
+        }
+
+        /**
+         * Iterate every TreeNode in this collection.
+         *
+         * @category Tree
+         * @param {function} iteratee Iteratee invoke for each node.
+         * @return {TreeNodes} Array of node objects.
+         */
+
+    }, {
+        key: 'forEach',
+        value: function forEach() {
+            return _map(this, 'each', arguments);
         }
 
         /**
@@ -5905,7 +5999,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'get',
         value: function get$$1() {
-            return map$1(this, 'get', arguments);
+            return _map(this, 'get', arguments);
         }
 
         /**
@@ -5919,7 +6013,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'hidden',
         value: function hidden() {
-            return map$1(this, 'hidden', arguments);
+            return _map(this, 'hidden', arguments);
         }
 
         /**
@@ -5932,7 +6026,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'hide',
         value: function hide() {
-            return map$1(this, 'hide', arguments);
+            return _map(this, 'hide', arguments);
         }
 
         /**
@@ -5945,7 +6039,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'hideDeep',
         value: function hideDeep() {
-            return map$1(this, 'hideDeep', arguments);
+            return _map(this, 'hideDeep', arguments);
         }
 
         /**
@@ -5959,7 +6053,21 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'indeterminate',
         value: function indeterminate() {
-            return map$1(this, 'indeterminate', arguments);
+            return _map(this, 'indeterminate', arguments);
+        }
+
+        /**
+         * Get the array index of the given root node.
+         *
+         * @category Tree
+         * @param {TreeNode} node Root tree node.
+         * @return {int} Index of the node.
+         */
+
+    }, {
+        key: 'indexOf',
+        value: function indexOf$$1() {
+            return _map(this, 'indexOf', arguments);
         }
 
         /**
@@ -5974,7 +6082,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'insertAt',
         value: function insertAt() {
-            return map$1(this, 'insertAt', arguments);
+            return _map(this, 'insertAt', arguments);
         }
 
         /**
@@ -5988,7 +6096,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'invoke',
         value: function invoke$$1() {
-            return map$1(this, 'invoke', arguments);
+            return _map(this, 'invoke', arguments);
         }
 
         /**
@@ -6002,7 +6110,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'invokeDeep',
         value: function invokeDeep() {
-            return map$1(this, 'invokeDeep', arguments);
+            return _map(this, 'invokeDeep', arguments);
         }
 
         /**
@@ -6024,21 +6132,6 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Check if an object is a TreeNode.
-         *
-         * @category Tree
-         * @deprecated
-         * @param {object} object Object
-         * @return {boolean} If object is a TreeNode.
-         */
-
-    }, {
-        key: 'isNode',
-        value: function isNode(object) {
-            return object instanceof TreeNode;
-        }
-
-        /**
          * Check if an object is a Tree.
          *
          * @category Tree
@@ -6056,28 +6149,23 @@ var InspireTree = function (_EventEmitter) {
          * Check if an object is a TreeNode.
          *
          * @category Tree
-         * @param {object} object Object
+         * @param {object} obj Object
          * @return {boolean} If object is a TreeNode.
          */
 
     }, {
-        key: 'isTreeNode',
-        value: function isTreeNode(object) {
-            return this.isNode(object);
-        }
+        key: 'join',
+
 
         /**
-         * Check if an object is a TreeNodes array.
+         * Returns a string from root node objects.
          *
          * @category Tree
-         * @param {object} object Object
-         * @return {boolean} If object is a TreeNodes array.
+         * @param {string} separator Separator, defaults to a comma
+         * @return {string} Strings from root node objects.
          */
-
-    }, {
-        key: 'isTreeNodes',
-        value: function isTreeNodes(object) {
-            return object instanceof TreeNodes;
+        value: function join() {
+            return _map(this, 'join', arguments);
         }
 
         /**
@@ -6209,7 +6297,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'loading',
         value: function loading() {
-            return map$1(this, 'loading', arguments);
+            return _map(this, 'loading', arguments);
         }
 
         /**
@@ -6223,7 +6311,21 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'loadMore',
         value: function loadMore() {
-            return map$1(this, 'loadMore', arguments);
+            return _map(this, 'loadMore', arguments);
+        }
+
+        /**
+         * Creates a new collection after passing every node through iteratee.
+         *
+         * @category Tree
+         * @param {function} iteratee Node iteratee.
+         * @return {TreeNodes} New array of node objects.
+         */
+
+    }, {
+        key: 'map',
+        value: function map$$1() {
+            return _map(this, 'map', arguments);
         }
 
         /**
@@ -6237,7 +6339,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'matched',
         value: function matched() {
-            return map$1(this, 'matched', arguments);
+            return _map(this, 'matched', arguments);
         }
 
         /**
@@ -6253,7 +6355,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'move',
         value: function move() {
-            return map$1(this, 'move', arguments);
+            return _map(this, 'move', arguments);
         }
 
         /*
@@ -6300,7 +6402,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'node',
         value: function node() {
-            return map$1(this, 'node', arguments);
+            return _map(this, 'node', arguments);
         }
 
         /**
@@ -6318,7 +6420,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'nodes',
         value: function nodes() {
-            return map$1(this, 'nodes', arguments);
+            return _map(this, 'nodes', arguments);
         }
 
         /**
@@ -6331,7 +6433,34 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'pagination',
         value: function pagination() {
-            return map$1(this, 'pagination', arguments);
+            return _map(this, 'pagination', arguments);
+        }
+
+        /**
+         * Pops the last node off the root collection.
+         *
+         * @category Tree
+         * @return {TreeNode} Node object.
+         */
+
+    }, {
+        key: 'pop',
+        value: function pop() {
+            return _map(this, 'pop', arguments);
+        }
+
+        /**
+         * Adds a TreeNode to the end of the root collection.
+         *
+         * @category Tree
+         * @param {TreeNode} node Node object.
+         * @return {int} The new length
+         */
+
+    }, {
+        key: 'push',
+        value: function push() {
+            return _map(this, 'push', arguments);
         }
 
         /**
@@ -6347,7 +6476,35 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'recurseDown',
         value: function recurseDown() {
-            return map$1(this, 'recurseDown', arguments);
+            return _map(this, 'recurseDown', arguments);
+        }
+
+        /**
+         * Reduces root nodes.
+         *
+         * @category Tree
+         * @param {function} iteratee Iteratee function
+         * @return {any} Resulting data.
+         */
+
+    }, {
+        key: 'reduce',
+        value: function reduce() {
+            return _map(this, 'reduce', arguments);
+        }
+
+        /**
+         * Right-reduces root nodes.
+         *
+         * @category Tree
+         * @param {function} iteratee Iteratee function
+         * @return {any} Resulting data.
+         */
+
+    }, {
+        key: 'reduceRight',
+        value: function reduceRight() {
+            return _map(this, 'reduceRight', arguments);
         }
 
         /**
@@ -6376,7 +6533,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'remove',
         value: function remove$$1() {
-            return map$1(this, 'remove', arguments);
+            return _map(this, 'remove', arguments);
         }
 
         /**
@@ -6406,7 +6563,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'removed',
         value: function removed() {
-            return map$1(this, 'removed', arguments);
+            return _map(this, 'removed', arguments);
         }
 
         /**
@@ -6419,7 +6576,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'restore',
         value: function restore() {
-            return map$1(this, 'restore', arguments);
+            return _map(this, 'restore', arguments);
         }
 
         /**
@@ -6432,7 +6589,20 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'restoreDeep',
         value: function restoreDeep() {
-            return map$1(this, 'restoreDeep', arguments);
+            return _map(this, 'restoreDeep', arguments);
+        }
+
+        /**
+         * Reduces root nodes.
+         *
+         * @category Tree
+         * @return {TreeNodes} Reversed array of node objects.
+         */
+
+    }, {
+        key: 'reverse',
+        value: function reverse() {
+            return _map(this, 'reverse', arguments);
         }
 
         /**
@@ -6517,7 +6687,7 @@ var InspireTree = function (_EventEmitter) {
                 // Execute the matcher and pipe results to the processor
                 matcher(query, function (matches) {
                     // Convert to a TreeNodes array if we're receiving external nodes
-                    if (!_this4.isTreeNodes(matches)) {
+                    if (!InspireTree.isTreeNodes(matches)) {
                         matches = _this4.nodes(_.map(matches, 'id'));
                     }
 
@@ -6542,7 +6712,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'select',
         value: function select() {
-            return map$1(this, 'select', arguments);
+            return _map(this, 'select', arguments);
         }
 
         /**
@@ -6556,7 +6726,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'selectable',
         value: function selectable() {
-            return map$1(this, 'selectable', arguments);
+            return _map(this, 'selectable', arguments);
         }
 
         /**
@@ -6596,7 +6766,7 @@ var InspireTree = function (_EventEmitter) {
          * @return {TreeNodes} Array of node objects.
          */
         value: function selectDeep() {
-            return map$1(this, 'selectDeep', arguments);
+            return _map(this, 'selectDeep', arguments);
         }
 
         /**
@@ -6610,7 +6780,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'selected',
         value: function selected() {
-            return map$1(this, 'selected', arguments);
+            return _map(this, 'selected', arguments);
         }
 
         /**
@@ -6623,7 +6793,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'selectFirstAvailableNode',
         value: function selectFirstAvailableNode() {
-            var node = this.model.filter('available').get(0);
+            var node = this.model.filterBy('available').get(0);
             if (node) {
                 node.select();
             }
@@ -6631,8 +6801,18 @@ var InspireTree = function (_EventEmitter) {
             return node;
         }
     }, {
-        key: 'show',
+        key: 'shift',
 
+
+        /**
+         * Shifts the first node off the root collection.
+         *
+         * @category Tree
+         * @return {TreeNode} Node object.
+         */
+        value: function shift() {
+            return _map(this, 'shift', arguments);
+        }
 
         /**
          * Show children in this collection.
@@ -6640,8 +6820,11 @@ var InspireTree = function (_EventEmitter) {
          * @category Tree
          * @return {TreeNodes} Array of node objects.
          */
+
+    }, {
+        key: 'show',
         value: function show() {
-            return map$1(this, 'show', arguments);
+            return _map(this, 'show', arguments);
         }
 
         /**
@@ -6654,7 +6837,23 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'showDeep',
         value: function showDeep() {
-            return map$1(this, 'showDeep', arguments);
+            return _map(this, 'showDeep', arguments);
+        }
+
+        /**
+         * Returns a shallow copy of a portion of root nodes into a new array
+         * object selected from begin to end (end not included)
+         *
+         * @category Tree
+         * @param {int} begin Starting index.
+         * @param {int} end End index.
+         * @return {Array} Array of selected subset.
+         */
+
+    }, {
+        key: 'slice',
+        value: function slice$$1() {
+            return _map(this, 'slice', arguments);
         }
 
         /**
@@ -6667,7 +6866,35 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'softRemove',
         value: function softRemove() {
-            return map$1(this, 'softRemove', arguments);
+            return _map(this, 'softRemove', arguments);
+        }
+
+        /**
+         * Returns whether at least one root node passes the given test.
+         *
+         * @category Tree
+         * @param {function} tester Test each node in this collection,
+         * @return {boolean} True if at least one node passes the test.
+         */
+
+    }, {
+        key: 'some',
+        value: function some() {
+            return _map(this, 'some', arguments);
+        }
+
+        /**
+         * Sorts root nodes in-place.
+         *
+         * @category Tree
+         * @param {function} compareFn Comparison function.
+         * @return {TreeNodes} Root array of node objects.
+         */
+
+    }, {
+        key: 'sort',
+        value: function sort() {
+            return _map(this, 'sort', arguments);
         }
 
         /**
@@ -6681,9 +6908,25 @@ var InspireTree = function (_EventEmitter) {
          */
 
     }, {
-        key: 'sort',
-        value: function sort() {
-            return map$1(this, 'sort', arguments);
+        key: 'sortBy',
+        value: function sortBy$$1() {
+            return _map(this, 'sortBy', arguments);
+        }
+
+        /**
+         * Removes and adds new TreeNodes into the root collection.
+         *
+         * @category Tree
+         * @param {int} start Starting index.
+         * @param {int} deleteCount Count of nodes to delete.
+         * @param {TreeNode} node Node(s) to insert.
+         * @return {Array} Array of selected subset.
+         */
+
+    }, {
+        key: 'splice',
+        value: function splice() {
+            return _map(this, 'slice', arguments);
         }
 
         /**
@@ -6698,7 +6941,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'state',
         value: function state() {
-            return map$1(this, 'state', arguments);
+            return _map(this, 'state', arguments);
         }
 
         /**
@@ -6713,7 +6956,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'stateDeep',
         value: function stateDeep() {
-            return map$1(this, 'stateDeep', arguments);
+            return _map(this, 'stateDeep', arguments);
         }
 
         /**
@@ -6728,7 +6971,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'swap',
         value: function swap() {
-            return map$1(this, 'swap', arguments);
+            return _map(this, 'swap', arguments);
         }
 
         /**
@@ -6741,7 +6984,20 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'toArray',
         value: function toArray$$1() {
-            return map$1(this, 'toArray', arguments);
+            return _map(this, 'toArray', arguments);
+        }
+
+        /**
+         * Returns a string from root node objects.
+         *
+         * @category Tree
+         * @return {string} Strings from root node objects.
+         */
+
+    }, {
+        key: 'toString',
+        value: function toString() {
+            return _map(this, 'toString', arguments);
         }
 
         /**
@@ -6768,8 +7024,18 @@ var InspireTree = function (_EventEmitter) {
             return this;
         }
     }, {
-        key: 'visible',
+        key: 'unshift',
 
+
+        /**
+         * Adds a TreeNode to the start of the root collection.
+         *
+         * @category Tree
+         * @return {number} The new length
+         */
+        value: function unshift() {
+            return _map(this, 'unshift', arguments);
+        }
 
         /**
          * Query for all visible nodes.
@@ -6778,8 +7044,30 @@ var InspireTree = function (_EventEmitter) {
          * @param {boolean} full Retain full hiearchy.
          * @return {TreeNodes} Array of node objects.
          */
+
+    }, {
+        key: 'visible',
         value: function visible() {
-            return map$1(this, 'visible', arguments);
+            return _map(this, 'visible', arguments);
+        }
+    }], [{
+        key: 'isTreeNode',
+        value: function isTreeNode(obj) {
+            return obj instanceof TreeNode;
+        }
+
+        /**
+         * Check if an object is a TreeNodes array.
+         *
+         * @category Tree
+         * @param {object} obj Object
+         * @return {boolean} If object is a TreeNodes array.
+         */
+
+    }, {
+        key: 'isTreeNodes',
+        value: function isTreeNodes(obj) {
+            return obj instanceof TreeNodes;
         }
     }]);
     return InspireTree;

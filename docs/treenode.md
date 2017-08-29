@@ -79,8 +79,16 @@
 * <a href="#toggleCollapse">`toggleCollapse`</a>
 * <a href="#toggleEditing">`toggleEditing`</a>
 * <a href="#toggleSelect">`toggleSelect`</a>
+* <a href="#tree">`tree`</a>
 * <a href="#uncheck">`uncheck`</a>
 * <a href="#visible">`visible`</a>
+
+<!-- /div -->
+
+<!-- div -->
+
+## `Methods`
+* <a href="#toString">`toString`</a>
 
 <!-- /div -->
 
@@ -933,8 +941,19 @@ Toggles selected state.
 
 <!-- div -->
 
+<h3 id="tree"><a href="#tree">#</a>&nbsp;<code>tree()</code></h3>
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1296 "View in source") [&#x24C9;][1]
+
+Get the tree this node ultimately belongs to.
+
+---
+
+<!-- /div -->
+
+<!-- div -->
+
 <h3 id="uncheck"><a href="#uncheck">#</a>&nbsp;<code>uncheck(shallow)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1288 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1307 "View in source") [&#x24C9;][1]
 
 Unchecks this node.
 
@@ -948,10 +967,27 @@ Unchecks this node.
 <!-- div -->
 
 <h3 id="visible"><a href="#visible">#</a>&nbsp;<code>visible()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1316 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1335 "View in source") [&#x24C9;][1]
 
 Checks whether a node is visible to a user. Returns false
 if it's hidden, or if any ancestor is hidden or collapsed.
+
+---
+
+<!-- /div -->
+
+<!-- /div -->
+
+<!-- div -->
+
+## `Methods`
+
+<!-- div -->
+
+<h3 id="toString"><a href="#toString">#</a>&nbsp;<code>toString()</code></h3>
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenode.js#L1286 "View in source") [&#x24C9;][1]
+
+Get the text content of this tree node.
 
 ---
 

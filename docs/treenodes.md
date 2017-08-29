@@ -36,9 +36,10 @@
 * <a href="#expandParents">`expandParents`</a>
 * <a href="#expanded">`expanded`</a>
 * <a href="#extract">`extract`</a>
-* <a href="#filter">`filter`</a>
+* <a href="#filterBy">`filterBy`</a>
 * <a href="#flatten">`flatten`</a>
 * <a href="#focused">`focused`</a>
+* <a href="#forEach">`forEach`</a>
 * <a href="#get">`get`</a>
 * <a href="#hidden">`hidden`</a>
 * <a href="#hide">`hide`</a>
@@ -66,7 +67,7 @@
 * <a href="#show">`show`</a>
 * <a href="#showDeep">`showDeep`</a>
 * <a href="#softRemove">`softRemove`</a>
-* <a href="#sort">`sort`</a>
+* <a href="#sortBy">`sortBy`</a>
 * <a href="#state">`state`</a>
 * <a href="#stateDeep">`stateDeep`</a>
 * <a href="#swap">`swap`</a>
@@ -414,8 +415,8 @@ don't affect the actual node array.
 
 <!-- div -->
 
-<h3 id="filter"><a href="#filter">#</a>&nbsp;<code>filter(predicate)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L474 "View in source") [&#x24C9;][1]
+<h3 id="filterBy"><a href="#filterBy">#</a>&nbsp;<code>filterBy(predicate)</code></h3>
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L485 "View in source") [&#x24C9;][1]
 
 Returns nodes which match a predicate.
 
@@ -429,7 +430,7 @@ Returns nodes which match a predicate.
 <!-- div -->
 
 <h3 id="flatten"><a href="#flatten">#</a>&nbsp;<code>flatten(predicate)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L495 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L506 "View in source") [&#x24C9;][1]
 
 Flattens a hierarchy, returning only node(s) matching the
 expected state or predicate function.
@@ -444,7 +445,7 @@ expected state or predicate function.
 <!-- div -->
 
 <h3 id="focused"><a href="#focused">#</a>&nbsp;<code>focused(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L515 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L526 "View in source") [&#x24C9;][1]
 
 Query for all focused nodes.
 
@@ -457,8 +458,22 @@ Query for all focused nodes.
 
 <!-- div -->
 
+<h3 id="forEach"><a href="#forEach">#</a>&nbsp;<code>forEach(iteratee)</code></h3>
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L474 "View in source") [&#x24C9;][1]
+
+Iterate every TreeNode in this collection.
+
+#### Arguments
+1. `iteratee` *(function)*: Iteratee invoke for each node.
+
+---
+
+<!-- /div -->
+
+<!-- div -->
+
 <h3 id="get"><a href="#get">#</a>&nbsp;<code>get(index)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L526 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L537 "View in source") [&#x24C9;][1]
 
 Get a specific node in the collection, or undefined if it doesn't exist.
 
@@ -472,7 +487,7 @@ Get a specific node in the collection, or undefined if it doesn't exist.
 <!-- div -->
 
 <h3 id="hidden"><a href="#hidden">#</a>&nbsp;<code>hidden(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L537 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L548 "View in source") [&#x24C9;][1]
 
 Query for all hidden nodes.
 
@@ -486,7 +501,7 @@ Query for all hidden nodes.
 <!-- div -->
 
 <h3 id="hide"><a href="#hide">#</a>&nbsp;<code>hide()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L547 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L558 "View in source") [&#x24C9;][1]
 
 Hide children in this collection.
 
@@ -497,7 +512,7 @@ Hide children in this collection.
 <!-- div -->
 
 <h3 id="hideDeep"><a href="#hideDeep">#</a>&nbsp;<code>hideDeep()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L557 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L568 "View in source") [&#x24C9;][1]
 
 Hide all children *(deeply)* in this collection.
 
@@ -508,7 +523,7 @@ Hide all children *(deeply)* in this collection.
 <!-- div -->
 
 <h3 id="indeterminate"><a href="#indeterminate">#</a>&nbsp;<code>indeterminate(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L568 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L579 "View in source") [&#x24C9;][1]
 
 Query for all indeterminate nodes.
 
@@ -522,7 +537,7 @@ Query for all indeterminate nodes.
 <!-- div -->
 
 <h3 id="insertAt"><a href="#insertAt">#</a>&nbsp;<code>insertAt(index, object)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L580 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L591 "View in source") [&#x24C9;][1]
 
 Insert a new node at a given position.
 
@@ -537,7 +552,7 @@ Insert a new node at a given position.
 <!-- div -->
 
 <h3 id="invoke"><a href="#invoke">#</a>&nbsp;<code>invoke(methods, args)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L651 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L662 "View in source") [&#x24C9;][1]
 
 Invoke method(s) on each node.
 
@@ -552,7 +567,7 @@ Invoke method(s) on each node.
 <!-- div -->
 
 <h3 id="invokeDeep"><a href="#invokeDeep">#</a>&nbsp;<code>invokeDeep(methods, args)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L663 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L674 "View in source") [&#x24C9;][1]
 
 Invoke method(s) deeply.
 
@@ -567,7 +582,7 @@ Invoke method(s) deeply.
 <!-- div -->
 
 <h3 id="loadMore"><a href="#loadMore">#</a>&nbsp;<code>loadMore(event)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L685 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L696 "View in source") [&#x24C9;][1]
 
 Loads additional nodes for this context.
 
@@ -581,7 +596,7 @@ Loads additional nodes for this context.
 <!-- div -->
 
 <h3 id="loading"><a href="#loading">#</a>&nbsp;<code>loading(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L674 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L685 "View in source") [&#x24C9;][1]
 
 Query for all loading nodes.
 
@@ -595,7 +610,7 @@ Query for all loading nodes.
 <!-- div -->
 
 <h3 id="matched"><a href="#matched">#</a>&nbsp;<code>matched(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L748 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L759 "View in source") [&#x24C9;][1]
 
 Query for all nodes which matched the last search.
 
@@ -609,7 +624,7 @@ Query for all nodes which matched the last search.
 <!-- div -->
 
 <h3 id="move"><a href="#move">#</a>&nbsp;<code>move(index, newIndex, target)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L761 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L772 "View in source") [&#x24C9;][1]
 
 Moves the node at a given index to a new index.
 
@@ -625,7 +640,7 @@ Moves the node at a given index to a new index.
 <!-- div -->
 
 <h3 id="node"><a href="#node">#</a>&nbsp;<code>node(id)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L781 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L792 "View in source") [&#x24C9;][1]
 
 Get a node.
 
@@ -639,7 +654,7 @@ Get a node.
 <!-- div -->
 
 <h3 id="nodes"><a href="#nodes">#</a>&nbsp;<code>nodes(refs)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L810 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L821 "View in source") [&#x24C9;][1]
 
 Get all nodes in a tree, or nodes for an array of IDs.
 
@@ -658,7 +673,7 @@ let some = tree.nodes([1, 2, 3])
 <!-- div -->
 
 <h3 id="pagination"><a href="#pagination">#</a>&nbsp;<code>pagination()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L841 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L852 "View in source") [&#x24C9;][1]
 
 Get the pagination.
 
@@ -669,7 +684,7 @@ Get the pagination.
 <!-- div -->
 
 <h3 id="recurseDown"><a href="#recurseDown">#</a>&nbsp;<code>recurseDown(iteratee)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L852 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L863 "View in source") [&#x24C9;][1]
 
 Iterate down all nodes and any children.
 
@@ -683,7 +698,7 @@ Iterate down all nodes and any children.
 <!-- div -->
 
 <h3 id="remove"><a href="#remove">#</a>&nbsp;<code>remove(node)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L865 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L876 "View in source") [&#x24C9;][1]
 
 Removes a node from this list.
 
@@ -697,7 +712,7 @@ Removes a node from this list.
 <!-- div -->
 
 <h3 id="removed"><a href="#removed">#</a>&nbsp;<code>removed(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L884 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L893 "View in source") [&#x24C9;][1]
 
 Query for all soft-removed nodes.
 
@@ -711,7 +726,7 @@ Query for all soft-removed nodes.
 <!-- div -->
 
 <h3 id="restore"><a href="#restore">#</a>&nbsp;<code>restore()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L894 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L903 "View in source") [&#x24C9;][1]
 
 Restore children in this collection.
 
@@ -722,7 +737,7 @@ Restore children in this collection.
 <!-- div -->
 
 <h3 id="restoreDeep"><a href="#restoreDeep">#</a>&nbsp;<code>restoreDeep()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L904 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L913 "View in source") [&#x24C9;][1]
 
 Restore all children *(deeply)* in this collection.
 
@@ -733,7 +748,7 @@ Restore all children *(deeply)* in this collection.
 <!-- div -->
 
 <h3 id="select"><a href="#select">#</a>&nbsp;<code>select()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L914 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L923 "View in source") [&#x24C9;][1]
 
 Select children in this collection.
 
@@ -744,7 +759,7 @@ Select children in this collection.
 <!-- div -->
 
 <h3 id="selectDeep"><a href="#selectDeep">#</a>&nbsp;<code>selectDeep()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L935 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L944 "View in source") [&#x24C9;][1]
 
 Select all children *(deeply)* in this collection.
 
@@ -755,7 +770,7 @@ Select all children *(deeply)* in this collection.
 <!-- div -->
 
 <h3 id="selectable"><a href="#selectable">#</a>&nbsp;<code>selectable(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L925 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L934 "View in source") [&#x24C9;][1]
 
 Query for all selectable nodes.
 
@@ -769,7 +784,7 @@ Query for all selectable nodes.
 <!-- div -->
 
 <h3 id="selected"><a href="#selected">#</a>&nbsp;<code>selected(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L946 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L955 "View in source") [&#x24C9;][1]
 
 Query for all selected nodes.
 
@@ -783,7 +798,7 @@ Query for all selected nodes.
 <!-- div -->
 
 <h3 id="show"><a href="#show">#</a>&nbsp;<code>show()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L956 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L965 "View in source") [&#x24C9;][1]
 
 Show children in this collection.
 
@@ -794,7 +809,7 @@ Show children in this collection.
 <!-- div -->
 
 <h3 id="showDeep"><a href="#showDeep">#</a>&nbsp;<code>showDeep()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L966 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L975 "View in source") [&#x24C9;][1]
 
 Show all children *(deeply)* in this collection.
 
@@ -805,7 +820,7 @@ Show all children *(deeply)* in this collection.
 <!-- div -->
 
 <h3 id="softRemove"><a href="#softRemove">#</a>&nbsp;<code>softRemove()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L976 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L985 "View in source") [&#x24C9;][1]
 
 Soft-remove children in this collection.
 
@@ -815,8 +830,8 @@ Soft-remove children in this collection.
 
 <!-- div -->
 
-<h3 id="sort"><a href="#sort">#</a>&nbsp;<code>sort(sorter)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L989 "View in source") [&#x24C9;][1]
+<h3 id="sortBy"><a href="#sortBy">#</a>&nbsp;<code>sortBy(sorter)</code></h3>
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L998 "View in source") [&#x24C9;][1]
 
 Sorts all TreeNode objects in this collection.
 <br>
@@ -833,7 +848,7 @@ If no custom sorter given, the configured "sort" value will be used.
 <!-- div -->
 
 <h3 id="state"><a href="#state">#</a>&nbsp;<code>state(name, newVal)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1013 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1022 "View in source") [&#x24C9;][1]
 
 Set state values for nodes in this collection.
 
@@ -848,7 +863,7 @@ Set state values for nodes in this collection.
 <!-- div -->
 
 <h3 id="stateDeep"><a href="#stateDeep">#</a>&nbsp;<code>stateDeep(name, newVal)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1025 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1034 "View in source") [&#x24C9;][1]
 
 Set state values recursively.
 
@@ -863,7 +878,7 @@ Set state values recursively.
 <!-- div -->
 
 <h3 id="swap"><a href="#swap">#</a>&nbsp;<code>swap(node1, node2)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1037 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1046 "View in source") [&#x24C9;][1]
 
 Swaps two node positions.
 
@@ -878,7 +893,7 @@ Swaps two node positions.
 <!-- div -->
 
 <h3 id="toArray"><a href="#toArray">#</a>&nbsp;<code>toArray()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1088 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1097 "View in source") [&#x24C9;][1]
 
 Returns a native Array of nodes.
 
@@ -889,9 +904,9 @@ Returns a native Array of nodes.
 <!-- div -->
 
 <h3 id="tree"><a href="#tree">#</a>&nbsp;<code>tree()</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1078 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1087 "View in source") [&#x24C9;][1]
 
-Chained method for returning a chain to the tree context.
+Get the tree this collection ultimately belongs to.
 
 ---
 
@@ -900,7 +915,7 @@ Chained method for returning a chain to the tree context.
 <!-- div -->
 
 <h3 id="visible"><a href="#visible">#</a>&nbsp;<code>visible(full)</code></h3>
-[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1105 "View in source") [&#x24C9;][1]
+[&#x24C8;](https://github.com/helion3/inspire-tree/blob/master/src/treenodes.js#L1114 "View in source") [&#x24C9;][1]
 
 Query for all visible nodes.
 
