@@ -537,6 +537,16 @@ export class TreeNode {
     }
 
     /**
+     * If node has any children, or allows dynamic loading.
+     *
+     * @category TreeNode
+     * @return {boolean} If children.
+     */
+    hasOrWillHaveChildren() {
+        return _.isArrayLike(this.children) ? Boolean(this.children.length) : this.allowDynamicLoad();
+    }
+
+    /**
      * If node has a parent.
      *
      * @category TreeNode

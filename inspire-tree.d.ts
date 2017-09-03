@@ -229,6 +229,7 @@ declare module "inspire-tree" {
         getParents(): TreeNodes;
         getTextualHierarchy(): Array<string>;
         hasChildren(): boolean;
+        hasOrWillHaveChildren(): boolean;
         hasParent(): boolean;
         hasVisibleChildren(): boolean;
         hide(): TreeNode;
