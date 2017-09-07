@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 3.0.1
+
+- Added `TreeNode.hasOrWillHaveChildren`. Returns true when children are present or `children` property is true.
+
 # 3.0.0
 
 - Added `createNode` method for creating a node, without adding it.

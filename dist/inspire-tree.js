@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 3.0.0
+ * @version 3.0.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -3407,6 +3407,19 @@ var TreeNode = function () {
         key: 'hasLoadedChildren',
         value: function hasLoadedChildren() {
             return _.isArrayLike(this.children);
+        }
+
+        /**
+         * If node has any children, or allows dynamic loading.
+         *
+         * @category TreeNode
+         * @return {boolean} If children.
+         */
+
+    }, {
+        key: 'hasOrWillHaveChildren',
+        value: function hasOrWillHaveChildren() {
+            return _.isArrayLike(this.children) ? Boolean(this.children.length) : this.allowDynamicLoad();
         }
 
         /**
