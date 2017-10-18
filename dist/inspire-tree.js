@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 3.0.1
+ * @version 4.0.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -2348,10 +2348,6 @@ var TreeNodes = function (_extendableBuiltin2) {
         value: function node(id) {
             var match = void 0;
 
-            if (_.isNumber(id)) {
-                id = id.toString();
-            }
-
             this.recurseDown(function (node) {
                 if (node.id === id) {
                     match = node;
@@ -2381,15 +2377,6 @@ var TreeNodes = function (_extendableBuiltin2) {
             var results = void 0;
 
             if (_.isArray(refs)) {
-                // Ensure incoming IDs are strings
-                refs = _.map(refs, function (element) {
-                    if (_.isNumber(element)) {
-                        element = element.toString();
-                    }
-
-                    return element;
-                });
-
                 results = new TreeNodes(this._tree);
 
                 this.recurseDown(function (node) {
@@ -4387,7 +4374,7 @@ var TreeNode = function () {
 function objectToNode(tree, object, parent) {
     // Create or type-ensure ID
     object.id = object.id || v4_1();
-    if (typeof object.id !== 'string') {
+    if (typeof object.id !== 'string' && typeof object.id !== 'number') {
         object.id = object.id.toString();
     }
 

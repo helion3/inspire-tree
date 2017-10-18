@@ -1,5 +1,17 @@
 # Changes to Inspire Tree
 
+# 4.0.0
+
+**Breaking Changes**
+
+- Removes string typing of node ID.
+
+This means that you must query your nodes by ID using the same type as the ID was given to the tree.
+Using `id: 1` means you must query by a number, `tree.node(1)`. Previously, querying by a number *or* string
+would work. This change allows your data to remain typed, if you need it later.
+
+Anything except numbers or strings will still be converted to a string using `toString`.
+
 # 3.0.1
 
 - Added `TreeNode.hasOrWillHaveChildren`. Returns true when children are present or `children` property is true.
