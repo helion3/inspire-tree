@@ -20,7 +20,7 @@ import { TreeNode } from '../treenode';
 export function objectToNode(tree, object, parent) {
     // Create or type-ensure ID
     object.id = object.id || uuidV4();
-    if (typeof object.id !== 'string') {
+    if (typeof object.id !== 'string' && typeof object.id !== 'number') {
         object.id = object.id.toString();
     }
 

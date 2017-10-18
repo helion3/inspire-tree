@@ -28,12 +28,12 @@ describe('Tree.lastSelectedNode', function() {
     it('returns selected node', function() {
         tree.node(1).select();
 
-        expect(tree.lastSelectedNode().id).to.equal('1');
+        expect(tree.lastSelectedNode().id).to.equal(1);
     });
 
     it('returns last selected node', function() {
         tree.node(2).select();
 
-        expect(tree.lastSelectedNode().id).to.equal('2');
+        expect(tree.lastSelectedNode().id).to.equal(2);
     });
 });

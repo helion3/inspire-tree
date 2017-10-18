@@ -9,7 +9,7 @@ describe('TreeNode.prototype.selectable', function() {
         tree = new InspireTree({
             selection: {
                 allow: function(node) {
-                    if (node.id === '3') {
+                    if (node.id === 3) {
                         return false;
                     }
                 }

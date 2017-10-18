@@ -25,7 +25,7 @@ describe('TreeNode.prototype.nextVisibleSiblingNode', function() {
     });
 
     it('returns second node', function() {
-        expect(tree.node(1).nextVisibleSiblingNode().id).to.equal('2');
+        expect(tree.node(1).nextVisibleSiblingNode().id).to.equal(2);
     });
 
     it('returns undefined when last node hidden', function() {

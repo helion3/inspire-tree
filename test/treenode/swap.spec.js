@@ -28,24 +28,24 @@ describe('TreeNode.prototype.swap', function() {
     });
 
     it('swaps two node positions', function() {
-        expect(tree.nodes()[0].id).to.equal('1');
-        expect(tree.nodes()[1].id).to.equal('2');
-        expect(tree.nodes()[2].id).to.equal('3');
+        expect(tree.nodes()[0].id).to.equal(1);
+        expect(tree.nodes()[1].id).to.equal(2);
+        expect(tree.nodes()[2].id).to.equal(3);
 
         tree.node(1).swap(tree.node(3));
 
-        expect(tree.nodes()[0].id).to.equal('3');
-        expect(tree.nodes()[1].id).to.equal('2');
-        expect(tree.nodes()[2].id).to.equal('1');
+        expect(tree.nodes()[0].id).to.equal(3);
+        expect(tree.nodes()[1].id).to.equal(2);
+        expect(tree.nodes()[2].id).to.equal(1);
     });
 
     it('swaps nodes across contexts', function() {
-        expect(tree.nodes()[0].id).to.equal('3');
-        expect(tree.node(1).children[0].id).to.equal('11');
+        expect(tree.nodes()[0].id).to.equal(3);
+        expect(tree.node(1).children[0].id).to.equal(11);
 
         tree.node(3).swap(tree.node(11));
 
-        expect(tree.node(1).children[0].id).to.equal('3');
-        expect(tree.nodes()[0].id).to.equal('11');
+        expect(tree.node(1).children[0].id).to.equal(3);
+        expect(tree.nodes()[0].id).to.equal(11);
     });
 });

@@ -55,7 +55,7 @@ describe('Modification', function() {
         tree1.selected().copy().to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
-        expect(tree2.nodes()[0].id).to.equal('1');
+        expect(tree2.nodes()[0].id).to.equal(1);
 
         tree2.removeAll();
     });
@@ -67,7 +67,7 @@ describe('Modification', function() {
         node.copy().to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
-        expect(tree2.nodes()[0].id).to.equal('1');
+        expect(tree2.nodes()[0].id).to.equal(1);
 
         tree2.removeAll();
     });
@@ -79,7 +79,7 @@ describe('Modification', function() {
         node.copy().to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
-        expect(tree2.nodes()[0].id).to.equal('20');
+        expect(tree2.nodes()[0].id).to.equal(20);
 
         tree2.removeAll();
     });
@@ -91,7 +91,7 @@ describe('Modification', function() {
         node.copy(true).to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
-        expect(tree2.nodes()[0].id).to.equal('2');
+        expect(tree2.nodes()[0].id).to.equal(2);
 
         tree2.removeAll();
     });

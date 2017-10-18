@@ -28,7 +28,7 @@ describe('TreeNode.prototype.copyHierarchy', function() {
         var hierarchy = tree.node(2).copyHierarchy();
 
         expect(InspireTree.isTreeNode(hierarchy)).to.be.true;
-        expect(hierarchy.id).to.equal('1');
+        expect(hierarchy.id).to.equal(1);
         expect(hierarchy.children).to.have.length(1);
     });
 
@@ -36,7 +36,7 @@ describe('TreeNode.prototype.copyHierarchy', function() {
         var hierarchy = tree.node(2).copyHierarchy(true);
 
         expect(InspireTree.isTreeNode(hierarchy)).to.be.true;
-        expect(hierarchy.id).to.equal('1');
+        expect(hierarchy.id).to.equal(1);
         expect(hierarchy.children).to.be.undefined;
     });
 });

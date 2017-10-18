@@ -28,12 +28,12 @@ describe('TreeNode.prototype.previousVisibleNode', function() {
     it('finds previous sibling node', function() {
         tree.node(1).expand();
 
-        expect(tree.node(3).previousVisibleNode().id).to.equal('2');
+        expect(tree.node(3).previousVisibleNode().id).to.equal(2);
     });
 
     it('finds parent when sibling hidden', function() {
         tree.node(2).hide();
 
-        expect(tree.node(3).previousVisibleNode().id).to.equal('1');
+        expect(tree.node(3).previousVisibleNode().id).to.equal(1);
     });
 });

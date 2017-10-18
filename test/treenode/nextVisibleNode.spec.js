@@ -31,6 +31,6 @@ describe('TreeNode.prototype.nextVisibleNode', function() {
     it('finds sibling of parent when visible child/sibling nodes unavailable', function() {
         tree.node(3).hide();
 
-        expect(tree.node(2).nextVisibleNode().id).to.equal('4');
+        expect(tree.node(2).nextVisibleNode().id).to.equal(4);
     });
 });

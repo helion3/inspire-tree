@@ -35,7 +35,7 @@ describe('TreeNode.prototype.clone', function() {
         var clone = original.clone();
 
         clone.id = 'brand-new';
-        expect(original.id).to.equal('1');
+        expect(original.id).to.equal(1);
         expect(clone.id).to.equal('brand-new');
 
         original.children[0].text = 'New';

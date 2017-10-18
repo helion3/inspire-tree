@@ -25,6 +25,6 @@ describe('Tree.focused', function() {
     it('returns focused node', function() {
         tree.node(1).focus();
 
-        expect(tree.focused()[0].id).to.equal('1');
+        expect(tree.focused()[0].id).to.equal(1);
     });
 });

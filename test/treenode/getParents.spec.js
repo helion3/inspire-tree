@@ -34,7 +34,7 @@ describe('TreeNode.prototype.getParents', function() {
         var parents = tree.node(3).getParents();
 
         expect(parents).to.have.length(2);
-        expect(parents[0].id).to.equal('2');
-        expect(parents[1].id).to.equal('1');
+        expect(parents[0].id).to.equal(2);
+        expect(parents[1].id).to.equal(1);
     });
 });

@@ -20,6 +20,6 @@ describe('TreeNodes.prototype.node', function() {
     });
 
     it('returns a node', function() {
-        expect(tree.node(1).id).to.equal('1');
+        expect(tree.node(1).id).to.equal(1);
     });
 });

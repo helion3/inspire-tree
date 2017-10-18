@@ -29,12 +29,12 @@ describe('Tree.boundingNodes', function() {
     });
 
     it('returns correct min/max nodes', function() {
-        var nodes = tree.boundingNodes.apply(tree, tree.nodes(['3', '11']));
-        expect(nodes[0].id).to.equal('11');
-        expect(nodes[1].id).to.equal('3');
+        var nodes = tree.boundingNodes.apply(tree, tree.nodes([3, 11]));
+        expect(nodes[0].id).to.equal(11);
+        expect(nodes[1].id).to.equal(3);
 
-        nodes = tree.boundingNodes.apply(tree, tree.nodes(['11', '1']));
-        expect(nodes[0].id).to.equal('1');
-        expect(nodes[1].id).to.equal('11');
+        nodes = tree.boundingNodes.apply(tree, tree.nodes([11, 1]));
+        expect(nodes[0].id).to.equal(1);
+        expect(nodes[1].id).to.equal(11);
     });
 });
