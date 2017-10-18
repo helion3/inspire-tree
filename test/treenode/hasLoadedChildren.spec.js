@@ -50,10 +50,10 @@ describe('TreeNode.prototype.hasLoadedChildren', function() {
         }).catch(done);
     });
 
-    // it('returns true for a node which has loaded children', function(done) {
-    //     tree.node(1).expand().then(function() {
-    //         expect(tree.node(1).hasLoadedChildren()).to.be.true;
-    //         done();
-    //     }).catch(done);
-    // });
+    it('returns true for a node which has loaded children', function(done) {
+        tree.node(1).expand().then(function() {
+            expect(tree.node(1).hasLoadedChildren()).to.be.true;
+            done();
+        }).catch(done);
+    });
 });
