@@ -26,6 +26,6 @@ describe('TreeNodes extends Array.prototype.shift', function() {
         var node = tree.nodes().shift();
 
         expect(tree.nodes()).to.have.length(1);
-        expect(node.id).to.equal('1');
+        expect(node.id).to.equal(1);
     });
 });

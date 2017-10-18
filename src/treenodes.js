@@ -792,10 +792,6 @@ export class TreeNodes extends Array {
     node(id) {
         let match;
 
-        if (_.isNumber(id)) {
-            id = id.toString();
-        }
-
         this.recurseDown((node) => {
             if (node.id === id) {
                 match = node;
@@ -822,15 +818,6 @@ export class TreeNodes extends Array {
         let results;
 
         if (_.isArray(refs)) {
-            // Ensure incoming IDs are strings
-            refs = _.map(refs, (element) => {
-                if (_.isNumber(element)) {
-                    element = element.toString();
-                }
-
-                return element;
-            });
-
             results = new TreeNodes(this._tree);
 
             this.recurseDown((node) => {

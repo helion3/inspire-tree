@@ -26,23 +26,23 @@ describe('TreeNodes.prototype.move', function() {
     });
 
     it('moves a node to a specific index', function() {
-        expect(tree.nodes()[0].id).to.equal('1');
-        expect(tree.nodes()[1].id).to.equal('2');
-        expect(tree.nodes()[2].id).to.equal('3');
+        expect(tree.nodes()[0].id).to.equal(1);
+        expect(tree.nodes()[1].id).to.equal(2);
+        expect(tree.nodes()[2].id).to.equal(3);
 
         tree.nodes().move(1, 0);
 
-        expect(tree.nodes()[0].id).to.equal('2');
-        expect(tree.nodes()[1].id).to.equal('1');
-        expect(tree.nodes()[2].id).to.equal('3');
+        expect(tree.nodes()[0].id).to.equal(2);
+        expect(tree.nodes()[1].id).to.equal(1);
+        expect(tree.nodes()[2].id).to.equal(3);
     });
 
     it('moves a node to a specific index', function() {
         tree.nodes().move(0, 2);
 
-        expect(tree.nodes()[0].id).to.equal('1');
-        expect(tree.nodes()[1].id).to.equal('3');
-        expect(tree.nodes()[2].id).to.equal('2');
+        expect(tree.nodes()[0].id).to.equal(1);
+        expect(tree.nodes()[1].id).to.equal(3);
+        expect(tree.nodes()[2].id).to.equal(2);
     });
 
     it('moves a node to another collection', function() {
@@ -55,6 +55,6 @@ describe('TreeNodes.prototype.move', function() {
 
         expect(tree.nodes()).to.have.length(2);
         expect(node.children).to.have.length(1);
-        expect(node.children[0].id).to.equal('2');
+        expect(node.children[0].id).to.equal(2);
     });
 });

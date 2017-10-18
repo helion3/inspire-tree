@@ -60,8 +60,8 @@ describe('TreeNodes.prototype.insertAt', function() {
             id: 3
         });
 
-        expect(tree.nodes()[0].id).to.equal('1');
-        expect(tree.nodes()[1].id).to.equal('3');
-        expect(tree.nodes()[2].id).to.equal('2');
+        expect(tree.nodes()[0].id).to.equal(1);
+        expect(tree.nodes()[1].id).to.equal(3);
+        expect(tree.nodes()[2].id).to.equal(2);
     });
 });

@@ -27,6 +27,6 @@ describe('TreeNode.prototype.getParent', function() {
     });
 
     it('returns parent for child node', function() {
-        expect(tree.node(2).getParent().id).to.equal('1');
+        expect(tree.node(2).getParent().id).to.equal(1);
     });
 });

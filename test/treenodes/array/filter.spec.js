@@ -28,6 +28,6 @@ describe('TreeNodes extends Array.prototype.filter', function() {
         });
 
         expect(matches).to.have.length(1);
-        expect(matches[0].id).to.equal('2');
+        expect(matches[0].id).to.equal(2);
     });
 });

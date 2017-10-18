@@ -34,8 +34,8 @@ describe('TreeNodes.prototype.extract', function() {
 
         expect(matches).to.have.length(1);
 
-        expect(matches[0].id).to.equal('1');
+        expect(matches[0].id).to.equal(1);
         expect(matches[0].hasChildren()).to.be.true;
-        expect(matches[0].children[0].id).to.equal('2');
+        expect(matches[0].children[0].id).to.equal(2);
     });
 });

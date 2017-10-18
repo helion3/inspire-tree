@@ -31,11 +31,11 @@ describe('TreeNode.prototype.nextVisibleChildNode', function() {
     });
 
     it('returns first node', function() {
-        expect(tree.node(1).nextVisibleChildNode().id).to.equal('2');
+        expect(tree.node(1).nextVisibleChildNode().id).to.equal(2);
     });
 
     it('returns second node when first hidden', function() {
         tree.node(2).hide();
-        expect(tree.node(1).nextVisibleChildNode().id).to.equal('3');
+        expect(tree.node(1).nextVisibleChildNode().id).to.equal(3);
     });
 });

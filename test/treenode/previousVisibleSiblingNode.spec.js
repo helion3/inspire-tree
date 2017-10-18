@@ -22,7 +22,7 @@ describe('TreeNode.prototype.previousVisibleSiblingNode', function() {
     });
 
     it('returns first node', function() {
-        expect(tree.node(2).previousVisibleSiblingNode().id).to.equal('1');
+        expect(tree.node(2).previousVisibleSiblingNode().id).to.equal(1);
     });
 
     it('returns undefined when first node hidden', function() {
