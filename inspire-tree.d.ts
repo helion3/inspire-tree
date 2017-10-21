@@ -228,6 +228,7 @@ declare module "inspire-tree" {
         getParent(): TreeNode;
         getParents(): TreeNodes;
         getTextualHierarchy(): Array<string>;
+        hasAncestor(): boolean;
         hasChildren(): boolean;
         hasOrWillHaveChildren(): boolean;
         hasParent(): boolean;

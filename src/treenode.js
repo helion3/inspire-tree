@@ -517,6 +517,20 @@ export class TreeNode {
     }
 
     /**
+     * Check if the given node is an ancestor of this node.
+     *
+     * @category TreeNode
+     * @param {TreeNode} node Node object.
+     * @return {boolean} If node is an ancestor
+     */
+    hasAncestor(node) {
+        let hasAncestor = false;
+        this.recurseUp((n) => !(hasAncestor = n.id === node.id));
+
+        return hasAncestor;
+    }
+
+    /**
      * If node has any children.
      *
      * @category TreeNode
