@@ -112,17 +112,17 @@ export class TreeNode {
      * Ensure this node allows dynamic children.
      *
      * @private
-     * @return {boolean} If tree/node allows dynamic children.
+     * @return {boolean} True if tree/node allows dynamic children.
      */
     allowDynamicLoad() {
         return this._tree.isDynamic && (_.isArrayLike(this.children) || this.children === true);
     }
 
     /**
-     * Get if node available.
+     * Check if node available.
      *
      * @category TreeNode
-     * @return {boolean} If available.
+     * @return {boolean} True if available.
      */
     available() {
         return (!this.hidden() && !this.removed());
@@ -141,7 +141,7 @@ export class TreeNode {
     };
 
     /**
-     * Marks this node as checked.
+     * Mark node as checked.
      *
      * @category TreeNode
      * @param {boolean} shallow Skip auto-checking children.
@@ -172,14 +172,14 @@ export class TreeNode {
      * Get whether this node is checked.
      *
      * @category TreeNode
-     * @return {boolean} Get if node checked.
+     * @return {boolean} True if node checked.
      */
     checked() {
         return this.state('checked');
     }
 
     /**
-     * Hides parents without any visible children.
+     * Hide parents without any visible children.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
@@ -198,7 +198,7 @@ export class TreeNode {
     }
 
     /**
-     * Clones this node.
+     * Clone this node.
      *
      * @category TreeNode
      * @param {array} excludeKeys Keys to exclude from the clone.
@@ -222,7 +222,7 @@ export class TreeNode {
      * Get whether this node is collapsed.
      *
      * @category TreeNode
-     * @return {boolean} Get if node collapsed.
+     * @return {boolean} True if node collapsed.
      */
     collapsed() {
         return this.state('collapsed');
@@ -239,7 +239,7 @@ export class TreeNode {
     }
 
     /**
-     * Copies node to a new tree instance.
+     * Copy node to another tree instance.
      *
      * @category TreeNode
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
@@ -272,7 +272,7 @@ export class TreeNode {
     }
 
     /**
-     * Copies all parents of a node.
+     * Copy all parents of a node.
      *
      * @category TreeNode
      * @param {boolean} excludeNode Exclude given node from hierarchy.
@@ -347,20 +347,20 @@ export class TreeNode {
     }
 
     /**
-     * Get if node editable. Required editing.edit to be enable via config.
+     * Get weather node editable. Required editing.edit to be enable via config.
      *
      * @category TreeNode
-     * @return {boolean} If node editable.
+     * @return {boolean} True if node editable.
      */
     editable() {
         return this._tree.config.editable && this._tree.config.editing.edit && this.state('editable');
     }
 
     /**
-     * Get if node is currently in edit mode.
+     * Get weather node is currently in edit mode.
      *
      * @category TreeNode
-     * @return {boolean} If node in edit mode.
+     * @return {boolean} True if node in edit mode.
      */
     editing() {
         return this.state('editing');
@@ -401,10 +401,10 @@ export class TreeNode {
     }
 
     /**
-     * Get if node expanded.
+     * Get weather node expanded.
      *
      * @category TreeNode
-     * @return {boolean} If expanded.
+     * @return {boolean} True if expanded.
      */
     expanded() {
         return !this.collapsed();
@@ -451,10 +451,10 @@ export class TreeNode {
     }
 
     /**
-     * Get whether this node is focused.
+     * Get weather this node is focused.
      *
      * @category TreeNode
-     * @return {boolean} Get if node focused.
+     * @return {boolean} True if node focused.
      */
     focused() {
         return this.state('focused');
@@ -482,7 +482,7 @@ export class TreeNode {
     }
 
     /**
-     * Returns parent nodes. Excludes any siblings.
+     * Get parent nodes. Excludes any siblings.
      *
      * @category TreeNode
      * @return {TreeNodes} Node objects.
@@ -517,11 +517,11 @@ export class TreeNode {
     }
 
     /**
-     * Check if the given node is an ancestor of this node.
+     * Get weather the given node is an ancestor of this node.
      *
      * @category TreeNode
      * @param {TreeNode} node Node object.
-     * @return {boolean} If node is an ancestor
+     * @return {boolean} True if node is an ancestor or the given node
      */
     hasAncestor(node) {
         let hasAncestor = false;
@@ -531,50 +531,50 @@ export class TreeNode {
     }
 
     /**
-     * If node has any children.
+     * Get weather node has any children.
      *
      * @category TreeNode
-     * @return {boolean} If children.
+     * @return {boolean} True if has loaded children.
      */
     hasChildren() {
         return (_.isArrayLike(this.children) && this.children.length > 0);
     }
 
     /**
-     * If children loading method has completed. Will always be true for non-dynamic nodes.
+     * Get weather children have been loaded. Will always be true for non-dynamic nodes.
      *
      * @category TreeNode
-     * @return {boolean} If we've attempted to load children.
+     * @return {boolean} True if we've attempted to load children.
      */
     hasLoadedChildren() {
         return _.isArrayLike(this.children);
     }
 
     /**
-     * If node has any children, or allows dynamic loading.
+     * Get weather node has any children, or allows dynamic loading.
      *
      * @category TreeNode
-     * @return {boolean} If children.
+     * @return {boolean} True if node has, or will have children.
      */
     hasOrWillHaveChildren() {
         return _.isArrayLike(this.children) ? Boolean(this.children.length) : this.allowDynamicLoad();
     }
 
     /**
-     * If node has a parent.
+     * Get weather node has a parent.
      *
      * @category TreeNode
-     * @return {boolean} If parent.
+     * @return {boolean} True if has a parent.
      */
     hasParent() {
         return Boolean(this.itree.parent);
     }
 
     /**
-     * If node has any visible children.
+     * Get weather node has any visible children.
      *
      * @category TreeNode
-     * @return {boolean} If visible children.
+     * @return {boolean} True if children are visible.
      */
     hasVisibleChildren() {
         let hasVisibleChildren = false;
@@ -604,17 +604,17 @@ export class TreeNode {
     }
 
     /**
-     * Get whether this node is hidden.
+     * Get weather this node is hidden.
      *
      * @category TreeNode
-     * @return {boolean} Get if node hidden.
+     * @return {boolean} True if node hidden.
      */
     hidden() {
         return this.state('hidden');
     }
 
     /**
-     * Returns a "path" of indices, values which map this node's location within all parent contexts.
+     * Get a "path" of indices, values which map this node's location within all parent contexts.
      *
      * @category TreeNode
      * @return {string} Index path
@@ -630,10 +630,10 @@ export class TreeNode {
     }
 
     /**
-     * Get whether this node is indeterminate.
+     * Get weather this node is indeterminate.
      *
      * @category TreeNode
-     * @return {boolean} Get if node indeterminate.
+     * @return {boolean} True if node indeterminate.
      */
     indeterminate() {
         return this.state('indeterminate');
@@ -744,17 +744,17 @@ export class TreeNode {
     }
 
     /**
-     * Get whether this node is loading child data.
+     * Get weather this node is loading child data.
      *
      * @category TreeNode
-     * @return {boolean} Get if node loading.
+     * @return {boolean} True if node's children are loading.
      */
     loading() {
         return this.state('loading');
     }
 
     /**
-     * Loads additional child nodes.
+     * Load additional children.
      *
      * @category TreeNode
      * @param {Event} event Click or scroll event if DOM interaction triggered this call.
@@ -769,8 +769,7 @@ export class TreeNode {
     }
 
     /**
-     * Mark a node as dirty, rebuilding this node in the virtual DOM
-     * and rerendering to the live DOM, next time applyChanges is called.
+     * Mark node as dirty. For some systems this assists with rendering tracking.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
@@ -791,7 +790,7 @@ export class TreeNode {
      * Get whether this node was matched during the last search.
      *
      * @category TreeNode
-     * @return {boolean} Get if node matched.
+     * @return {boolean} True if node matched.
      */
     matched() {
         return this.state('matched');
@@ -958,7 +957,7 @@ export class TreeNode {
     }
 
     /**
-     * Updates the indeterminate state of this node.
+     * Update the indeterminate state of this node by scanning states of children.
      *
      * True if some, but not all children are checked.
      * False if no children are checked.
@@ -1011,7 +1010,7 @@ export class TreeNode {
     }
 
     /**
-     * Removes all current children and re-executes a loadChildren call.
+     * Remove all current children and re-execute a loadChildren call.
      *
      * @category TreeNode
      * @return {Promise} Promise resolved on load.
@@ -1068,7 +1067,7 @@ export class TreeNode {
      * Get whether this node is soft-removed.
      *
      * @category TreeNode
-     * @return {boolean} Get if node removed.
+     * @return {boolean} True if node soft-removed.
      */
     removed() {
         return this.state('removed');
@@ -1081,7 +1080,7 @@ export class TreeNode {
      * not yet been loaded, or if a custom DOM renderer is used.
      *
      * @category TreeNode
-     * @return {boolean} Get if node rendered.
+     * @return {boolean} True if node rendered.
      */
     rendered() {
         return this.state('rendered');
@@ -1133,10 +1132,10 @@ export class TreeNode {
     }
 
     /**
-     * Get if node selectable.
+     * Get weather node selectable.
      *
      * @category TreeNode
-     * @return {boolean} If node selectable.
+     * @return {boolean} True if node selectable.
      */
     selectable() {
         let allow = this._tree.config.selection.allow(this);
@@ -1147,7 +1146,7 @@ export class TreeNode {
      * Get whether this node is selected.
      *
      * @category TreeNode
-     * @return {boolean} Get if node selected.
+     * @return {boolean} True if node selected.
      */
     selected() {
         return this.state('selected');
@@ -1210,7 +1209,7 @@ export class TreeNode {
     }
 
     /**
-     * Swaps position with the given node.
+     * Swap position with the given node.
      *
      * @category TreeNode
      * @param {TreeNode} node Node.
@@ -1235,7 +1234,7 @@ export class TreeNode {
     }
 
     /**
-     * Toggles checked state.
+     * Toggle checked state.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
@@ -1245,7 +1244,7 @@ export class TreeNode {
     }
 
     /**
-     * Toggles collapsed state.
+     * Toggle collapsed state.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
@@ -1255,7 +1254,7 @@ export class TreeNode {
     }
 
     /**
-     * Toggles editing state.
+     * Toggle editing state.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
@@ -1270,7 +1269,7 @@ export class TreeNode {
     }
 
     /**
-     * Toggles selected state.
+     * Toggle selected state.
      *
      * @category TreeNode
      * @return {TreeNode} Node object.
@@ -1322,7 +1321,7 @@ export class TreeNode {
     }
 
     /**
-     * Unchecks this node.
+     * Uncheck this node.
      *
      * @category TreeNode
      * @param {boolean} shallow Skip auto-unchecking children.
@@ -1350,7 +1349,7 @@ export class TreeNode {
     };
 
     /**
-     * Checks whether a node is visible to a user. Returns false
+     * Get whether node is visible to a user. Returns false
      * if it's hidden, or if any ancestor is hidden or collapsed.
      *
      * @category TreeNode

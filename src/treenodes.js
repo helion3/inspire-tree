@@ -120,7 +120,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Adds a new node to this collection. If a sort
+     * Adds a new node. If a sort
      * method is configured, the node will be added
      * in the appropriate order.
      *
@@ -152,7 +152,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Blur children in this collection.
+     * Blur nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -162,7 +162,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Blur all children (deeply) in this collection.
+     * Blur (deeply) all nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -183,7 +183,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Clean children in this collection.
+     * Clean nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -193,7 +193,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Clones (deep) the array of nodes.
+     * Clones (deeply) the array of nodes.
      *
      * Note: Cloning will *not* clone the context pointer.
      *
@@ -205,7 +205,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Collapse children in this collection.
+     * Collapse nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -226,7 +226,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Collapse all children (deeply) in this collection.
+     * Collapse (deeply) all children.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -236,7 +236,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Concat nodes like an Array would.
+     * Concat multiple TreeNodes arrays.
      *
      * @category TreeNodes
      * @param {TreeNodes} nodes Array of nodes.
@@ -274,7 +274,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Copies nodes to a new tree instance.
+     * Copy nodes to another tree instance.
      *
      * @category TreeNodes
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
@@ -307,7 +307,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Returns deepest nodes from this array.
+     * Return deepest nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -325,7 +325,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Deselect children in this collection.
+     * Deselect nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -335,7 +335,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Deselect all children (deeply) in this collection.
+     * Deselect (deeply) all nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -345,7 +345,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Iterate every TreeNode in this collection.
+     * Iterate each TreeNode.
      *
      * @category TreeNodes
      * @param {function} iteratee Iteratee invoke for each node.
@@ -380,7 +380,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Expand children in this collection.
+     * Expand nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -401,10 +401,10 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Recursively expands all nodes, loading all dynamic calls.
+     * Expand (deeply) all nodes.
      *
      * @category TreeNodes
-     * @return {Promise} Promise resolved only when all children have loaded and expanded.
+     * @return {Promise} Promise resolved when all children have loaded and expanded.
      */
     expandDeep() {
         return new Promise((resolve) => {
@@ -434,7 +434,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Expand parents of children in this collection.
+     * Expand parents.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -444,7 +444,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Returns a cloned hierarchy of all nodes matching a predicate.
+     * Clone a hierarchy of all nodes matching a predicate.
      *
      * Because it filters deeply, we must clone all nodes so that we
      * don't affect the actual node array.
@@ -465,18 +465,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Iterate every TreeNode in this collection.
-     *
-     * @category TreeNodes
-     * @param {function} iteratee Iteratee invoke for each node.
-     * @return {TreeNodes} Array of node objects.
-     */
-    forEach(iteratee) {
-        return this.each(iteratee);
-    }
-
-    /**
-     * Returns nodes which match a predicate.
+     * Filter all nodes matching the given predicate.
      *
      * @category TreeNodes
      * @param {string|function} predicate State flag or custom function.
@@ -496,8 +485,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Flattens a hierarchy, returning only node(s) matching the
-     * expected state or predicate function.
+     * Flatten and get only node(s) matching the expected state or predicate function.
      *
      * @category TreeNodes
      * @param {string|function} predicate State property or custom function.
@@ -528,7 +516,18 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Get a specific node in the collection, or undefined if it doesn't exist.
+     * Iterate each TreeNode.
+     *
+     * @category TreeNodes
+     * @param {function} iteratee Iteratee invoke for each node.
+     * @return {TreeNodes} Array of node objects.
+     */
+    forEach(iteratee) {
+        return this.each(iteratee);
+    }
+
+    /**
+     * Get a specific node by its index, or undefined if it doesn't exist.
      *
      * @category TreeNodes
      * @param {int} index Numeric index of requested node.
@@ -550,7 +549,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Hide children in this collection.
+     * Hide nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -560,7 +559,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Hide all children (deeply) in this collection.
+     * Hide (deeply) all nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -676,7 +675,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Query for all loading nodes.
+     * Query for all nodes currently loading children.
      *
      * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
@@ -750,7 +749,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Query for all nodes which matched the last search.
+     * Query for all nodes matched in the last search.
      *
      * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
@@ -761,7 +760,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Moves the node at a given index to a new index.
+     * Move node at a given index to a new index.
      *
      * @category TreeNodes
      * @param {int} index Current index.
@@ -843,6 +842,8 @@ export class TreeNodes extends Array {
     /**
      * Iterate down all nodes and any children.
      *
+     * Return false to stop execution.
+     *
      * @category TreeNodes
      * @param {function} iteratee Iteratee function.
      * @return {TreeNodes} Resulting nodes.
@@ -854,7 +855,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Removes a node from this list.
+     * Remove a node.
      *
      * @category TreeNodes
      * @param {TreeNode} node Node object.
@@ -882,7 +883,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Restore children in this collection.
+     * Restore nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -892,7 +893,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Restore all children (deeply) in this collection.
+     * Restore (deeply) all nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -902,7 +903,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Select children in this collection.
+     * Select nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -923,7 +924,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Select all children (deeply) in this collection.
+     * Select (deeply) all nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -944,7 +945,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Show children in this collection.
+     * Show nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -954,7 +955,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Show all children (deeply) in this collection.
+     * Show (deeply) all nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -964,7 +965,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Soft-remove children in this collection.
+     * Soft-remove nodes.
      *
      * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
@@ -999,7 +1000,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Set state values for nodes in this collection.
+     * Set nodes' state values.
      *
      * @category TreeNodes
      * @param {string} name Property name.
@@ -1011,7 +1012,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Set state values recursively.
+     * Set (deeply) nodes' state values.
      *
      * @category TreeNodes
      * @param {string} name Property name.
@@ -1066,7 +1067,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Get the tree this collection ultimately belongs to.
+     * Get the tree instance.
      *
      * @category TreeNodes
      * @return {[type]} [description]
@@ -1076,7 +1077,7 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Returns a native Array of nodes.
+     * Get a native node Array.
      *
      * @category TreeNodes
      * @return {array} Array of node objects.
