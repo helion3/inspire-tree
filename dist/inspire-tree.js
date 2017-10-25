@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 4.0.0
+ * @version 4.0.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -1547,7 +1547,7 @@ var TreeNodes = function (_extendableBuiltin2) {
     }
 
     /**
-     * Adds a new node to this collection. If a sort
+     * Adds a new node. If a sort
      * method is configured, the node will be added
      * in the appropriate order.
      *
@@ -1586,7 +1586,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Blur children in this collection.
+         * Blur nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1599,7 +1599,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Blur all children (deeply) in this collection.
+         * Blur (deeply) all nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1626,7 +1626,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Clean children in this collection.
+         * Clean nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1639,7 +1639,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Clones (deep) the array of nodes.
+         * Clones (deeply) the array of nodes.
          *
          * Note: Cloning will *not* clone the context pointer.
          *
@@ -1654,7 +1654,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Collapse children in this collection.
+         * Collapse nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1681,7 +1681,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Collapse all children (deeply) in this collection.
+         * Collapse (deeply) all children.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1694,7 +1694,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Concat nodes like an Array would.
+         * Concat multiple TreeNodes arrays.
          *
          * @category TreeNodes
          * @param {TreeNodes} nodes Array of nodes.
@@ -1738,7 +1738,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Copies nodes to a new tree instance.
+         * Copy nodes to another tree instance.
          *
          * @category TreeNodes
          * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
@@ -1776,7 +1776,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Returns deepest nodes from this array.
+         * Return deepest nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1797,7 +1797,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Deselect children in this collection.
+         * Deselect nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1810,7 +1810,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Deselect all children (deeply) in this collection.
+         * Deselect (deeply) all nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1823,7 +1823,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Iterate every TreeNode in this collection.
+         * Iterate each TreeNode.
          *
          * @category TreeNodes
          * @param {function} iteratee Iteratee invoke for each node.
@@ -1867,7 +1867,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Expand children in this collection.
+         * Expand nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1894,10 +1894,10 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Recursively expands all nodes, loading all dynamic calls.
+         * Expand (deeply) all nodes.
          *
          * @category TreeNodes
-         * @return {Promise} Promise resolved only when all children have loaded and expanded.
+         * @return {Promise} Promise resolved when all children have loaded and expanded.
          */
 
     }, {
@@ -1931,7 +1931,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Expand parents of children in this collection.
+         * Expand parents.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -1944,7 +1944,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Returns a cloned hierarchy of all nodes matching a predicate.
+         * Clone a hierarchy of all nodes matching a predicate.
          *
          * Because it filters deeply, we must clone all nodes so that we
          * don't affect the actual node array.
@@ -1968,21 +1968,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Iterate every TreeNode in this collection.
-         *
-         * @category TreeNodes
-         * @param {function} iteratee Iteratee invoke for each node.
-         * @return {TreeNodes} Array of node objects.
-         */
-
-    }, {
-        key: 'forEach',
-        value: function forEach(iteratee) {
-            return this.each(iteratee);
-        }
-
-        /**
-         * Returns nodes which match a predicate.
+         * Filter all nodes matching the given predicate.
          *
          * @category TreeNodes
          * @param {string|function} predicate State flag or custom function.
@@ -2005,8 +1991,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Flattens a hierarchy, returning only node(s) matching the
-         * expected state or predicate function.
+         * Flatten and get only node(s) matching the expected state or predicate function.
          *
          * @category TreeNodes
          * @param {string|function} predicate State property or custom function.
@@ -2043,7 +2028,21 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Get a specific node in the collection, or undefined if it doesn't exist.
+         * Iterate each TreeNode.
+         *
+         * @category TreeNodes
+         * @param {function} iteratee Iteratee invoke for each node.
+         * @return {TreeNodes} Array of node objects.
+         */
+
+    }, {
+        key: 'forEach',
+        value: function forEach(iteratee) {
+            return this.each(iteratee);
+        }
+
+        /**
+         * Get a specific node by its index, or undefined if it doesn't exist.
          *
          * @category TreeNodes
          * @param {int} index Numeric index of requested node.
@@ -2071,7 +2070,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Hide children in this collection.
+         * Hide nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2084,7 +2083,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Hide all children (deeply) in this collection.
+         * Hide (deeply) all nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2215,7 +2214,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Query for all loading nodes.
+         * Query for all nodes currently loading children.
          *
          * @category TreeNodes
          * @param {boolean} full Retain full hiearchy.
@@ -2295,7 +2294,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Query for all nodes which matched the last search.
+         * Query for all nodes matched in the last search.
          *
          * @category TreeNodes
          * @param {boolean} full Retain full hiearchy.
@@ -2309,7 +2308,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Moves the node at a given index to a new index.
+         * Move node at a given index to a new index.
          *
          * @category TreeNodes
          * @param {int} index Current index.
@@ -2405,6 +2404,8 @@ var TreeNodes = function (_extendableBuiltin2) {
         /**
          * Iterate down all nodes and any children.
          *
+         * Return false to stop execution.
+         *
          * @category TreeNodes
          * @param {function} iteratee Iteratee function.
          * @return {TreeNodes} Resulting nodes.
@@ -2419,7 +2420,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Removes a node from this list.
+         * Remove a node.
          *
          * @category TreeNodes
          * @param {TreeNode} node Node object.
@@ -2453,7 +2454,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Restore children in this collection.
+         * Restore nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2466,7 +2467,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Restore all children (deeply) in this collection.
+         * Restore (deeply) all nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2479,7 +2480,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Select children in this collection.
+         * Select nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2506,7 +2507,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Select all children (deeply) in this collection.
+         * Select (deeply) all nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2533,7 +2534,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Show children in this collection.
+         * Show nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2546,7 +2547,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Show all children (deeply) in this collection.
+         * Show (deeply) all nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2559,7 +2560,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Soft-remove children in this collection.
+         * Soft-remove nodes.
          *
          * @category TreeNodes
          * @return {TreeNodes} Array of node objects.
@@ -2602,7 +2603,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Set state values for nodes in this collection.
+         * Set nodes' state values.
          *
          * @category TreeNodes
          * @param {string} name Property name.
@@ -2617,7 +2618,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Set state values recursively.
+         * Set (deeply) nodes' state values.
          *
          * @category TreeNodes
          * @param {string} name Property name.
@@ -2677,7 +2678,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Get the tree this collection ultimately belongs to.
+         * Get the tree instance.
          *
          * @category TreeNodes
          * @return {[type]} [description]
@@ -2690,7 +2691,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
-         * Returns a native Array of nodes.
+         * Get a native node Array.
          *
          * @category TreeNodes
          * @return {array} Array of node objects.
@@ -2896,7 +2897,7 @@ var TreeNode = function () {
          * Ensure this node allows dynamic children.
          *
          * @private
-         * @return {boolean} If tree/node allows dynamic children.
+         * @return {boolean} True if tree/node allows dynamic children.
          */
 
     }, {
@@ -2906,10 +2907,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get if node available.
+         * Check if node available.
          *
          * @category TreeNode
-         * @return {boolean} If available.
+         * @return {boolean} True if available.
          */
 
     }, {
@@ -2937,7 +2938,7 @@ var TreeNode = function () {
 
 
         /**
-         * Marks this node as checked.
+         * Mark node as checked.
          *
          * @category TreeNode
          * @param {boolean} shallow Skip auto-checking children.
@@ -2971,14 +2972,14 @@ var TreeNode = function () {
          * Get whether this node is checked.
          *
          * @category TreeNode
-         * @return {boolean} Get if node checked.
+         * @return {boolean} True if node checked.
          */
         value: function checked() {
             return this.state('checked');
         }
 
         /**
-         * Hides parents without any visible children.
+         * Hide parents without any visible children.
          *
          * @category TreeNode
          * @return {TreeNode} Node object.
@@ -3000,7 +3001,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Clones this node.
+         * Clone this node.
          *
          * @category TreeNode
          * @param {array} excludeKeys Keys to exclude from the clone.
@@ -3030,7 +3031,7 @@ var TreeNode = function () {
          * Get whether this node is collapsed.
          *
          * @category TreeNode
-         * @return {boolean} Get if node collapsed.
+         * @return {boolean} True if node collapsed.
          */
 
     }, {
@@ -3053,7 +3054,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Copies node to a new tree instance.
+         * Copy node to another tree instance.
          *
          * @category TreeNode
          * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
@@ -3089,7 +3090,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Copies all parents of a node.
+         * Copy all parents of a node.
          *
          * @category TreeNode
          * @param {boolean} excludeNode Exclude given node from hierarchy.
@@ -3170,10 +3171,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get if node editable. Required editing.edit to be enable via config.
+         * Get weather node editable. Required editing.edit to be enable via config.
          *
          * @category TreeNode
-         * @return {boolean} If node editable.
+         * @return {boolean} True if node editable.
          */
 
     }, {
@@ -3183,10 +3184,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get if node is currently in edit mode.
+         * Get weather node is currently in edit mode.
          *
          * @category TreeNode
-         * @return {boolean} If node in edit mode.
+         * @return {boolean} True if node in edit mode.
          */
 
     }, {
@@ -3231,10 +3232,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get if node expanded.
+         * Get weather node expanded.
          *
          * @category TreeNode
-         * @return {boolean} If expanded.
+         * @return {boolean} True if expanded.
          */
 
     }, {
@@ -3290,10 +3291,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get whether this node is focused.
+         * Get weather this node is focused.
          *
          * @category TreeNode
-         * @return {boolean} Get if node focused.
+         * @return {boolean} True if node focused.
          */
 
     }, {
@@ -3330,7 +3331,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Returns parent nodes. Excludes any siblings.
+         * Get parent nodes. Excludes any siblings.
          *
          * @category TreeNode
          * @return {TreeNodes} Node objects.
@@ -3371,10 +3372,29 @@ var TreeNode = function () {
         }
 
         /**
-         * If node has any children.
+         * Get weather the given node is an ancestor of this node.
          *
          * @category TreeNode
-         * @return {boolean} If children.
+         * @param {TreeNode} node Node object.
+         * @return {boolean} True if node is an ancestor or the given node
+         */
+
+    }, {
+        key: 'hasAncestor',
+        value: function hasAncestor(node) {
+            var hasAncestor = false;
+            this.recurseUp(function (n) {
+                return !(hasAncestor = n.id === node.id);
+            });
+
+            return hasAncestor;
+        }
+
+        /**
+         * Get weather node has any children.
+         *
+         * @category TreeNode
+         * @return {boolean} True if has loaded children.
          */
 
     }, {
@@ -3384,10 +3404,10 @@ var TreeNode = function () {
         }
 
         /**
-         * If children loading method has completed. Will always be true for non-dynamic nodes.
+         * Get weather children have been loaded. Will always be true for non-dynamic nodes.
          *
          * @category TreeNode
-         * @return {boolean} If we've attempted to load children.
+         * @return {boolean} True if we've attempted to load children.
          */
 
     }, {
@@ -3397,10 +3417,10 @@ var TreeNode = function () {
         }
 
         /**
-         * If node has any children, or allows dynamic loading.
+         * Get weather node has any children, or allows dynamic loading.
          *
          * @category TreeNode
-         * @return {boolean} If children.
+         * @return {boolean} True if node has, or will have children.
          */
 
     }, {
@@ -3410,10 +3430,10 @@ var TreeNode = function () {
         }
 
         /**
-         * If node has a parent.
+         * Get weather node has a parent.
          *
          * @category TreeNode
-         * @return {boolean} If parent.
+         * @return {boolean} True if has a parent.
          */
 
     }, {
@@ -3423,10 +3443,10 @@ var TreeNode = function () {
         }
 
         /**
-         * If node has any visible children.
+         * Get weather node has any visible children.
          *
          * @category TreeNode
-         * @return {boolean} If visible children.
+         * @return {boolean} True if children are visible.
          */
 
     }, {
@@ -3462,10 +3482,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get whether this node is hidden.
+         * Get weather this node is hidden.
          *
          * @category TreeNode
-         * @return {boolean} Get if node hidden.
+         * @return {boolean} True if node hidden.
          */
 
     }, {
@@ -3475,7 +3495,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Returns a "path" of indices, values which map this node's location within all parent contexts.
+         * Get a "path" of indices, values which map this node's location within all parent contexts.
          *
          * @category TreeNode
          * @return {string} Index path
@@ -3494,10 +3514,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get whether this node is indeterminate.
+         * Get weather this node is indeterminate.
          *
          * @category TreeNode
-         * @return {boolean} Get if node indeterminate.
+         * @return {boolean} True if node indeterminate.
          */
 
     }, {
@@ -3618,10 +3638,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get whether this node is loading child data.
+         * Get weather this node is loading child data.
          *
          * @category TreeNode
-         * @return {boolean} Get if node loading.
+         * @return {boolean} True if node's children are loading.
          */
 
     }, {
@@ -3631,7 +3651,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Loads additional child nodes.
+         * Load additional children.
          *
          * @category TreeNode
          * @param {Event} event Click or scroll event if DOM interaction triggered this call.
@@ -3649,8 +3669,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Mark a node as dirty, rebuilding this node in the virtual DOM
-         * and rerendering to the live DOM, next time applyChanges is called.
+         * Mark node as dirty. For some systems this assists with rendering tracking.
          *
          * @category TreeNode
          * @return {TreeNode} Node object.
@@ -3674,7 +3693,7 @@ var TreeNode = function () {
          * Get whether this node was matched during the last search.
          *
          * @category TreeNode
-         * @return {boolean} Get if node matched.
+         * @return {boolean} True if node matched.
          */
 
     }, {
@@ -3871,7 +3890,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Updates the indeterminate state of this node.
+         * Update the indeterminate state of this node by scanning states of children.
          *
          * True if some, but not all children are checked.
          * False if no children are checked.
@@ -3926,7 +3945,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Removes all current children and re-executes a loadChildren call.
+         * Remove all current children and re-execute a loadChildren call.
          *
          * @category TreeNode
          * @return {Promise} Promise resolved on load.
@@ -3991,7 +4010,7 @@ var TreeNode = function () {
          * Get whether this node is soft-removed.
          *
          * @category TreeNode
-         * @return {boolean} Get if node removed.
+         * @return {boolean} True if node soft-removed.
          */
 
     }, {
@@ -4007,7 +4026,7 @@ var TreeNode = function () {
          * not yet been loaded, or if a custom DOM renderer is used.
          *
          * @category TreeNode
-         * @return {boolean} Get if node rendered.
+         * @return {boolean} True if node rendered.
          */
 
     }, {
@@ -4068,10 +4087,10 @@ var TreeNode = function () {
         }
 
         /**
-         * Get if node selectable.
+         * Get weather node selectable.
          *
          * @category TreeNode
-         * @return {boolean} If node selectable.
+         * @return {boolean} True if node selectable.
          */
 
     }, {
@@ -4085,7 +4104,7 @@ var TreeNode = function () {
          * Get whether this node is selected.
          *
          * @category TreeNode
-         * @return {boolean} Get if node selected.
+         * @return {boolean} True if node selected.
          */
 
     }, {
@@ -4160,7 +4179,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Swaps position with the given node.
+         * Swap position with the given node.
          *
          * @category TreeNode
          * @param {TreeNode} node Node.
@@ -4191,7 +4210,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Toggles checked state.
+         * Toggle checked state.
          *
          * @category TreeNode
          * @return {TreeNode} Node object.
@@ -4204,7 +4223,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Toggles collapsed state.
+         * Toggle collapsed state.
          *
          * @category TreeNode
          * @return {TreeNode} Node object.
@@ -4217,7 +4236,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Toggles editing state.
+         * Toggle editing state.
          *
          * @category TreeNode
          * @return {TreeNode} Node object.
@@ -4235,7 +4254,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Toggles selected state.
+         * Toggle selected state.
          *
          * @category TreeNode
          * @return {TreeNode} Node object.
@@ -4299,7 +4318,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Unchecks this node.
+         * Uncheck this node.
          *
          * @category TreeNode
          * @param {boolean} shallow Skip auto-unchecking children.
@@ -4333,7 +4352,7 @@ var TreeNode = function () {
 
 
         /**
-         * Checks whether a node is visible to a user. Returns false
+         * Get whether node is visible to a user. Returns false
          * if it's hidden, or if any ancestor is hidden or collapsed.
          *
          * @category TreeNode
@@ -5419,7 +5438,7 @@ var InspireTree = function (_EventEmitter) {
     }
 
     /**
-     * Adds a new node to this collection. If a sort
+     * Adds a new node. If a sort
      * method is configured, the node will be added
      * in the appropriate order.
      *
@@ -5461,7 +5480,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Release any pending data changes to any listeners.
+         * Release pending data changes to any listeners.
          *
          * Will skip rendering as long as any calls
          * to `batch` have yet to be resolved,
@@ -5497,7 +5516,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Batch multiple changes for any listeners (i.e. DOM)
+         * Batch multiple changes for listeners (i.e. DOM)
          *
          * @category Tree
          * @private
@@ -5528,7 +5547,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Blur all children (deeply) in this collection.
+         * Blur (deeply) all nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5564,7 +5583,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Get if the tree will auto-deselect currently selected nodes
+         * Check if the tree will auto-deselect currently selected nodes
          * when a new selection is made.
          *
          * @category Tree
@@ -5592,7 +5611,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Clean children in this collection.
+         * Clean nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5605,7 +5624,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Clears matched nodes, shows all nodes and collapses parents.
+         * Clear nodes matched by previous search, restore all nodes and collapse parents.
          *
          * @category Tree
          * @return {Tree} Tree instance.
@@ -5619,7 +5638,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Clones (deep) the array of nodes.
+         * Clones (deeply) the array of nodes.
          *
          * Note: Cloning will *not* clone the context pointer.
          *
@@ -5634,7 +5653,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Collapse children in this collection.
+         * Collapse nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5661,7 +5680,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Collapse all children (deeply) in this collection.
+         * Collapse (deeply) all children.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5674,7 +5693,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Concat nodes like an Array would.
+         * Concat multiple TreeNodes arrays.
          *
          * @category Tree
          * @param {TreeNodes} nodes Array of nodes.
@@ -5688,7 +5707,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Copies nodes to a new tree instance.
+         * Copy nodes to another tree instance.
          *
          * @category Tree
          * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
@@ -5716,7 +5735,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns deepest nodes from this array.
+         * Return deepest nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5729,7 +5748,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Deselect children in this collection.
+         * Deselect nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5742,7 +5761,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Deselect all children (deeply) in this collection.
+         * Deselect (deeply) all nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5772,7 +5791,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Iterate every TreeNode in this collection.
+         * Iterate each TreeNode.
          *
          * @category Tree
          * @param {function} iteratee Iteratee invoke for each node.
@@ -5786,7 +5805,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns whether every root node passes the given test.
+         * Check if every node passes the given test.
          *
          * @category Tree
          * @param {function} tester Test each node in this collection,
@@ -5861,7 +5880,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Expand children in this collection.
+         * Expand children.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -5874,11 +5893,10 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Recursively expands all nodes, loading all dynamic calls.
+         * Expand (deeply) all nodes.
          *
          * @category Tree
-         * @param {boolean} full Retain full hiearchy.
-         * @return {TreeNodes} Array of node objects.
+         * @return {Promise} Promise resolved when all children have loaded and expanded.
          */
 
     }, {
@@ -5891,7 +5909,7 @@ var InspireTree = function (_EventEmitter) {
          * Query for all expanded nodes.
          *
          * @category Tree
-         * @return {Promise} Promise resolved only when all children have loaded and expanded.
+         * @return {TreeNodes} Array of node objects.
          */
 
     }, {
@@ -5901,7 +5919,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns a cloned hierarchy of all nodes matching a predicate.
+         * Clone a hierarchy of all nodes matching a predicate.
          *
          * Because it filters deeply, we must clone all nodes so that we
          * don't affect the actual node array.
@@ -5918,7 +5936,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns nodes which match a predicate.
+         * Filter all nodes matching the given predicate.
          *
          * @category Tree
          * @param {function} predicate Test function.
@@ -5932,7 +5950,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns nodes which match a predicate.
+         * Filter all nodes matching the given predicate.
          *
          * @category Tree
          * @param {string|function} predicate State flag or custom function.
@@ -5946,8 +5964,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Flattens a hierarchy, returning only node(s) matching the
-         * expected state or predicate function.
+         * Flatten and get only node(s) matching the expected state or predicate function.
          *
          * @category Tree
          * @param {string|function} predicate State property or custom function.
@@ -5975,7 +5992,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Iterate every TreeNode in this collection.
+         * Iterate each TreeNode.
          *
          * @category Tree
          * @param {function} iteratee Iteratee invoke for each node.
@@ -5989,7 +6006,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Get a specific node in the collection, or undefined if it doesn't exist.
+         * Get a specific node by its index, or undefined if it doesn't exist.
          *
          * @category Tree
          * @param {int} index Numeric index of requested node.
@@ -6017,7 +6034,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Hide children in this collection.
+         * Hide nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6030,7 +6047,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Hide all children (deeply) in this collection.
+         * Hide (deeply) all nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6057,7 +6074,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Get the array index of the given root node.
+         * Get the index of the given node.
          *
          * @category Tree
          * @param {TreeNode} node Root tree node.
@@ -6071,7 +6088,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Insert a new node at a given position.
+         * Insert a new node at the given position.
          *
          * @category Tree
          * @param {integer} index Index at which to insert the node.
@@ -6158,7 +6175,7 @@ var InspireTree = function (_EventEmitter) {
 
 
         /**
-         * Returns a string from root node objects.
+         * Join nodes into a resulting string.
          *
          * @category Tree
          * @param {string} separator Separator, defaults to a comma
@@ -6182,10 +6199,10 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Loads tree. Accepts an array or a promise.
+         * Load data. Accepts an array, function, or promise.
          *
          * @category Tree
-         * @param {array|function} loader Array of nodes, or promise resolving an array of nodes.
+         * @param {array|function|Promise} loader Array of nodes, function, or promise resolving an array of nodes.
          * @return {Promise} Promise resolved upon successful load, rejected on error.
          * @example
          *
@@ -6287,7 +6304,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Query for all loading nodes.
+         * Query for all nodes currently loading children.
          *
          * @category Tree
          * @param {boolean} full Retain full hiearchy.
@@ -6301,7 +6318,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Loads additional nodes for the root context.
+         * Load additional nodes for the root context.
          *
          * @category Tree
          * @param {Event} event Click or scroll event if DOM interaction triggered this call.
@@ -6315,7 +6332,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Creates a new collection after passing every node through iteratee.
+         * Create a new collection after passing every node through iteratee.
          *
          * @category Tree
          * @param {function} iteratee Node iteratee.
@@ -6343,7 +6360,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Moves the node at a given index to a new index.
+         * Move node at a given index to a new index.
          *
          * @category Tree
          * @param {int} index Current index.
@@ -6437,7 +6454,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Pops the last node off the root collection.
+         * Pop node in the final index position.
          *
          * @category Tree
          * @return {TreeNode} Node object.
@@ -6450,7 +6467,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Adds a TreeNode to the end of the root collection.
+         * Add a TreeNode to the end of the root collection.
          *
          * @category Tree
          * @param {TreeNode} node Node object.
@@ -6464,9 +6481,9 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Base recursion function for a collection or node.
+         * Iterate down all nodes and any children.
          *
-         * Returns false if execution should cease.
+         * Return false to stop execution.
          *
          * @private
          * @param {function} iteratee Iteratee function
@@ -6480,7 +6497,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Reduces root nodes.
+         * Reduce nodes.
          *
          * @category Tree
          * @param {function} iteratee Iteratee function
@@ -6494,7 +6511,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Right-reduces root nodes.
+         * Right-reduce root nodes.
          *
          * @category Tree
          * @param {function} iteratee Iteratee function
@@ -6508,7 +6525,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Reloads/re-executes the original data loader.
+         * Reload/re-execute the original data loader.
          *
          * @category Tree
          * @return {Promise} Load method promise.
@@ -6523,7 +6540,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Removes a direct descendant node.
+         * Remove a node.
          *
          * @category Tree
          * @param {TreeNode} node Node object.
@@ -6537,7 +6554,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Removes all nodes.
+         * Remove all nodes.
          *
          * @category Tree
          * @return {Tree} Tree instance.
@@ -6567,7 +6584,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Restore children in this collection.
+         * Restore nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6580,7 +6597,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Restore all children (deeply) in this collection.
+         * Restore (deeply) all nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6593,7 +6610,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Reduces root nodes.
+         * Reverse node order.
          *
          * @category Tree
          * @return {TreeNodes} Reversed array of node objects.
@@ -6703,7 +6720,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Select children in this collection.
+         * Select nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6760,7 +6777,7 @@ var InspireTree = function (_EventEmitter) {
 
 
         /**
-         * Select all children (deeply) in this collection.
+         * Select (deeply) all nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6784,7 +6801,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Select the first available node at the root level.
+         * Select the first available node.
          *
          * @category Tree
          * @return {TreeNode} Selected node object.
@@ -6805,7 +6822,7 @@ var InspireTree = function (_EventEmitter) {
 
 
         /**
-         * Shifts the first node off the root collection.
+         * Shift node in the first index position.
          *
          * @category Tree
          * @return {TreeNode} Node object.
@@ -6815,7 +6832,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Show children in this collection.
+         * Show nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6828,7 +6845,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Show all children (deeply) in this collection.
+         * Show (deeply) all nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6841,8 +6858,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns a shallow copy of a portion of root nodes into a new array
-         * object selected from begin to end (end not included)
+         * Get a shallow copy of a portion of nodes.
          *
          * @category Tree
          * @param {int} begin Starting index.
@@ -6857,7 +6873,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Soft-remove children in this collection.
+         * Soft-remove nodes.
          *
          * @category Tree
          * @return {TreeNodes} Array of node objects.
@@ -6870,7 +6886,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns whether at least one root node passes the given test.
+         * Check if at least one node passes the given test.
          *
          * @category Tree
          * @param {function} tester Test each node in this collection,
@@ -6884,7 +6900,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Sorts root nodes in-place.
+         * Sort nodes using a function.
          *
          * @category Tree
          * @param {function} compareFn Comparison function.
@@ -6898,7 +6914,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Sorts all TreeNode objects in this collection.
+         * Sort nodes using a function or key name.
          *
          * If no custom sorter given, the configured "sort" value will be used.
          *
@@ -6914,7 +6930,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Removes and adds new TreeNodes into the root collection.
+         * Remove and/or add new TreeNodes into the root collection.
          *
          * @category Tree
          * @param {int} start Starting index.
@@ -6930,7 +6946,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Set state values for nodes in this collection.
+         * Set nodes' state values.
          *
          * @category Tree
          * @param {string} name Property name.
@@ -6945,7 +6961,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Set state values for nodes in this collection.
+         * Set (deeply) nodes' state values.
          *
          * @category Tree
          * @param {string} name Property name.
@@ -6960,7 +6976,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Swaps two node positions.
+         * Swap two node positions.
          *
          * @category Tree
          * @param {TreeNode} node1 Node 1.
@@ -6975,7 +6991,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns a native Array of nodes.
+         * Get a native node Array.
          *
          * @category Tree
          * @return {array} Array of node objects.
@@ -6988,7 +7004,7 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Returns a string from root node objects.
+         * Get a string representation of node objects.
          *
          * @category Tree
          * @return {string} Strings from root node objects.
@@ -7028,7 +7044,7 @@ var InspireTree = function (_EventEmitter) {
 
 
         /**
-         * Adds a TreeNode to the start of the root collection.
+         * Add a TreeNode in the first index position.
          *
          * @category Tree
          * @return {number} The new length

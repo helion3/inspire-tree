@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 4.0.1
+
+- Added `TreeNode@hasAncestor`.
+
 # 4.0.0
 
 **Breaking Changes**
