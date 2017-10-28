@@ -1283,22 +1283,36 @@ export class TreeNode {
      *
      * @category TreeNode
      * @param {boolean} excludeChildren Exclude children.
+     * @param {boolean} includeState Include itree.state object.
      * @return {object} Node object.
      */
-    toObject(excludeChildren) {
-        let object = {};
+    toObject(excludeChildren = false, includeState = false) {
+        let exported = {};
 
-        _.each(this, (v, k) => {
-            if (k !== '_tree' && k !== 'children' && k !== 'itree') {
-                object[k] = v;
-            }
+        var keys = _.pull(Object.keys(this), '_tree', 'children', 'itree');
+
+        // Map keys
+        _.each(keys, (keyName) => {
+            exported[keyName] = this[keyName];
         });
 
-        if (!excludeChildren && this.hasChildren() && _.isFunction(this.children.toArray)) {
-            object.children = this.children.toArray();
+        // Copy over whitelisted itree data
+        // Excludes internal-use junk like parent, dirty, ref
+        var itree = exported.itree = {};
+        itree.a = this.itree.a;
+        itree.icon = this.itree.icon;
+        itree.li = this.itree.li;
+
+        if (includeState) {
+            itree.state = this.itree.state;
         }
 
-        return object;
+        // If including children, export them
+        if (!excludeChildren && this.hasChildren() && _.isFunction(this.children.toArray)) {
+            exported.children = this.children.toArray();
+        }
+
+        return exported;
     }
 
     /**

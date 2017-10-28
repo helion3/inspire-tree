@@ -269,7 +269,7 @@ declare module "inspire-tree" {
         toggleEditing(): TreeNode;
         toggleSelect(): TreeNode;
         toString(): string;
-        toObject(excludeChildren?: boolean): any;
+        toObject(excludeChildren?: boolean, includeState?: boolean): any;
         tree(): InspireTree;
         uncheck(shallow?: boolean): TreeNode;
         visible(): boolean;

@@ -12,7 +12,10 @@ describe('TreeNode.prototype.toObject', function() {
                 id: 1,
                 children: [{
                     text: 'B'
-                }]
+                }],
+                itree: {
+                    icon: 'icon-test'
+                }
             }]
         });
     });
@@ -23,6 +26,25 @@ describe('TreeNode.prototype.toObject', function() {
 
     it('returns a native object', function() {
         expect(tree.node(1).toObject().constructor.name).to.equal('Object');
+    });
+
+    it('retains user-provided (one-way, non-state) itree data', function() {
+        var exported = tree.node(1).toObject();
+
+        expect(exported.itree).to.be.an('object');
+        expect(exported.itree.icon).to.equal('icon-test');
+        expect(exported.itree.state).to.be.undefined;
+    });
+
+    it('retains state data', function() {
+        var node = tree.node(1);
+        node.select();
+
+        var exported = node.toObject(false, true);
+
+        expect(exported.itree).to.be.an('object');
+        expect(exported.itree.state).to.be.an('object');
+        expect(exported.itree.state.selected).to.be.true;
     });
 
     it('returns children as a native array', function() {

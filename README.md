@@ -124,10 +124,10 @@ Any calls to `load`-related methods can use the returned promise normally.
 - **text** - Text used in display.
 - **id** - Unique ID. If missing, one will be generated.
 - **children** - An array of child nodes.
-- **a.attributes** - Custom attributes for this node's `a`.
-- **li.attributes** - Custom attributes for this node's root `li`.
 - **itree** - An object used to describe initial tree values:
+    + **a.attributes** - Custom attributes for this node's `a`.
 	+ **icon** - Custom icon for the anchor.
+    + **li.attributes** - Custom attributes for this node's root `li`.
 	+ **state.collapsed** - Set initial collapsed state.
     + **state.focused** - Node has UI focus.
 	+ **state.hidden** - Set initial visibility.
