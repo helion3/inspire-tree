@@ -262,7 +262,8 @@ declare module "inspire-tree" {
         selected(): boolean;
         set(key: number|string, val: any): TreeNode;
         show(): TreeNode;
-        state(key: string, val: boolean): TreeNodes;
+        state(key: string, val: boolean): boolean;
+        states(keys: Array<string>, val: boolean): boolean;
         softRemove(): TreeNode;
         toggleCheck(): TreeNode;
         toggleCollapse(): TreeNode;

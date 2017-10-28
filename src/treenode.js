@@ -1209,6 +1209,26 @@ export class TreeNode {
     }
 
     /**
+     * Get or set multiple state values to a single value.
+     *
+     * @param {Array} names Property names.
+     * @param {boolean} newVal New value, if setting.
+     * @return {Array} Array of state booleans
+     */
+    states(names, newVal) {
+        this._tree.batch();
+        let results = [];
+
+        _.each(names, (name) => {
+            results.push(this.state(name, newVal));
+        });
+
+        this._tree.batch();
+
+        return results;
+    }
+
+    /**
      * Swap position with the given node.
      *
      * @category TreeNode
