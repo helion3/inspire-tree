@@ -1216,8 +1216,9 @@ export class TreeNode {
      * @return {Array} Array of state booleans
      */
     states(names, newVal) {
-        this._tree.batch();
         let results = [];
+
+        this._tree.batch();
 
         _.each(names, (name) => {
             results.push(this.state(name, newVal));
