@@ -848,6 +848,15 @@ export default class InspireTree extends EventEmitter2 {
                     this.model._pagination.total = _.parseInt(totalNodes);
                 }
 
+                // Set pagination totals if children already present in array
+                if (_.isArrayLike(loader)) {
+                    this.model.recurseDown((node) => {
+                        if (node.hasChildren()) {
+                            node.children._pagination.total = node.children.length;
+                        }
+                    });
+                }
+
                 if (this.config.selection.require && !this.selected().length) {
                     this.selectFirstAvailableNode();
                 }
