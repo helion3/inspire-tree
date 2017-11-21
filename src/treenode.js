@@ -1036,9 +1036,10 @@ export class TreeNode {
      * Remove a node from the tree.
      *
      * @category TreeNode
+     * @param {boolean} includeState Include itree.state object.
      * @return {object} Removed tree node object.
      */
-    remove() {
+    remove(includeState = false) {
         // Cache parent before we remove the node
         let parent = this.getParent();
 
@@ -1055,7 +1056,7 @@ export class TreeNode {
         pagination.total--;
 
         // Export/event
-        let exported = this.toObject();
+        let exported = this.toObject(false, includeState);
         this._tree.emit('node.removed', exported, parent);
 
         this._tree.applyChanges();

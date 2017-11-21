@@ -253,7 +253,7 @@ declare module "inspire-tree" {
         recurseUp(iteratee: NodeIteratee): TreeNode;
         refreshIndeterminateState(): TreeNode;
         reload(): Promise<TreeNodes>;
-        remove(): any;
+        remove(includeState?: boolean): any;
         removed(): boolean;
         rendered(): boolean;
         restore(): TreeNode;

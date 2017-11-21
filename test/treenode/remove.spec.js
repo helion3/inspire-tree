@@ -4,7 +4,7 @@ var InspireTree = require('../../build/inspire-tree');
 describe('TreeNode.prototype.remove', function() {
     var tree;
 
-    before(function() {
+    beforeEach(function() {
         // Create tree
         tree = new InspireTree({
             data: [{
@@ -22,5 +22,18 @@ describe('TreeNode.prototype.remove', function() {
         tree.node(1).remove();
 
         expect(tree.nodes()).to.have.length(0);
+    });
+
+    it('removes a node while retaining state', function() {
+        var node = tree.node(1);
+        node.select();
+
+        expect(node.selected()).to.be.true;
+
+        var exported = node.remove(true);
+
+        expect(exported.itree).to.be.an('object');
+        expect(exported.itree.state).to.be.an('object');
+        expect(exported.itree.state.selected).to.be.true;
     });
 });
