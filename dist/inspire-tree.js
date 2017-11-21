@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 4.0.1
+ * @version 4.1.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -4179,6 +4179,32 @@ var TreeNode = function () {
         }
 
         /**
+         * Get or set multiple state values to a single value.
+         *
+         * @param {Array} names Property names.
+         * @param {boolean} newVal New value, if setting.
+         * @return {Array} Array of state booleans
+         */
+
+    }, {
+        key: 'states',
+        value: function states(names, newVal) {
+            var _this5 = this;
+
+            var results = [];
+
+            this._tree.batch();
+
+            _.each(names, function (name) {
+                results.push(_this5.state(name, newVal));
+            });
+
+            this._tree.batch();
+
+            return results;
+        }
+
+        /**
          * Swap position with the given node.
          *
          * @category TreeNode
@@ -4271,25 +4297,44 @@ var TreeNode = function () {
          *
          * @category TreeNode
          * @param {boolean} excludeChildren Exclude children.
+         * @param {boolean} includeState Include itree.state object.
          * @return {object} Node object.
          */
 
     }, {
         key: 'toObject',
-        value: function toObject(excludeChildren) {
-            var object = {};
+        value: function toObject() {
+            var _this6 = this;
 
-            _.each(this, function (v, k) {
-                if (k !== '_tree' && k !== 'children' && k !== 'itree') {
-                    object[k] = v;
-                }
+            var excludeChildren = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+            var includeState = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+            var exported = {};
+
+            var keys = _.pull(Object.keys(this), '_tree', 'children', 'itree');
+
+            // Map keys
+            _.each(keys, function (keyName) {
+                exported[keyName] = _this6[keyName];
             });
 
-            if (!excludeChildren && this.hasChildren() && _.isFunction(this.children.toArray)) {
-                object.children = this.children.toArray();
+            // Copy over whitelisted itree data
+            // Excludes internal-use junk like parent, dirty, ref
+            var itree = exported.itree = {};
+            itree.a = this.itree.a;
+            itree.icon = this.itree.icon;
+            itree.li = this.itree.li;
+
+            if (includeState) {
+                itree.state = this.itree.state;
             }
 
-            return object;
+            // If including children, export them
+            if (!excludeChildren && this.hasChildren() && _.isFunction(this.children.toArray)) {
+                exported.children = this.children.toArray();
+            }
+
+            return exported;
         }
 
         /**
@@ -4407,10 +4452,6 @@ function objectToNode(tree, object, parent) {
 
     var a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
-
-    var pagination = itree.pagination = {};
-    pagination.limit = tree.config.pagination.limit;
-    pagination.total = _.isArray(object.children) ? object.children.length : 0;
 
     var state = itree.state = itree.state || {};
 
@@ -6245,6 +6286,15 @@ var InspireTree = function (_EventEmitter) {
                     _this3.model._pagination.total = nodes.length;
                     if (_.parseInt(totalNodes) > nodes.length) {
                         _this3.model._pagination.total = _.parseInt(totalNodes);
+                    }
+
+                    // Set pagination totals if children already present in array
+                    if (_.isArrayLike(loader)) {
+                        _this3.model.recurseDown(function (node) {
+                            if (node.hasChildren()) {
+                                node.children._pagination.total = node.children.length;
+                            }
+                        });
                     }
 
                     if (_this3.config.selection.require && !_this3.selected().length) {

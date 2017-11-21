@@ -1,5 +1,11 @@
 # Changes to Inspire Tree
 
+# 4.1.0
+
+- Added `TreeNode.states` which sets multiple states to a single value.
+- `toObject` now supports optionally exporting node state.
+- Fixed pagination totals for nested data loaded via array.
+
 # 4.0.1
 
 - Added `TreeNode@hasAncestor`.
