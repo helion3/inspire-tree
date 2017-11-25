@@ -1225,7 +1225,7 @@ export class TreeNode {
             results.push(this.state(name, newVal));
         });
 
-        this._tree.batch();
+        this._tree.end();
 
         return results;
     }
