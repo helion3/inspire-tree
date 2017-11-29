@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 4.1.0
+ * @version 4.2.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -3976,12 +3976,15 @@ var TreeNode = function () {
          * Remove a node from the tree.
          *
          * @category TreeNode
+         * @param {boolean} includeState Include itree.state object.
          * @return {object} Removed tree node object.
          */
 
     }, {
         key: 'remove',
         value: function remove$$1() {
+            var includeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
             // Cache parent before we remove the node
             var parent = this.getParent();
 
@@ -3998,7 +4001,7 @@ var TreeNode = function () {
             pagination.total--;
 
             // Export/event
-            var exported = this.toObject();
+            var exported = this.toObject(false, includeState);
             this._tree.emit('node.removed', exported, parent);
 
             this._tree.applyChanges();
@@ -4199,7 +4202,7 @@ var TreeNode = function () {
                 results.push(_this5.state(name, newVal));
             });
 
-            this._tree.batch();
+            this._tree.end();
 
             return results;
         }
@@ -4458,6 +4461,8 @@ function objectToNode(tree, object, parent) {
     // Enabled by default
     state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : tree.defaultState.collapsed;
     state.selectable = typeof state.selectable === 'boolean' ? state.selectable : tree.defaultState.selectable;
+    state.draggable = typeof state.draggable === 'boolean' ? state.draggable : tree.defaultState.draggable;
+    state['drop-target'] = typeof state['drop-target'] === 'boolean' ? state['drop-target'] : tree.defaultState['drop-target'];
 
     // Disabled by default
     state.checked = typeof state.checked === 'boolean' ? state.checked : false;
@@ -5434,6 +5439,8 @@ var InspireTree = function (_EventEmitter) {
             collapsed: true,
             editable: _.get(tree, 'config.editing.edit'),
             editing: false,
+            draggable: true,
+            'drop-target': true,
             focused: false,
             hidden: false,
             indeterminate: false,
@@ -6288,8 +6295,8 @@ var InspireTree = function (_EventEmitter) {
                         _this3.model._pagination.total = _.parseInt(totalNodes);
                     }
 
-                    // Set pagination totals if children already present in array
-                    if (_.isArrayLike(loader)) {
+                    // Set pagination totals if resolver failed to provide them
+                    if (!totalNodes) {
                         _this3.model.recurseDown(function (node) {
                             if (node.hasChildren()) {
                                 node.children._pagination.total = node.children.length;

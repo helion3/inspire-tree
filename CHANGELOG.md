@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 4.2.0
+
+- Added `includeState` parameter to `TreeNode.remove`.
+- Added `draggable` and `drop-target` to node state objects.
+- Improved logic for calculating pagination totals when using arrays.
+- Fixed batch end error in `TreeNode.states`.
+
 # 4.1.0
 
 - Added `TreeNode.states` which sets multiple states to a single value.
