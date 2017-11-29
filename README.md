@@ -128,15 +128,24 @@ Any calls to `load`-related methods can use the returned promise normally.
     + **a.attributes** - Custom attributes for this node's `a`.
 	+ **icon** - Custom icon for the anchor.
     + **li.attributes** - Custom attributes for this node's root `li`.
+    + **state.checked** - Set checked state.
 	+ **state.collapsed** - Set initial collapsed state.
-    + **state.focused** - Node has UI focus.
+    + **state.draggable** - Allows this node to be dragged, if supported*.
+    + **state.drop-target** - Allows node to be a drop target, if supported*.
+    + **state.editable** - Allow user editing of node text, if supported*.
+    + **state.focused** - Node has focus, if supported*.
 	+ **state.hidden** - Set initial visibility.
+    + **state.indeterminate** - Set indeterminate state. May be overridden if all or zero children checked.
     + **state.loading** - Dynamic load of children in progress.
     + **state.matched** - Node was matched by a search.
     + **state.removed** - Soft removed. Never shown until restored.
-    + **state.rendered** - Whether node has been rendered. Not set automatically unless used with InspireTreeDOM.
+    + **state.rendered** - Whether node has been rendered, if supported*.
     + **state.selectable** - Allow selection.
 	+ **state.selected** - Set initial selection.
+
+* Value applies natively to InspireTreeDOM, and will require added support if you're using a custom DOM renderer.
+
+Some internal-use-only states are not listed.
 
 ## Events
 

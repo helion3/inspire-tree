@@ -40,6 +40,8 @@ export function objectToNode(tree, object, parent) {
     // Enabled by default
     state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : tree.defaultState.collapsed;
     state.selectable = typeof state.selectable === 'boolean' ? state.selectable : tree.defaultState.selectable;
+    state.draggable = typeof state.draggable === 'boolean' ? state.draggable : tree.defaultState.draggable;
+    state['drop-target'] = typeof state['drop-target'] === 'boolean' ? state['drop-target'] : tree.defaultState['drop-target'];
 
     // Disabled by default
     state.checked = typeof state.checked === 'boolean' ? state.checked : false;

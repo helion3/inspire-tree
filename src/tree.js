@@ -141,6 +141,8 @@ export default class InspireTree extends EventEmitter2 {
             collapsed: true,
             editable: _.get(tree, 'config.editing.edit'),
             editing: false,
+            draggable: true,
+            'drop-target': true,
             focused: false,
             hidden: false,
             indeterminate: false,
