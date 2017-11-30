@@ -24,6 +24,7 @@ _.each(sourceFiles, function(sourceFile) {
         title: '',
         toc: 'categories',
         path: path.join(srcPath, sourceFile),
+        style: 'github',
         url: 'https://github.com/helion3/inspire-tree/blob/master/src/' + sourceFile
     });
 
