@@ -114,7 +114,7 @@ export class InspireTree extends TreeNodes {
     // Inherited from EventEmitter2.
     // These are manually defined because otherwise we'd have to make
     // the eventemitter2 module a dependency purely for the typings which
-    // simply be spam for a majority of users
+    // would simply be spam for a majority of users
     emit(event: string | string[], ...values: any[]): boolean;
     emitAsync(event: string | string[], ...values: any[]): Promise<any[]>;
     addListener(event: string, listener: Listener): this;
