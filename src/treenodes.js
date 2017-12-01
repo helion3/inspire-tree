@@ -771,8 +771,8 @@ export class TreeNodes extends Array {
     move(index, newIndex, target = this) {
         this._tree.batch();
 
-        var oldNode = this[index].remove();
-        var node = target.insertAt(newIndex, oldNode);
+        const oldNode = this[index].remove();
+        const node = target.insertAt(newIndex, oldNode);
 
         this._tree.emit('node.moved', node, this, index, target, newIndex);
 
@@ -1034,12 +1034,12 @@ export class TreeNodes extends Array {
     swap(node1, node2) {
         this._tree.batch();
 
-        var n1Context = node1.context();
-        var n2Context = node2.context();
+        const n1Context = node1.context();
+        const n2Context = node2.context();
 
         // Cache. Note: n2Index is only usable once
-        var n1Index = n1Context.indexOf(node1);
-        var n2Index = n2Context.indexOf(node2);
+        const n1Index = n1Context.indexOf(node1);
+        const n2Index = n2Context.indexOf(node2);
 
         // If contexts match, we can simply re-assign them
         if (n1Context === n2Context) {

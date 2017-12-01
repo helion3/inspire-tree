@@ -834,7 +834,7 @@ export default class InspireTree extends EventEmitter2 {
                 }
 
                 // Parse newly-loaded nodes
-                var newModel = collectionToModel(this, nodes);
+                const newModel = collectionToModel(this, nodes);
 
                 // Concat only if loading is deferred
                 if (this.config.deferredLoading) {
@@ -863,7 +863,7 @@ export default class InspireTree extends EventEmitter2 {
                     this.selectFirstAvailableNode();
                 }
 
-                var init = () => {
+                const init = () => {
                     this.emit('model.loaded', this.model);
 
                     resolve(this.model);

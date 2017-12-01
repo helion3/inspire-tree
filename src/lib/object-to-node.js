@@ -35,7 +35,7 @@ export function objectToNode(tree, object, parent) {
     let a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
 
-    var state = itree.state = itree.state || {};
+    const state = itree.state = itree.state || {};
 
     // Enabled by default
     state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : tree.defaultState.collapsed;

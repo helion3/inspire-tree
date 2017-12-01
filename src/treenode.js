@@ -51,7 +51,7 @@ export class TreeNode {
 
             // Iterate manually for better perf
             _.each(source, (value, key) => {
-                // Skip vars
+                // Skip properties
                 if (!_.includes(excludeKeys, key)) {
                     if (_.isObject(value)) {
                         if (value instanceof TreeNodes) {
@@ -732,8 +732,7 @@ export class TreeNode {
                 this._tree.emit('tree.loaderror', err);
             };
 
-            var pagination = this._tree.constructor.isTreeNodes(this.children) ? this.children.pagination() : null;
-
+            const pagination = this._tree.constructor.isTreeNodes(this.children) ? this.children.pagination() : null;
             let loader = this._tree.config.data(this, complete, error, pagination);
 
             // Data loader is likely a promise
@@ -1311,7 +1310,7 @@ export class TreeNode {
     toObject(excludeChildren = false, includeState = false) {
         let exported = {};
 
-        var keys = _.pull(Object.keys(this), '_tree', 'children', 'itree');
+        const keys = _.pull(Object.keys(this), '_tree', 'children', 'itree');
 
         // Map keys
         _.each(keys, (keyName) => {
@@ -1320,7 +1319,7 @@ export class TreeNode {
 
         // Copy over whitelisted itree data
         // Excludes internal-use junk like parent, dirty, ref
-        var itree = exported.itree = {};
+        const itree = exported.itree = {};
         itree.a = this.itree.a;
         itree.icon = this.itree.icon;
         itree.li = this.itree.li;
