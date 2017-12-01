@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 4.2.0
+ * @version 4.2.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -2830,7 +2830,7 @@ var TreeNode = function () {
 
             // Iterate manually for better perf
             _.each(source, function (value, key) {
-                // Skip vars
+                // Skip properties
                 if (!_.includes(excludeKeys, key)) {
                     if (_.isObject(value)) {
                         if (value instanceof TreeNodes) {
@@ -3627,7 +3627,6 @@ var TreeNode = function () {
                 };
 
                 var pagination = _this3._tree.constructor.isTreeNodes(_this3.children) ? _this3.children.pagination() : null;
-
                 var loader = _this3._tree.config.data(_this3, complete, error, pagination);
 
                 // Data loader is likely a promise

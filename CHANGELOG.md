@@ -1,5 +1,10 @@
 # Changes to Inspire Tree
 
+# 4.2.1
+
+- Improves typescript definitions.
+- Moves four npm dependencies to the `dependencies` array to support ES6 users.
+
 # 4.2.0
 
 - Added `includeState` parameter to `TreeNode.remove`.
