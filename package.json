@@ -4,7 +4,12 @@
   "description": "Inspired JavaScript Tree UI Component",
   "repository": "https://github.com/helion3/inspire-tree",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "es6-promise": "^4.1.1",
+    "eventemitter2": "^4.1.2",
+    "lodash": "^4.17.2",
+    "uuid": "^3.1.0"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-plugin-transform-builtin-extend": "^1.1.2",
@@ -12,11 +17,8 @@
     "babel-preset-es2015-rollup": "^3.0.0",
     "chai": "^4.1.1",
     "docdown": "^0.7.2",
-    "es6-promise": "^4.1.1",
     "eslint": "^4.5.0",
-    "eventemitter2": "^4.1.2",
     "jquery": "^3.2.1",
-    "lodash": "^4.17.2",
     "mocha": "^4.0.1",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.0",
@@ -26,8 +28,7 @@
     "rollup-watch": "^4.3.1",
     "sinon": "^4.0.1",
     "sinon-chai": "^2.13.0",
-    "typescript": "^2.4.2",
-    "uuid": "^3.1.0"
+    "typescript": "^2.4.2"
   },
   "scripts": {
     "build": "rollup -c",
