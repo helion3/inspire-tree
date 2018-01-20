@@ -8,13 +8,6 @@ export interface NodeIteratee {
 }
 
 /**
- * Represents a generic data loader which is given resolve/reject callbacks.
- */
-export interface DataResolver {
-    (node: any, resolve: any, reject: any): any;
-}
-
-/**
  * Represents a processor for nodes matched during search.
  */
 export interface MatchProcessor {
@@ -50,7 +43,7 @@ interface EventAndListener {
 export interface Config {
     allowLoadEvents?: Array<string>;
     contextMenu?: boolean;
-    data?: Array<any>|Promise<any>|DataResolver;
+    data?: Array<NodeConfig>|Promise<Array<NodeConfig>>;
     deferredLoading?: boolean;
     editable?: boolean;
     editing?: {
@@ -81,6 +74,37 @@ export interface Config {
     sort?: string;
 }
 
+export interface NodeConfig {
+    children?: Array<NodeConfig>|true,
+    id?: string,
+    text: string,
+    itree?: {
+        a?: {
+            attributes?: any
+        },
+        icon?: string,
+        li?: {
+            attributes?: any
+        },
+        state?: {
+            checked?: boolean,
+            collapsed?: boolean,
+            draggable?: boolean,
+            'drop-target'?: boolean,
+            editable?: boolean,
+            focused?: boolean,
+            hidden?: boolean,
+            indeterminate?: boolean,
+            loading?: boolean,
+            matched?: boolean,
+            removed?: boolean,
+            rendered?: boolean,
+            selectable?: boolean,
+            selected?: boolean,
+        }
+    }
+}
+
 /**
  * Represents a TreeNodes pagination configuration object.
  */
@@ -90,8 +114,8 @@ export interface Pagination {
 }
 
 export class InspireTree extends EventEmitter2 {
-    addNode(node: any): TreeNode;
-    addNodes(node: Array<any>): TreeNodes;
+    addNode(node: NodeConfig): TreeNode;
+    addNodes(node: Array<NodeConfig>): TreeNodes;
     available(): TreeNodes;
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
@@ -176,7 +200,7 @@ export class InspireTree extends EventEmitter2 {
 }
 
 export class TreeNodes extends Array<TreeNode> {
-    addNode(node: any): TreeNode;
+    addNode(node: NodeConfig): TreeNode;
     available(): TreeNodes;
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
@@ -240,8 +264,8 @@ export class TreeNodes extends Array<TreeNode> {
 }
 
 export class TreeNode {
-    addChild(node: any): TreeNode;
-    addChildren(nodes: Array<any>): TreeNodes;
+    addChild(node: NodeConfig): TreeNode;
+    addChildren(nodes: Array<NodeConfig>): TreeNodes;
     available(): boolean;
     blur(): TreeNode;
     check(shallow?: boolean): TreeNode;
