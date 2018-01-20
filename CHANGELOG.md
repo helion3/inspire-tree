@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 4.3.0
+
+- Typescript definition file cleanup and improvements:
+- Added `NodeConfig` interface.
+- Imports `EventEmitter2` definitions.
+- Various cleanup.
+
 # 4.2.1
 
 - Improves typescript definitions.
