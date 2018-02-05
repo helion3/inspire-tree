@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 4.3.1
+
+- Fixed crypto error resulting from build tool regression.
+
 # 4.3.0
 
 - Typescript definition file cleanup and improvements:
