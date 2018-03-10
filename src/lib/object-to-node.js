@@ -1,5 +1,3 @@
-'use strict';
-
 import * as _ from 'lodash';
 import { collectionToModel } from './collection-to-model';
 import uuidV4 from 'uuid/v4';

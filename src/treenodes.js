@@ -1,5 +1,3 @@
-'use strict';
-
 // Libs
 import * as _ from 'lodash';
 import { objectToNode } from './lib/object-to-node';
@@ -120,9 +118,8 @@ export class TreeNodes extends Array {
     }
 
     /**
-     * Adds a new node. If a sort
-     * method is configured, the node will be added
-     * in the appropriate order.
+     * Adds a new node. If a sort method is configured,
+     * the node will be added in the appropriate order.
      *
      * @category TreeNodes
      * @param {object} object Node
@@ -457,9 +454,7 @@ export class TreeNodes extends Array {
         let flat = this.flatten(predicate);
         let matches = new TreeNodes(this._tree);
 
-        _.each(flat, (node) => {
-            matches.addNode(node.copyHierarchy());
-        });
+        _.each(flat, (node) => matches.addNode(node.copyHierarchy()));
 
         return matches;
     }

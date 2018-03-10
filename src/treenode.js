@@ -1,5 +1,3 @@
-'use strict';
-
 // Libs
 import * as _ from 'lodash';
 import { baseStateChange } from './lib/base-state-change';

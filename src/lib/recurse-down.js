@@ -1,5 +1,3 @@
-'use strict';
-
 import * as _ from 'lodash';
 import { TreeNode } from '../treenode';
 import { TreeNodes } from '../treenodes';

@@ -1,5 +1,3 @@
-'use strict';
-
 // Libs
 import * as _ from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
@@ -186,9 +184,8 @@ export default class InspireTree extends EventEmitter2 {
     }
 
     /**
-     * Adds a new node. If a sort
-     * method is configured, the node will be added
-     * in the appropriate order.
+     * Adds a new node. If a sort method is configured,
+     * the node will be added in the appropriate order.
      *
      * @category Tree
      * @param {object} node Node
@@ -209,9 +206,7 @@ export default class InspireTree extends EventEmitter2 {
         this.batch();
 
         let newNodes = new TreeNodes(this);
-        _.each(nodes, (node) => {
-            newNodes.push(this.addNode(node));
-        });
+        _.each(nodes, (node) => newNodes.push(this.addNode(node)));
 
         this.end();
 
@@ -229,12 +224,9 @@ export default class InspireTree extends EventEmitter2 {
      * @return {void}
      */
     applyChanges() {
-        // Never rerender when until batch complete
-        if (this.batching > 0) {
-            return;
+        if (this.batching === 0) {
+            this.emit('changes.applied');
         }
-
-        this.emit('changes.applied');
     }
 
     /**
