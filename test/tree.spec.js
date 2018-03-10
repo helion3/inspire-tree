@@ -1,6 +1,6 @@
 var chai = require('chai');
 var expect = chai.expect;
-var InspireTree = require('../build/inspire-tree');
+var InspireTree = require('../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 // Do this once since it's global
 var sinonChai = require('sinon-chai');

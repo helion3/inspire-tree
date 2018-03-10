@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var InspireTree = require('../../build/inspire-tree');
+var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('Tree.removeAll', function() {
     it('removes all nodes', function() {
