@@ -67,7 +67,6 @@ export default class InspireTree extends EventEmitter2 {
             pagination: {
                 limit: -1
             },
-            renderer: false,
             search: {
                 matcher: false,
                 matchProcessor: false
