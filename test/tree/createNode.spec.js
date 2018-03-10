@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('Tree.createNode', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -21,7 +21,7 @@ describe('Tree.createNode', function() {
     it('creates a new node without adding it', function() {
         expect(tree.nodes()).to.have.length(1);
 
-        var node = tree.createNode([{
+        const node = tree.createNode([{
             text: 'B'
         }]);
 

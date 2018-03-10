@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.pagination', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -33,7 +33,7 @@ describe('TreeNode.prototype.pagination', function() {
     });
 
     it('sets initial pagination correctly', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         node.loadChildren().then(function() {
             expect(node.pagination().limit).to.equal(1);
@@ -42,7 +42,7 @@ describe('TreeNode.prototype.pagination', function() {
     });
 
     it('updates pagination on load more', function(done) {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         node.loadMore().then(function() {
             expect(node.pagination().limit).to.equal(2);

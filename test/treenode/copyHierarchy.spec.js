@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.copyHierarchy', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -25,7 +25,7 @@ describe('TreeNode.prototype.copyHierarchy', function() {
     });
 
     it('returns copy of parent with node as only child', function() {
-        var hierarchy = tree.node(2).copyHierarchy();
+        const hierarchy = tree.node(2).copyHierarchy();
 
         expect(InspireTree.isTreeNode(hierarchy)).to.be.true;
         expect(hierarchy.id).to.equal(1);
@@ -33,7 +33,7 @@ describe('TreeNode.prototype.copyHierarchy', function() {
     });
 
     it('returns only hierarchy with excludeNode=true', function() {
-        var hierarchy = tree.node(2).copyHierarchy(true);
+        const hierarchy = tree.node(2).copyHierarchy(true);
 
         expect(InspireTree.isTreeNode(hierarchy)).to.be.true;
         expect(hierarchy.id).to.equal(1);

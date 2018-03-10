@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.blur', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -20,7 +20,7 @@ describe('TreeNodes.prototype.blur', function() {
     });
 
     it('blurs root nodes', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         node.focus();
 
         expect(node.focused()).to.be.true;

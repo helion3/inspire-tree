@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.checked', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -22,7 +22,7 @@ describe('TreeNode.prototype.checked', function() {
     });
 
     it('returns the checked state of the node', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         expect(node.checked()).to.be.false;
 
         node.check();

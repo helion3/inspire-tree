@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.states', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -19,7 +19,7 @@ describe('TreeNode.prototype.states', function() {
     });
 
     it('returns an array of states', function() {
-        var states = tree.node(1).states(['selected', 'collapsed']);
+        const states = tree.node(1).states(['selected', 'collapsed']);
         expect(states).to.have.length(2);
         expect(states[0]).to.be.false;
         expect(states[1]).to.be.true;
@@ -27,7 +27,7 @@ describe('TreeNode.prototype.states', function() {
 
     it('sets multiple states to a new value', function() {
         tree.node(1).states(['selected', 'collapsed'], false);
-        var states = tree.node(1).states(['selected', 'collapsed']);
+        const states = tree.node(1).states(['selected', 'collapsed']);
 
         expect(states).to.have.length(2);
         expect(states[0]).to.be.false;

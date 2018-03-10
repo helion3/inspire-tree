@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.getTextualHierarchy', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -31,7 +31,7 @@ describe('TreeNode.prototype.getTextualHierarchy', function() {
     });
 
     it('returns both parent texts for child node', function() {
-        var parents = tree.node(3).getTextualHierarchy();
+        const parents = tree.node(3).getTextualHierarchy();
 
         expect(parents).to.have.length(3);
         expect(parents[0]).to.equal('A');

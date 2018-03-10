@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.remove', function() {
-    var tree;
+    let tree;
 
     beforeEach(function() {
         // Create tree
@@ -25,12 +25,12 @@ describe('TreeNode.prototype.remove', function() {
     });
 
     it('removes a node while retaining state', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         node.select();
 
         expect(node.selected()).to.be.true;
 
-        var exported = node.remove(true);
+        const exported = node.remove(true);
 
         expect(exported.itree).to.be.an('object');
         expect(exported.itree.state).to.be.an('object');

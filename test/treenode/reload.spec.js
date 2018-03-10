@@ -1,10 +1,10 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.reload', function() {
-    var tree;
+    let tree;
 
-    var children = [{
+    const children = [{
         text: 'B'
     }];
 
@@ -31,7 +31,7 @@ describe('TreeNode.prototype.reload', function() {
     });
 
     it('reload children', function(done) {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         // Load children the first time
         node.select().expand().then(function() {

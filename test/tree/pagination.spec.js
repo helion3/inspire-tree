@@ -1,10 +1,10 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('Tree.prototype.pagination', function() {
-    var tree;
+    let tree;
 
-    var mockData = [{
+    const mockData = [{
         text: '0',
         children: [{
             text: '0.0',
@@ -62,7 +62,7 @@ describe('Tree.prototype.pagination', function() {
     });
 
     it('sets initial pagination data correctly', function() {
-        var pagination = tree.pagination();
+        const pagination = tree.pagination();
 
         expect(pagination).to.be.an('object');
         expect(pagination.limit).to.equal(-1);
@@ -70,7 +70,7 @@ describe('Tree.prototype.pagination', function() {
     });
 
     it('does not clear existing data when deferred loading is used', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             deferredLoading: true,
             data: function(node, resolve) {
                 resolve([{
@@ -96,13 +96,13 @@ describe('Tree.prototype.pagination', function() {
         });
 
         tree.on('model.loaded', function() {
-            var pagination = tree.pagination();
+            const pagination = tree.pagination();
 
             expect(pagination).to.be.an('object');
             expect(pagination.limit).to.equal(5);
             expect(pagination.total).to.equal(6);
 
-            var count = 2;
+            let count = 2;
             tree.nodes().recurseDown((node) => {
                 if (node.hasChildren()) {
                     expect(node.children._pagination.limit).to.equal(5);
@@ -130,13 +130,13 @@ describe('Tree.prototype.pagination', function() {
         });
 
         tree.on('model.loaded', function() {
-            var pagination = tree.pagination();
+            const pagination = tree.pagination();
 
             expect(pagination).to.be.an('object');
             expect(pagination.limit).to.equal(5);
             expect(pagination.total).to.equal(6);
 
-            var count = 2;
+            let count = 2;
             tree.nodes().recurseDown((node) => {
                 if (node.hasChildren()) {
                     expect(node.children._pagination.limit).to.equal(5);

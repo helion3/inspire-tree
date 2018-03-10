@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes extends Array.prototype.sort', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -26,7 +26,7 @@ describe('TreeNodes extends Array.prototype.sort', function() {
     });
 
     it('sorts treenodes', function() {
-        var nodes = tree.nodes();
+        const nodes = tree.nodes();
 
         nodes.sort(function(a, b) {
             return parseInt(a.id, 10) > parseInt(b.id, 10) ? -1 : 1;

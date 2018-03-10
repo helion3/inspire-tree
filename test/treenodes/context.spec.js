@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.context', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -26,7 +26,7 @@ describe('TreeNodes.prototype.context', function() {
     });
 
     it('returns parent node for a child context', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         expect(node.getChildren().context()).to.equal(node);
     });

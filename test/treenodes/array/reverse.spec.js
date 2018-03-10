@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes extends Array.prototype.reverse', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -21,7 +21,7 @@ describe('TreeNodes extends Array.prototype.reverse', function() {
     });
 
     it('reverses node order', function() {
-        var nodes = tree.nodes().reverse();
+        const nodes = tree.nodes().reverse();
 
         expect(nodes).to.have.length(2);
         expect(nodes[0].text).to.equal('B');

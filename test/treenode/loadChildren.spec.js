@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.loadChildren', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -33,7 +33,7 @@ describe('TreeNode.prototype.loadChildren', function() {
     });
 
     it('loads children', function(done) {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         expect(node.hasChildren()).to.be.false;
         expect(node.hasLoadedChildren()).to.be.false;
@@ -52,7 +52,7 @@ describe('TreeNode.prototype.loadChildren', function() {
     });
 
     it('doesn\'t error with an invalid nodes array', function(done) {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: function(node, resolve) {
                 if (!node) {
                     resolve([{

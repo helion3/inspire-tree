@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.toArray', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -20,14 +20,14 @@ describe('TreeNodes.prototype.toArray', function() {
     });
 
     it('returns nodes as a native array', function() {
-        var nodes = tree.nodes().toArray();
+        const nodes = tree.nodes().toArray();
 
         expect(Array.isArray(nodes)).to.be.true;
         expect(nodes).to.have.length(1);
     });
 
     it('returns array of native objects', function() {
-        var nodes = tree.nodes().toArray();
+        const nodes = tree.nodes().toArray();
 
         expect(nodes[0].constructor.name).to.equal('Object');
     });

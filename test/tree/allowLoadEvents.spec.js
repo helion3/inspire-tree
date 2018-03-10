@@ -1,15 +1,15 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
-var sinon = require('sinon');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const sinon = require('sinon');
 
 describe('config.allowLoadEvents', function() {
     it('fires the node.selected event for pre-selected node', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             allowLoadEvents: ['selected'],
             data: []
         });
 
-        var callback = sinon.spy();
+        const callback = sinon.spy();
 
         tree.on('node.selected', callback);
 
@@ -27,7 +27,7 @@ describe('config.allowLoadEvents', function() {
     });
 
     it('passes a true isLoadEvent argument', function(done) {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             allowLoadEvents: ['selected'],
             data: []
         });

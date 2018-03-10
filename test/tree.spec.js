@@ -1,9 +1,9 @@
-var chai = require('chai');
-var expect = chai.expect;
-var InspireTree = require('../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const chai = require('chai');
+const expect = chai.expect;
+const InspireTree = require('../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 // Do this once since it's global
-var sinonChai = require('sinon-chai');
+const sinonChai = require('sinon-chai');
 chai.should();
 chai.use(sinonChai);
 
@@ -17,7 +17,7 @@ describe('Inspire Tree', function() {
     });
 
     it('returns API', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: []
         });
 

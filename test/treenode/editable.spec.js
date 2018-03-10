@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.editable', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -19,7 +19,7 @@ describe('TreeNode.prototype.editable', function() {
     });
 
     it('returns false when tree is not editable', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         expect(node.editable()).to.be.false;
 
         node.state('editable', true);
@@ -36,7 +36,7 @@ describe('TreeNode.prototype.editable', function() {
             }]
         });
 
-        var node = tree.node(1);
+        const node = tree.node(1);
         expect(node.editable()).to.be.true;
 
         node.state('editable', false);

@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('Modification', function() {
-    var tree1;
-    var tree2;
+    let tree1;
+    let tree2;
 
     before(function() {
         tree1 = new InspireTree({
@@ -50,7 +50,7 @@ describe('Modification', function() {
     it('copies selected node to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.node(1);
+        const node = tree1.node(1);
         node.select();
         tree1.selected().copy().to(tree2);
 
@@ -63,7 +63,7 @@ describe('Modification', function() {
     it('copies specific node to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.node(1);
+        const node = tree1.node(1);
         node.copy().to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
@@ -75,7 +75,7 @@ describe('Modification', function() {
     it('copies child node to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.node(20);
+        const node = tree1.node(20);
         node.copy().to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
@@ -87,7 +87,7 @@ describe('Modification', function() {
     it('copies child node and its hierarchy to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        var node = tree1.node(20);
+        const node = tree1.node(20);
         node.copy(true).to(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
@@ -104,7 +104,7 @@ describe('Modification', function() {
         expect(tree1.node(2).children).to.have.length(1);
 
         // Push a new child to the copied data
-        var parent = tree2.node(2);
+        const parent = tree2.node(2);
         parent.addChild({
             text: 'New'
         });
@@ -120,7 +120,7 @@ describe('Modification', function() {
     });
 
     it('shows child node when merged back into source via api', function() {
-        var node = tree1.node(20);
+        const node = tree1.node(20);
 
         // Remove source copy
         node.softRemove();
@@ -130,7 +130,7 @@ describe('Modification', function() {
         node.copy(true).to(tree2);
 
         // Check new copy
-        var clone = tree2.node(20);
+        const clone = tree2.node(20);
         expect(clone.removed()).to.be.false;
 
         // Move back
@@ -143,7 +143,7 @@ describe('Modification', function() {
     });
 
     it('shows child node when merged back into source by selection', function() {
-        var node = tree1.node(20);
+        const node = tree1.node(20);
 
         // Remove source copy
         node.softRemove();
@@ -153,12 +153,12 @@ describe('Modification', function() {
         node.copy(true).to(tree2);
 
         // Check new copy
-        var clone = tree2.node(20);
+        const clone = tree2.node(20);
         expect(clone.removed()).to.be.false;
 
         // Re-select in destination
         clone.select();
-        var selected = tree2.selected();
+        const selected = tree2.selected();
 
         // Move back
         selected.copy(true).to(tree1);
@@ -174,7 +174,7 @@ describe('Modification', function() {
         tree1.nodes().copy().to(tree2);
         tree1.nodes().softRemove();
 
-        var node = tree2.node(20);
+        const node = tree2.node(20);
         node.copy(true).to(tree1);
 
         expect(tree1.nodes()[0].removed()).to.be.true;

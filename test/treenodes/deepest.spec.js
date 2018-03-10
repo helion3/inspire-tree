@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.deepest', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -31,7 +31,7 @@ describe('TreeNodes.prototype.deepest', function() {
     });
 
     it('returns only deepest nodes', function() {
-        var deepest = tree.nodes().deepest();
+        const deepest = tree.nodes().deepest();
 
         expect(deepest).to.have.length(2);
         expect(deepest[0].text).to.equal('B');

@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.move', function() {
-    var tree;
+    let tree;
 
     before(function() {
         tree = new InspireTree({
@@ -46,7 +46,7 @@ describe('TreeNodes.prototype.move', function() {
     });
 
     it('moves a node to another collection', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         expect(tree.nodes()).to.have.length(3);
         expect(node.children).to.have.length(0);

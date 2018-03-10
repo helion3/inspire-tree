@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.uncheck', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -29,7 +29,7 @@ describe('TreeNode.prototype.uncheck', function() {
     });
 
     it('unchecks the node', function() {
-        var node = tree.node(2);
+        const node = tree.node(2);
         node.check();
         expect(node.checked()).to.be.true;
 
@@ -38,7 +38,7 @@ describe('TreeNode.prototype.uncheck', function() {
     });
 
     it('unchecks child nodes', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         node.check();
         node.children.each((child) => {
             expect(child.checked()).to.be.true;

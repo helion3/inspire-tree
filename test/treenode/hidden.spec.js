@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.hidden', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -26,7 +26,7 @@ describe('TreeNode.prototype.hidden', function() {
     });
 
     it('returns true when hidden', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         node.hide();
 
         expect(node.hidden()).to.be.true;

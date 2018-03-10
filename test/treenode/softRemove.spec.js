@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.softRemove', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -25,7 +25,7 @@ describe('TreeNode.prototype.softRemove', function() {
     });
 
     it('soft removes node', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         expect(node.removed()).to.be.false;
 
         node.softRemove();
@@ -33,7 +33,7 @@ describe('TreeNode.prototype.softRemove', function() {
     });
 
     it('retains state on soft remove', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         node.restore();
         node.select();

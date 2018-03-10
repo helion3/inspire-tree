@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.addChild', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -21,7 +21,7 @@ describe('TreeNode.prototype.addChild', function() {
     });
 
     it('adds a new child', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         // Make sure nothing exists yet
         expect(node.hasChildren()).to.be.false;
@@ -34,9 +34,9 @@ describe('TreeNode.prototype.addChild', function() {
     });
 
     it('returns a TreeNode with a parent', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
-        var child = node.addChild({
+        const child = node.addChild({
             text: 'A'
         });
 
@@ -45,7 +45,7 @@ describe('TreeNode.prototype.addChild', function() {
     });
 
     it('applies sort correctly to new children', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         node.addChild({
             text: 'B'

@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.check', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -33,7 +33,7 @@ describe('TreeNode.prototype.check', function() {
     });
 
     it('checks the node', function() {
-        var node = tree.node(2);
+        const node = tree.node(2);
         expect(node.checked()).to.be.false;
 
         node.check();
@@ -41,7 +41,7 @@ describe('TreeNode.prototype.check', function() {
     });
 
     it('checks child nodes', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         node.children.each((child) => {
             expect(child.checked()).to.be.false;
         });
@@ -62,7 +62,7 @@ describe('TreeNode.prototype.check', function() {
         tree.node(111).check();
 
         // Verify root node is indeterminate
-        var node = tree.node(1);
+        const node = tree.node(1);
         expect(node.indeterminate()).to.be.true;
         expect(node.checked()).to.be.false;
 

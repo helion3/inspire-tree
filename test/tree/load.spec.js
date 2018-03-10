@@ -1,11 +1,11 @@
-var chai = require('chai');
-var expect = chai.expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
-var sinon = require('sinon');
+const chai = require('chai');
+const expect = chai.expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const sinon = require('sinon');
 
 describe('Tree.load', function() {
     it('loads data via array', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: [{
                 text: 'Test'
             }]
@@ -15,7 +15,7 @@ describe('Tree.load', function() {
     });
 
     it('clears existing data when deferred loading is not used', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: function(node, resolve) {
                 resolve([{
                     text: 'Test'
@@ -31,7 +31,7 @@ describe('Tree.load', function() {
     });
 
     it('loads data via callback', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: function(node, resolve) {
                 resolve([{
                     text: 'Test'
@@ -43,7 +43,7 @@ describe('Tree.load', function() {
     });
 
     it('loads data via promise', function(done) {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: new Promise(function(resolve) {
                 resolve([{
                     text: 'Test'
@@ -60,7 +60,7 @@ describe('Tree.load', function() {
     });
 
     it('doesn\'t error with an invalid nodes array', function(done) {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: []
         });
 
@@ -74,7 +74,7 @@ describe('Tree.load', function() {
     });
 
     it('returns a promise', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: []
         });
 
@@ -82,7 +82,7 @@ describe('Tree.load', function() {
     });
 
     it('loads child node data dynamically', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: function(node, resolve) {
                 if (!node) {
                     resolve([{
@@ -101,7 +101,7 @@ describe('Tree.load', function() {
 
         expect(tree.nodes()).to.have.length(1);
 
-        var parent = tree.node(1);
+        const parent = tree.node(1);
         expect(parent.children).to.be.true;
 
         parent.expand();
@@ -111,7 +111,7 @@ describe('Tree.load', function() {
     });
 
     it('applies custom sorter', function() {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: [{
                 text: 'C'
             }, {
@@ -122,16 +122,16 @@ describe('Tree.load', function() {
             sort: 'text'
         });
 
-        var nodes = tree.nodes();
+        const nodes = tree.nodes();
         expect(nodes[0].text).to.equal('A');
         expect(nodes[1].text).to.equal('B');
         expect(nodes[2].text).to.equal('C');
     });
 
     it('delays event for synchronous loader', function(done) {
-        var callback = sinon.spy();
+        const callback = sinon.spy();
 
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: [{
                 text: 'A'
             }]
@@ -146,7 +146,7 @@ describe('Tree.load', function() {
     });
 
     it('triggers promise on instantiation load error', function(done) {
-        var tree = new InspireTree({
+        const tree = new InspireTree({
             data: function(node, resolve, reject) {
                 reject(new Error('Fake'));
             }

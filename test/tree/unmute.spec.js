@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
-var sinon = require('sinon');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const sinon = require('sinon');
 
 describe('Tree.unmute', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -27,7 +27,7 @@ describe('Tree.unmute', function() {
         tree.mute();
 
         // Make sure events are muted...
-        var callback = sinon.spy();
+        let callback = sinon.spy();
         tree.on('node.selected', callback);
         tree.node(1).select();
         callback.should.not.have.been.called;

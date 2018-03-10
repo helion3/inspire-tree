@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.selectable', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -45,7 +45,7 @@ describe('TreeNode.prototype.selectable', function() {
     });
 
     it('does not select unselectable node', function() {
-        var node = tree.node(2);
+        const node = tree.node(2);
         node.select();
 
         expect(node.selected()).to.be.false;

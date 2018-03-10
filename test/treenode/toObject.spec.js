@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.toObject', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -29,7 +29,7 @@ describe('TreeNode.prototype.toObject', function() {
     });
 
     it('retains user-provided (one-way, non-state) itree data', function() {
-        var exported = tree.node(1).toObject();
+        const exported = tree.node(1).toObject();
 
         expect(exported.itree).to.be.an('object');
         expect(exported.itree.icon).to.equal('icon-test');
@@ -37,10 +37,10 @@ describe('TreeNode.prototype.toObject', function() {
     });
 
     it('retains state data', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         node.select();
 
-        var exported = node.toObject(false, true);
+        const exported = node.toObject(false, true);
 
         expect(exported.itree).to.be.an('object');
         expect(exported.itree.state).to.be.an('object');

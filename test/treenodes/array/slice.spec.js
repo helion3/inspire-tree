@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes extends Array.prototype.slice', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -23,7 +23,7 @@ describe('TreeNodes extends Array.prototype.slice', function() {
     });
 
     it('slices treenodes', function() {
-        var res = tree.nodes().slice(0, 1);
+        const res = tree.nodes().slice(0, 1);
 
         expect(res).to.have.length(1);
         expect(res[0].text).to.equal('A');

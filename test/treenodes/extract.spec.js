@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.extract', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -30,7 +30,7 @@ describe('TreeNodes.prototype.extract', function() {
     });
 
     it('returns merged heirarchy for matching nodes', function() {
-        var matches = tree.nodes().extract('pickMe');
+        const matches = tree.nodes().extract('pickMe');
 
         expect(matches).to.have.length(1);
 

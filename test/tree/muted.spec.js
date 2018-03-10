@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
-var _ = require('lodash');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const _ = require('lodash');
 
 describe('Tree.muted', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree

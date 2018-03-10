@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('Tree.search', function() {
-    var tree;
+    let tree;
 
     before(function() {
         tree = new InspireTree({
@@ -47,7 +47,7 @@ describe('Tree.search', function() {
     });
 
     it('returns matches for a custom matching function', function(done) {
-        var matcher = function(node) {
+        const matcher = function(node) {
             return node.text.length < 4;
         };
 
@@ -128,7 +128,7 @@ describe('Tree.search', function() {
                 id: 2
             }],
             search: function(query, resolve) {
-                var matches = [];
+                const matches = [];
 
                 tree.nodes().each(function(node) {
                     if (node.text.length < 4) {

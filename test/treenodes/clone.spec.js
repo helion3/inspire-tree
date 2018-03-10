@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.clone', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -23,9 +23,8 @@ describe('TreeNodes.prototype.clone', function() {
     });
 
     it('returns a complete clone', function() {
-        var original = tree.nodes();
-        var clone = original.clone();
-
+        const original = tree.nodes();
+        const clone = original.clone();
 
         expect(InspireTree.isTreeNodes(clone)).to.be.true;
         expect(clone).to.have.length(1);
@@ -33,8 +32,8 @@ describe('TreeNodes.prototype.clone', function() {
     });
 
     it('changes to clone do not impact original', function() {
-        var original = tree.nodes();
-        var clone = original.clone();
+        const original = tree.nodes();
+        const clone = original.clone();
 
         clone[0].id = 'brand-new';
         expect(original[0].id).to.equal(1);

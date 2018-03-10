@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.markDirty', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -23,7 +23,7 @@ describe('TreeNode.prototype.markDirty', function() {
     });
 
     it('marks node dirty', function() {
-        var node = tree.node(2);
+        const node = tree.node(2);
         expect(node.itree.dirty).to.be.false;
 
         node.markDirty();

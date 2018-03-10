@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.recurseDown', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -30,7 +30,7 @@ describe('TreeNodes.prototype.recurseDown', function() {
     });
 
     it('recurse down treenodes and children', function() {
-        var count = 0;
+        let count = 0;
 
         tree.nodes().recurseDown(function() {
             count++;
@@ -40,7 +40,7 @@ describe('TreeNodes.prototype.recurseDown', function() {
     });
 
     it('stops recursion when returning false', function() {
-        var count = 0;
+        let count = 0;
 
         tree.nodes().recurseDown(function() {
             count++;

@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.loading', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -19,7 +19,7 @@ describe('TreeNode.prototype.loading', function() {
     });
 
     it('returns true when loading', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
         expect(node.loading()).to.be.false;
 
         node.state('loading', true);

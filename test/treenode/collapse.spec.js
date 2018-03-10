@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNode.prototype.collapse', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -30,7 +30,7 @@ describe('TreeNode.prototype.collapse', function() {
     });
 
     it('collapses children', function() {
-        var node = tree.node(1);
+        const node = tree.node(1);
 
         node.expand();
         expect(node.collapsed()).to.be.false;
@@ -40,7 +40,7 @@ describe('TreeNode.prototype.collapse', function() {
     });
 
     it('allows collapse when children empty', function() {
-        var node = tree.node(2);
+        const node = tree.node(2);
 
         node.collapse();
         expect(node.collapsed()).to.be.true;

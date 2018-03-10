@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes extends Array.prototype.pop', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -23,7 +23,7 @@ describe('TreeNodes extends Array.prototype.pop', function() {
     });
 
     it('pops the last element off and returns it', function() {
-        var node = tree.nodes().pop();
+        const node = tree.nodes().pop();
 
         expect(tree.nodes()).to.have.length(1);
         expect(node.id).to.equal(2);

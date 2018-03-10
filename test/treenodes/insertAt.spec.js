@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.insertAt', function() {
-    var tree;
-    var tree2;
+    let tree;
+    let tree2;
 
     before(function() {
         // Create tree

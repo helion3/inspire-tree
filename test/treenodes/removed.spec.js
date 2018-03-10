@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes.prototype.removed', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -35,14 +35,14 @@ describe('TreeNodes.prototype.removed', function() {
     });
 
     it('returns only removed nodes', function() {
-        var removed = tree.removed();
+        const removed = tree.removed();
 
         expect(removed).to.have.length(2);
         expect(removed[0].hasChildren()).to.be.false;
     });
 
     it('returns hierarchy of removed nodes', function() {
-        var removed = tree.removed(true);
+        const removed = tree.removed(true);
 
         expect(removed).to.have.length(2);
         expect(removed[0].hasChildren()).to.be.true;

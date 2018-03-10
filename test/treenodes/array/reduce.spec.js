@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
+const expect = require('chai').expect;
+const InspireTree = require('../../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('TreeNodes extends Array.prototype.reduce', function() {
-    var tree;
+    let tree;
 
     before(function() {
         // Create tree
@@ -23,7 +23,7 @@ describe('TreeNodes extends Array.prototype.reduce', function() {
     });
 
     it('reduces nodes to an array of text', function() {
-        var res = tree.nodes().reduce(function(a, b) {
+        const res = tree.nodes().reduce(function(a, b) {
             a.push(b.text);
 
             return a;
