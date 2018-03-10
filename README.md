@@ -105,7 +105,6 @@ Any calls to `load`-related methods can use the returned promise normally.
     + **resetStateOnRestore** - Reset node state to defaults when restored.
 - **pagination**
     + **limit** - How many nodes are rendered/loaded at once. Used with deferrals. Defaults to nodes which fit in the container.
-- **renderer** - Function which returns a custom renderer (see below).
 - **search**
     + **matcher** - Custom search executor (for custom/external handling of entire search). Must be a function which accepts a `query` and resolve/reject arguments.
     + **matchProcessor** - Custom handler for search matches. Must be a function which accepts a `TreeNodes` argument.
