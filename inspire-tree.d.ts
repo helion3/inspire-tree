@@ -43,7 +43,7 @@ interface EventAndListener {
 export interface Config {
     allowLoadEvents?: Array<string>;
     contextMenu?: boolean;
-    data?: Array<NodeConfig>|Promise<Array<NodeConfig>>;
+    data?(node: TreeNode, resolve: (nodes: Array<NodeConfig>) => any, reject: (err: Error) => any): any|Array<NodeConfig>|Promise<Array<NodeConfig>>;
     deferredLoading?: boolean;
     editable?: boolean;
     editing?: {
