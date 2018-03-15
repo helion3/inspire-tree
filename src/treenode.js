@@ -386,7 +386,6 @@ export class TreeNode {
                     node.loadChildren().then(resolve).catch(reject);
                 }
                 else {
-                    node.markDirty();
                     node._tree.applyChanges();
                     resolve(node);
                 }
