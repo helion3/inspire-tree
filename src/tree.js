@@ -5,8 +5,8 @@ import { EventEmitter2 } from 'eventemitter2';
 import { objectToNode } from './lib/object-to-node';
 import { Promise } from 'es6-promise';
 import { standardizePromise } from './lib/standardize-promise';
-import { TreeNode } from './treenode';
-import { TreeNodes } from './treenodes';
+import TreeNode from './treenode';
+import TreeNodes from './treenodes';
 import uuidV4 from 'uuid/v4';
 
 /**

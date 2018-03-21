@@ -21,13 +21,6 @@ export interface SearchMatcher {
     (query: string, resolve: any, reject: any): any;
 }
 
-/**
- * Represents the copy.to middleman structure.
- */
-export interface Copy {
-    to(dest: any): any;
-}
-
 // Copied from EventEmitter2 to avoid imports, see below
 type eventNS = string[];
 interface Listener {
@@ -132,7 +125,7 @@ export class InspireTree extends EventEmitter2 {
     constructor(tree: InspireTree, array: Array<any>|TreeNodes);
     constructor(tree: InspireTree);
     context(): TreeNode;
-    copy(hierarchy?: boolean): Copy;
+    copy(hierarchy?: boolean): TreeNodes;
     createNode(obj: any): TreeNode;
     deepest(): TreeNodes;
     deselect(): TreeNodes;
@@ -213,7 +206,7 @@ export class TreeNodes extends Array<TreeNode> {
     constructor(tree: InspireTree, array: Array<any>|TreeNodes);
     constructor(tree: InspireTree);
     context(): TreeNode;
-    copy(hierarchy?: boolean): Copy;
+    copy(hierarchy?: boolean): TreeNodes;
     deepest(): TreeNodes;
     deselect(): TreeNodes;
     deselectDeep(): TreeNodes;
@@ -278,7 +271,7 @@ export class TreeNode {
     constructor(tree: InspireTree, source: any|TreeNode);
     constructor(tree: InspireTree);
     context(): TreeNodes;
-    copy(hierarchy?: boolean): Copy;
+    copy(hierarchy?: boolean): TreeNode;
     copyHierarchy(excludeNode?: boolean): TreeNode;
     deselect(shallow?: boolean): TreeNode;
     editable(): boolean;

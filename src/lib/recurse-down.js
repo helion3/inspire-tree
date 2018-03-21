@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import { TreeNode } from '../treenode';
-import { TreeNodes } from '../treenodes';
+import TreeNode from '../treenode';
+import TreeNodes from '../treenodes';
 
 /**
  * Base recursion function for a collection or node.

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { objectToNode } from './object-to-node';
-import { TreeNodes } from '../treenodes';
+import TreeNodes from '../treenodes';
 
 /**
  * Parses a raw collection of objects into a model used

@@ -15,6 +15,6 @@ describe('TreeNode.prototype.copy', function() {
     });
 
     it('exists', function() {
-        expect(tree.node(1).copy().to).to.be.a('function');
+        expect(tree.node(1).copy).to.be.a('function');
     });
 });

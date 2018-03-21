@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { objectToNode } from './lib/object-to-node';
 import { Promise } from 'es6-promise';
 import { recurseDown } from './lib/recurse-down';
-import { TreeNode } from './treenode';
+import TreeNode from './treenode';
 
 /**
  * Base function to filter nodes by state value.
@@ -260,32 +260,18 @@ class TreeNodes extends Array {
     /**
      * Copy nodes to another tree instance.
      *
+     * @param {object} dest Destination Inspire Tree.
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
      * @return {object} Methods to perform action on copied nodes.
      */
-    copy(hierarchy) {
-        return {
+    copy(dest, hierarchy) {
+        let newNodes = new TreeNodes(this._tree);
 
-            /**
-             * Sets a destination.
-             *
-             * @param {object} dest Destination Inspire Tree.
-             * @return {array} Array of new nodes.
-             */
-            to: (dest) => {
-                if (!_.isFunction(dest.addNodes)) {
-                    throw new Error('Destination must be an Inspire Tree instance.');
-                }
+        _.each(this, (node) => {
+            newNodes.push(node.copy(dest, hierarchy));
+        });
 
-                let newNodes = new TreeNodes(this._tree);
-
-                _.each(this, (node) => {
-                    newNodes.push(node.copy(hierarchy).to(dest));
-                });
-
-                return newNodes;
-            }
-        };
+        return newNodes;
     }
 
     /**

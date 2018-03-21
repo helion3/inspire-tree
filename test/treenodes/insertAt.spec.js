@@ -41,7 +41,7 @@ describe('TreeNodes.prototype.insertAt', function() {
             children: true
         });
 
-        tree2.node(1).copy().to(tree);
+        tree2.node(1).copy(tree);
 
         expect(tree.node(1).hasChildren()).to.be.true;
     });

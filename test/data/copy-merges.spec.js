@@ -26,13 +26,13 @@ describe('Modification', function() {
     });
 
     it('throws error if destination tree isn\'t recognized', function() {
-        expect(tree1.nodes().copy().to).to.throw(Error);
+        expect(tree1.nodes().copy).to.throw(Error);
     });
 
     it('copies all nodes to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        tree1.nodes().copy().to(tree2);
+        tree1.nodes().copy(tree2);
         expect(tree2.nodes()).to.have.length(2);
 
         tree2.removeAll();
@@ -41,7 +41,7 @@ describe('Modification', function() {
     it('copies given nodes to a new tree', function() {
         expect(tree2.nodes()).to.have.length(0);
 
-        tree1.nodes().copy().to(tree2);
+        tree1.nodes().copy(tree2);
         expect(tree2.nodes()).to.have.length(2);
 
         tree2.removeAll();
@@ -52,7 +52,7 @@ describe('Modification', function() {
 
         const node = tree1.node(1);
         node.select();
-        tree1.selected().copy().to(tree2);
+        tree1.selected().copy(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
         expect(tree2.nodes()[0].id).to.equal(1);
@@ -64,7 +64,7 @@ describe('Modification', function() {
         expect(tree2.nodes()).to.have.length(0);
 
         const node = tree1.node(1);
-        node.copy().to(tree2);
+        node.copy(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
         expect(tree2.nodes()[0].id).to.equal(1);
@@ -76,7 +76,7 @@ describe('Modification', function() {
         expect(tree2.nodes()).to.have.length(0);
 
         const node = tree1.node(20);
-        node.copy().to(tree2);
+        node.copy(tree2);
 
         expect(tree2.nodes()).to.have.length(1);
         expect(tree2.nodes()[0].id).to.equal(20);
@@ -88,7 +88,7 @@ describe('Modification', function() {
         expect(tree2.nodes()).to.have.length(0);
 
         const node = tree1.node(20);
-        node.copy(true).to(tree2);
+        node.copy(tree2, true);
 
         expect(tree2.nodes()).to.have.length(1);
         expect(tree2.nodes()[0].id).to.equal(2);
@@ -98,7 +98,7 @@ describe('Modification', function() {
 
     it('merges new nodes on copy', function() {
         // Move all nodes over
-        tree1.nodes().copy().to(tree2);
+        tree1.nodes().copy(tree2);
 
         // Check original child count
         expect(tree1.node(2).children).to.have.length(1);
@@ -113,7 +113,7 @@ describe('Modification', function() {
         expect(tree2.node(2).children).to.have.length(2);
 
         // Re-copy the node to the original tree
-        parent.copy(true).to(tree1);
+        parent.copy(tree1, true);
         expect(tree1.node(2).children).to.have.length(2);
 
         tree2.removeAll();
@@ -127,14 +127,14 @@ describe('Modification', function() {
         expect(node.removed()).to.be.true;
 
         // Move it
-        node.copy(true).to(tree2);
+        node.copy(tree2, true);
 
         // Check new copy
         const clone = tree2.node(20);
         expect(clone.removed()).to.be.false;
 
         // Move back
-        clone.copy(true).to(tree1);
+        clone.copy(tree1, true);
 
         // Check source
         expect(node.removed()).to.be.false;
@@ -150,7 +150,7 @@ describe('Modification', function() {
         expect(node.removed()).to.be.true;
 
         // Move it
-        node.copy(true).to(tree2);
+        node.copy(tree2, true);
 
         // Check new copy
         const clone = tree2.node(20);
@@ -161,7 +161,7 @@ describe('Modification', function() {
         const selected = tree2.selected();
 
         // Move back
-        selected.copy(true).to(tree1);
+        selected.copy(tree1, true);
 
         // Check source
         expect(node.removed()).to.be.false;
@@ -171,11 +171,11 @@ describe('Modification', function() {
 
     it('only shows nodes merged back in', function() {
         // Move all to one tree
-        tree1.nodes().copy().to(tree2);
+        tree1.nodes().copy(tree2);
         tree1.nodes().softRemove();
 
         const node = tree2.node(20);
-        node.copy(true).to(tree1);
+        node.copy(tree1, true);
 
         expect(tree1.nodes()[0].removed()).to.be.true;
         expect(tree1.nodes()[1].removed()).to.be.false;

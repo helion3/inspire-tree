@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { collectionToModel } from './collection-to-model';
 import uuidV4 from 'uuid/v4';
-import { TreeNode } from '../treenode';
+import TreeNode from '../treenode';
 
 /**
  * Parse a raw object into a TreeNode used within a tree.

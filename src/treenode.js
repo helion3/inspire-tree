@@ -6,7 +6,7 @@ import { objectToNode } from './lib/object-to-node';
 import { Promise } from 'es6-promise';
 import { recurseDown } from './lib/recurse-down';
 import { standardizePromise } from './lib/standardize-promise';
-import { TreeNodes } from './treenodes';
+import TreeNodes from './treenodes';
 
 /**
  * Helper method to clone an ITree config object.
@@ -227,32 +227,21 @@ class TreeNode {
     /**
      * Copy node to another tree instance.
      *
+     * @param {object} dest Destination Inspire Tree.
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
      * @return {object} Property "to" for defining destination.
      */
-    copy(hierarchy) {
-        let node = this;
+    copy(dest, hierarchy) {
+        if (!dest || !_.isFunction(dest.addNode)) {
+            throw new Error('Destination must be an Inspire Tree instance.');
+        }
 
+        let node = this;
         if (hierarchy) {
             node = node.copyHierarchy();
         }
 
-        return {
-
-            /**
-             * Sets a destination.
-             *
-             * @param {object} dest Destination Inspire Tree.
-             * @return {object} New node object.
-             */
-            to: (dest) => {
-                if (!_.isFunction(dest.addNode)) {
-                    throw new Error('Destination must be an Inspire Tree instance.');
-                }
-
-                return dest.addNode(node.toObject());
-            }
-        };
+        return dest.addNode(node.toObject());
     }
 
     /**
