@@ -35,4 +35,22 @@ describe('TreeNode.prototype.state', function() {
         node.state('selected', false);
         expect(node.state('selected')).to.be.false;
     });
+
+    it('sets state from an object', function() {
+        const node = tree.node(1);
+
+        expect(node.state('matched')).to.be.undefined;
+        expect(node.state('selected')).to.be.false;
+
+        const oldState = node.state({
+            matched: true,
+            selected: true
+        });
+
+        expect(node.state('matched')).to.be.true;
+        expect(node.state('selected')).to.be.true;
+
+        expect(oldState.matched).to.be.undefined;
+        expect(oldState.selected).to.be.false;
+    });
 });

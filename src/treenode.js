@@ -33,6 +33,35 @@ function cloneItree(itree, excludeKeys) {
 }
 
 /**
+ * Get or set a state value.
+ *
+ * This is a base method and will not invoke related changes, for example
+ * setting selected=false will not trigger any deselection logic.
+ *
+ * @param {TreeNode} node Tree node.
+ * @param {string|object} property Property name or Key/Value state object.
+ * @param {boolean} val New value, if setting.
+ * @return {boolean} Current value on read, old value on set.
+ */
+function baseState(node, property, val) {
+    let currentVal = node.itree.state[property];
+
+    if (typeof val !== 'undefined' && currentVal !== val) {
+        // Update values
+        node.itree.state[property] = val;
+
+        if (property !== 'rendered') {
+            node.markDirty();
+        }
+
+        // Emit an event
+        node._tree.emit('node.state.changed', node, property, currentVal, val);
+    }
+
+    return currentVal;
+}
+
+/**
  * Represents a singe node object within the tree.
  *
  * @param {TreeNode} source TreeNode to copy.
@@ -1108,26 +1137,25 @@ class TreeNode {
      * This is a base method and will not invoke related changes, for example
      * setting selected=false will not trigger any deselection logic.
      *
-     * @param {string} name Property name.
-     * @param {boolean} newVal New value, if setting.
-     * @return {boolean} Current value on read, old value on set.
+     * @param {string|object} obj Property name or Key/Value state object.
+     * @param {boolean} val New value, if setting.
+     * @return {boolean|object} Old state object, or old value if property name used.
      */
-    state(name, newVal) {
-        let currentVal = this.itree.state[name];
-
-        if (typeof newVal !== 'undefined' && currentVal !== newVal) {
-            // Update values
-            this.itree.state[name] = newVal;
-
-            if (name !== 'rendered') {
-                this.markDirty();
-            }
-
-            // Emit an event
-            this._tree.emit('node.state.changed', this, name, currentVal, newVal);
+    state(obj, val) {
+        if (_.isString(obj)) {
+            return baseState(this, obj, val);
         }
 
-        return currentVal;
+        this._tree.batch();
+
+        const oldState = {};
+        _.each(obj, (value, prop) => {
+            oldState[prop] = baseState(this, prop, value);
+        });
+
+        this._tree.end();
+
+        return oldState;
     }
 
     /**
