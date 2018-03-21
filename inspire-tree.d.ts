@@ -320,7 +320,7 @@ export class TreeNode {
     set(key: number|string, val: any): TreeNode;
     show(): TreeNode;
     softRemove(): TreeNode;
-    state(key: string, val: boolean): boolean;
+    state(key: object|string, val?: boolean): boolean|object;
     states(keys: Array<string>, val: boolean): boolean;
     toggleCheck(): TreeNode;
     toggleCollapse(): TreeNode;
