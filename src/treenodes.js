@@ -610,10 +610,14 @@ class TreeNodes extends Array {
      * Invoke method(s) deeply.
      *
      * @param {string|array} methods Method name(s).
-     *  @param {array|Arguments} args Array of arguments to proxy.
+     * @param {array|Arguments} args Array of arguments to proxy.
      * @return {TreeNodes} Array of node objects.
      */
     invokeDeep(methods, args) {
+        if (arguments.length > 2) {
+            args = _.tail(arguments);
+        }
+
         return baseInvoke(this, methods, args, true);
     }
 

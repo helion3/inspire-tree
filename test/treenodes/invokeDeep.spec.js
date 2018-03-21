@@ -39,6 +39,18 @@ describe('TreeNodes.prototype.invokeDeep', function() {
         expect(tree.selected()).to.have.length(4);
     });
 
+    it('invokes method deeply with an array of arguments', function() {
+        tree.invokeDeep('state', ['selected', false]);
+
+        expect(tree.selected()).to.have.length(0);
+    });
+
+    it('invokes method deeply with spread arguments', function() {
+        tree.invokeDeep('state', 'selected', true);
+
+        expect(tree.selected()).to.have.length(4);
+    });
+
     it('invokes multiple methods on each node', function() {
         tree.invokeDeep(['deselect', 'expand']);
 
