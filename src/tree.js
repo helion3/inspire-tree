@@ -25,10 +25,9 @@ function map(tree, method, args) {
 /**
  * Represents a singe tree instance.
  *
- * @category Tree
  * @return {InspireTree} Tree instance.
  */
-export default class InspireTree extends EventEmitter2 {
+class InspireTree extends EventEmitter2 {
     constructor(opts) {
         super();
 
@@ -187,7 +186,6 @@ export default class InspireTree extends EventEmitter2 {
      * Adds a new node. If a sort method is configured,
      * the node will be added in the appropriate order.
      *
-     * @category Tree
      * @param {object} node Node
      * @return {TreeNode} Node object.
      */
@@ -198,7 +196,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Add nodes.
      *
-     * @category Tree
      * @param {array} nodes Array of node objects.
      * @return {TreeNodes} Added node objects.
      */
@@ -219,7 +216,6 @@ export default class InspireTree extends EventEmitter2 {
      * Will skip rendering as long as any calls
      * to `batch` have yet to be resolved,
      *
-     * @category Tree
      * @private
      * @return {void}
      */
@@ -232,7 +228,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all available nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -243,7 +238,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Batch multiple changes for listeners (i.e. DOM)
      *
-     * @category Tree
      * @private
      * @return {void}
      */
@@ -258,7 +252,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Blur children in this collection.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     blur() {
@@ -268,7 +261,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Blur (deeply) all nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     blurDeep() {
@@ -279,7 +271,6 @@ export default class InspireTree extends EventEmitter2 {
      * Compares any number of TreeNode objects and returns
      * the minimum and maximum (starting/ending) nodes.
      *
-     * @category Tree
      * @return {array} Array with two TreeNode objects.
      */
     boundingNodes() {
@@ -299,7 +290,6 @@ export default class InspireTree extends EventEmitter2 {
      * Check if the tree will auto-deselect currently selected nodes
      * when a new selection is made.
      *
-     * @category Tree
      * @return {boolean} If tree will auto-deselect nodes.
      */
     canAutoDeselect() {
@@ -309,7 +299,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all checked nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -320,7 +309,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Clean nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     clean() {
@@ -330,7 +318,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Clear nodes matched by previous search, restore all nodes and collapse parents.
      *
-     * @category Tree
      * @return {Tree} Tree instance.
      */
     clearSearch() {
@@ -343,7 +330,6 @@ export default class InspireTree extends EventEmitter2 {
      *
      * Note: Cloning will *not* clone the context pointer.
      *
-     * @category Tree
      * @return {TreeNodes} Array of cloned nodes.
      */
     clone() {
@@ -353,7 +339,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Collapse nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     collapse() {
@@ -363,7 +348,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all collapsed nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -374,7 +358,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Collapse (deeply) all children.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     collapseDeep() {
@@ -384,7 +367,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Concat multiple TreeNodes arrays.
      *
-     * @category Tree
      * @param {TreeNodes} nodes Array of nodes.
      * @return {TreeNodes} Resulting node array.
      */
@@ -395,7 +377,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Copy nodes to another tree instance.
      *
-     * @category Tree
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
      * @return {object} Methods to perform action on copied nodes.
      */
@@ -406,7 +387,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Creates a TreeNode without adding it. If the obj is already a TreeNode it's returned without modification.
      *
-     * @category Tree
      * @param {object} obj Source node object.
      * @return {TreeNode} Node object.
      */
@@ -417,7 +397,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Return deepest nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     deepest() {
@@ -427,7 +406,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Deselect nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     deselect() {
@@ -437,7 +415,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Deselect (deeply) all nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     deselectDeep() {
@@ -447,7 +424,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Disable auto-deselection of currently selected nodes.
      *
-     * @category Tree
      * @return {Tree} Tree instance.
      */
     disableDeselection() {
@@ -461,7 +437,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Iterate each TreeNode.
      *
-     * @category Tree
      * @param {function} iteratee Iteratee invoke for each node.
      * @return {TreeNodes} Array of node objects.
      */
@@ -472,7 +447,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Check if every node passes the given test.
      *
-     * @category Tree
      * @param {function} tester Test each node in this collection,
      * @return {boolean} True if every node passes the test.
      */
@@ -483,7 +457,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all editable nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -494,7 +467,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all nodes in editing mode.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -505,7 +477,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Enable auto-deselection of currently selected nodes.
      *
-     * @category Tree
      * @return {Tree} Tree instance.
      */
     enableDeselection() {
@@ -517,7 +488,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Release the current batch.
      *
-     * @category Tree
      * @private
      * @return {void}
      */
@@ -532,7 +502,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Expand children.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     expand() {
@@ -542,7 +511,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Expand (deeply) all nodes.
      *
-     * @category Tree
      * @return {Promise} Promise resolved when all children have loaded and expanded.
      */
     expandDeep() {
@@ -552,7 +520,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all expanded nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     expanded() {
@@ -565,7 +532,6 @@ export default class InspireTree extends EventEmitter2 {
      * Because it filters deeply, we must clone all nodes so that we
      * don't affect the actual node array.
      *
-     * @category Tree
      * @param {string|function} predicate State flag or custom function.
      * @return {TreeNodes} Array of node objects.
      */
@@ -576,7 +542,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Filter all nodes matching the given predicate.
      *
-     * @category Tree
      * @param {function} predicate Test function.
      * @return {TreeNodes} Array of node objects.
      */
@@ -587,7 +552,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Filter all nodes matching the given predicate.
      *
-     * @category Tree
      * @param {string|function} predicate State flag or custom function.
      * @return {TreeNodes} Array of node objects.
      */
@@ -598,7 +562,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Flatten and get only node(s) matching the expected state or predicate function.
      *
-     * @category Tree
      * @param {string|function} predicate State property or custom function.
      * @return {TreeNodes} Flat array of matching nodes.
      */
@@ -609,7 +572,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all focused nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -620,7 +582,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Iterate each TreeNode.
      *
-     * @category Tree
      * @param {function} iteratee Iteratee invoke for each node.
      * @return {TreeNodes} Array of node objects.
      */
@@ -631,7 +592,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get a specific node by its index, or undefined if it doesn't exist.
      *
-     * @category Tree
      * @param {int} index Numeric index of requested node.
      * @return {TreeNode} Node object. Undefined if invalid index.
      */
@@ -642,7 +602,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all hidden nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -653,7 +612,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Hide nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     hide() {
@@ -663,7 +621,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Hide (deeply) all nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     hideDeep() {
@@ -673,7 +630,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all indeterminate nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -684,7 +640,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get the index of the given node.
      *
-     * @category Tree
      * @param {TreeNode} node Root tree node.
      * @return {int} Index of the node.
      */
@@ -695,7 +650,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Insert a new node at the given position.
      *
-     * @category Tree
      * @param {integer} index Index at which to insert the node.
      * @param {object} object Raw node object or TreeNode.
      * @return {TreeNode} Node object.
@@ -707,7 +661,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Invoke method(s) on each node.
      *
-     * @category Tree
      * @param {string|array} methods Method name(s).
      * @return {TreeNodes} Array of node objects.
      */
@@ -718,7 +671,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Invoke method(s) deeply.
      *
-     * @category Tree
      * @param {string|array} methods Method name(s).
      * @return {TreeNodes} Array of node objects.
      */
@@ -729,7 +681,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Check if an event is currently muted.
      *
-     * @category Tree
      * @param {string} eventName Event name.
      * @return {boolean} If event is muted.
      */
@@ -744,7 +695,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Check if an object is a Tree.
      *
-     * @category Tree
      * @param {object} object Object
      * @return {boolean} If object is a Tree.
      */
@@ -755,7 +705,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Check if an object is a TreeNode.
      *
-     * @category Tree
      * @param {object} obj Object
      * @return {boolean} If object is a TreeNode.
      */
@@ -766,7 +715,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Check if an object is a TreeNodes array.
      *
-     * @category Tree
      * @param {object} obj Object
      * @return {boolean} If object is a TreeNodes array.
      */
@@ -777,7 +725,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Join nodes into a resulting string.
      *
-     * @category Tree
      * @param {string} separator Separator, defaults to a comma
      * @return {string} Strings from root node objects.
      */
@@ -788,7 +735,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get the most recently selected node, if any.
      *
-     * @category Tree
      * @return {TreeNode} Last selected node, or undefined.
      */
     lastSelectedNode() {
@@ -798,7 +744,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Load data. Accepts an array, function, or promise.
      *
-     * @category Tree
      * @param {array|function|Promise} loader Array of nodes, function, or promise resolving an array of nodes.
      * @return {Promise} Promise resolved upon successful load, rejected on error.
      * @example
@@ -912,7 +857,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all nodes currently loading children.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -923,7 +867,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Load additional nodes for the root context.
      *
-     * @category Tree
      * @param {Event} event Click or scroll event if DOM interaction triggered this call.
      * @return {Promise} Resolves with request results.
      */
@@ -934,7 +877,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Create a new collection after passing every node through iteratee.
      *
-     * @category Tree
      * @param {function} iteratee Node iteratee.
      * @return {TreeNodes} New array of node objects.
      */
@@ -945,7 +887,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all nodes matched in the last search.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -956,7 +897,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Move node at a given index to a new index.
      *
-     * @category Tree
      * @param {int} index Current index.
      * @param {int} newIndex New index.
      * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
@@ -966,10 +906,9 @@ export default class InspireTree extends EventEmitter2 {
         return map(this, 'move', arguments);
     }
 
-    /*
+    /**
      * Pause events.
      *
-     * @category Tree
      * @param {array} events Event names to mute.
      * @return {Tree} Tree instance.
      */
@@ -987,7 +926,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get current mute settings.
      *
-     * @category Tree
      * @return {boolean|array} Muted events. If all, true.
      */
     muted() {
@@ -997,7 +935,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get a node.
      *
-     * @category Tree
      * @param {string|number} id ID of node.
      * @return {TreeNode} Node object.
      */
@@ -1008,7 +945,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get all nodes in a tree, or nodes for an array of IDs.
      *
-     * @category Tree
      * @param {array} refs Array of ID references.
      * @return {TreeNodes} Array of node objects.
      * @example
@@ -1023,7 +959,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get the root TreeNodes pagination.
      *
-     * @category Tree
      * @return {object} Pagination configuration object.
      */
     pagination() {
@@ -1033,7 +968,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Pop node in the final index position.
      *
-     * @category Tree
      * @return {TreeNode} Node object.
      */
     pop() {
@@ -1043,7 +977,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Add a TreeNode to the end of the root collection.
      *
-     * @category Tree
      * @param {TreeNode} node Node object.
      * @return {int} The new length
      */
@@ -1067,7 +1000,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Reduce nodes.
      *
-     * @category Tree
      * @param {function} iteratee Iteratee function
      * @return {any} Resulting data.
      */
@@ -1078,7 +1010,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Right-reduce root nodes.
      *
-     * @category Tree
      * @param {function} iteratee Iteratee function
      * @return {any} Resulting data.
      */
@@ -1089,7 +1020,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Reload/re-execute the original data loader.
      *
-     * @category Tree
      * @return {Promise} Load method promise.
      */
     reload() {
@@ -1101,7 +1031,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Remove a node.
      *
-     * @category Tree
      * @param {TreeNode} node Node object.
      * @return {TreeNodes} Array of node objects.
      */
@@ -1112,7 +1041,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Remove all nodes.
      *
-     * @category Tree
      * @return {Tree} Tree instance.
      */
     removeAll() {
@@ -1125,7 +1053,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all soft-removed nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -1136,7 +1063,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Restore nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     restore() {
@@ -1146,7 +1072,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Restore (deeply) all nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     restoreDeep() {
@@ -1156,7 +1081,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Reverse node order.
      *
-     * @category Tree
      * @return {TreeNodes} Reversed array of node objects.
      */
     reverse() {
@@ -1166,7 +1090,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Search nodes, showing only those that match and the necessary hierarchy.
      *
-     * @category Tree
      * @param {*} query Search string, RegExp, or function.
      * @return {TreeNodes} Array of matching node objects.
      */
@@ -1256,7 +1179,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Select nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     select() {
@@ -1266,7 +1188,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all selectable nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -1278,7 +1199,6 @@ export default class InspireTree extends EventEmitter2 {
      * Select all nodes between a start and end node.
      * Starting node must have a higher index path so we can work down to endNode.
      *
-     * @category Tree
      * @param {TreeNode} startNode Starting node
      * @param {TreeNode} endNode Ending node
      * @return {Tree} Tree instance.
@@ -1301,7 +1221,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Select (deeply) all nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     selectDeep() {
@@ -1311,7 +1230,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all selected nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -1322,7 +1240,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Select the first available node.
      *
-     * @category Tree
      * @return {TreeNode} Selected node object.
      */
     selectFirstAvailableNode() {
@@ -1337,7 +1254,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Shift node in the first index position.
      *
-     * @category Tree
      * @return {TreeNode} Node object.
      */
     shift() {
@@ -1347,7 +1263,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Show nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     show() {
@@ -1357,7 +1272,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Show (deeply) all nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     showDeep() {
@@ -1367,7 +1281,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get a shallow copy of a portion of nodes.
      *
-     * @category Tree
      * @param {int} begin Starting index.
      * @param {int} end End index.
      * @return {Array} Array of selected subset.
@@ -1379,7 +1292,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Soft-remove nodes.
      *
-     * @category Tree
      * @return {TreeNodes} Array of node objects.
      */
     softRemove() {
@@ -1389,7 +1301,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Check if at least one node passes the given test.
      *
-     * @category Tree
      * @param {function} tester Test each node in this collection,
      * @return {boolean} True if at least one node passes the test.
      */
@@ -1400,7 +1311,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Sort nodes using a function.
      *
-     * @category Tree
      * @param {function} compareFn Comparison function.
      * @return {TreeNodes} Root array of node objects.
      */
@@ -1413,7 +1323,6 @@ export default class InspireTree extends EventEmitter2 {
      *
      * If no custom sorter given, the configured "sort" value will be used.
      *
-     * @category Tree
      * @param {string|function} sorter Sort function or property name.
      * @return {TreeNodes} Array of node obejcts.
      */
@@ -1424,7 +1333,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Remove and/or add new TreeNodes into the root collection.
      *
-     * @category Tree
      * @param {int} start Starting index.
      * @param {int} deleteCount Count of nodes to delete.
      * @param {TreeNode} node Node(s) to insert.
@@ -1437,7 +1345,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Set nodes' state values.
      *
-     * @category Tree
      * @param {string} name Property name.
      * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
@@ -1449,7 +1356,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Set (deeply) nodes' state values.
      *
-     * @category Tree
      * @param {string} name Property name.
      * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
@@ -1461,7 +1367,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Swap two node positions.
      *
-     * @category Tree
      * @param {TreeNode} node1 Node 1.
      * @param {TreeNode} node2 Node 2.
      * @return {TreeNodes} Array of node objects.
@@ -1473,7 +1378,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get a native node Array.
      *
-     * @category Tree
      * @return {array} Array of node objects.
      */
     toArray() {
@@ -1483,7 +1387,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Get a string representation of node objects.
      *
-     * @category Tree
      * @return {string} Strings from root node objects.
      */
     toString() {
@@ -1493,7 +1396,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Resume events.
      *
-     * @category Tree
      * @param {array} events Events to unmute.
      * @return {Tree} Tree instance.
      */
@@ -1515,7 +1417,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Add a TreeNode in the first index position.
      *
-     * @category Tree
      * @return {number} The new length
      */
     unshift() {
@@ -1525,7 +1426,6 @@ export default class InspireTree extends EventEmitter2 {
     /**
      * Query for all visible nodes.
      *
-     * @category Tree
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -1533,3 +1433,5 @@ export default class InspireTree extends EventEmitter2 {
         return map(this, 'visible', arguments);
     }
 }
+
+export default InspireTree;

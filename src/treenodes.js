@@ -84,11 +84,10 @@ function getPredicateFunction(predicate) {
  * native objects are problematic to extend correctly
  * so we mimic it, not actually extend it.
  *
- * @category TreeNodes
  * @param {array} array Array of TreeNode objects.
  * @return {TreeNodes} Collection of TreeNode
  */
-export class TreeNodes extends Array {
+class TreeNodes extends Array {
     constructor(tree, array) {
         super();
 
@@ -121,7 +120,6 @@ export class TreeNodes extends Array {
      * Adds a new node. If a sort method is configured,
      * the node will be added in the appropriate order.
      *
-     * @category TreeNodes
      * @param {object} object Node
      * @return {TreeNode} Node object.
      */
@@ -140,7 +138,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all available nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -151,7 +148,6 @@ export class TreeNodes extends Array {
     /**
      * Blur nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     blur() {
@@ -161,7 +157,6 @@ export class TreeNodes extends Array {
     /**
      * Blur (deeply) all nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     blurDeep() {
@@ -171,7 +166,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all checked nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -182,7 +176,6 @@ export class TreeNodes extends Array {
     /**
      * Clean nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     clean() {
@@ -194,7 +187,6 @@ export class TreeNodes extends Array {
      *
      * Note: Cloning will *not* clone the context pointer.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of cloned nodes.
      */
     clone() {
@@ -204,7 +196,6 @@ export class TreeNodes extends Array {
     /**
      * Collapse nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     collapse() {
@@ -214,7 +205,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all collapsed nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -225,7 +215,6 @@ export class TreeNodes extends Array {
     /**
      * Collapse (deeply) all children.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     collapseDeep() {
@@ -235,7 +224,6 @@ export class TreeNodes extends Array {
     /**
      * Concat multiple TreeNodes arrays.
      *
-     * @category TreeNodes
      * @param {TreeNodes} nodes Array of nodes.
      * @return {TreeNodes} Resulting node array.
      */
@@ -263,7 +251,6 @@ export class TreeNodes extends Array {
      * of children, context is the parent node. Otherwise
      * the context is the tree itself.
      *
-     * @category TreeNodes
      * @return {TreeNode|object} Node object or tree instance.
      */
     context() {
@@ -273,7 +260,6 @@ export class TreeNodes extends Array {
     /**
      * Copy nodes to another tree instance.
      *
-     * @category TreeNodes
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
      * @return {object} Methods to perform action on copied nodes.
      */
@@ -283,7 +269,6 @@ export class TreeNodes extends Array {
             /**
              * Sets a destination.
              *
-             * @category CopyNode
              * @param {object} dest Destination Inspire Tree.
              * @return {array} Array of new nodes.
              */
@@ -306,7 +291,6 @@ export class TreeNodes extends Array {
     /**
      * Return deepest nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     deepest() {
@@ -324,7 +308,6 @@ export class TreeNodes extends Array {
     /**
      * Deselect nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     deselect() {
@@ -334,7 +317,6 @@ export class TreeNodes extends Array {
     /**
      * Deselect (deeply) all nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     deselectDeep() {
@@ -344,7 +326,6 @@ export class TreeNodes extends Array {
     /**
      * Iterate each TreeNode.
      *
-     * @category TreeNodes
      * @param {function} iteratee Iteratee invoke for each node.
      * @return {TreeNodes} Array of node objects.
      */
@@ -357,7 +338,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all editable nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -368,7 +348,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all nodes in editing mode.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -379,7 +358,6 @@ export class TreeNodes extends Array {
     /**
      * Expand nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     expand() {
@@ -389,7 +367,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all expanded nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -400,7 +377,6 @@ export class TreeNodes extends Array {
     /**
      * Expand (deeply) all nodes.
      *
-     * @category TreeNodes
      * @return {Promise} Promise resolved when all children have loaded and expanded.
      */
     expandDeep() {
@@ -433,7 +409,6 @@ export class TreeNodes extends Array {
     /**
      * Expand parents.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     expandParents() {
@@ -446,7 +421,6 @@ export class TreeNodes extends Array {
      * Because it filters deeply, we must clone all nodes so that we
      * don't affect the actual node array.
      *
-     * @category TreeNodes
      * @param {string|function} predicate State flag or custom function.
      * @return {TreeNodes} Array of node objects.
      */
@@ -462,7 +436,6 @@ export class TreeNodes extends Array {
     /**
      * Filter all nodes matching the given predicate.
      *
-     * @category TreeNodes
      * @param {string|function} predicate State flag or custom function.
      * @return {TreeNodes} Array of node objects.
      */
@@ -482,7 +455,6 @@ export class TreeNodes extends Array {
     /**
      * Flatten and get only node(s) matching the expected state or predicate function.
      *
-     * @category TreeNodes
      * @param {string|function} predicate State property or custom function.
      * @return {TreeNodes} Flat array of matching nodes.
      */
@@ -502,7 +474,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all focused nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -513,7 +484,6 @@ export class TreeNodes extends Array {
     /**
      * Iterate each TreeNode.
      *
-     * @category TreeNodes
      * @param {function} iteratee Iteratee invoke for each node.
      * @return {TreeNodes} Array of node objects.
      */
@@ -524,7 +494,6 @@ export class TreeNodes extends Array {
     /**
      * Get a specific node by its index, or undefined if it doesn't exist.
      *
-     * @category TreeNodes
      * @param {int} index Numeric index of requested node.
      * @return {TreeNode} Node object. Undefined if invalid index.
      */
@@ -535,7 +504,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all hidden nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -546,7 +514,6 @@ export class TreeNodes extends Array {
     /**
      * Hide nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     hide() {
@@ -556,7 +523,6 @@ export class TreeNodes extends Array {
     /**
      * Hide (deeply) all nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     hideDeep() {
@@ -566,7 +532,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all indeterminate nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -577,7 +542,6 @@ export class TreeNodes extends Array {
     /**
      * Insert a new node at a given position.
      *
-     * @category TreeNodes
      * @param {integer} index Index at which to insert the node.
      * @param {object} object Raw node object or TreeNode.
      * @return {TreeNode} Node object.
@@ -648,7 +612,6 @@ export class TreeNodes extends Array {
     /**
      * Invoke method(s) on each node.
      *
-     * @category TreeNodes
      * @param {string|array} methods Method name(s).
      * @param {array|Arguments} args Array of arguments to proxy.
      * @return {TreeNodes} Array of node objects.
@@ -660,7 +623,6 @@ export class TreeNodes extends Array {
     /**
      * Invoke method(s) deeply.
      *
-     * @category TreeNodes
      * @param {string|array} methods Method name(s).
      *  @param {array|Arguments} args Array of arguments to proxy.
      * @return {TreeNodes} Array of node objects.
@@ -672,7 +634,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all nodes currently loading children.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -683,7 +644,6 @@ export class TreeNodes extends Array {
     /**
      * Loads additional nodes for this context.
      *
-     * @category TreeNodes
      * @param {Event} event Click or scroll event if DOM interaction triggered this call.
      * @return {Promise} Resolves with request results.
      */
@@ -746,7 +706,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all nodes matched in the last search.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -757,7 +716,6 @@ export class TreeNodes extends Array {
     /**
      * Move node at a given index to a new index.
      *
-     * @category TreeNodes
      * @param {int} index Current index.
      * @param {int} newIndex New index.
      * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
@@ -779,7 +737,6 @@ export class TreeNodes extends Array {
     /**
      * Get a node.
      *
-     * @category TreeNodes
      * @param {string|number} id ID of node.
      * @return {TreeNode} Node object.
      */
@@ -800,7 +757,6 @@ export class TreeNodes extends Array {
     /**
      * Get all nodes in a tree, or nodes for an array of IDs.
      *
-     * @category TreeNodes
      * @param {array} refs Array of ID references.
      * @return {TreeNodes} Array of node objects.
      * @example
@@ -827,7 +783,6 @@ export class TreeNodes extends Array {
     /**
      * Get the pagination.
      *
-     * @category TreeNodes
      * @return {object} Pagination configuration object.
      */
     pagination() {
@@ -839,7 +794,6 @@ export class TreeNodes extends Array {
      *
      * Return false to stop execution.
      *
-     * @category TreeNodes
      * @param {function} iteratee Iteratee function.
      * @return {TreeNodes} Resulting nodes.
      */
@@ -852,7 +806,6 @@ export class TreeNodes extends Array {
     /**
      * Remove a node.
      *
-     * @category TreeNodes
      * @param {TreeNode} node Node object.
      * @return {TreeNodes} Resulting nodes.
      */
@@ -869,7 +822,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all soft-removed nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -880,7 +832,6 @@ export class TreeNodes extends Array {
     /**
      * Restore nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     restore() {
@@ -890,7 +841,6 @@ export class TreeNodes extends Array {
     /**
      * Restore (deeply) all nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     restoreDeep() {
@@ -900,7 +850,6 @@ export class TreeNodes extends Array {
     /**
      * Select nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     select() {
@@ -910,7 +859,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all selectable nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -921,7 +869,6 @@ export class TreeNodes extends Array {
     /**
      * Select (deeply) all nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     selectDeep() {
@@ -931,7 +878,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all selected nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -942,7 +888,6 @@ export class TreeNodes extends Array {
     /**
      * Show nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     show() {
@@ -952,7 +897,6 @@ export class TreeNodes extends Array {
     /**
      * Show (deeply) all nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     showDeep() {
@@ -962,7 +906,6 @@ export class TreeNodes extends Array {
     /**
      * Soft-remove nodes.
      *
-     * @category TreeNodes
      * @return {TreeNodes} Array of node objects.
      */
     softRemove() {
@@ -974,7 +917,6 @@ export class TreeNodes extends Array {
      *
      * If no custom sorter given, the configured "sort" value will be used.
      *
-     * @category TreeNodes
      * @param {string|function} sorter Sort function or property name.
      * @return {TreeNodes} Array of node obejcts.
      */
@@ -997,7 +939,6 @@ export class TreeNodes extends Array {
     /**
      * Set nodes' state values.
      *
-     * @category TreeNodes
      * @param {string} name Property name.
      * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
@@ -1009,7 +950,6 @@ export class TreeNodes extends Array {
     /**
      * Set (deeply) nodes' state values.
      *
-     * @category TreeNodes
      * @param {string} name Property name.
      * @param {boolean} newVal New value, if setting.
      * @return {TreeNodes} Array of node objects.
@@ -1021,7 +961,6 @@ export class TreeNodes extends Array {
     /**
      * Swaps two node positions.
      *
-     * @category TreeNodes
      * @param {TreeNode} node1 Node 1.
      * @param {TreeNode} node2 Node 2.
      * @return {TreeNodes} Array of node objects.
@@ -1064,8 +1003,7 @@ export class TreeNodes extends Array {
     /**
      * Get the tree instance.
      *
-     * @category TreeNodes
-     * @return {[type]} [description]
+     * @return {InspireTree} Tree instance.
      */
     tree() {
         return this._tree;
@@ -1074,7 +1012,6 @@ export class TreeNodes extends Array {
     /**
      * Get a native node Array.
      *
-     * @category TreeNodes
      * @return {array} Array of node objects.
      */
     toArray() {
@@ -1090,7 +1027,6 @@ export class TreeNodes extends Array {
     /**
      * Query for all visible nodes.
      *
-     * @category TreeNodes
      * @param {boolean} full Retain full hiearchy.
      * @return {TreeNodes} Array of node objects.
      */
@@ -1098,3 +1034,5 @@ export class TreeNodes extends Array {
         return baseStatePredicate.call(this, 'visible', full);
     }
 };
+
+export default TreeNodes;
