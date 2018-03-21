@@ -38,7 +38,7 @@
     "watch": "rollup -c -w",
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
     "lint": "eslint test src *.js",
-    "deploy": "./scripts/docs.js && DIST=1 rollup -c && DIST=1 MIN=1 rollup -c"
+    "deploy": "npm run docs && DIST=1 rollup -c && DIST=1 MIN=1 rollup -c"
   },
   "main": "dist/inspire-tree.js",
   "types": "./inspire-tree.d.ts",
