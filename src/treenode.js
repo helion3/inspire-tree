@@ -39,7 +39,7 @@ function cloneItree(itree, excludeKeys) {
  * setting selected=false will not trigger any deselection logic.
  *
  * @param {TreeNode} node Tree node.
- * @param {string|object} property Property name or Key/Value state object.
+ * @param {string} property Property name.
  * @param {boolean} val New value, if setting.
  * @return {boolean} Current value on read, old value on set.
  */
