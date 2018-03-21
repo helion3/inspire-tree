@@ -143,6 +143,21 @@ class TreeNode {
     }
 
     /**
+     * Assign source object(s) to this node.
+     *
+     * @param {object} source Source object(s)
+     * @return {TreeNode} Node object.
+     */
+    assign() {
+        _.assign(this, ...arguments);
+
+        this.markDirty();
+        this._tree.applyChanges();
+
+        return this;
+    }
+
+    /**
      * Check if node available.
      *
      * @return {boolean} True if available.
@@ -1115,8 +1130,8 @@ class TreeNode {
      */
     set(property, value) {
         this[property] = value;
-        this.markDirty();
 
+        this.markDirty();
         this._tree.applyChanges();
 
         return this;

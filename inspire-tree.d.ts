@@ -259,6 +259,7 @@ export class TreeNodes extends Array<TreeNode> {
 export class TreeNode {
     addChild(node: NodeConfig): TreeNode;
     addChildren(nodes: Array<NodeConfig>): TreeNodes;
+    assign(...sources: object[]): TreeNode;
     available(): boolean;
     blur(): TreeNode;
     check(shallow?: boolean): TreeNode;
