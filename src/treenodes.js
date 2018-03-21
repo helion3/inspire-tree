@@ -614,7 +614,7 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     invokeDeep(methods, args) {
-        if (arguments.length > 2) {
+        if (!_.isArrayLikeObject(args) || arguments.length > 2) {
             args = _.tail(arguments);
         }
 

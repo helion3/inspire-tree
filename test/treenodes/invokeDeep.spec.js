@@ -45,7 +45,15 @@ describe('TreeNodes.prototype.invokeDeep', function() {
         expect(tree.selected()).to.have.length(0);
     });
 
+    it('invokes method deeply with a single non-array argument', function() {
+        tree.invokeDeep('set', 'fake');
+
+        expect('fake' in tree.node(1)).to.be.true;
+        expect('fake' in tree.node(3)).to.be.true;
+    });
+
     it('invokes method deeply with spread arguments', function() {
+        tree.deselectDeep();
         tree.invokeDeep('state', 'selected', true);
 
         expect(tree.selected()).to.have.length(4);
