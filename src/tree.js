@@ -511,7 +511,7 @@ class InspireTree extends EventEmitter2 {
     /**
      * Expand (deeply) all nodes.
      *
-     * @return {Promise} Promise resolved when all children have loaded and expanded.
+     * @return {Promise<TreeNodes>} Promise resolved when all children have loaded and expanded.
      */
     expandDeep() {
         return map(this, 'expandDeep', arguments);
@@ -745,7 +745,7 @@ class InspireTree extends EventEmitter2 {
      * Load data. Accepts an array, function, or promise.
      *
      * @param {array|function|Promise} loader Array of nodes, function, or promise resolving an array of nodes.
-     * @return {Promise} Promise resolved upon successful load, rejected on error.
+     * @return {Promise<TreeNodes>} Promise resolved upon successful load, rejected on error.
      * @example
      *
      * tree.load($.getJSON('nodes.json'));
@@ -868,7 +868,7 @@ class InspireTree extends EventEmitter2 {
      * Load additional nodes for the root context.
      *
      * @param {Event} event Click or scroll event if DOM interaction triggered this call.
-     * @return {Promise} Resolves with request results.
+     * @return {Promise<TreeNodes>} Resolves with request results.
      */
     loadMore() {
         return map(this, 'loadMore', arguments);
@@ -1020,7 +1020,7 @@ class InspireTree extends EventEmitter2 {
     /**
      * Reload/re-execute the original data loader.
      *
-     * @return {Promise} Load method promise.
+     * @return {Promise<TreeNodes>} Load method promise.
      */
     reload() {
         this.removeAll();
@@ -1091,7 +1091,7 @@ class InspireTree extends EventEmitter2 {
      * Search nodes, showing only those that match and the necessary hierarchy.
      *
      * @param {*} query Search string, RegExp, or function.
-     * @return {TreeNodes} Array of matching node objects.
+     * @return {Promise<TreeNodes>} Promise resolved with an array of matching node objects.
      */
     search(query) {
         let { matcher, matchProcessor } = this.config.search;

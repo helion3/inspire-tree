@@ -383,7 +383,7 @@ class TreeNode {
     /**
      * Expand this node.
      *
-     * @return {Promise} Promise resolved on successful load and expand of children.
+     * @return {Promise<TreeNode>} Promise resolved on successful load and expand of children.
      */
     expand() {
         let node = this;
@@ -666,7 +666,7 @@ class TreeNode {
      * On load success, pass the result array to `resolve`.
      * On error, pass the Error to `reject`.
      *
-     * @return {Promise} Promise resolving children nodes.
+     * @return {Promise<TreeNodes>} Promise resolving children nodes.
      */
     loadChildren() {
         return new Promise((resolve, reject) => {
@@ -747,7 +747,7 @@ class TreeNode {
      * Load additional children.
      *
      * @param {Event} event Click or scroll event if DOM interaction triggered this call.
-     * @return {Promise} Resolves with request results.
+     * @return {Promise<TreeNodes>} Resolves with request results.
      */
     loadMore() {
         if (!this.children || this.children === true) {
@@ -989,7 +989,7 @@ class TreeNode {
     /**
      * Remove all current children and re-execute a loadChildren call.
      *
-     * @return {Promise} Promise resolved on load.
+     * @return {Promise<TreeNodes>} Promise resolved on load.
      */
     reload() {
         return new Promise((resolve, reject) => {

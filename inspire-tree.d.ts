@@ -135,7 +135,7 @@ export class InspireTree extends EventEmitter2 {
     editable(full?: boolean): TreeNodes;
     editing(full?: boolean): TreeNodes;
     enableDeselection(): InspireTree;
-    expand(): TreeNodes;
+    expand(): Promise<TreeNodes>;
     expandDeep(): TreeNodes;
     expanded(full?: boolean): TreeNodes;
     expandParents(): TreeNodes;
@@ -156,7 +156,7 @@ export class InspireTree extends EventEmitter2 {
     static isTreeNode(object: any): boolean;
     static isTreeNodes(object: any): boolean;
     lastSelectedNode(): TreeNode;
-    load(loader: Promise<TreeNodes>): any;
+    load(loader: Promise<TreeNodes>): Promise<TreeNodes>;
     loading(full?: boolean): TreeNodes;
     matched(full?: boolean): TreeNodes;
     move(index: number, newIndex: number, target: TreeNodes): TreeNode;
@@ -171,7 +171,7 @@ export class InspireTree extends EventEmitter2 {
     removed(full?: boolean): TreeNodes;
     restore(): TreeNodes;
     restoreDeep(): TreeNodes;
-    search(query: string|RegExp|NodeIteratee): TreeNodes;
+    search(query: string|RegExp|NodeIteratee): Promise<TreeNodes>;
     select(): TreeNodes;
     selectable(full?: boolean): TreeNodes;
     selectBetween(start: TreeNode, end: TreeNode): InspireTree;
@@ -214,7 +214,7 @@ export class TreeNodes extends Array<TreeNode> {
     editable(full?: boolean): TreeNodes;
     editing(full?: boolean): TreeNodes;
     expand(): TreeNodes;
-    expandDeep(): TreeNodes;
+    expandDeep(): Promise<TreeNodes>;
     expanded(full?: boolean): TreeNodes;
     expandParents(): TreeNodes;
     extract(predicate: string|NodeIteratee): TreeNodes;

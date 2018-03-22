@@ -363,7 +363,7 @@ class TreeNodes extends Array {
     /**
      * Expand (deeply) all nodes.
      *
-     * @return {Promise} Promise resolved when all children have loaded and expanded.
+     * @return {Promise<TreeNodes>} Promise resolved when all children have loaded and expanded.
      */
     expandDeep() {
         return new Promise((resolve) => {
@@ -635,7 +635,7 @@ class TreeNodes extends Array {
      * Loads additional nodes for this context.
      *
      * @param {Event} event Click or scroll event if DOM interaction triggered this call.
-     * @return {Promise} Resolves with request results.
+     * @return {Promise<TreeNodes>} Resolves with request results.
      */
     loadMore(event) {
         // Never refire if node is loading
