@@ -560,6 +560,16 @@ class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Returns the first node matching predicate.
+     *
+     * @param {function} predicate Predicate functions, accepts a single node and returns a boolean.
+     * @return {TreeNode} First matching TreeNode, or undefined.
+     */
+    find() {
+        return map(this, 'find', arguments);
+    }
+
+    /**
      * Flatten and get only node(s) matching the expected state or predicate function.
      *
      * @param {string|function} predicate State property or custom function.

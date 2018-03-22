@@ -426,8 +426,8 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     filterBy(predicate) {
-        let fn = getPredicateFunction(predicate);
-        let matches = new TreeNodes(this._tree);
+        const fn = getPredicateFunction(predicate);
+        const matches = new TreeNodes(this._tree);
 
         _.each(this, (node) => {
             if (fn(node)) {
@@ -436,6 +436,26 @@ class TreeNodes extends Array {
         });
 
         return matches;
+    }
+
+    /**
+     * Returns the first node matching predicate.
+     *
+     * @param {function} predicate Predicate functions, accepts a single node and returns a boolean.
+     * @return {TreeNode} First matching TreeNode, or undefined.
+     */
+    find(predicate) {
+        let match;
+
+        this.recurseDown(node => {
+            if (predicate(node)) {
+                match = node;
+
+                return false;
+            }
+        });
+
+        return match;
     }
 
     /**
