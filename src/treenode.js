@@ -38,6 +38,7 @@ function cloneItree(itree, excludeKeys) {
  * This is a base method and will not invoke related changes, for example
  * setting selected=false will not trigger any deselection logic.
  *
+ * @private
  * @param {TreeNode} node Tree node.
  * @param {string} property Property name.
  * @param {boolean} val New value, if setting.
