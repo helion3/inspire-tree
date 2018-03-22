@@ -8,6 +8,7 @@ Inspire Tree is a performance-driven javascript-based UI tree component, built f
 our need for one - the only existing solution which met our *feature* needs was a nightmare to *develop* for.
 
 - [Website & Demos](http://www.inspire-tree.com/)
+- [API Docs](http://www.inspire-tree.com/docs/current/)
 - [Changelog](https://github.com/helion3/inspire-tree/blob/master/CHANGELOG.md)
 
 ### Features:
@@ -82,12 +83,6 @@ will be caught in a promise that's cached as `tree._loader.promise`. This allows
 which can't be returned from the InspireTree constructor.
 
 Any calls to `load`-related methods can use the returned promise normally.
-
-## API Docs
-
-- [Tree API](docs/tree.md)
-- [TreeNode](docs/treenode.md)
-- [TreeNodes](docs/treenodes.md)
 
 ## Tree Configuration
 
