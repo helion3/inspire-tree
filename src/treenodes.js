@@ -908,7 +908,7 @@ class TreeNodes extends Array {
      * If no custom sorter given, the configured "sort" value will be used.
      *
      * @param {string|function} sorter Sort function or property name.
-     * @return {TreeNodes} Array of node obejcts.
+     * @return {TreeNodes} Array of node objects.
      */
     sortBy(sorter) {
         sorter = sorter || this._tree.config.sort;
@@ -922,6 +922,24 @@ class TreeNodes extends Array {
                 this.push(node);
             });
         }
+
+        return this;
+    }
+
+    /**
+     * Sorts (deeply) all nodes in this collection.
+     *
+     * @param {function} comparator [description]
+     * @return {TreeNodes} Array of node objects.
+     */
+    sortDeep(comparator) {
+        this.sort(comparator);
+
+        this.each(node => {
+            if (node.hasChildren()) {
+                node.children.sortDeep(comparator);
+            }
+        });
 
         return this;
     }

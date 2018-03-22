@@ -1331,6 +1331,16 @@ class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Deeply sort nodes.
+     *
+     * @param {function} compareFn Comparison function.
+     * @return {TreeNodes} Root array of node objects.
+     */
+    sortDeep() {
+        return map(this, 'sortDeep', arguments);
+    }
+
+    /**
      * Remove and/or add new TreeNodes into the root collection.
      *
      * @param {int} start Starting index.
