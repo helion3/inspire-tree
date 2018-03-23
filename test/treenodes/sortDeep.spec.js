@@ -33,9 +33,7 @@ describe('TreeNodes.prototype.sortDeep', function() {
 
         tree.search('B');
 
-        nodes.sortDeep(function(a, b) {
-            return b.matched() - a.matched();
-        });
+        nodes.sortDeep((a, b) => b.matched() - a.matched());
 
         expect(nodes[0].text).to.equal('B');
         expect(nodes[1].text).to.equal('A');
