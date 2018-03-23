@@ -321,8 +321,16 @@ class InspireTree extends EventEmitter2 {
      * @return {Tree} Tree instance.
      */
     clearSearch() {
-        this.matched().state('matched', false);
-        return this.showDeep().collapseDeep().tree();
+        this.batch();
+
+        this.recurseDown(node => {
+            // Reset search effects (show node, collapse, reset matched)
+            node.show().collapse().state('matched', false);
+        });
+
+        this.end();
+
+        return this;
     }
 
     /**
