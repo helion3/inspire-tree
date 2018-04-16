@@ -1,5 +1,19 @@
 # Changes to Inspire Tree
 
+# 5.0.0
+
+- Added `TreeNode.assign`.
+- Added `TreeNodes.find`.
+- Added `TreeNodes.sortDeep`.
+- Added state object argument support to `TreeNode.state`.
+- Fixed argument support for `TreeNodes.invokeDeep`.
+- Fixed typescript definition issues.
+- Switched API doc generator from docdown to jsdoc.
+
+**Breaking Changes**
+
+- Removed `{ to() }` return of `copy` methods. For example `nodes.copy(dest)` instead of `nodes.copy().to(dest)`.
+
 # 4.3.1
 
 - Fixed crypto error resulting from build tool regression.
