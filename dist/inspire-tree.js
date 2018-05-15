@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 5.0.0
+ * @version 5.0.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -139,6 +139,11 @@ function baseStateChange(prop, value, verb, node, deep) {
 
         if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
             resetState(node);
+        }
+
+        // indeterminate may never be true if checked is
+        if (value && prop === 'checked') {
+            node.state('indeterminate', false);
         }
 
         node.state(prop, value);
@@ -2955,9 +2960,6 @@ var TreeNode = function () {
             var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
 
             baseStateChange('checked', true, 'checked', this, deep);
-
-            // Reset indeterminate state
-            this.state('indeterminate', false);
 
             // Refresh parent
             if (this.hasParent()) {

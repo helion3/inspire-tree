@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 5.0.1
+
+- Fixed parent checkbox not overriding indeterminate children.
+
 # 5.0.0
 
 - Added `TreeNode.assign`.
