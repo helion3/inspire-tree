@@ -16,6 +16,9 @@ describe('TreeNode.prototype.check', function() {
                     children: [{
                         text: 'AAA',
                         id: 111
+                    }, {
+                        text: 'AAA',
+                        id: 112
                     }]
                 }, {
                     text: 'AB',
@@ -72,5 +75,27 @@ describe('TreeNode.prototype.check', function() {
         node.recurseDown((child) => {
             expect(child.checked()).to.be.true;
         });
+    });
+
+    it('checks previously indeterminate children', function() {
+        // Reset
+        tree.recurseDown((node) => {
+            node.uncheck();
+        });
+
+        // Check the child
+        tree.node(111).check();
+
+        // Verify middle node is indeterminate
+        const node = tree.node(11);
+        expect(node.indeterminate()).to.be.true;
+        expect(node.checked()).to.be.false;
+
+        // Check root node and verify all children are checked
+        tree.node(1).check();
+
+        // Ensure middle node is now checked
+        expect(node.indeterminate()).to.be.false;
+        expect(node.checked()).to.be.true;
     });
 });

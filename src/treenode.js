@@ -192,9 +192,6 @@ class TreeNode {
 
         baseStateChange('checked', true, 'checked', this, deep);
 
-        // Reset indeterminate state
-        this.state('indeterminate', false);
-
         // Refresh parent
         if (this.hasParent()) {
             this.getParent().refreshIndeterminateState();

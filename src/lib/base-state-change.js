@@ -35,6 +35,11 @@ export function baseStateChange(prop, value, verb, node, deep) {
             resetState(node);
         }
 
+        // indeterminate may never be true if checked is
+        if (value && prop === 'checked') {
+            node.state('indeterminate', false);
+        }
+
         node.state(prop, value);
 
         node._tree.emit('node.' + verb, node, false);
