@@ -37,7 +37,6 @@ class InspireTree extends EventEmitter2 {
         tree._lastSelectedNode;
         tree._muted = false;
         tree.allowsLoadEvents = false;
-        tree.batching = 0;
         tree.id = uuidV4();
         tree.initialized = false;
         tree.isDynamic = false;
@@ -220,9 +219,7 @@ class InspireTree extends EventEmitter2 {
      * @return {void}
      */
     applyChanges() {
-        if (this.batching === 0) {
-            this.emit('changes.applied');
-        }
+        return this.model.applyChanges();
     }
 
     /**
@@ -242,11 +239,7 @@ class InspireTree extends EventEmitter2 {
      * @return {void}
      */
     batch() {
-        if (this.batching < 0) {
-            this.batching = 0;
-        }
-
-        this.batching++;
+        return this.model.batch();
     }
 
     /**
@@ -453,16 +446,6 @@ class InspireTree extends EventEmitter2 {
     }
 
     /**
-     * Check if every node passes the given test.
-     *
-     * @param {function} tester Test each node in this collection,
-     * @return {boolean} True if every node passes the test.
-     */
-    every() {
-        return map(this, 'every', arguments);
-    }
-
-    /**
      * Query for all editable nodes.
      *
      * @param {boolean} full Retain full hiearchy.
@@ -500,11 +483,17 @@ class InspireTree extends EventEmitter2 {
      * @return {void}
      */
     end() {
-        this.batching--;
+        return this.model.end();
+    }
 
-        if (this.batching === 0) {
-            this.applyChanges();
-        }
+    /**
+     * Check if every node passes the given test.
+     *
+     * @param {function} tester Test each node in this collection,
+     * @return {boolean} True if every node passes the test.
+     */
+    every() {
+        return map(this, 'every', arguments);
     }
 
     /**
@@ -570,11 +559,21 @@ class InspireTree extends EventEmitter2 {
     /**
      * Returns the first node matching predicate.
      *
-     * @param {function} predicate Predicate functions, accepts a single node and returns a boolean.
+     * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
      * @return {TreeNode} First matching TreeNode, or undefined.
      */
     find() {
         return map(this, 'find', arguments);
+    }
+
+    /**
+     * Returns the first shallow node matching predicate.
+     *
+     * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+     * @return {TreeNode} First matching TreeNode, or undefined.
+     */
+    first() {
+        return map(this, 'first', arguments);
     }
 
     /**
@@ -751,6 +750,16 @@ class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Returns the last shallow node matching predicate.
+     *
+     * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+     * @return {TreeNode} Last matching shallow TreeNode, or undefined.
+     */
+    last() {
+        return map(this, 'last', arguments);
+    }
+
+    /**
      * Get the most recently selected node, if any.
      *
      * @return {TreeNode} Last selected node, or undefined.
@@ -822,7 +831,7 @@ class InspireTree extends EventEmitter2 {
 
                     resolve(this.model);
 
-                    this.applyChanges();
+                    this.model.applyChanges();
                 };
 
                 // Delay event for synchronous loader

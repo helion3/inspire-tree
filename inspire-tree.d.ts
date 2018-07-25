@@ -142,6 +142,7 @@ export class InspireTree extends EventEmitter2 {
     extract(predicate: string|NodeIteratee): TreeNodes;
     filterBy(predicate: string|NodeIteratee): TreeNodes;
     find(predicate: (node: TreeNode) => boolean): TreeNode;
+    first(predicate: (node: TreeNode) => boolean): TreeNode;
     flatten(predicate: string|NodeIteratee): TreeNodes;
     focused(full?: boolean): TreeNodes;
     get(index: number): TreeNode;
@@ -156,6 +157,7 @@ export class InspireTree extends EventEmitter2 {
     isEventMuted(eventName: string): boolean;
     static isTreeNode(object: any): boolean;
     static isTreeNodes(object: any): boolean;
+    last(predicate: (node: TreeNode) => boolean): TreeNode;
     lastSelectedNode(): TreeNode;
     load(loader: Promise<TreeNodes>): Promise<TreeNodes>;
     loading(full?: boolean): TreeNodes;
@@ -297,6 +299,8 @@ export class TreeNode {
     hide(): TreeNode;
     indeterminate(): boolean;
     indexPath(): string;
+    isFirstRenderable(): boolean;
+    isLastRenderable(): boolean;
     lastDeepestVisibleChild(): TreeNode;
     loadChildren(): Promise<TreeNodes>;
     loading(): boolean;
@@ -315,6 +319,7 @@ export class TreeNode {
     reload(): Promise<TreeNodes>;
     remove(includeState?: boolean): any;
     removed(): boolean;
+    renderable(): boolean;
     rendered(): boolean;
     restore(): TreeNode;
     select(shallow?: boolean): TreeNode;

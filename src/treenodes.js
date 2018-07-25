@@ -84,11 +84,13 @@ function getPredicateFunction(predicate) {
  * native objects are problematic to extend correctly
  * so we mimic it, not actually extend it.
  *
+ * @param {InspireTree} tree Context tree.
  * @param {array} array Array of TreeNode objects.
+ * @param {object} opts Configuration object.
  * @return {TreeNodes} Collection of TreeNode
  */
 class TreeNodes extends Array {
-    constructor(tree, array) {
+    constructor(tree, array, opts) {
         super();
 
         if (_.isFunction(_.get(tree, 'isTree')) && !tree.isTree(tree)) {
@@ -97,6 +99,15 @@ class TreeNodes extends Array {
 
         this._tree = tree;
         this.length = 0;
+        this.batching = 0;
+
+        // A custom dirty flag to indicate when an index-altering
+        // change has occured. Avoids re-caching when unnecessary.
+        this.indicesDirty = false;
+
+        this.config = _.defaultsDeep({}, opts, {
+            calculateRenderablePositions: false
+        });
 
         // Init pagination
         this._pagination = {
@@ -136,6 +147,37 @@ class TreeNodes extends Array {
     }
 
     /**
+     * Release pending data changes to any listeners.
+     *
+     * Will skip rendering as long as any calls
+     * to `batch` have yet to be resolved,
+     *
+     * @private
+     * @return {void}
+     */
+    applyChanges() {
+        if (this.batching === 0) {
+            this.calculateRenderablePositions();
+
+            this._tree.emit('changes.applied', this.context());
+        }
+    }
+
+    /**
+     * Batch multiple changes for listeners (i.e. DOM)
+     *
+     * @private
+     * @return {void}
+     */
+    batch() {
+        if (this.batching < 0) {
+            this.batching = 0;
+        }
+
+        this.batching++;
+    }
+
+    /**
      * Query for all available nodes.
      *
      * @param {boolean} full Retain full hiearchy.
@@ -161,6 +203,54 @@ class TreeNodes extends Array {
      */
     blurDeep() {
         return this.invokeDeep('blur');
+    }
+
+    /**
+     * Calculate and cache the first/last renderable nodes.
+     *
+     * Primarily useful for rendering engines, since hidden DOM
+     * nodes may still be present and CSS :first/:last selectors
+     * would fail.
+     *
+     * @private
+     * @return {void}
+     */
+    calculateRenderablePositions() {
+        if (!this.indicesDirty || this.batching > 0 || !this.config.calculateRenderablePositions) {
+            return;
+        }
+
+        let first, last;
+
+        this.each(node => {
+            if (node.renderable()) {
+                // Cache first node if none yet
+                first = first || node;
+
+                // Always update last node on match
+                last = node;
+            }
+        });
+
+        if (this.firstRenderableNode && this.firstRenderableNode !== first) {
+            this.firstRenderableNode.markDirty();
+        }
+
+        if (first && first !== this.firstRenderableNode) {
+            first.markDirty();
+        }
+
+        if (this.lastRenderableNode && this.lastRenderableNode !== last) {
+            this.lastRenderableNode.markDirty();
+        }
+
+        if (last && last !== this.lastRenderableNode) {
+            last.markDirty();
+        }
+
+        this.firstRenderableNode = first;
+        this.lastRenderableNode = last;
+        this.indicesDirty = false;
     }
 
     /**
@@ -342,6 +432,20 @@ class TreeNodes extends Array {
     }
 
     /**
+     * Release the current batch.
+     *
+     * @private
+     * @return {void}
+     */
+    end() {
+        this.batching--;
+
+        if (this.batching === 0) {
+            this.applyChanges();
+        }
+    }
+
+    /**
      * Expand nodes.
      *
      * @return {TreeNodes} Array of node objects.
@@ -441,7 +545,7 @@ class TreeNodes extends Array {
     /**
      * Returns the first node matching predicate.
      *
-     * @param {function} predicate Predicate functions, accepts a single node and returns a boolean.
+     * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
      * @return {TreeNode} First matching TreeNode, or undefined.
      */
     find(predicate) {
@@ -456,6 +560,20 @@ class TreeNodes extends Array {
         });
 
         return match;
+    }
+
+    /**
+     * Returns the first shallow node matching predicate.
+     *
+     * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+     * @return {TreeNode} First matching TreeNode, or undefined.
+     */
+    first(predicate) {
+        for (let i = 0, l = this.length; i < l; i++) {
+            if (predicate(this[i])) {
+                return this[i];
+            }
+        }
     }
 
     /**
@@ -580,7 +698,7 @@ class TreeNodes extends Array {
                 }
 
                 existingNode.markDirty();
-                this._tree.applyChanges();
+                this.applyChanges();
 
                 // Node merged, return it.
                 return existingNode;
@@ -610,7 +728,7 @@ class TreeNodes extends Array {
             this.invoke('markDirty');
         }
 
-        this._tree.applyChanges();
+        this.applyChanges();
 
         return node;
     }
@@ -639,6 +757,20 @@ class TreeNodes extends Array {
         }
 
         return baseInvoke(this, methods, args, true);
+    }
+
+    /**
+     * Returns the last shallow node matching predicate.
+     *
+     * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+     * @return {TreeNode} Last matching shallow TreeNode, or undefined.
+     */
+    last(predicate) {
+        for (let i = this.length - 1; i >= 0; i--) {
+            if (predicate(this[i])) {
+                return this[i];
+            }
+        }
     }
 
     /**
@@ -672,7 +804,7 @@ class TreeNodes extends Array {
 
         // Set loading flag, prevents repeat requests
         this._loading = true;
-        this._tree.batch();
+        this.batch();
 
         // Mark this context as dirty since we'll update text/tree nodes
         _.invoke(this._context, 'markDirty');
@@ -697,16 +829,16 @@ class TreeNodes extends Array {
             promise = Promise.resolve();
         }
 
-        this._tree.end();
+        this.end();
 
         // Clear the loading flag
         if (this._tree.config.deferredLoading) {
             promise.then(() => {
                 this._loading = false;
-                this._tree.applyChanges();
+                this.applyChanges();
             }).catch(() => {
                 this._loading = false;
-                this._tree.applyChanges();
+                this.applyChanges();
             });
         }
 
@@ -732,14 +864,10 @@ class TreeNodes extends Array {
      * @return {TreeNode} Node object.
      */
     move(index, newIndex, target = this) {
-        this._tree.batch();
-
         const oldNode = this[index].remove();
         const node = target.insertAt(newIndex, oldNode);
 
         this._tree.emit('node.moved', node, this, index, target, newIndex);
-
-        this._tree.end();
 
         return node;
     }
@@ -800,6 +928,35 @@ class TreeNodes extends Array {
     }
 
     /**
+     * Removes the last node.
+     *
+     * @return {TreeNode} Last tree node.
+     */
+    pop() {
+        const result = super.pop();
+
+        this.indicesDirty = true;
+        this.calculateRenderablePositions();
+
+        return result;
+    }
+
+    /**
+     * Push a new TreeNode onto the collection.
+     *
+     * @param {TreeNode} node Node objext.
+     * @returns {number} The new length.
+     */
+    push(node) {
+        const result = super.push(node);
+
+        this.indicesDirty = true;
+        this.calculateRenderablePositions();
+
+        return result;
+    }
+
+    /**
      * Iterate down all nodes and any children.
      *
      * Return false to stop execution.
@@ -821,10 +978,10 @@ class TreeNodes extends Array {
      */
     remove(node) {
         _.remove(this, { id: node.id });
-
         _.invoke(this._context, 'markDirty');
 
-        this._tree.applyChanges();
+        this.indicesDirty = true;
+        this.applyChanges();
 
         return this;
     }
@@ -896,6 +1053,21 @@ class TreeNodes extends Array {
     }
 
     /**
+     * Removes the first node.
+     *
+     * @param {TreeNode} node Node object.
+     * @return {TreeNode} Node object.
+     */
+    shift(node) {
+        const result = super.shift(node);
+
+        this.indicesDirty = true;
+        this.calculateRenderablePositions();
+
+        return result;
+    }
+
+    /**
      * Show nodes.
      *
      * @return {TreeNodes} Array of node objects.
@@ -935,12 +1107,18 @@ class TreeNodes extends Array {
 
         // Only apply sort if one provided
         if (sorter) {
+            this.batch();
+
             let sorted = _.sortBy(this, sorter);
 
             this.length = 0;
             _.each(sorted, (node) => {
                 this.push(node);
             });
+
+            this.indicesDirty = true;
+
+            this.end();
         }
 
         return this;
@@ -962,6 +1140,23 @@ class TreeNodes extends Array {
         });
 
         return this;
+    }
+
+    /**
+     * Changes array contents by removing existing nodes and/or adding new nodes.
+     *
+     * @param {number} start Start index.
+     * @param {number} deleteCount Number of nodes to delete.
+     * @param {TreeNode} ...nodes One or more nodes.
+     * @return {array} Array of deleted elements.
+     */
+    splice() {
+        const result = super.splice.apply(this, arguments);
+
+        this.indicesDirty = true;
+        this.calculateRenderablePositions();
+
+        return result;
     }
 
     /**
@@ -1021,6 +1216,8 @@ class TreeNodes extends Array {
             n2Context.move(n2Context.indexOf(node2), n1Index, n1Context);
         }
 
+        this.indicesDirty = true;
+
         this._tree.end();
 
         this._tree.emit('node.swapped', node1, n1Context, n1Index, node2, n2Context, n2Index);
@@ -1050,6 +1247,21 @@ class TreeNodes extends Array {
         });
 
         return array;
+    }
+
+    /**
+     * Adds a node to beginning of the collection.
+     *
+     * @param {TreeNode} node Node object.
+     * @return {number} New length of collection.
+     */
+    unshift(node) {
+        const result = super.unshift(node);
+
+        this.indicesDirty = true;
+        this.calculateRenderablePositions();
+
+        return result;
     }
 
     /**
