@@ -20,7 +20,11 @@ describe('TreeNode.prototype.set', function() {
 
     it('updates node property', function() {
         const node = tree.node(1);
+
+        // Dirty would be true due to renderable position calcs
+        node.itree.dirty = false;
         expect(node.itree.dirty).to.be.false;
+
         expect(node.text).to.equal('A');
 
         node.set('text', 'New');

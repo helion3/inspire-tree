@@ -20,9 +20,9 @@ describe('TreeNodes extends Array.prototype.unshift', function() {
     });
 
     it('unshifts a node', function() {
-        tree.nodes().unshift({
+        tree.nodes().unshift(tree.createNode({
             text: 'A'
-        });
+        }));
 
         expect(tree.nodes()).to.have.length(2);
         expect(tree.nodes()[0].text).to.equal('A');

@@ -13,7 +13,11 @@ import TreeNodes from '../treenodes';
  * @return {array|object} Object model.
  */
 export function collectionToModel(tree, array, parent) {
-    const collection = new TreeNodes(tree);
+    const collection = new TreeNodes(tree, null, {
+        calculateRenderablePositions: true
+    });
+
+    collection.batch();
 
     // Sort
     if (tree.config.sort) {
@@ -25,6 +29,8 @@ export function collectionToModel(tree, array, parent) {
     });
 
     collection._context = parent;
+
+    collection.end();
 
     return collection;
 }

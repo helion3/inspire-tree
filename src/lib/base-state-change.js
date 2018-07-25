@@ -28,7 +28,7 @@ function resetState(node) {
  */
 export function baseStateChange(prop, value, verb, node, deep) {
     if (node.state(prop) !== value) {
-        node._tree.batch();
+        node.context().batch();
 
         if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
             resetState(node);
@@ -49,8 +49,15 @@ export function baseStateChange(prop, value, verb, node, deep) {
             });
         }
 
+        // This node's "renderability" has changed, so we should
+        // trigger a re-cache in the parent context.
+        if (prop === 'hidden' || prop === 'removed') {
+            node.context().indicesDirty = true;
+            node.context().calculateRenderablePositions();
+        }
+
         node.markDirty();
-        node._tree.end();
+        node.context().end();
     }
 
     return node;

@@ -123,11 +123,16 @@ class TreeNode {
     addChildren(children) {
         const nodes = new TreeNodes(this._tree);
 
-        this._tree.batch();
+        if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
+            this.children = new TreeNodes(this._tree);
+            this.children._context = this;
+        }
+
+        this.children.batch();
         _.each(children, child => {
             nodes.push(this.addChild(child));
         });
-        this._tree.end();
+        this.children.end();
 
         return nodes;
     }
@@ -152,7 +157,7 @@ class TreeNode {
         _.assign(this, ...arguments);
 
         this.markDirty();
-        this._tree.applyChanges();
+        this.context().applyChanges();
 
         return this;
     }
@@ -343,14 +348,14 @@ class TreeNode {
      */
     deselect(shallow) {
         if (this.selected() && (!this._tree.config.selection.require || this._tree.selected().length > 1)) {
-            this._tree.batch();
+            this.context().batch();
 
             // Will we apply this state change to our children?
             const deep = !shallow && this._tree.config.selection.autoSelectChildren;
 
             baseStateChange('selected', false, 'deselected', this, deep);
 
-            this._tree.end();
+            this.context().end();
         }
 
         return this;
@@ -393,7 +398,7 @@ class TreeNode {
                     this.loadChildren().then(resolve).catch(reject);
                 }
                 else {
-                    this._tree.applyChanges();
+                    this.context().applyChanges();
                     resolve(this);
                 }
             }
@@ -626,6 +631,33 @@ class TreeNode {
     }
 
     /**
+     * Get whether this node is the first renderable in its context.
+     *
+     * @return {boolean} True if node is first renderable
+     */
+    isFirstRenderable() {
+        return this === this.context().firstRenderableNode;
+    }
+
+    /**
+     * Get whether this node is the last renderable in its context.
+     *
+     * @return {boolean} True if node is last renderable
+     */
+    isLastRenderable() {
+        return this === this.context().lastRenderableNode;
+    }
+
+    /**
+     * Get whether this node is the only renderable in its context.
+     *
+     * @return {boolean} True if node is only renderable
+     */
+    isOnlyRenderable() {
+        return this.isFirstRenderable() && this.isLastRenderable();
+    }
+
+    /**
      * Find the last + deepest visible child of the previous sibling.
      *
      * @return {TreeNode} Node object.
@@ -666,7 +698,7 @@ class TreeNode {
 
             this.state('loading', true);
             this.markDirty();
-            this._tree.applyChanges();
+            this.context().applyChanges();
 
             const complete = (nodes, totalNodes) => {
                 // A little type-safety for silly situations
@@ -674,7 +706,7 @@ class TreeNode {
                     return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
                 }
 
-                this._tree.batch();
+                this.context().batch();
                 this.state('loading', false);
 
                 const model = collectionToModel(this._tree, nodes, this);
@@ -695,7 +727,7 @@ class TreeNode {
                 }
 
                 this.markDirty();
-                this._tree.end();
+                this.context().end();
 
                 resolve(this.children);
 
@@ -707,7 +739,7 @@ class TreeNode {
                 this.children = new TreeNodes(this._tree);
                 this.children._context = this;
                 this.markDirty();
-                this._tree.applyChanges();
+                this.context().applyChanges();
 
                 reject(err);
 
@@ -1019,7 +1051,7 @@ class TreeNode {
         const exported = this.toObject(false, includeState);
         this._tree.emit('node.removed', exported, parent);
 
-        this._tree.applyChanges();
+        this.context().applyChanges();
 
         return exported;
     }
@@ -1031,6 +1063,17 @@ class TreeNode {
      */
     removed() {
         return this.state('removed');
+    }
+
+    /**
+     * Get whether this node can be "rendered" when the context is.
+     * Hidden and removed nodes may still be included in the DOM,
+     * but not "rendered" in a sense they'll be visible.
+     *
+     * @return {boolean} If not hidden or removed
+     */
+    renderable() {
+        return !this.hidden() && !this.removed();
     }
 
     /**
@@ -1118,7 +1161,7 @@ class TreeNode {
         this[property] = value;
 
         this.markDirty();
-        this._tree.applyChanges();
+        this.context().applyChanges();
 
         return this;
     }
@@ -1130,6 +1173,17 @@ class TreeNode {
      */
     show() {
         return baseStateChange('hidden', false, 'shown', this);
+    }
+
+    /**
+     * Mark this node as "removed" without actually removing it.
+     *
+     * Expand/show methods will never reveal this node until restored.
+     *
+     * @return {TreeNode} Node object.
+     */
+    softRemove() {
+        return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
     }
 
     /**
@@ -1147,14 +1201,14 @@ class TreeNode {
             return baseState(this, obj, val);
         }
 
-        this._tree.batch();
+        this.context().batch();
 
         const oldState = {};
         _.each(obj, (value, prop) => {
             oldState[prop] = baseState(this, prop, value);
         });
 
-        this._tree.end();
+        this.context().end();
 
         return oldState;
     }
@@ -1169,13 +1223,13 @@ class TreeNode {
     states(names, newVal) {
         const results = [];
 
-        this._tree.batch();
+        this.context().batch();
 
         _.each(names, name => {
             results.push(this.state(name, newVal));
         });
 
-        this._tree.end();
+        this.context().end();
 
         return results;
     }
@@ -1190,17 +1244,6 @@ class TreeNode {
         this.context().swap(this, node);
 
         return this;
-    }
-
-    /**
-     * Mark this node as "removed" without actually removing it.
-     *
-     * Expand/show methods will never reveal this node until restored.
-     *
-     * @return {TreeNode} Node object.
-     */
-    softRemove() {
-        return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
     }
 
     /**
@@ -1230,7 +1273,7 @@ class TreeNode {
         this.state('editing', !this.state('editing'));
 
         this.markDirty();
-        this._tree.applyChanges();
+        this.context().applyChanges();
 
         return this;
     }

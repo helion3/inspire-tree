@@ -24,6 +24,9 @@ describe('TreeNode.prototype.markDirty', function() {
 
     it('marks node dirty', function() {
         const node = tree.node(2);
+
+        // Dirty would be true due to renderable position calcs
+        node.itree.dirty = false;
         expect(node.itree.dirty).to.be.false;
 
         node.markDirty();
