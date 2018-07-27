@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 5.0.1
+ * @version 6.0.0-alpha.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -135,7 +135,7 @@ function resetState(node) {
  */
 function baseStateChange(prop, value, verb, node, deep) {
     if (node.state(prop) !== value) {
-        node._tree.batch();
+        node.context().batch();
 
         if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
             resetState(node);
@@ -156,8 +156,15 @@ function baseStateChange(prop, value, verb, node, deep) {
             });
         }
 
+        // This node's "renderability" has changed, so we should
+        // trigger a re-cache in the parent context.
+        if (prop === 'hidden' || prop === 'removed') {
+            node.context().indicesDirty = true;
+            node.context().calculateRenderablePositions();
+        }
+
         node.markDirty();
-        node._tree.end();
+        node.context().end();
     }
 
     return node;
@@ -1378,6 +1385,31 @@ var createClass = function () {
   };
 }();
 
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
 var inherits = function (subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
@@ -1507,14 +1539,16 @@ function getPredicateFunction(predicate) {
  * native objects are problematic to extend correctly
  * so we mimic it, not actually extend it.
  *
+ * @param {InspireTree} tree Context tree.
  * @param {array} array Array of TreeNode objects.
+ * @param {object} opts Configuration object.
  * @return {TreeNodes} Collection of TreeNode
  */
 
 var TreeNodes = function (_extendableBuiltin2) {
     inherits(TreeNodes, _extendableBuiltin2);
 
-    function TreeNodes(tree, array) {
+    function TreeNodes(tree, array, opts) {
         classCallCheck(this, TreeNodes);
 
         var _this = possibleConstructorReturn(this, (TreeNodes.__proto__ || Object.getPrototypeOf(TreeNodes)).call(this));
@@ -1525,6 +1559,15 @@ var TreeNodes = function (_extendableBuiltin2) {
 
         _this._tree = tree;
         _this.length = 0;
+        _this.batching = 0;
+
+        // A custom dirty flag to indicate when an index-altering
+        // change has occured. Avoids re-caching when unnecessary.
+        _this.indicesDirty = false;
+
+        _this.config = _.defaultsDeep({}, opts, {
+            calculateRenderablePositions: false
+        });
 
         // Init pagination
         _this._pagination = {
@@ -1568,6 +1611,43 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
+         * Release pending data changes to any listeners.
+         *
+         * Will skip rendering as long as any calls
+         * to `batch` have yet to be resolved,
+         *
+         * @private
+         * @return {void}
+         */
+
+    }, {
+        key: 'applyChanges',
+        value: function applyChanges() {
+            if (this.batching === 0) {
+                this.calculateRenderablePositions();
+
+                this._tree.emit('changes.applied', this.context());
+            }
+        }
+
+        /**
+         * Batch multiple changes for listeners (i.e. DOM)
+         *
+         * @private
+         * @return {void}
+         */
+
+    }, {
+        key: 'batch',
+        value: function batch() {
+            if (this.batching < 0) {
+                this.batching = 0;
+            }
+
+            this.batching++;
+        }
+
+        /**
          * Query for all available nodes.
          *
          * @param {boolean} full Retain full hiearchy.
@@ -1602,6 +1682,58 @@ var TreeNodes = function (_extendableBuiltin2) {
         key: 'blurDeep',
         value: function blurDeep() {
             return this.invokeDeep('blur');
+        }
+
+        /**
+         * Calculate and cache the first/last renderable nodes.
+         *
+         * Primarily useful for rendering engines, since hidden DOM
+         * nodes may still be present and CSS :first/:last selectors
+         * would fail.
+         *
+         * @private
+         * @return {void}
+         */
+
+    }, {
+        key: 'calculateRenderablePositions',
+        value: function calculateRenderablePositions() {
+            if (!this.indicesDirty || this.batching > 0 || !this.config.calculateRenderablePositions) {
+                return;
+            }
+
+            var first = void 0,
+                last = void 0;
+
+            this.each(function (node) {
+                if (node.renderable()) {
+                    // Cache first node if none yet
+                    first = first || node;
+
+                    // Always update last node on match
+                    last = node;
+                }
+            });
+
+            if (this.firstRenderableNode && this.firstRenderableNode !== first) {
+                this.firstRenderableNode.markDirty();
+            }
+
+            if (first && first !== this.firstRenderableNode) {
+                first.markDirty();
+            }
+
+            if (this.lastRenderableNode && this.lastRenderableNode !== last) {
+                this.lastRenderableNode.markDirty();
+            }
+
+            if (last && last !== this.lastRenderableNode) {
+                last.markDirty();
+            }
+
+            this.firstRenderableNode = first;
+            this.lastRenderableNode = last;
+            this.indicesDirty = false;
         }
 
         /**
@@ -1828,6 +1960,23 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
+         * Release the current batch.
+         *
+         * @private
+         * @return {void}
+         */
+
+    }, {
+        key: 'end',
+        value: function end() {
+            this.batching--;
+
+            if (this.batching === 0) {
+                this.applyChanges();
+            }
+        }
+
+        /**
          * Expand nodes.
          *
          * @return {TreeNodes} Array of node objects.
@@ -1948,7 +2097,7 @@ var TreeNodes = function (_extendableBuiltin2) {
         /**
          * Returns the first node matching predicate.
          *
-         * @param {function} predicate Predicate functions, accepts a single node and returns a boolean.
+         * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
          * @return {TreeNode} First matching TreeNode, or undefined.
          */
 
@@ -1966,6 +2115,23 @@ var TreeNodes = function (_extendableBuiltin2) {
             });
 
             return match;
+        }
+
+        /**
+         * Returns the first shallow node matching predicate.
+         *
+         * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+         * @return {TreeNode} First matching TreeNode, or undefined.
+         */
+
+    }, {
+        key: 'first',
+        value: function first(predicate) {
+            for (var i = 0, l = this.length; i < l; i++) {
+                if (predicate(this[i])) {
+                    return this[i];
+                }
+            }
         }
 
         /**
@@ -2117,7 +2283,7 @@ var TreeNodes = function (_extendableBuiltin2) {
                         }
 
                     existingNode.markDirty();
-                    this._tree.applyChanges();
+                    this.applyChanges();
 
                     // Node merged, return it.
                     return existingNode;
@@ -2147,7 +2313,7 @@ var TreeNodes = function (_extendableBuiltin2) {
                 this.invoke('markDirty');
             }
 
-            this._tree.applyChanges();
+            this.applyChanges();
 
             return node;
         }
@@ -2182,6 +2348,23 @@ var TreeNodes = function (_extendableBuiltin2) {
             }
 
             return baseInvoke(this, methods, args, true);
+        }
+
+        /**
+         * Returns the last shallow node matching predicate.
+         *
+         * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+         * @return {TreeNode} Last matching shallow TreeNode, or undefined.
+         */
+
+    }, {
+        key: 'last',
+        value: function last(predicate) {
+            for (var i = this.length - 1; i >= 0; i--) {
+                if (predicate(this[i])) {
+                    return this[i];
+                }
+            }
         }
 
         /**
@@ -2223,7 +2406,7 @@ var TreeNodes = function (_extendableBuiltin2) {
 
             // Set loading flag, prevents repeat requests
             this._loading = true;
-            this._tree.batch();
+            this.batch();
 
             // Mark this context as dirty since we'll update text/tree nodes
             _.invoke(this._context, 'markDirty');
@@ -2246,16 +2429,16 @@ var TreeNodes = function (_extendableBuiltin2) {
                 promise = es6Promise_1.resolve();
             }
 
-            this._tree.end();
+            this.end();
 
             // Clear the loading flag
             if (this._tree.config.deferredLoading) {
                 promise.then(function () {
                     _this3._loading = false;
-                    _this3._tree.applyChanges();
+                    _this3.applyChanges();
                 }).catch(function () {
                     _this3._loading = false;
-                    _this3._tree.applyChanges();
+                    _this3.applyChanges();
                 });
             }
 
@@ -2289,14 +2472,10 @@ var TreeNodes = function (_extendableBuiltin2) {
         value: function move(index, newIndex) {
             var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
 
-            this._tree.batch();
-
             var oldNode = this[index].remove();
             var node = target.insertAt(newIndex, oldNode);
 
             this._tree.emit('node.moved', node, this, index, target, newIndex);
-
-            this._tree.end();
 
             return node;
         }
@@ -2366,6 +2545,41 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
+         * Removes the last node.
+         *
+         * @return {TreeNode} Last tree node.
+         */
+
+    }, {
+        key: 'pop',
+        value: function pop() {
+            var result = get(TreeNodes.prototype.__proto__ || Object.getPrototypeOf(TreeNodes.prototype), 'pop', this).call(this);
+
+            this.indicesDirty = true;
+            this.calculateRenderablePositions();
+
+            return result;
+        }
+
+        /**
+         * Push a new TreeNode onto the collection.
+         *
+         * @param {TreeNode} node Node objext.
+         * @returns {number} The new length.
+         */
+
+    }, {
+        key: 'push',
+        value: function push(node) {
+            var result = get(TreeNodes.prototype.__proto__ || Object.getPrototypeOf(TreeNodes.prototype), 'push', this).call(this, node);
+
+            this.indicesDirty = true;
+            this.calculateRenderablePositions();
+
+            return result;
+        }
+
+        /**
          * Iterate down all nodes and any children.
          *
          * Return false to stop execution.
@@ -2393,10 +2607,10 @@ var TreeNodes = function (_extendableBuiltin2) {
         key: 'remove',
         value: function remove(node) {
             _.remove(this, { id: node.id });
-
             _.invoke(this._context, 'markDirty');
 
-            this._tree.applyChanges();
+            this.indicesDirty = true;
+            this.applyChanges();
 
             return this;
         }
@@ -2489,6 +2703,24 @@ var TreeNodes = function (_extendableBuiltin2) {
         }
 
         /**
+         * Removes the first node.
+         *
+         * @param {TreeNode} node Node object.
+         * @return {TreeNode} Node object.
+         */
+
+    }, {
+        key: 'shift',
+        value: function shift(node) {
+            var result = get(TreeNodes.prototype.__proto__ || Object.getPrototypeOf(TreeNodes.prototype), 'shift', this).call(this, node);
+
+            this.indicesDirty = true;
+            this.calculateRenderablePositions();
+
+            return result;
+        }
+
+        /**
          * Show nodes.
          *
          * @return {TreeNodes} Array of node objects.
@@ -2542,12 +2774,18 @@ var TreeNodes = function (_extendableBuiltin2) {
 
             // Only apply sort if one provided
             if (sorter) {
+                this.batch();
+
                 var sorted = _.sortBy(this, sorter);
 
                 this.length = 0;
                 _.each(sorted, function (node) {
                     _this4.push(node);
                 });
+
+                this.indicesDirty = true;
+
+                this.end();
             }
 
             return this;
@@ -2572,6 +2810,26 @@ var TreeNodes = function (_extendableBuiltin2) {
             });
 
             return this;
+        }
+
+        /**
+         * Changes array contents by removing existing nodes and/or adding new nodes.
+         *
+         * @param {number} start Start index.
+         * @param {number} deleteCount Number of nodes to delete.
+         * @param {TreeNode} ...nodes One or more nodes.
+         * @return {array} Array of deleted elements.
+         */
+
+    }, {
+        key: 'splice',
+        value: function splice() {
+            var result = get(TreeNodes.prototype.__proto__ || Object.getPrototypeOf(TreeNodes.prototype), 'splice', this).apply(this, arguments);
+
+            this.indicesDirty = true;
+            this.calculateRenderablePositions();
+
+            return result;
         }
 
         /**
@@ -2639,6 +2897,8 @@ var TreeNodes = function (_extendableBuiltin2) {
                 n2Context.move(n2Context.indexOf(node2), n1Index, n1Context);
             }
 
+            this.indicesDirty = true;
+
             this._tree.end();
 
             this._tree.emit('node.swapped', node1, n1Context, n1Index, node2, n2Context, n2Index);
@@ -2674,6 +2934,24 @@ var TreeNodes = function (_extendableBuiltin2) {
             });
 
             return array;
+        }
+
+        /**
+         * Adds a node to beginning of the collection.
+         *
+         * @param {TreeNode} node Node object.
+         * @return {number} New length of collection.
+         */
+
+    }, {
+        key: 'unshift',
+        value: function unshift(node) {
+            var result = get(TreeNodes.prototype.__proto__ || Object.getPrototypeOf(TreeNodes.prototype), 'unshift', this).call(this, node);
+
+            this.indicesDirty = true;
+            this.calculateRenderablePositions();
+
+            return result;
         }
 
         /**
@@ -2878,11 +3156,16 @@ var TreeNode = function () {
 
             var nodes = new TreeNodes(this._tree);
 
-            this._tree.batch();
+            if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
+                this.children = new TreeNodes(this._tree);
+                this.children._context = this;
+            }
+
+            this.children.batch();
             _.each(children, function (child) {
                 nodes.push(_this2.addChild(child));
             });
-            this._tree.end();
+            this.children.end();
 
             return nodes;
         }
@@ -2913,7 +3196,7 @@ var TreeNode = function () {
             _.assign.apply(_, [this].concat(Array.prototype.slice.call(arguments)));
 
             this.markDirty();
-            this._tree.applyChanges();
+            this.context().applyChanges();
 
             return this;
         }
@@ -3142,14 +3425,14 @@ var TreeNode = function () {
          */
         value: function deselect(shallow) {
             if (this.selected() && (!this._tree.config.selection.require || this._tree.selected().length > 1)) {
-                this._tree.batch();
+                this.context().batch();
 
                 // Will we apply this state change to our children?
                 var deep = !shallow && this._tree.config.selection.autoSelectChildren;
 
                 baseStateChange('selected', false, 'deselected', this, deep);
 
-                this._tree.end();
+                this.context().end();
             }
 
             return this;
@@ -3202,7 +3485,7 @@ var TreeNode = function () {
                     if (node._tree.isDynamic && node.children === true) {
                         node.loadChildren().then(resolve).catch(reject);
                     } else {
-                        node._tree.applyChanges();
+                        node.context().applyChanges();
                         resolve(node);
                     }
                 } else {
@@ -3490,6 +3773,42 @@ var TreeNode = function () {
         }
 
         /**
+         * Get whether this node is the first renderable in its context.
+         *
+         * @return {boolean} True if node is first renderable
+         */
+
+    }, {
+        key: 'isFirstRenderable',
+        value: function isFirstRenderable() {
+            return this === this.context().firstRenderableNode;
+        }
+
+        /**
+         * Get whether this node is the last renderable in its context.
+         *
+         * @return {boolean} True if node is last renderable
+         */
+
+    }, {
+        key: 'isLastRenderable',
+        value: function isLastRenderable() {
+            return this === this.context().lastRenderableNode;
+        }
+
+        /**
+         * Get whether this node is the only renderable in its context.
+         *
+         * @return {boolean} True if node is only renderable
+         */
+
+    }, {
+        key: 'isOnlyRenderable',
+        value: function isOnlyRenderable() {
+            return this.isFirstRenderable() && this.isLastRenderable();
+        }
+
+        /**
          * Find the last + deepest visible child of the previous sibling.
          *
          * @return {TreeNode} Node object.
@@ -3540,7 +3859,7 @@ var TreeNode = function () {
 
                 _this3.state('loading', true);
                 _this3.markDirty();
-                _this3._tree.applyChanges();
+                _this3.context().applyChanges();
 
                 var complete = function complete(nodes, totalNodes) {
                     // A little type-safety for silly situations
@@ -3548,7 +3867,7 @@ var TreeNode = function () {
                         return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
                     }
 
-                    _this3._tree.batch();
+                    _this3.context().batch();
                     _this3.state('loading', false);
 
                     var model = collectionToModel(_this3._tree, nodes, _this3);
@@ -3568,7 +3887,7 @@ var TreeNode = function () {
                     }
 
                     _this3.markDirty();
-                    _this3._tree.end();
+                    _this3.context().end();
 
                     resolve(_this3.children);
 
@@ -3580,7 +3899,7 @@ var TreeNode = function () {
                     _this3.children = new TreeNodes(_this3._tree);
                     _this3.children._context = _this3;
                     _this3.markDirty();
-                    _this3._tree.applyChanges();
+                    _this3.context().applyChanges();
 
                     reject(err);
 
@@ -3948,7 +4267,7 @@ var TreeNode = function () {
             var exported = this.toObject(false, includeState);
             this._tree.emit('node.removed', exported, parent);
 
-            this._tree.applyChanges();
+            this.context().applyChanges();
 
             return exported;
         }
@@ -3963,6 +4282,20 @@ var TreeNode = function () {
         key: 'removed',
         value: function removed() {
             return this.state('removed');
+        }
+
+        /**
+         * Get whether this node can be "rendered" when the context is.
+         * Hidden and removed nodes may still be included in the DOM,
+         * but not "rendered" in a sense they'll be visible.
+         *
+         * @return {boolean} If not hidden or removed
+         */
+
+    }, {
+        key: 'renderable',
+        value: function renderable() {
+            return !this.hidden() && !this.removed();
         }
 
         /**
@@ -4068,7 +4401,7 @@ var TreeNode = function () {
             this[property] = value;
 
             this.markDirty();
-            this._tree.applyChanges();
+            this.context().applyChanges();
 
             return this;
         }
@@ -4083,6 +4416,20 @@ var TreeNode = function () {
         key: 'show',
         value: function show() {
             return baseStateChange('hidden', false, 'shown', this);
+        }
+
+        /**
+         * Mark this node as "removed" without actually removing it.
+         *
+         * Expand/show methods will never reveal this node until restored.
+         *
+         * @return {TreeNode} Node object.
+         */
+
+    }, {
+        key: 'softRemove',
+        value: function softRemove() {
+            return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
         }
 
         /**
@@ -4105,14 +4452,14 @@ var TreeNode = function () {
                 return baseState(this, obj, val);
             }
 
-            this._tree.batch();
+            this.context().batch();
 
             var oldState = {};
             _.each(obj, function (value, prop) {
                 oldState[prop] = baseState(_this5, prop, value);
             });
 
-            this._tree.end();
+            this.context().end();
 
             return oldState;
         }
@@ -4132,13 +4479,13 @@ var TreeNode = function () {
 
             var results = [];
 
-            this._tree.batch();
+            this.context().batch();
 
             _.each(names, function (name) {
                 results.push(_this6.state(name, newVal));
             });
 
-            this._tree.end();
+            this.context().end();
 
             return results;
         }
@@ -4156,20 +4503,6 @@ var TreeNode = function () {
             this.context().swap(this, node);
 
             return this;
-        }
-
-        /**
-         * Mark this node as "removed" without actually removing it.
-         *
-         * Expand/show methods will never reveal this node until restored.
-         *
-         * @return {TreeNode} Node object.
-         */
-
-    }, {
-        key: 'softRemove',
-        value: function softRemove() {
-            return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
         }
 
         /**
@@ -4208,7 +4541,7 @@ var TreeNode = function () {
             this.state('editing', !this.state('editing'));
 
             this.markDirty();
-            this._tree.applyChanges();
+            this.context().applyChanges();
 
             return this;
         }
@@ -4435,7 +4768,11 @@ function objectToNode(tree, object, parent) {
  * @return {array|object} Object model.
  */
 function collectionToModel(tree, array, parent) {
-    var collection = new TreeNodes(tree);
+    var collection = new TreeNodes(tree, null, {
+        calculateRenderablePositions: true
+    });
+
+    collection.batch();
 
     // Sort
     if (tree.config.sort) {
@@ -4447,6 +4784,8 @@ function collectionToModel(tree, array, parent) {
     });
 
     collection._context = parent;
+
+    collection.end();
 
     return collection;
 }
@@ -5261,7 +5600,6 @@ var InspireTree = function (_EventEmitter) {
         tree._lastSelectedNode;
         tree._muted = false;
         tree.allowsLoadEvents = false;
-        tree.batching = 0;
         tree.id = v4_1();
         tree.initialized = false;
         tree.isDynamic = false;
@@ -5459,9 +5797,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'applyChanges',
         value: function applyChanges() {
-            if (this.batching === 0) {
-                this.emit('changes.applied');
-            }
+            return this.model.applyChanges();
         }
 
         /**
@@ -5487,11 +5823,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'batch',
         value: function batch() {
-            if (this.batching < 0) {
-                this.batching = 0;
-            }
-
-            this.batching++;
+            return this.model.batch();
         }
 
         /**
@@ -5755,19 +6087,6 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
-         * Check if every node passes the given test.
-         *
-         * @param {function} tester Test each node in this collection,
-         * @return {boolean} True if every node passes the test.
-         */
-
-    }, {
-        key: 'every',
-        value: function every() {
-            return _map(this, 'every', arguments);
-        }
-
-        /**
          * Query for all editable nodes.
          *
          * @param {boolean} full Retain full hiearchy.
@@ -5817,11 +6136,20 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'end',
         value: function end() {
-            this.batching--;
+            return this.model.end();
+        }
 
-            if (this.batching === 0) {
-                this.applyChanges();
-            }
+        /**
+         * Check if every node passes the given test.
+         *
+         * @param {function} tester Test each node in this collection,
+         * @return {boolean} True if every node passes the test.
+         */
+
+    }, {
+        key: 'every',
+        value: function every() {
+            return _map(this, 'every', arguments);
         }
 
         /**
@@ -5905,7 +6233,7 @@ var InspireTree = function (_EventEmitter) {
         /**
          * Returns the first node matching predicate.
          *
-         * @param {function} predicate Predicate functions, accepts a single node and returns a boolean.
+         * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
          * @return {TreeNode} First matching TreeNode, or undefined.
          */
 
@@ -5913,6 +6241,19 @@ var InspireTree = function (_EventEmitter) {
         key: 'find',
         value: function find() {
             return _map(this, 'find', arguments);
+        }
+
+        /**
+         * Returns the first shallow node matching predicate.
+         *
+         * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+         * @return {TreeNode} First matching TreeNode, or undefined.
+         */
+
+    }, {
+        key: 'first',
+        value: function first() {
+            return _map(this, 'first', arguments);
         }
 
         /**
@@ -6122,6 +6463,19 @@ var InspireTree = function (_EventEmitter) {
         }
 
         /**
+         * Returns the last shallow node matching predicate.
+         *
+         * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
+         * @return {TreeNode} Last matching shallow TreeNode, or undefined.
+         */
+
+    }, {
+        key: 'last',
+        value: function last() {
+            return _map(this, 'last', arguments);
+        }
+
+        /**
          * Get the most recently selected node, if any.
          *
          * @return {TreeNode} Last selected node, or undefined.
@@ -6199,7 +6553,7 @@ var InspireTree = function (_EventEmitter) {
 
                         resolve(_this3.model);
 
-                        _this3.applyChanges();
+                        _this3.model.applyChanges();
                     };
 
                     // Delay event for synchronous loader
