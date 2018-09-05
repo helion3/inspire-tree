@@ -1041,7 +1041,7 @@ class InspireTree extends EventEmitter2 {
      * @return {Promise<TreeNodes>} Load method promise.
      */
     reload() {
-        this.removeAll();
+        this.reset();
 
         return this.load(this.opts.data || this.config.data);
     }
@@ -1062,8 +1062,7 @@ class InspireTree extends EventEmitter2 {
      * @return {Tree} Tree instance.
      */
     removeAll() {
-        this.model = new TreeNodes(this);
-        this.applyChanges();
+        this.reset().applyChanges();
 
         return this;
     }
@@ -1076,6 +1075,21 @@ class InspireTree extends EventEmitter2 {
      */
     removed() {
         return map(this, 'removed', arguments);
+    }
+
+    /**
+     * Resets the root model and associated information like pagination.
+     *
+     * Note: This method does *not* apply changes because it assumes
+     * futher changes will occur to the model.
+     *
+     * @private
+     * @return {Tree} Tree instance.
+     */
+    reset() {
+        this.model = new TreeNodes(this);
+
+        return this;
     }
 
     /**
