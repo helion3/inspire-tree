@@ -22,7 +22,6 @@ describe('TreeNodes.prototype.filterBy', function() {
         expect(tree.filterBy).to.be.a('function');
     });
 
-
     it('returns matches for custom booleans', function() {
         tree.node(2).select();
 

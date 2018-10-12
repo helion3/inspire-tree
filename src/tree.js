@@ -31,21 +31,19 @@ class InspireTree extends EventEmitter2 {
     constructor(opts) {
         super();
 
-        let tree = this;
-
         // Init properties
-        tree._lastSelectedNode;
-        tree._muted = false;
-        tree.allowsLoadEvents = false;
-        tree.batching = 0;
-        tree.id = uuidV4();
-        tree.initialized = false;
-        tree.isDynamic = false;
-        tree.opts = opts;
-        tree.preventDeselection = false;
+        this._lastSelectedNode;
+        this._muted = false;
+        this.allowsLoadEvents = false;
+        this.batching = 0;
+        this.id = uuidV4();
+        this.initialized = false;
+        this.isDynamic = false;
+        this.opts = opts;
+        this.preventDeselection = false;
 
         // Assign defaults
-        tree.config = _.defaultsDeep({}, opts, {
+        this.config = _.defaultsDeep({}, opts, {
             allowLoadEvents: [],
             checkbox: {
                 autoCheckChildren: true
@@ -82,29 +80,29 @@ class InspireTree extends EventEmitter2 {
         });
 
         // If checkbox mode, we must force auto-selecting children
-        if (tree.config.selection.mode === 'checkbox') {
-            tree.config.selection.autoSelectChildren = true;
+        if (this.config.selection.mode === 'checkbox') {
+            this.config.selection.autoSelectChildren = true;
 
             // In checkbox mode, checked=selected
-            tree.on('node.checked', (node) => {
+            this.on('node.checked', node => {
                 if (!node.selected()) {
                     node.select(true);
                 }
             });
 
-            tree.on('node.selected', (node) => {
+            this.on('node.selected', node => {
                 if (!node.checked()) {
                     node.check(true);
                 }
             });
 
-            tree.on('node.unchecked', (node) => {
+            this.on('node.unchecked', node => {
                 if (node.selected()) {
                     node.deselect(true);
                 }
             });
 
-            tree.on('node.deselected', (node) => {
+            this.on('node.deselected', node => {
                 if (node.checked()) {
                     node.uncheck(true);
                 }
@@ -112,30 +110,30 @@ class InspireTree extends EventEmitter2 {
         }
 
         // If auto-selecting children, we must force multiselect
-        if (tree.config.selection.autoSelectChildren) {
-            tree.config.selection.multiple = true;
-            tree.config.selection.autoDeselect = false;
+        if (this.config.selection.autoSelectChildren) {
+            this.config.selection.multiple = true;
+            this.config.selection.autoDeselect = false;
         }
 
         // Treat editable as full edit mode
         if (opts.editable && !opts.editing) {
-            tree.config.editing.add = true;
-            tree.config.editing.edit = true;
-            tree.config.editing.remove = true;
+            this.config.editing.add = true;
+            this.config.editing.edit = true;
+            this.config.editing.remove = true;
         }
 
         // Support simple config for search
         if (_.isFunction(opts.search)) {
-            tree.config.search = {
+            this.config.search = {
                 matcher: opts.search,
                 matchProcessor: false
             };
         }
 
         // Init the default state for nodes
-        tree.defaultState = {
+        this.defaultState = {
             collapsed: true,
-            editable: _.get(tree, 'config.editing.edit'),
+            editable: _.get(this, 'config.editing.edit'),
             editing: false,
             draggable: true,
             'drop-target': true,
@@ -151,35 +149,35 @@ class InspireTree extends EventEmitter2 {
         };
 
         // Cache some configs
-        tree.allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
-        tree.isDynamic = _.isFunction(tree.config.data);
+        this.allowsLoadEvents = _.isArray(this.config.allowLoadEvents) && this.config.allowLoadEvents.length > 0;
+        this.isDynamic = _.isFunction(this.config.data);
 
         // Override emitter so we can better control flow
-        let emit = tree.emit;
-        tree.emit = function(eventName) {
-            if (!tree.isEventMuted(eventName)) {
+        const emit = this.emit;
+        this.emit = (...args) => {
+            if (!this.isEventMuted(args[0])) {
                 // Duck-type for a DOM event
-                if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
-                    let event = arguments[1];
+                if (_.isFunction(_.get(args, '[0].preventDefault'))) {
+                    const event = args[0];
                     event.treeDefaultPrevented = false;
                     event.preventTreeDefault = () => {
                         event.treeDefaultPrevented = true;
                     };
                 }
 
-                emit.apply(tree, arguments);
+                emit.apply(this, args);
             }
         };
 
         // Init the model
-        tree.model = new TreeNodes(tree);
+        this.model = new TreeNodes(this);
 
         // Load initial user data
-        if (tree.config.data) {
-            tree.load(tree.config.data);
+        if (this.config.data) {
+            this.load(this.config.data);
         }
 
-        tree.initialized = true;
+        this.initialized = true;
     }
 
     /**
@@ -202,8 +200,8 @@ class InspireTree extends EventEmitter2 {
     addNodes(nodes) {
         this.batch();
 
-        let newNodes = new TreeNodes(this);
-        _.each(nodes, (node) => newNodes.push(this.addNode(node)));
+        const newNodes = new TreeNodes(this);
+        _.each(nodes, node => newNodes.push(this.addNode(node)));
 
         this.end();
 
@@ -274,11 +272,11 @@ class InspireTree extends EventEmitter2 {
      * @return {array} Array with two TreeNode objects.
      */
     boundingNodes() {
-        let pathMap = _.transform(arguments, (map, node) => {
-            map[node.indexPath().replace(/\./g, '')] = node;
+        const pathMap = _.transform(arguments, (col, node) => {
+            col[node.indexPath().replace(/\./g, '')] = node;
         }, {});
 
-        let [head, ...tail] = _.sortBy(Object.keys(pathMap));
+        const [head, ...tail] = _.sortBy(Object.keys(pathMap));
 
         return [
             _.get(pathMap, head),
@@ -769,8 +767,8 @@ class InspireTree extends EventEmitter2 {
      * tree.load($.getJSON('nodes.json'));
      */
     load(loader) {
-        let promise = new Promise((resolve, reject) => {
-            let complete = (nodes, totalNodes) => {
+        const promise = new Promise((resolve, reject) => {
+            const complete = (nodes, totalNodes) => {
                 // A little type-safety for silly situations
                 if (!_.isArrayLike(nodes)) {
                     return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
@@ -806,7 +804,7 @@ class InspireTree extends EventEmitter2 {
 
                 // Set pagination totals if resolver failed to provide them
                 if (!totalNodes) {
-                    this.model.recurseDown((node) => {
+                    this.model.recurseDown(node => {
                         if (node.hasChildren()) {
                             node.children._pagination.total = node.children.length;
                         }
@@ -841,7 +839,7 @@ class InspireTree extends EventEmitter2 {
 
             // Data loader requires a caller/callback
             else if (_.isFunction(loader)) {
-                let resp = loader(null, complete, reject, this.pagination());
+                const resp = loader(null, complete, reject, this.pagination());
 
                 // Loader returned its own object
                 if (resp) {
@@ -855,19 +853,17 @@ class InspireTree extends EventEmitter2 {
             }
 
             else {
-                error(new Error('Invalid data loader.'));
+                reject(new Error('Invalid data loader.'));
             }
         });
 
         // Copy to event listeners
-        promise.catch((err) => {
+        promise.catch(err => {
             this.emit('data.loaderror', err);
         });
 
         // Cache to allow access after tree instantiation
-        this._loader = {
-            promise: promise
-        };
+        this._loader = { promise };
 
         return promise;
     }
@@ -967,8 +963,8 @@ class InspireTree extends EventEmitter2 {
      * @return {TreeNodes} Array of node objects.
      * @example
      *
-     * let all = tree.nodes()
-     * let some = tree.nodes([1, 2, 3])
+     * const all = tree.nodes()
+     * const some = tree.nodes([1, 2, 3])
      */
     nodes() {
         return map(this, 'nodes', arguments);
@@ -1136,7 +1132,7 @@ class InspireTree extends EventEmitter2 {
         this.batch();
 
         // Reset states
-        this.recurseDown((node) => {
+        this.recurseDown(node => {
             node.state('hidden', true);
             node.state('matched', false);
         });
@@ -1144,26 +1140,24 @@ class InspireTree extends EventEmitter2 {
         this.end();
 
         // Query nodes for any matching the query
-        matcher = _.isFunction(matcher) ? matcher : (query, resolve) => {
-            let matches = new TreeNodes(this);
+        matcher = _.isFunction(matcher) ? matcher : (matchQuery, resolve) => {
+            const matches = new TreeNodes(this);
 
             // Convery the query into a usable predicate
-            if (_.isString(query)) {
-                query = new RegExp(query, 'i');
+            if (_.isString(matchQuery)) {
+                matchQuery = new RegExp(matchQuery, 'i');
             }
 
             let predicate;
-            if (_.isRegExp(query)) {
-                predicate = (node) => {
-                    return query.test(node.text);
-                };
+            if (_.isRegExp(matchQuery)) {
+                predicate = node => matchQuery.test(node.text);
             }
             else {
-                predicate = query;
+                predicate = matchQuery;
             }
 
             // Recurse down and find all matches
-            this.model.recurseDown((node) => {
+            this.model.recurseDown(node => {
                 if (!node.removed()) {
                     if (predicate(node)) {
                         // Return as a match
@@ -1176,8 +1170,8 @@ class InspireTree extends EventEmitter2 {
         };
 
         // Process all matching nodes.
-        matchProcessor = _.isFunction(matchProcessor) ? matchProcessor : (matches) => {
-            matches.each((node) => {
+        matchProcessor = _.isFunction(matchProcessor) ? matchProcessor : matches => {
+            matches.each(node => {
                 node.show().state('matched', true);
 
                 node.expandParents().collapse();
@@ -1191,7 +1185,7 @@ class InspireTree extends EventEmitter2 {
         // Wrap the search matcher with a promise since it could require async requests
         return new Promise((resolve, reject) => {
             // Execute the matcher and pipe results to the processor
-            matcher(query, (matches) => {
+            matcher(query, matches => {
                 // Convert to a TreeNodes array if we're receiving external nodes
                 if (!InspireTree.isTreeNodes(matches)) {
                     matches = this.nodes(_.map(matches, 'id'));
@@ -1248,7 +1242,7 @@ class InspireTree extends EventEmitter2 {
         this.end();
 
         return this;
-    };
+    }
 
     /**
      * Select (deeply) all nodes.
@@ -1275,13 +1269,13 @@ class InspireTree extends EventEmitter2 {
      * @return {TreeNode} Selected node object.
      */
     selectFirstAvailableNode() {
-        let node = this.model.filterBy('available').get(0);
+        const node = this.model.filterBy('available').get(0);
         if (node) {
             node.select();
         }
 
         return node;
-    };
+    }
 
     /**
      * Shift node in the first index position.
@@ -1454,7 +1448,7 @@ class InspireTree extends EventEmitter2 {
         }
 
         return this;
-    };
+    }
 
     /**
      * Add a TreeNode in the first index position.

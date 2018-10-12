@@ -45,19 +45,19 @@ describe('TreeNode.prototype.check', function() {
 
     it('checks child nodes', function() {
         const node = tree.node(1);
-        node.children.each((child) => {
+        node.children.each(child => {
             expect(child.checked()).to.be.false;
         });
 
         node.check();
-        node.children.each((child) => {
+        node.children.each(child => {
             expect(child.checked()).to.be.true;
         });
     });
 
     it('checks node and children when node was previously indeterminate', function() {
         // Reset
-        tree.recurseDown((node) => {
+        tree.recurseDown(node => {
             node.uncheck();
         });
 
@@ -72,14 +72,14 @@ describe('TreeNode.prototype.check', function() {
         // Check node and verify all children checked
         node.check();
         expect(node.indeterminate()).to.be.false;
-        node.recurseDown((child) => {
+        node.recurseDown(child => {
             expect(child.checked()).to.be.true;
         });
     });
 
     it('checks previously indeterminate children', function() {
         // Reset
-        tree.recurseDown((node) => {
+        tree.recurseDown(node => {
             node.uncheck();
         });
 

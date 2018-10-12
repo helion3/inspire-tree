@@ -19,7 +19,7 @@ import TreeNodes from './treenodes';
  * @return {object} Cloned ITree.
  */
 function cloneItree(itree, excludeKeys) {
-    let clone = {};
+    const clone = {};
     excludeKeys = _.castArray(excludeKeys);
     excludeKeys.push('ref');
 
@@ -45,7 +45,7 @@ function cloneItree(itree, excludeKeys) {
  * @return {boolean} Current value on read, old value on set.
  */
 function baseState(node, property, val) {
-    let currentVal = node.itree.state[property];
+    const currentVal = node.itree.state[property];
 
     if (typeof val !== 'undefined' && currentVal !== val) {
         // Update values
@@ -122,10 +122,10 @@ class TreeNode {
      * @return {TreeNodes} Array of node objects.
      */
     addChildren(children) {
-        let nodes = new TreeNodes(this._tree);
+        const nodes = new TreeNodes(this._tree);
 
         this._tree.batch();
-        _.each(children, (child) => {
+        _.each(children, child => {
             nodes.push(this.addChild(child));
         });
         this._tree.end();
@@ -176,7 +176,7 @@ class TreeNode {
         this.state('editing', false);
 
         return baseStateChange('focused', false, 'blurred', this);
-    };
+    }
 
     /**
      * Mark node as checked.
@@ -188,7 +188,7 @@ class TreeNode {
         this._tree.batch();
 
         // Will we automatically apply state changes to our children
-        let deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+        const deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
 
         baseStateChange('checked', true, 'checked', this, deep);
 
@@ -200,7 +200,7 @@ class TreeNode {
         this._tree.end();
 
         return this;
-    };
+    }
 
     /**
      * Get whether this node is checked.
@@ -217,9 +217,9 @@ class TreeNode {
      * @return {TreeNode} Node object.
      */
     clean() {
-        this.recurseUp((node) => {
+        this.recurseUp(node => {
             if (node.hasParent()) {
-                let parent = node.getParent();
+                const parent = node.getParent();
                 if (!parent.hasVisibleChildren()) {
                     parent.hide();
                 }
@@ -293,24 +293,22 @@ class TreeNode {
      * @return {TreeNode} Root node object with hierarchy.
      */
     copyHierarchy(excludeNode) {
-        let nodes = [];
+        const nodes = [];
         let parents = this.getParents();
 
         // Remove old hierarchy data
-        _.each(parents, (node) => {
+        _.each(parents, node => {
             nodes.push(node.toObject(excludeNode));
         });
 
         parents = nodes.reverse();
 
         if (!excludeNode) {
-            let clone = this.toObject(true);
+            const clone = this.toObject(true);
 
             // Filter out hidden children
             if (this.hasChildren()) {
-                clone.children = this.children.filterBy((n) => {
-                    return !n.state('hidden');
-                }).toArray();
+                clone.children = this.children.filterBy(n => !n.state('hidden')).toArray();
 
                 clone.children._context = clone;
             }
@@ -318,11 +316,11 @@ class TreeNode {
             nodes.push(clone);
         }
 
-        let hierarchy = nodes[0];
+        const hierarchy = nodes[0];
+        const l = nodes.length;
         let pointer = hierarchy;
-        let l = nodes.length;
         _.each(nodes, (parent, key) => {
-            let children = [];
+            const children = [];
 
             if (key + 1 < l) {
                 children.push(nodes[key + 1]);
@@ -333,7 +331,7 @@ class TreeNode {
         });
 
         return objectToNode(this._tree, hierarchy);
-    };
+    }
 
     /**
      * Deselect this node.
@@ -349,7 +347,7 @@ class TreeNode {
             this._tree.batch();
 
             // Will we apply this state change to our children?
-            let deep = !shallow && this._tree.config.selection.autoSelectChildren;
+            const deep = !shallow && this._tree.config.selection.autoSelectChildren;
 
             baseStateChange('selected', false, 'deselected', this, deep);
 
@@ -383,28 +381,26 @@ class TreeNode {
      * @return {Promise<TreeNode>} Promise resolved on successful load and expand of children.
      */
     expand() {
-        let node = this;
-
         return new Promise((resolve, reject) => {
-            let allow = (node.hasChildren() || (node._tree.isDynamic && node.children === true));
+            const allow = (this.hasChildren() || (this._tree.isDynamic && this.children === true));
 
-            if (allow && (node.collapsed() || node.hidden())) {
-                node.state('collapsed', false);
-                node.state('hidden', false);
+            if (allow && (this.collapsed() || this.hidden())) {
+                this.state('collapsed', false);
+                this.state('hidden', false);
 
-                node._tree.emit('node.expanded', node);
+                this._tree.emit('node.expanded', this);
 
-                if (node._tree.isDynamic && node.children === true) {
-                    node.loadChildren().then(resolve).catch(reject);
+                if (this._tree.isDynamic && this.children === true) {
+                    this.loadChildren().then(resolve).catch(reject);
                 }
                 else {
-                    node._tree.applyChanges();
-                    resolve(node);
+                    this._tree.applyChanges();
+                    resolve(this);
                 }
             }
             else {
                 // Resolve immediately
-                resolve(node);
+                resolve(this);
             }
         });
     }
@@ -425,7 +421,7 @@ class TreeNode {
      */
     expandParents() {
         if (this.hasParent()) {
-            this.getParent().recurseUp((node) => {
+            this.getParent().recurseUp(node => {
                 node.expand();
             });
         }
@@ -490,10 +486,10 @@ class TreeNode {
      * @return {TreeNodes} Node objects.
      */
     getParents() {
-        let parents = new TreeNodes(this._tree);
+        const parents = new TreeNodes(this._tree);
 
         if (this.hasParent()) {
-            this.getParent().recurseUp((node) => {
+            this.getParent().recurseUp(node => {
                 parents.push(node);
             });
         }
@@ -508,9 +504,9 @@ class TreeNode {
      * @return {array} Array of node texts.
      */
     getTextualHierarchy() {
-        let paths = [];
+        const paths = [];
 
-        this.recurseUp((node) => {
+        this.recurseUp(node => {
             paths.unshift(node.text);
         });
 
@@ -525,7 +521,7 @@ class TreeNode {
      */
     hasAncestor(node) {
         let hasAncestor = false;
-        this.recurseUp((n) => !(hasAncestor = n.id === node.id));
+        this.recurseUp(n => !(hasAncestor = n.id === node.id));
 
         return hasAncestor;
     }
@@ -587,7 +583,7 @@ class TreeNode {
      * @return {TreeNode} Node object.
      */
     hide() {
-        let node = baseStateChange('hidden', true, 'hidden', this);
+        const node = baseStateChange('hidden', true, 'hidden', this);
 
         // Update children
         if (node.hasChildren()) {
@@ -612,9 +608,9 @@ class TreeNode {
      * @return {string} Index path
      */
     indexPath() {
-        let indices = [];
+        const indices = [];
 
-        this.recurseUp((node) => {
+        this.recurseUp(node => {
             indices.push(_.indexOf(node.context(), node));
         });
 
@@ -639,11 +635,9 @@ class TreeNode {
         let found;
 
         if (this.hasChildren() && !this.collapsed()) {
-            found = _.findLast(this.children, (node) => {
-                return node.visible();
-            });
+            found = _.findLast(this.children, node => node.visible());
 
-            let res = found.lastDeepestVisibleChild();
+            const res = found.lastDeepestVisibleChild();
             if (res) {
                 found = res;
             }
@@ -675,7 +669,7 @@ class TreeNode {
             this.markDirty();
             this._tree.applyChanges();
 
-            let complete = (nodes, totalNodes) => {
+            const complete = (nodes, totalNodes) => {
                 // A little type-safety for silly situations
                 if (!_.isArrayLike(nodes)) {
                     return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
@@ -684,7 +678,7 @@ class TreeNode {
                 this._tree.batch();
                 this.state('loading', false);
 
-                let model = collectionToModel(this._tree, nodes, this);
+                const model = collectionToModel(this._tree, nodes, this);
                 if (_.isArrayLike(this.children)) {
                     this.children = this.children.concat(model);
                 }
@@ -709,7 +703,7 @@ class TreeNode {
                 this._tree.emit('children.loaded', this);
             };
 
-            let error = (err) => {
+            const error = err => {
                 this.state('loading', false);
                 this.children = new TreeNodes(this._tree);
                 this.children._context = this;
@@ -722,7 +716,7 @@ class TreeNode {
             };
 
             const pagination = this._tree.constructor.isTreeNodes(this.children) ? this.children.pagination() : null;
-            let loader = this._tree.config.data(this, complete, error, pagination);
+            const loader = this._tree.config.data(this, complete, error, pagination);
 
             // Data loader is likely a promise
             if (_.isObject(loader)) {
@@ -791,7 +785,7 @@ class TreeNode {
         let next;
 
         if (this.hasParent()) {
-            let parent = this.getParent();
+            const parent = this.getParent();
             next = parent.nextVisibleSiblingNode();
 
             if (!next) {
@@ -811,9 +805,7 @@ class TreeNode {
         let next;
 
         if (this.hasChildren()) {
-            next = _.find(this.children, (child) => {
-                return child.visible();
-            });
+            next = _.find(this.children, child => child.visible());
         }
 
         return next;
@@ -849,12 +841,10 @@ class TreeNode {
      * @return {TreeNode} Node object, if any.
      */
     nextVisibleSiblingNode() {
-        let context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
-        let i = _.findIndex(context, { id: this.id });
+        const context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
+        const i = _.findIndex(context, { id: this.id });
 
-        return _.find(_.slice(context, i + 1), (node) => {
-            return node.visible();
-        });
+        return _.find(_.slice(context, i + 1), node => node.visible());
     }
 
     /**
@@ -896,11 +886,10 @@ class TreeNode {
      * @return {TreeNode} Node object, if any.
      */
     previousVisibleSiblingNode() {
-        let context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
-        let i = _.findIndex(context, { id: this.id });
-        return _.findLast(_.slice(context, 0, i), (node) => {
-            return node.visible();
-        });
+        const context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
+        const i = _.findIndex(context, { id: this.id });
+
+        return _.findLast(_.slice(context, 0, i), node => node.visible());
     }
 
     /**
@@ -922,7 +911,7 @@ class TreeNode {
      * @return {TreeNode} Node object.
      */
     recurseUp(iteratee) {
-        let result = iteratee(this);
+        const result = iteratee(this);
 
         if (result !== false && this.hasParent()) {
             this.getParent().recurseUp(iteratee);
@@ -940,15 +929,15 @@ class TreeNode {
      * @return {TreeNode} Node object.
      */
     refreshIndeterminateState() {
-        let oldValue = this.indeterminate();
+        const oldValue = this.indeterminate();
         this.state('indeterminate', false);
 
         if (this.hasChildren()) {
-            let childrenCount = this.children.length;
+            const childrenCount = this.children.length;
             let indeterminate = 0;
             let checked = 0;
 
-            this.children.each((n) => {
+            this.children.each(n => {
                 if (n.checked()) {
                     checked++;
                 }
@@ -1013,7 +1002,7 @@ class TreeNode {
      */
     remove(includeState = false) {
         // Cache parent before we remove the node
-        let parent = this.getParent();
+        const parent = this.getParent();
 
         // Remove self
         this.context().remove(this);
@@ -1024,11 +1013,11 @@ class TreeNode {
             parent.markDirty();
         }
 
-        let pagination = parent ? parent.pagination() : this._tree.pagination();
+        const pagination = parent ? parent.pagination() : this._tree.pagination();
         pagination.total--;
 
         // Export/event
-        let exported = this.toObject(false, includeState);
+        const exported = this.toObject(false, includeState);
         this._tree.emit('node.removed', exported, parent);
 
         this._tree.applyChanges();
@@ -1078,14 +1067,14 @@ class TreeNode {
             this._tree.batch();
 
             if (this._tree.canAutoDeselect()) {
-                let oldVal = this._tree.config.selection.require;
+                const oldVal = this._tree.config.selection.require;
                 this._tree.config.selection.require = false;
                 this._tree.deselectDeep();
                 this._tree.config.selection.require = oldVal;
             }
 
             // Will we apply this state change to our children?
-            let deep = !shallow && this._tree.config.selection.autoSelectChildren;
+            const deep = !shallow && this._tree.config.selection.autoSelectChildren;
 
             baseStateChange('selected', true, 'selected', this, deep);
 
@@ -1106,7 +1095,7 @@ class TreeNode {
      * @return {boolean} True if node selectable.
      */
     selectable() {
-        let allow = this._tree.config.selection.allow(this);
+        const allow = this._tree.config.selection.allow(this);
         return typeof allow === 'boolean' ? allow : this.state('selectable');
     }
 
@@ -1179,11 +1168,11 @@ class TreeNode {
      * @return {Array} Array of state booleans
      */
     states(names, newVal) {
-        let results = [];
+        const results = [];
 
         this._tree.batch();
 
-        _.each(names, (name) => {
+        _.each(names, name => {
             results.push(this.state(name, newVal));
         });
 
@@ -1264,12 +1253,12 @@ class TreeNode {
      * @return {object} Node object.
      */
     toObject(excludeChildren = false, includeState = false) {
-        let exported = {};
+        const exported = {};
 
         const keys = _.pull(Object.keys(this), '_tree', 'children', 'itree');
 
         // Map keys
-        _.each(keys, (keyName) => {
+        _.each(keys, keyName => {
             exported[keyName] = this[keyName];
         });
 
@@ -1320,7 +1309,7 @@ class TreeNode {
         this._tree.batch();
 
         // Will we apply this state change to our children?
-        let deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
+        const deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
 
         baseStateChange('checked', false, 'unchecked', this, deep);
 
@@ -1335,7 +1324,7 @@ class TreeNode {
         this._tree.end();
 
         return this;
-    };
+    }
 
     /**
      * Get whether node is visible to a user. Returns false

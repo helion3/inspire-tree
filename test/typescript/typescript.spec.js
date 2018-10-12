@@ -5,10 +5,10 @@ const d = path.join(__dirname, '..', '..', 'inspire-tree.d.ts');
 
 function compile(fileNames, options) {
     fileNames = Array.isArray(fileNames) ? fileNames : [fileNames];
-    let program = ts.createProgram(fileNames, options);
-    let emitResult = program.emit();
+    const program = ts.createProgram(fileNames, options);
+    const emitResult = program.emit();
 
-    let allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
+    const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
 
     allDiagnostics.forEach(diagnostic => {
         const { line, character } = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);

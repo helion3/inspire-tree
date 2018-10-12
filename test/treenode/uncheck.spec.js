@@ -40,12 +40,12 @@ describe('TreeNode.prototype.uncheck', function() {
     it('unchecks child nodes', function() {
         const node = tree.node(1);
         node.check();
-        node.children.each((child) => {
+        node.children.each(child => {
             expect(child.checked()).to.be.true;
         });
 
         node.uncheck();
-        node.children.each((child) => {
+        node.children.each(child => {
             expect(child.checked()).to.be.false;
         });
     });

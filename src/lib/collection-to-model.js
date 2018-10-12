@@ -13,14 +13,14 @@ import TreeNodes from '../treenodes';
  * @return {array|object} Object model.
  */
 export function collectionToModel(tree, array, parent) {
-    let collection = new TreeNodes(tree);
+    const collection = new TreeNodes(tree);
 
     // Sort
     if (tree.config.sort) {
         array = _.sortBy(array, tree.config.sort);
     }
 
-    _.each(array, (node) => {
+    _.each(array, node => {
         collection.push(objectToNode(tree, node, parent));
     });
 

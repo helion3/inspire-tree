@@ -15,7 +15,6 @@ function resetState(node) {
     return node;
 }
 
-
 /**
  * Stores repetitive state change logic for most state methods.
  *
@@ -45,7 +44,7 @@ export function baseStateChange(prop, value, verb, node, deep) {
         node._tree.emit('node.' + verb, node, false);
 
         if (deep && node.hasChildren()) {
-            node.children.recurseDown((child) => {
+            node.children.recurseDown(child => {
                 baseStateChange(prop, value, verb, child);
             });
         }
@@ -55,4 +54,4 @@ export function baseStateChange(prop, value, verb, node, deep) {
     }
 
     return node;
-};
+}

@@ -52,7 +52,7 @@ describe('TreeNode.prototype.loadChildren', function() {
     });
 
     it('doesn\'t error with an invalid nodes array', function(done) {
-        const tree = new InspireTree({
+        tree = new InspireTree({
             data: function(node, resolve) {
                 if (!node) {
                     resolve([{

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { collectionToModel } from './collection-to-model';
-import uuidV4 from 'uuid/v4';
 import TreeNode from '../treenode';
+import uuidV4 from 'uuid/v4';
 
 /**
  * Parse a raw object into a TreeNode used within a tree.
@@ -23,14 +23,14 @@ export function objectToNode(tree, object, parent) {
     }
 
     // High-performance default assignments
-    let itree = object.itree = object.itree || {};
+    const itree = object.itree = object.itree || {};
     itree.icon = itree.icon || false;
     itree.dirty = false;
 
-    let li = itree.li = itree.li || {};
+    const li = itree.li = itree.li || {};
     li.attributes = li.attributes || {};
 
-    let a = itree.a = itree.a || {};
+    const a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
 
     const state = itree.state = itree.state || {};
@@ -65,7 +65,7 @@ export function objectToNode(tree, object, parent) {
 
     // Fire events for pre-set states, if enabled
     if (tree.allowsLoadEvents) {
-        _.each(tree.config.allowLoadEvents, (eventName) => {
+        _.each(tree.config.allowLoadEvents, eventName => {
             if (state[eventName]) {
                 tree.emit('node.' + eventName, object, true);
             }
@@ -73,4 +73,4 @@ export function objectToNode(tree, object, parent) {
     }
 
     return object;
-};
+}

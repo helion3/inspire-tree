@@ -20,7 +20,6 @@ describe('TreeNodes.prototype.find', function() {
         expect(tree.find).to.be.a('function');
     });
 
-
     it('returns match', function() {
         tree.search('B');
 

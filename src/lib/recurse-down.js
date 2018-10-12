@@ -16,7 +16,7 @@ export function recurseDown(obj, iteratee) {
     let res;
 
     if (obj instanceof TreeNodes) {
-        _.each(obj, (node) => {
+        _.each(obj, node => {
             res = recurseDown(node, iteratee);
 
             return res;

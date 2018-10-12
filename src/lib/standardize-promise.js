@@ -26,4 +26,4 @@ export function standardizePromise(promise) {
             promise.catch(reject);
         }
     });
-};
+}

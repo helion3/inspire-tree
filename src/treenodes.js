@@ -6,32 +6,6 @@ import { recurseDown } from './lib/recurse-down';
 import TreeNode from './treenode';
 
 /**
- * Base function to filter nodes by state value.
- *
- * @private
- * @param {string} state State property
- * @param {boolean} full Return a non-flat hierarchy
- * @return {TreeNodes} Array of matching nodes.
- */
-function baseStatePredicate(state, full) {
-    if (full) {
-        return this.extract(state);
-    }
-
-    // Cache a state predicate function
-    let fn = getPredicateFunction(state);
-
-    return this.flatten((node) => {
-        // Never include removed nodes unless specifically requested
-        if (state !== 'removed' && node.removed()) {
-            return false;
-        }
-
-        return fn(node);
-    });
-};
-
-/**
  * Base function to invoke given method(s) on tree nodes.
  *
  * @private
@@ -46,8 +20,8 @@ function baseInvoke(nodes, methods, args, deep) {
 
     nodes._tree.batch();
 
-    nodes[deep ? 'recurseDown' : 'each']((node) => {
-        _.each(methods, (method) => {
+    nodes[deep ? 'recurseDown' : 'each'](node => {
+        _.each(methods, method => {
             if (_.isFunction(node[method])) {
                 node[method].apply(node, args);
             }
@@ -69,12 +43,36 @@ function baseInvoke(nodes, methods, args, deep) {
 function getPredicateFunction(predicate) {
     let fn = predicate;
     if (_.isString(predicate)) {
-        fn = (node) => {
-            return _.isFunction(node[predicate]) ? node[predicate]() : node[predicate];
-        };
+        fn = node => (_.isFunction(node[predicate]) ? node[predicate]() : node[predicate]);
     }
 
     return fn;
+}
+
+/**
+ * Base function to filter nodes by state value.
+ *
+ * @private
+ * @param {string} state State property
+ * @param {boolean} full Return a non-flat hierarchy
+ * @return {TreeNodes} Array of matching nodes.
+ */
+function baseStatePredicate(state, full) {
+    if (full) {
+        return this.extract(state);
+    }
+
+    // Cache a state predicate function
+    const fn = getPredicateFunction(state);
+
+    return this.flatten(node => {
+        // Never include removed nodes unless specifically requested
+        if (state !== 'removed' && node.removed()) {
+            return false;
+        }
+
+        return fn(node);
+    });
 }
 
 /**
@@ -105,7 +103,7 @@ class TreeNodes extends Array {
         };
 
         if (_.isArray(array) || array instanceof TreeNodes) {
-            _.each(array, (node) => {
+            _.each(array, node => {
                 if (node instanceof TreeNode) {
                     this.push(node.clone());
                 }
@@ -228,10 +226,10 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Resulting node array.
      */
     concat(nodes) {
-        let newNodes = new TreeNodes(this._tree);
+        const newNodes = new TreeNodes(this._tree);
         newNodes._context = this._context;
 
-        let pusher = (node) => {
+        const pusher = node => {
             if (node instanceof TreeNode) {
                 newNodes.push(node);
             }
@@ -265,9 +263,9 @@ class TreeNodes extends Array {
      * @return {object} Methods to perform action on copied nodes.
      */
     copy(dest, hierarchy) {
-        let newNodes = new TreeNodes(this._tree);
+        const newNodes = new TreeNodes(this._tree);
 
-        _.each(this, (node) => {
+        _.each(this, node => {
             newNodes.push(node.copy(dest, hierarchy));
         });
 
@@ -280,9 +278,9 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     deepest() {
-        let matches = new TreeNodes(this._tree);
+        const matches = new TreeNodes(this._tree);
 
-        this.recurseDown((node) => {
+        this.recurseDown(node => {
             if (!node.children) {
                 matches.push(node);
             }
@@ -366,16 +364,16 @@ class TreeNodes extends Array {
      * @return {Promise<TreeNodes>} Promise resolved when all children have loaded and expanded.
      */
     expandDeep() {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             let waitCount = 0;
 
-            let done = () => {
+            const done = () => {
                 if (--waitCount === 0) {
                     resolve(this);
                 }
             };
 
-            this.recurseDown((node) => {
+            this.recurseDown(node => {
                 waitCount++;
 
                 // Ignore nodes without children
@@ -411,10 +409,10 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     extract(predicate) {
-        let flat = this.flatten(predicate);
-        let matches = new TreeNodes(this._tree);
+        const flat = this.flatten(predicate);
+        const matches = new TreeNodes(this._tree);
 
-        _.each(flat, (node) => matches.addNode(node.copyHierarchy()));
+        _.each(flat, node => matches.addNode(node.copyHierarchy()));
 
         return matches;
     }
@@ -429,7 +427,7 @@ class TreeNodes extends Array {
         const fn = getPredicateFunction(predicate);
         const matches = new TreeNodes(this._tree);
 
-        _.each(this, (node) => {
+        _.each(this, node => {
             if (fn(node)) {
                 matches.push(node);
             }
@@ -465,10 +463,10 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Flat array of matching nodes.
      */
     flatten(predicate) {
-        let flat = new TreeNodes(this._tree);
+        const flat = new TreeNodes(this._tree);
 
-        let fn = getPredicateFunction(predicate);
-        this.recurseDown((node) => {
+        const fn = getPredicateFunction(predicate);
+        this.recurseDown(node => {
             if (fn(node)) {
                 flat.push(node);
             }
@@ -556,7 +554,7 @@ class TreeNodes extends Array {
         // If node has a pre-existing ID
         if (object.id) {
             // Is it already in the tree?
-            let existingNode = this.node(object.id);
+            const existingNode = this.node(object.id);
             if (existingNode) {
                 existingNode.restore().show();
 
@@ -569,7 +567,7 @@ class TreeNodes extends Array {
                     }
 
                     // Copy each child (using addNode, which uses insertAt)
-                    _.each(object.children, (child) => {
+                    _.each(object.children, child => {
                         existingNode.children.addNode(child);
                     });
                 }
@@ -588,7 +586,7 @@ class TreeNodes extends Array {
         }
 
         // Node is new, insert at given location.
-        let node = this._tree.constructor.isTreeNode(object) ? object : objectToNode(this._tree, object);
+        const node = this._tree.constructor.isTreeNode(object) ? object : objectToNode(this._tree, object);
 
         // Grab remaining nodes
         this.splice(index, 0, node);
@@ -753,7 +751,7 @@ class TreeNodes extends Array {
     node(id) {
         let match;
 
-        this.recurseDown((node) => {
+        this.recurseDown(node => {
             if (node.id === id) {
                 match = node;
 
@@ -771,8 +769,8 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      * @example
      *
-     * let all = tree.nodes()
-     * let some = tree.nodes([1, 2, 3])
+     * const all = tree.nodes()
+     * const some = tree.nodes([1, 2, 3])
      */
     nodes(refs) {
         let results;
@@ -780,7 +778,7 @@ class TreeNodes extends Array {
         if (_.isArray(refs)) {
             results = new TreeNodes(this._tree);
 
-            this.recurseDown((node) => {
+            this.recurseDown(node => {
                 if (refs.indexOf(node.id) > -1) {
                     results.push(node);
                 }
@@ -935,10 +933,10 @@ class TreeNodes extends Array {
 
         // Only apply sort if one provided
         if (sorter) {
-            let sorted = _.sortBy(this, sorter);
+            const sorted = _.sortBy(this, sorter);
 
             this.length = 0;
-            _.each(sorted, (node) => {
+            _.each(sorted, node => {
                 this.push(node);
             });
         }
@@ -1043,9 +1041,9 @@ class TreeNodes extends Array {
      * @return {array} Array of node objects.
      */
     toArray() {
-        let array = [];
+        const array = [];
 
-        _.each(this, (node) => {
+        _.each(this, node => {
             array.push(node.toObject());
         });
 
@@ -1061,6 +1059,6 @@ class TreeNodes extends Array {
     visible(full) {
         return baseStatePredicate.call(this, 'visible', full);
     }
-};
+}
 
 export default TreeNodes;

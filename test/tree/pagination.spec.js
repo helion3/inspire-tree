@@ -44,7 +44,6 @@ describe('Tree.prototype.pagination', function() {
         text: '5'
     }];
 
-
     before(function() {
         // Create tree
         tree = new InspireTree({
@@ -70,7 +69,7 @@ describe('Tree.prototype.pagination', function() {
     });
 
     it('does not clear existing data when deferred loading is used', function() {
-        const tree = new InspireTree({
+        tree = new InspireTree({
             deferredLoading: true,
             data: function(node, resolve) {
                 resolve([{
@@ -103,7 +102,7 @@ describe('Tree.prototype.pagination', function() {
             expect(pagination.total).to.equal(6);
 
             let count = 2;
-            tree.nodes().recurseDown((node) => {
+            tree.nodes().recurseDown(node => {
                 if (node.hasChildren()) {
                     expect(node.children._pagination.limit).to.equal(5);
                     expect(node.children._pagination.total).to.equal(6);
@@ -137,7 +136,7 @@ describe('Tree.prototype.pagination', function() {
             expect(pagination.total).to.equal(6);
 
             let count = 2;
-            tree.nodes().recurseDown((node) => {
+            tree.nodes().recurseDown(node => {
                 if (node.hasChildren()) {
                     expect(node.children._pagination.limit).to.equal(5);
                     expect(node.children._pagination.total).to.equal(6);

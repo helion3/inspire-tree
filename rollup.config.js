@@ -13,7 +13,7 @@ const pkgConfig = require('./package.json');
 const DIST = process.env.DIST || false;
 const MIN = process.env.MIN || false;
 
-var banner = `/* Inspire Tree
+const banner = `/* Inspire Tree
  * @version ${pkgConfig.version}
  * ${pkgConfig.repository}
  * @copyright Copyright 2015 Helion3, and other contributors
@@ -21,7 +21,7 @@ var banner = `/* Inspire Tree
  *          see ${pkgConfig.repository}/blob/master/LICENSE
  */`;
 
-let plugins = [
+const plugins = [
     babel({
         exclude: 'node_modules/**'
     }),
