@@ -1,4 +1,3 @@
-// Libs
 import * as _ from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
 import { EventEmitter2 } from 'eventemitter2';

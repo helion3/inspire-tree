@@ -1,4 +1,3 @@
-// Libs
 import * as _ from 'lodash';
 import { objectToNode } from './lib/object-to-node';
 import { Promise } from 'es6-promise';
