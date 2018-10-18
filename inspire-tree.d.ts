@@ -141,7 +141,7 @@ export class InspireTree extends EventEmitter2 {
     expandParents(): TreeNodes;
     extract(predicate: string|NodeIteratee): TreeNodes;
     filterBy(predicate: string|NodeIteratee): TreeNodes;
-    find(predicate: (node: TreeNode) => boolean): TreeNode;
+    find(predicate: (node: TreeNode, index?: number, obj?: TreeNode[]) => boolean, thisArg?: any): TreeNode;
     flatten(predicate: string|NodeIteratee): TreeNodes;
     focused(full?: boolean): TreeNodes;
     get(index: number): TreeNode;
@@ -220,7 +220,7 @@ export class TreeNodes extends Array<TreeNode> {
     expandParents(): TreeNodes;
     extract(predicate: string|NodeIteratee): TreeNodes;
     filterBy(predicate: string|NodeIteratee): TreeNodes;
-    find(predicate: (node: TreeNode) => boolean): TreeNode;
+    find(predicate: (node: TreeNode, index?: number, obj?: TreeNode[]) => boolean, thisArg?: any): TreeNode;
     flatten(predicate: string|NodeIteratee): TreeNodes;
     focused(full?: boolean): TreeNodes;
     get(index: number): TreeNode;
