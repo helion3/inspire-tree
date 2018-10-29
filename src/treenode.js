@@ -357,7 +357,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node editable. Required editing.edit to be enable via config.
+     * Get whether node editable. Required editing.edit to be enable via config.
      *
      * @return {boolean} True if node editable.
      */
@@ -366,7 +366,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node is currently in edit mode.
+     * Get whether node is currently in edit mode.
      *
      * @return {boolean} True if node in edit mode.
      */
@@ -405,7 +405,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node expanded.
+     * Get whether node expanded.
      *
      * @return {boolean} True if expanded.
      */
@@ -452,7 +452,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather this node is focused.
+     * Get whether this node is focused.
      *
      * @return {boolean} True if node focused.
      */
@@ -513,7 +513,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather the given node is an ancestor of this node.
+     * Get whether the given node is an ancestor of this node.
      *
      * @param {TreeNode} node Node object.
      * @return {boolean} True if node is an ancestor or the given node
@@ -526,7 +526,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node has any children.
+     * Get whether node has any children.
      *
      * @return {boolean} True if has loaded children.
      */
@@ -535,7 +535,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather children have been loaded. Will always be true for non-dynamic nodes.
+     * Get whether children have been loaded. Will always be true for non-dynamic nodes.
      *
      * @return {boolean} True if we've attempted to load children.
      */
@@ -544,7 +544,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node has any children, or allows dynamic loading.
+     * Get whether node has any children, or allows dynamic loading.
      *
      * @return {boolean} True if node has, or will have children.
      */
@@ -553,7 +553,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node has a parent.
+     * Get whether node has a parent.
      *
      * @return {boolean} True if has a parent.
      */
@@ -562,7 +562,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node has any visible children.
+     * Get whether node has any visible children.
      *
      * @return {boolean} True if children are visible.
      */
@@ -593,7 +593,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather this node is hidden.
+     * Get whether this node is hidden.
      *
      * @return {boolean} True if node hidden.
      */
@@ -617,7 +617,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather this node is indeterminate.
+     * Get whether this node is indeterminate.
      *
      * @return {boolean} True if node indeterminate.
      */
@@ -725,7 +725,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather this node is loading child data.
+     * Get whether this node is loading child data.
      *
      * @return {boolean} True if node's children are loading.
      */
@@ -1089,7 +1089,7 @@ class TreeNode {
     }
 
     /**
-     * Get weather node selectable.
+     * Get whether node selectable.
      *
      * @return {boolean} True if node selectable.
      */
