@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 5.0.1
+ * @version 5.0.2
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -10,102 +10,6 @@
 	typeof define === 'function' && define.amd ? define(['lodash'], factory) :
 	(global.InspireTree = factory(global._));
 }(this, (function (_) { 'use strict';
-
-var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var rngBrowser = createCommonjsModule(function (module) {
-// Unique ID creation requires a high quality random # generator.  In the
-// browser this is a little complicated due to unknown quality of Math.random()
-// and inconsistent support for the `crypto` API.  We do the best we can via
-// feature-detection
-
-// getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
-var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues.bind(crypto)) ||
-                      (typeof(msCrypto) != 'undefined' && msCrypto.getRandomValues.bind(msCrypto));
-if (getRandomValues) {
-  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
-  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
-
-  module.exports = function whatwgRNG() {
-    getRandomValues(rnds8);
-    return rnds8;
-  };
-} else {
-  // Math.random()-based (RNG)
-  //
-  // If all else fails, use Math.random().  It's fast, but is of unspecified
-  // quality.
-  var rnds = new Array(16);
-
-  module.exports = function mathRNG() {
-    for (var i = 0, r; i < 16; i++) {
-      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
-    }
-
-    return rnds;
-  };
-}
-});
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  return bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]];
-}
-
-var bytesToUuid_1 = bytesToUuid;
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options === 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rngBrowser)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid_1(rnds);
-}
-
-var v4_1 = v4;
 
 /**
  * Reset a node's state to the tree default.
@@ -161,6 +65,16 @@ function baseStateChange(prop, value, verb, node, deep) {
     }
 
     return node;
+}
+
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
 var es6Promise = createCommonjsModule(function (module, exports) {
@@ -1430,31 +1344,6 @@ function _extendableBuiltin(cls) {
 }
 
 /**
- * Base function to filter nodes by state value.
- *
- * @private
- * @param {string} state State property
- * @param {boolean} full Return a non-flat hierarchy
- * @return {TreeNodes} Array of matching nodes.
- */
-function baseStatePredicate(state, full) {
-    if (full) {
-        return this.extract(state);
-    }
-
-    // Cache a state predicate function
-    var fn = getPredicateFunction(state);
-
-    return this.flatten(function (node) {
-        // Never include removed nodes unless specifically requested
-        if (state !== 'removed' && node.removed()) {
-            return false;
-        }
-
-        return fn(node);
-    });
-}
-/**
  * Base function to invoke given method(s) on tree nodes.
  *
  * @private
@@ -1498,6 +1387,32 @@ function getPredicateFunction(predicate) {
     }
 
     return fn;
+}
+
+/**
+ * Base function to filter nodes by state value.
+ *
+ * @private
+ * @param {string} state State property
+ * @param {boolean} full Return a non-flat hierarchy
+ * @return {TreeNodes} Array of matching nodes.
+ */
+function baseStatePredicate(state, full) {
+    if (full) {
+        return this.extract(state);
+    }
+
+    // Cache a state predicate function
+    var fn = getPredicateFunction(state);
+
+    return this.flatten(function (node) {
+        // Never include removed nodes unless specifically requested
+        if (state !== 'removed' && node.removed()) {
+            return false;
+        }
+
+        return fn(node);
+    });
 }
 
 /**
@@ -2331,8 +2246,8 @@ var TreeNodes = function (_extendableBuiltin2) {
          * @return {TreeNodes} Array of node objects.
          * @example
          *
-         * let all = tree.nodes()
-         * let some = tree.nodes([1, 2, 3])
+         * const all = tree.nodes()
+         * const some = tree.nodes([1, 2, 3])
          */
 
     }, {
@@ -2749,8 +2664,6 @@ function standardizePromise(promise) {
     });
 }
 
-// Libs
-
 /**
  * Helper method to clone an ITree config object.
  *
@@ -2943,9 +2856,6 @@ var TreeNode = function () {
 
             return baseStateChange('focused', false, 'blurred', this);
         }
-    }, {
-        key: 'check',
-
 
         /**
          * Mark node as checked.
@@ -2953,6 +2863,9 @@ var TreeNode = function () {
          * @param {boolean} shallow Skip auto-checking children.
          * @return {TreeNode} Node object.
          */
+
+    }, {
+        key: 'check',
         value: function check(shallow) {
             this._tree.batch();
 
@@ -2970,15 +2883,15 @@ var TreeNode = function () {
 
             return this;
         }
-    }, {
-        key: 'checked',
-
 
         /**
          * Get whether this node is checked.
          *
          * @return {boolean} True if node checked.
          */
+
+    }, {
+        key: 'checked',
         value: function checked() {
             return this.state('checked');
         }
@@ -3112,8 +3025,8 @@ var TreeNode = function () {
             }
 
             var hierarchy = nodes[0];
-            var pointer = hierarchy;
             var l = nodes.length;
+            var pointer = hierarchy;
             _.each(nodes, function (parent, key) {
                 var children = [];
 
@@ -3127,9 +3040,6 @@ var TreeNode = function () {
 
             return objectToNode(this._tree, hierarchy);
         }
-    }, {
-        key: 'deselect',
-
 
         /**
          * Deselect this node.
@@ -3140,6 +3050,9 @@ var TreeNode = function () {
          * @param {boolean} shallow Skip auto-deselecting children.
          * @return {TreeNode} Node object.
          */
+
+    }, {
+        key: 'deselect',
         value: function deselect(shallow) {
             if (this.selected() && (!this._tree.config.selection.require || this._tree.selected().length > 1)) {
                 this._tree.batch();
@@ -3156,7 +3069,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather node editable. Required editing.edit to be enable via config.
+         * Get whether node editable. Required editing.edit to be enable via config.
          *
          * @return {boolean} True if node editable.
          */
@@ -3168,7 +3081,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather node is currently in edit mode.
+         * Get whether node is currently in edit mode.
          *
          * @return {boolean} True if node in edit mode.
          */
@@ -3188,32 +3101,32 @@ var TreeNode = function () {
     }, {
         key: 'expand',
         value: function expand() {
-            var node = this;
+            var _this3 = this;
 
             return new es6Promise_1(function (resolve, reject) {
-                var allow = node.hasChildren() || node._tree.isDynamic && node.children === true;
+                var allow = _this3.hasChildren() || _this3._tree.isDynamic && _this3.children === true;
 
-                if (allow && (node.collapsed() || node.hidden())) {
-                    node.state('collapsed', false);
-                    node.state('hidden', false);
+                if (allow && (_this3.collapsed() || _this3.hidden())) {
+                    _this3.state('collapsed', false);
+                    _this3.state('hidden', false);
 
-                    node._tree.emit('node.expanded', node);
+                    _this3._tree.emit('node.expanded', _this3);
 
-                    if (node._tree.isDynamic && node.children === true) {
-                        node.loadChildren().then(resolve).catch(reject);
+                    if (_this3._tree.isDynamic && _this3.children === true) {
+                        _this3.loadChildren().then(resolve).catch(reject);
                     } else {
-                        node._tree.applyChanges();
-                        resolve(node);
+                        _this3._tree.applyChanges();
+                        resolve(_this3);
                     }
                 } else {
                     // Resolve immediately
-                    resolve(node);
+                    resolve(_this3);
                 }
             });
         }
 
         /**
-         * Get weather node expanded.
+         * Get whether node expanded.
          *
          * @return {boolean} True if expanded.
          */
@@ -3269,7 +3182,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather this node is focused.
+         * Get whether this node is focused.
          *
          * @return {boolean} True if node focused.
          */
@@ -3345,7 +3258,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather the given node is an ancestor of this node.
+         * Get whether the given node is an ancestor of this node.
          *
          * @param {TreeNode} node Node object.
          * @return {boolean} True if node is an ancestor or the given node
@@ -3363,7 +3276,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather node has any children.
+         * Get whether node has any children.
          *
          * @return {boolean} True if has loaded children.
          */
@@ -3375,7 +3288,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather children have been loaded. Will always be true for non-dynamic nodes.
+         * Get whether children have been loaded. Will always be true for non-dynamic nodes.
          *
          * @return {boolean} True if we've attempted to load children.
          */
@@ -3387,7 +3300,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather node has any children, or allows dynamic loading.
+         * Get whether node has any children, or allows dynamic loading.
          *
          * @return {boolean} True if node has, or will have children.
          */
@@ -3399,7 +3312,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather node has a parent.
+         * Get whether node has a parent.
          *
          * @return {boolean} True if has a parent.
          */
@@ -3411,7 +3324,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather node has any visible children.
+         * Get whether node has any visible children.
          *
          * @return {boolean} True if children are visible.
          */
@@ -3448,7 +3361,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather this node is hidden.
+         * Get whether this node is hidden.
          *
          * @return {boolean} True if node hidden.
          */
@@ -3478,7 +3391,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather this node is indeterminate.
+         * Get whether this node is indeterminate.
          *
          * @return {boolean} True if node indeterminate.
          */
@@ -3531,16 +3444,16 @@ var TreeNode = function () {
     }, {
         key: 'loadChildren',
         value: function loadChildren() {
-            var _this3 = this;
+            var _this4 = this;
 
             return new es6Promise_1(function (resolve, reject) {
-                if (!_this3.allowDynamicLoad()) {
+                if (!_this4.allowDynamicLoad()) {
                     return reject(new Error('Node does not have or support dynamic children.'));
                 }
 
-                _this3.state('loading', true);
-                _this3.markDirty();
-                _this3._tree.applyChanges();
+                _this4.state('loading', true);
+                _this4.markDirty();
+                _this4._tree.applyChanges();
 
                 var complete = function complete(nodes, totalNodes) {
                     // A little type-safety for silly situations
@@ -3548,47 +3461,47 @@ var TreeNode = function () {
                         return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
                     }
 
-                    _this3._tree.batch();
-                    _this3.state('loading', false);
+                    _this4._tree.batch();
+                    _this4.state('loading', false);
 
-                    var model = collectionToModel(_this3._tree, nodes, _this3);
-                    if (_.isArrayLike(_this3.children)) {
-                        _this3.children = _this3.children.concat(model);
+                    var model = collectionToModel(_this4._tree, nodes, _this4);
+                    if (_.isArrayLike(_this4.children)) {
+                        _this4.children = _this4.children.concat(model);
                     } else {
-                        _this3.children = model;
+                        _this4.children = model;
                     }
 
                     if (_.parseInt(totalNodes) > nodes.length) {
-                        _this3.children._pagination.total = _.parseInt(totalNodes);
+                        _this4.children._pagination.total = _.parseInt(totalNodes);
                     }
 
                     // If using checkbox mode, share selection with newly loaded children
-                    if (_this3._tree.config.selection.mode === 'checkbox' && _this3.selected()) {
-                        _this3.children.select();
+                    if (_this4._tree.config.selection.mode === 'checkbox' && _this4.selected()) {
+                        _this4.children.select();
                     }
 
-                    _this3.markDirty();
-                    _this3._tree.end();
+                    _this4.markDirty();
+                    _this4._tree.end();
 
-                    resolve(_this3.children);
+                    resolve(_this4.children);
 
-                    _this3._tree.emit('children.loaded', _this3);
+                    _this4._tree.emit('children.loaded', _this4);
                 };
 
                 var error = function error(err) {
-                    _this3.state('loading', false);
-                    _this3.children = new TreeNodes(_this3._tree);
-                    _this3.children._context = _this3;
-                    _this3.markDirty();
-                    _this3._tree.applyChanges();
+                    _this4.state('loading', false);
+                    _this4.children = new TreeNodes(_this4._tree);
+                    _this4.children._context = _this4;
+                    _this4.markDirty();
+                    _this4._tree.applyChanges();
 
                     reject(err);
 
-                    _this3._tree.emit('tree.loaderror', err);
+                    _this4._tree.emit('tree.loaderror', err);
                 };
 
-                var pagination = _this3._tree.constructor.isTreeNodes(_this3.children) ? _this3.children.pagination() : null;
-                var loader = _this3._tree.config.data(_this3, complete, error, pagination);
+                var pagination = _this4._tree.constructor.isTreeNodes(_this4.children) ? _this4.children.pagination() : null;
+                var loader = _this4._tree.config.data(_this4, complete, error, pagination);
 
                 // Data loader is likely a promise
                 if (_.isObject(loader)) {
@@ -3598,7 +3511,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather this node is loading child data.
+         * Get whether this node is loading child data.
          *
          * @return {boolean} True if node's children are loading.
          */
@@ -3797,6 +3710,7 @@ var TreeNode = function () {
         value: function previousVisibleSiblingNode() {
             var context = this.hasParent() ? this.getParent().children : this._tree.nodes();
             var i = _.findIndex(context, { id: this.id });
+
             return _.findLast(_.slice(context, 0, i), function (node) {
                 return node.visible();
             });
@@ -3899,21 +3813,21 @@ var TreeNode = function () {
     }, {
         key: 'reload',
         value: function reload() {
-            var _this4 = this;
+            var _this5 = this;
 
             return new es6Promise_1(function (resolve, reject) {
-                if (!_this4.allowDynamicLoad()) {
+                if (!_this5.allowDynamicLoad()) {
                     return reject(new Error('Node or tree does not support dynamic children.'));
                 }
 
                 // Reset children
-                _this4.children = true;
+                _this5.children = true;
 
                 // Collapse
-                _this4.collapse();
+                _this5.collapse();
 
                 // Load and the proxy the promise
-                _this4.loadChildren().then(resolve).catch(reject);
+                _this5.loadChildren().then(resolve).catch(reject);
             });
         }
 
@@ -4030,7 +3944,7 @@ var TreeNode = function () {
         }
 
         /**
-         * Get weather node selectable.
+         * Get whether node selectable.
          *
          * @return {boolean} True if node selectable.
          */
@@ -4099,7 +4013,7 @@ var TreeNode = function () {
     }, {
         key: 'state',
         value: function state(obj, val) {
-            var _this5 = this;
+            var _this6 = this;
 
             if (_.isString(obj)) {
                 return baseState(this, obj, val);
@@ -4109,7 +4023,7 @@ var TreeNode = function () {
 
             var oldState = {};
             _.each(obj, function (value, prop) {
-                oldState[prop] = baseState(_this5, prop, value);
+                oldState[prop] = baseState(_this6, prop, value);
             });
 
             this._tree.end();
@@ -4128,14 +4042,14 @@ var TreeNode = function () {
     }, {
         key: 'states',
         value: function states(names, newVal) {
-            var _this6 = this;
+            var _this7 = this;
 
             var results = [];
 
             this._tree.batch();
 
             _.each(names, function (name) {
-                results.push(_this6.state(name, newVal));
+                results.push(_this7.state(name, newVal));
             });
 
             this._tree.end();
@@ -4236,7 +4150,7 @@ var TreeNode = function () {
     }, {
         key: 'toObject',
         value: function toObject() {
-            var _this7 = this;
+            var _this8 = this;
 
             var excludeChildren = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
             var includeState = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
@@ -4247,7 +4161,7 @@ var TreeNode = function () {
 
             // Map keys
             _.each(keys, function (keyName) {
-                exported[keyName] = _this7[keyName];
+                exported[keyName] = _this8[keyName];
             });
 
             // Copy over whitelisted itree data
@@ -4322,9 +4236,6 @@ var TreeNode = function () {
 
             return this;
         }
-    }, {
-        key: 'visible',
-
 
         /**
          * Get whether node is visible to a user. Returns false
@@ -4332,6 +4243,9 @@ var TreeNode = function () {
          *
          * @return {boolean} Whether visible.
          */
+
+    }, {
+        key: 'visible',
         value: function visible() {
             var isVisible = true;
             if (this.hidden() || this.removed() || this._tree.usesNativeDOM && !this.rendered()) {
@@ -4351,6 +4265,92 @@ var TreeNode = function () {
     }]);
     return TreeNode;
 }();
+
+var rngBrowser = createCommonjsModule(function (module) {
+// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+
+// getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
+var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues.bind(crypto)) ||
+                      (typeof(msCrypto) != 'undefined' && msCrypto.getRandomValues.bind(msCrypto));
+if (getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+
+  module.exports = function whatwgRNG() {
+    getRandomValues(rnds8);
+    return rnds8;
+  };
+} else {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+
+  module.exports = function mathRNG() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+});
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+var bytesToUuid_1 = bytesToUuid;
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rngBrowser)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid_1(rnds);
+}
+
+var v4_1 = v4;
 
 /**
  * Parse a raw object into a TreeNode used within a tree.
@@ -5226,8 +5226,6 @@ var eventemitter2 = createCommonjsModule(function (module, exports) {
 });
 var eventemitter2_1 = eventemitter2.EventEmitter2;
 
-// Libs
-
 /**
  * Maps a method to the root TreeNodes collection.
  *
@@ -5253,23 +5251,21 @@ var InspireTree = function (_EventEmitter) {
     function InspireTree(opts) {
         classCallCheck(this, InspireTree);
 
+        // Init properties
         var _this = possibleConstructorReturn(this, (InspireTree.__proto__ || Object.getPrototypeOf(InspireTree)).call(this));
 
-        var tree = _this;
-
-        // Init properties
-        tree._lastSelectedNode;
-        tree._muted = false;
-        tree.allowsLoadEvents = false;
-        tree.batching = 0;
-        tree.id = v4_1();
-        tree.initialized = false;
-        tree.isDynamic = false;
-        tree.opts = opts;
-        tree.preventDeselection = false;
+        _this._lastSelectedNode;
+        _this._muted = false;
+        _this.allowsLoadEvents = false;
+        _this.batching = 0;
+        _this.id = v4_1();
+        _this.initialized = false;
+        _this.isDynamic = false;
+        _this.opts = opts;
+        _this.preventDeselection = false;
 
         // Assign defaults
-        tree.config = _.defaultsDeep({}, opts, {
+        _this.config = _.defaultsDeep({}, opts, {
             allowLoadEvents: [],
             checkbox: {
                 autoCheckChildren: true
@@ -5306,29 +5302,29 @@ var InspireTree = function (_EventEmitter) {
         });
 
         // If checkbox mode, we must force auto-selecting children
-        if (tree.config.selection.mode === 'checkbox') {
-            tree.config.selection.autoSelectChildren = true;
+        if (_this.config.selection.mode === 'checkbox') {
+            _this.config.selection.autoSelectChildren = true;
 
             // In checkbox mode, checked=selected
-            tree.on('node.checked', function (node) {
+            _this.on('node.checked', function (node) {
                 if (!node.selected()) {
                     node.select(true);
                 }
             });
 
-            tree.on('node.selected', function (node) {
+            _this.on('node.selected', function (node) {
                 if (!node.checked()) {
                     node.check(true);
                 }
             });
 
-            tree.on('node.unchecked', function (node) {
+            _this.on('node.unchecked', function (node) {
                 if (node.selected()) {
                     node.deselect(true);
                 }
             });
 
-            tree.on('node.deselected', function (node) {
+            _this.on('node.deselected', function (node) {
                 if (node.checked()) {
                     node.uncheck(true);
                 }
@@ -5336,30 +5332,30 @@ var InspireTree = function (_EventEmitter) {
         }
 
         // If auto-selecting children, we must force multiselect
-        if (tree.config.selection.autoSelectChildren) {
-            tree.config.selection.multiple = true;
-            tree.config.selection.autoDeselect = false;
+        if (_this.config.selection.autoSelectChildren) {
+            _this.config.selection.multiple = true;
+            _this.config.selection.autoDeselect = false;
         }
 
         // Treat editable as full edit mode
         if (opts.editable && !opts.editing) {
-            tree.config.editing.add = true;
-            tree.config.editing.edit = true;
-            tree.config.editing.remove = true;
+            _this.config.editing.add = true;
+            _this.config.editing.edit = true;
+            _this.config.editing.remove = true;
         }
 
         // Support simple config for search
         if (_.isFunction(opts.search)) {
-            tree.config.search = {
+            _this.config.search = {
                 matcher: opts.search,
                 matchProcessor: false
             };
         }
 
         // Init the default state for nodes
-        tree.defaultState = {
+        _this.defaultState = {
             collapsed: true,
-            editable: _.get(tree, 'config.editing.edit'),
+            editable: _.get(_this, 'config.editing.edit'),
             editing: false,
             draggable: true,
             'drop-target': true,
@@ -5375,35 +5371,39 @@ var InspireTree = function (_EventEmitter) {
         };
 
         // Cache some configs
-        tree.allowsLoadEvents = _.isArray(tree.config.allowLoadEvents) && tree.config.allowLoadEvents.length > 0;
-        tree.isDynamic = _.isFunction(tree.config.data);
+        _this.allowsLoadEvents = _.isArray(_this.config.allowLoadEvents) && _this.config.allowLoadEvents.length > 0;
+        _this.isDynamic = _.isFunction(_this.config.data);
 
         // Override emitter so we can better control flow
-        var emit = tree.emit;
-        tree.emit = function (eventName) {
-            if (!tree.isEventMuted(eventName)) {
+        var emit = _this.emit;
+        _this.emit = function () {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+            }
+
+            if (!_this.isEventMuted(args[0])) {
                 // Duck-type for a DOM event
-                if (_.isFunction(_.get(arguments, '[1].preventDefault'))) {
-                    var event = arguments[1];
+                if (_.isFunction(_.get(args, '[0].preventDefault'))) {
+                    var event = args[0];
                     event.treeDefaultPrevented = false;
                     event.preventTreeDefault = function () {
                         event.treeDefaultPrevented = true;
                     };
                 }
 
-                emit.apply(tree, arguments);
+                emit.apply(_this, args);
             }
         };
 
         // Init the model
-        tree.model = new TreeNodes(tree);
+        _this.model = new TreeNodes(_this);
 
         // Load initial user data
-        if (tree.config.data) {
-            tree.load(tree.config.data);
+        if (_this.config.data) {
+            _this.load(_this.config.data);
         }
 
-        tree.initialized = true;
+        _this.initialized = true;
         return _this;
     }
 
@@ -5528,8 +5528,8 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'boundingNodes',
         value: function boundingNodes() {
-            var pathMap = _.transform(arguments, function (map, node) {
-                map[node.indexPath().replace(/\./g, '')] = node;
+            var pathMap = _.transform(arguments, function (col, node) {
+                col[node.indexPath().replace(/\./g, '')] = node;
             }, {});
 
             var _$sortBy = _.sortBy(Object.keys(pathMap)),
@@ -6229,7 +6229,7 @@ var InspireTree = function (_EventEmitter) {
                 if (_.isObject(loader)) {
                     standardizePromise(loader).then(complete).catch(reject);
                 } else {
-                    error(new Error('Invalid data loader.'));
+                    reject(new Error('Invalid data loader.'));
                 }
             });
 
@@ -6239,9 +6239,7 @@ var InspireTree = function (_EventEmitter) {
             });
 
             // Cache to allow access after tree instantiation
-            this._loader = {
-                promise: promise
-            };
+            this._loader = { promise: promise };
 
             return promise;
         }
@@ -6364,8 +6362,8 @@ var InspireTree = function (_EventEmitter) {
          * @return {TreeNodes} Array of node objects.
          * @example
          *
-         * let all = tree.nodes()
-         * let some = tree.nodes([1, 2, 3])
+         * const all = tree.nodes()
+         * const some = tree.nodes([1, 2, 3])
          */
 
     }, {
@@ -6462,7 +6460,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'reload',
         value: function reload() {
-            this.removeAll();
+            this.reset();
 
             return this.load(this.opts.data || this.config.data);
         }
@@ -6489,8 +6487,7 @@ var InspireTree = function (_EventEmitter) {
     }, {
         key: 'removeAll',
         value: function removeAll() {
-            this.model = new TreeNodes(this);
-            this.applyChanges();
+            this.reset().applyChanges();
 
             return this;
         }
@@ -6506,6 +6503,24 @@ var InspireTree = function (_EventEmitter) {
         key: 'removed',
         value: function removed() {
             return _map(this, 'removed', arguments);
+        }
+
+        /**
+         * Resets the root model and associated information like pagination.
+         *
+         * Note: This method does *not* apply changes because it assumes
+         * futher changes will occur to the model.
+         *
+         * @private
+         * @return {Tree} Tree instance.
+         */
+
+    }, {
+        key: 'reset',
+        value: function reset() {
+            this.model = new TreeNodes(this);
+
+            return this;
         }
 
         /**
@@ -6577,21 +6592,21 @@ var InspireTree = function (_EventEmitter) {
             this.end();
 
             // Query nodes for any matching the query
-            matcher = _.isFunction(matcher) ? matcher : function (query, resolve) {
+            matcher = _.isFunction(matcher) ? matcher : function (matchQuery, resolve) {
                 var matches = new TreeNodes(_this4);
 
                 // Convery the query into a usable predicate
-                if (_.isString(query)) {
-                    query = new RegExp(query, 'i');
+                if (_.isString(matchQuery)) {
+                    matchQuery = new RegExp(matchQuery, 'i');
                 }
 
                 var predicate = void 0;
-                if (_.isRegExp(query)) {
+                if (_.isRegExp(matchQuery)) {
                     predicate = function predicate(node) {
-                        return query.test(node.text);
+                        return matchQuery.test(node.text);
                     };
                 } else {
-                    predicate = query;
+                    predicate = matchQuery;
                 }
 
                 // Recurse down and find all matches
@@ -6690,15 +6705,15 @@ var InspireTree = function (_EventEmitter) {
 
             return this;
         }
-    }, {
-        key: 'selectDeep',
-
 
         /**
          * Select (deeply) all nodes.
          *
          * @return {TreeNodes} Array of node objects.
          */
+
+    }, {
+        key: 'selectDeep',
         value: function selectDeep() {
             return _map(this, 'selectDeep', arguments);
         }
@@ -6732,15 +6747,15 @@ var InspireTree = function (_EventEmitter) {
 
             return node;
         }
-    }, {
-        key: 'shift',
-
 
         /**
          * Shift node in the first index position.
          *
          * @return {TreeNode} Node object.
          */
+
+    }, {
+        key: 'shift',
         value: function shift() {
             return _map(this, 'shift', arguments);
         }
@@ -6952,15 +6967,15 @@ var InspireTree = function (_EventEmitter) {
 
             return this;
         }
-    }, {
-        key: 'unshift',
-
 
         /**
          * Add a TreeNode in the first index position.
          *
          * @return {number} The new length
          */
+
+    }, {
+        key: 'unshift',
         value: function unshift() {
             return _map(this, 'unshift', arguments);
         }

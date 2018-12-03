@@ -1,5 +1,11 @@
 # Changes to Inspire Tree
 
+# 5.0.2
+
+- Fixed incorrect `find` method typescript definition.
+- Fixed minor spelling/linting errors.
+- Fixed duplicate rerender call on model reset.
+
 # 5.0.1
 
 - Fixed parent checkbox not overriding indeterminate children.
