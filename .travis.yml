@@ -2,8 +2,8 @@ sudo: required
 dist: trusty
 language: node_js
 node_js:
-  - "9"
-  - "7"
+  - "11"
+  - "10"
 before_install:
   - npm install -g rollup yarn
   - yarn -V
