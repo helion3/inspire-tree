@@ -1,5 +1,5 @@
 {
-    "presets": ["es2015-rollup"],
+    "presets": ["@babel/preset-env"],
     "plugins": [
         "babel-plugin-transform-object-rest-spread",
         ["babel-plugin-transform-builtin-extend", {
