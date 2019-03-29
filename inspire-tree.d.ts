@@ -150,6 +150,8 @@ export class InspireTree extends EventEmitter2 {
     hide(): TreeNodes;
     hideDeep(): TreeNodes;
     id: string | number;
+    config: any;
+    preventDeselection: boolean;
     indeterminate(full?: boolean): TreeNodes;
     insertAt(index: number, object: any): TreeNode;
     invoke(methods: string|Array<string>): TreeNodes;
