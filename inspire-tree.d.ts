@@ -277,6 +277,7 @@ export class TreeNode {
     constructor(tree: InspireTree, source: any|TreeNode, excludeKeys: Array<string>);
     constructor(tree: InspireTree, source: any|TreeNode);
     constructor(tree: InspireTree);
+    text: string;
     context(): TreeNodes;
     copy(hierarchy?: boolean): TreeNode;
     copyHierarchy(excludeNode?: boolean): TreeNode;
