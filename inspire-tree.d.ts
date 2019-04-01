@@ -65,6 +65,7 @@ export interface Config {
         require?: boolean;
     };
     sort?: string;
+    multiselect?: boolean;
 }
 
 export interface NodeConfig {
@@ -278,6 +279,31 @@ export class TreeNode {
     constructor(tree: InspireTree, source: any|TreeNode);
     constructor(tree: InspireTree);
     text: string;
+    itree?: {
+        a?: {
+            attributes?: any
+        },
+        icon?: string,
+        li?: {
+            attributes?: any
+        },
+        state?: {
+            checked?: boolean,
+            collapsed?: boolean,
+            draggable?: boolean,
+            'drop-target'?: boolean,
+            editable?: boolean,
+            focused?: boolean,
+            hidden?: boolean,
+            indeterminate?: boolean,
+            loading?: boolean,
+            matched?: boolean,
+            removed?: boolean,
+            rendered?: boolean,
+            selectable?: boolean,
+            selected?: boolean,
+        }
+    };
     context(): TreeNodes;
     copy(hierarchy?: boolean): TreeNode;
     copyHierarchy(excludeNode?: boolean): TreeNode;
