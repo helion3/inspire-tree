@@ -279,6 +279,7 @@ export class TreeNode {
     constructor(tree: InspireTree, source: any|TreeNode);
     constructor(tree: InspireTree);
     text: string;
+    id: string;
     itree?: {
         a?: {
             attributes?: any
