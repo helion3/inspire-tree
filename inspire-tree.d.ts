@@ -280,31 +280,7 @@ export class TreeNode {
     constructor(tree: InspireTree);
     text: string;
     id: string;
-    itree?: {
-        a?: {
-            attributes?: any
-        },
-        icon?: string,
-        li?: {
-            attributes?: any
-        },
-        state?: {
-            checked?: boolean,
-            collapsed?: boolean,
-            draggable?: boolean,
-            'drop-target'?: boolean,
-            editable?: boolean,
-            focused?: boolean,
-            hidden?: boolean,
-            indeterminate?: boolean,
-            loading?: boolean,
-            matched?: boolean,
-            removed?: boolean,
-            rendered?: boolean,
-            selectable?: boolean,
-            selected?: boolean,
-        }
-    };
+    itree?: NodeConfig['itree'];
     context(): TreeNodes;
     copy(hierarchy?: boolean): TreeNode;
     copyHierarchy(excludeNode?: boolean): TreeNode;
