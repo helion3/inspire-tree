@@ -65,6 +65,7 @@ export interface Config {
         require?: boolean;
     };
     sort?: string;
+    multiselect?: boolean;
 }
 
 export interface NodeConfig {
@@ -150,6 +151,8 @@ export class InspireTree extends EventEmitter2 {
     hide(): TreeNodes;
     hideDeep(): TreeNodes;
     id: string | number;
+    config: Config;
+    preventDeselection: boolean;
     indeterminate(full?: boolean): TreeNodes;
     insertAt(index: number, object: any): TreeNode;
     invoke(methods: string|Array<string>): TreeNodes;
@@ -275,6 +278,9 @@ export class TreeNode {
     constructor(tree: InspireTree, source: any|TreeNode, excludeKeys: Array<string>);
     constructor(tree: InspireTree, source: any|TreeNode);
     constructor(tree: InspireTree);
+    text: string;
+    id: string;
+    itree?: NodeConfig['itree'];
     context(): TreeNodes;
     copy(hierarchy?: boolean): TreeNode;
     copyHierarchy(excludeNode?: boolean): TreeNode;
