@@ -25,5 +25,5 @@ describe('typescript definition', () => {
             target: ts.ScriptTarget.ES5,
             module: ts.ModuleKind.CommonJS
         });
-    });
+    }).timeout(4000);
 });
