@@ -26,7 +26,6 @@ const plugins = [
         exclude: 'node_modules/**'
     }),
     nodeResolve({
-        jsnext: true,
         browser: true
     }),
     commonjs({
