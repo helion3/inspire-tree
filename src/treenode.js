@@ -288,7 +288,7 @@ class TreeNode {
             node = node.copyHierarchy(false, includeState);
         }
 
-        return dest.addNode(node.toObject(false, includeState));
+        return dest.addNode(_.cloneDeep(node.toObject(false, includeState)));
     }
 
     /**

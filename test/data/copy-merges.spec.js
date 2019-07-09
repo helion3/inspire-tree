@@ -214,4 +214,19 @@ describe('Modification', function() {
 
         tree2.removeAll();
     });
+
+    it('clones on copy, state objects are separate', function() {
+        const node1 = tree1.node(1);
+        node1.deselect();
+        expect(node1.selected()).to.be.false;
+
+        node1.copy(tree2, false, true);
+
+        node1.select();
+
+        const node2 = tree2.node(1);
+        expect(node2.selected()).to.be.false;
+
+        tree2.removeAll();
+    });
 });
