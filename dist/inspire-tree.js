@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 6.0.0
+ * @version 6.0.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -3176,7 +3176,7 @@
           node = node.copyHierarchy(false, includeState);
         }
 
-        return dest.addNode(node.toObject(false, includeState));
+        return dest.addNode(_.cloneDeep(node.toObject(false, includeState)));
       }
       /**
        * Copy all parents of a node.

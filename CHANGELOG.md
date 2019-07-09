@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 6.0.1
+
+- Fixes copy not cloning exported object, sharing object references.
+
 # 6.0.0
 
 - Added `TreeNodes.first` and `TreeNodes.last` shallow search functions.
