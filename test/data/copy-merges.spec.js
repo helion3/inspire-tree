@@ -184,4 +184,34 @@ describe('Modification', function() {
 
         tree2.removeAll();
     });
+
+    it('includes state, and retains custom properties for a single node', function() {
+        // Move all to one tree
+        const node1 = tree1.node(1);
+        node1.state('example', true);
+        node1.select();
+
+        expect(node1.selected()).to.be.true;
+
+        node1.copy(tree2, false, true);
+
+        const node2 = tree2.node(1);
+        expect(node2.state('example')).to.be.true;
+        expect(node2.selected()).to.be.true;
+
+        tree2.removeAll();
+    });
+
+    it('includes state, and retains custom properties for all nodes', function() {
+        // Move all to one tree
+        tree1.nodes().state('example', true).copy(tree2, false, true);
+
+        const node1 = tree2.node(1);
+        expect(node1.state('example')).to.be.true;
+
+        const node2 = tree2.node(2);
+        expect(node2.state('example')).to.be.true;
+
+        tree2.removeAll();
+    });
 });

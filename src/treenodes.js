@@ -350,13 +350,14 @@ class TreeNodes extends Array {
      *
      * @param {object} dest Destination Inspire Tree.
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @param {boolean} includeState Include itree.state object.
      * @return {object} Methods to perform action on copied nodes.
      */
-    copy(dest, hierarchy) {
+    copy(dest, hierarchy, includeState) {
         const newNodes = new TreeNodes(this._tree);
 
         _.each(this, node => {
-            newNodes.push(node.copy(dest, hierarchy));
+            newNodes.push(node.copy(dest, hierarchy, includeState));
         });
 
         return newNodes;

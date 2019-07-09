@@ -375,7 +375,9 @@ class InspireTree extends EventEmitter2 {
     /**
      * Copy nodes to another tree instance.
      *
+     * @param {object} dest Destination Inspire Tree.
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @param {boolean} includeState Include itree.state object.
      * @return {object} Methods to perform action on copied nodes.
      */
     copy() {

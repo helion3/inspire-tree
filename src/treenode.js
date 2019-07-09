@@ -275,40 +275,42 @@ class TreeNode {
      *
      * @param {object} dest Destination Inspire Tree.
      * @param {boolean} hierarchy Include necessary ancestors to match hierarchy.
+     * @param {boolean} includeState Include itree.state object.
      * @return {object} Property "to" for defining destination.
      */
-    copy(dest, hierarchy) {
+    copy(dest, hierarchy, includeState) {
         if (!dest || !_.isFunction(dest.addNode)) {
             throw new Error('Destination must be an Inspire Tree instance.');
         }
 
         let node = this;
         if (hierarchy) {
-            node = node.copyHierarchy();
+            node = node.copyHierarchy(false, includeState);
         }
 
-        return dest.addNode(node.toObject());
+        return dest.addNode(node.toObject(false, includeState));
     }
 
     /**
      * Copy all parents of a node.
      *
      * @param {boolean} excludeNode Exclude given node from hierarchy.
+     * @param {boolean} includeState Include itree.state object.
      * @return {TreeNode} Root node object with hierarchy.
      */
-    copyHierarchy(excludeNode) {
+    copyHierarchy(excludeNode, includeState) {
         const nodes = [];
         let parents = this.getParents();
 
         // Remove old hierarchy data
         _.each(parents, node => {
-            nodes.push(node.toObject(excludeNode));
+            nodes.push(node.toObject(excludeNode, includeState));
         });
 
         parents = nodes.reverse();
 
         if (!excludeNode) {
-            const clone = this.toObject(true);
+            const clone = this.toObject(true, includeState);
 
             // Filter out hidden children
             if (this.hasChildren()) {

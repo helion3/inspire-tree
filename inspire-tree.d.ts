@@ -126,7 +126,7 @@ export class InspireTree extends EventEmitter2 {
     constructor(tree: InspireTree, array: Array<any>|TreeNodes);
     constructor(tree: InspireTree);
     context(): TreeNode;
-    copy(hierarchy?: boolean): TreeNodes;
+    copy(dest: InspireTree, hierarchy?: boolean, includeState?: boolean): TreeNodes;
     createNode(obj: any): TreeNode;
     deepest(): TreeNodes;
     deselect(): TreeNodes;
@@ -212,7 +212,7 @@ export class TreeNodes extends Array<TreeNode> {
     constructor(tree: InspireTree, array: Array<any>|TreeNodes);
     constructor(tree: InspireTree);
     context(): TreeNode;
-    copy(hierarchy?: boolean): TreeNodes;
+    copy(dest: InspireTree, hierarchy?: boolean, includeState?: boolean): TreeNodes;
     deepest(): TreeNodes;
     deselect(): TreeNodes;
     deselectDeep(): TreeNodes;
@@ -282,8 +282,8 @@ export class TreeNode {
     id: string;
     itree?: NodeConfig['itree'];
     context(): TreeNodes;
-    copy(hierarchy?: boolean): TreeNode;
-    copyHierarchy(excludeNode?: boolean): TreeNode;
+    copy(dest: InspireTree, hierarchy?: boolean, includeState?: boolean): TreeNode;
+    copyHierarchy(excludeNode?: boolean, includeState?: boolean): TreeNode;
     deselect(shallow?: boolean): TreeNode;
     editable(): boolean;
     editing(): boolean;
