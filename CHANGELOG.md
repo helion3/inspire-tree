@@ -1,5 +1,38 @@
 # Changes to Inspire Tree
 
+# 6.0.0
+
+- Added `TreeNodes.first` and `TreeNodes.last` shallow search functions.
+- Added `TreeNode.renderable`, `TreeNode.isFirstRenderable`, `TreeNode.isLastRenderable`, and `TreeNode.isOnlyRenderable` check functions.
+- Moved batch/end/applyChanges to the TreeNodes level. Calling this on the tree as usual aliases the root-level model.
+- Updated TreeNodes method to call batch/end on their context in most cases, not the entire tree.
+- Added `TreeNodes.context()` as a parameter for `changes.applied` events. Some renderers could possibly ignore these if the context is a TreeNode.
+- Added a config object argument to the TreeNodes constructor. Internally, calculateRenderablePositions is only used for "renderable" TreeNodes.
+- Added pass-through of `includeState` parameter for `copy/copyHierarchy` methods which rely on `toObject`.
+- Minor cleanup.
+
+**Breaking Changes**
+
+**Dirty**
+
+Internally, first/last/only "renderable" nodes are calculated on add/remove or position change operations
+(addNode, push, splice, sort, etc).
+
+These are useful to rendering engines, and in order to communicate the change, nodes are marked as dirty
+when their first/last/only position changes.
+
+This will cause `dirty` flags to be *true* for some nodes when it wasn't previously.
+
+**changes.applied**
+
+Batching is now handled contextually. Each TreeNodes collection may fire its own `changes.applied` event. The event
+now includes a `context` argument which will be the result of `TreeNodes.context()`. The context will either be
+the InspireTree object, or a parent TreeNode.
+
+If your entire tree is rendered on this event, you can either ignore the event when fired for a specific node, or
+debounce it.
+
+
 # 5.0.2
 
 - Fixed incorrect `find` method typescript definition.
