@@ -107,6 +107,115 @@ export interface Pagination {
     total: number;
 }
 
+
+export interface TreeEvents {
+    /** @event changes.applied (InspireTree | TreeNode context) - Indicates batched changes are complete for the context. */
+    'changes.applied'?: (context: InspireTree | TreeNode) => void;
+
+    /** @event children.loaded (TreeNode node) - Children were dynamically loaded for a node. */
+    'children.loaded'?: (node: TreeNode) => void;
+
+    /** @event data.loaded (Array nodes) - Data has been loaded successfully (only for data loaded via xhr/callbacks). */
+    'data.loaded'?: (nodes: any[]) => void;
+
+    /** @event data.loaderror (Error err) - Loading failed. */
+    'data.loaderror'?: (err: Error) => void;
+
+    /** @event model.loaded (Array nodes) - Data has been parsed into an internal model. */
+    'model.loaded'?: (node: TreeNode) => void;
+
+    /** @event node.added (TreeNode node) - Node added. */
+    'node.added'?: (node: TreeNode) => void;
+
+    /** @event node.click (TreeNode node) - Node os clicked. */
+    'node.click'?: (node: TreeNode) => void;
+
+    /** @event node.blurred (TreeNode node, bool isLoadEvent) - Node lost focus. */
+    'node.blurred'?: (node: TreeNode, isLoadEvent: boolean) => void;
+
+    /** @event node.checked (TreeNode node, bool isLoadEvent) - Node checked. */
+    'node.checked'?: (node: TreeNode, isLoadEvent: boolean) => void;
+
+    /** @event node.collapsed (TreeNode node) - Node collapsed. */
+    'node.collapsed'?: (node: TreeNode) => void;
+
+    /** @event node.deselected (TreeNode node) - Node deselected. */
+    'node.deselected'?: (node: TreeNode) => void;
+
+    /** @event node.edited (TreeNode node), (string oldValue), (string newValue) - Node text was altered via inline editing. */
+    'node.edited'?: (node: TreeNode) => void;
+
+    /** @event node.expanded (TreeNode node, bool isLoadEvent) - Node expanded. */
+    'node.expanded'?: (node: TreeNode, isLoadEvent: boolean) => void;
+
+    /** @event node.focused (TreeNode node, bool isLoadEvent) - Node focused. */
+    'node.focused'?: (node: TreeNode, isLoadEvent: boolean) => void;
+
+    /** @event node.hidden (TreeNode node, bool isLoadEvent) - Node hidden. */
+    'node.hidden'?: (node: TreeNode, isLoadEvent: boolean) => void;
+
+    /** @event node.moved (TreeNode node, TreeNodes source, int oldIndex, TreeNodes target, int newIndex) - Node moved. */
+    'node.moved'?: (node: TreeNode) => void;
+
+    /** @event node.paginated (TreeNode context), (Object pagination) (Event event) - Nodes were paginated. Context is undefined when for the root level. */
+    'node.paginated'?: (node: TreeNode) => void;
+
+    /** @event node.propertchanged - (TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue) - A node's root property has changed. */
+    'node.property.changed'?: (node: TreeNode) => void;
+
+    /** @event node.removed (object node) - Node removed. */
+    'node.removed'?: (node: TreeNode) => void;
+
+    /** @event node.restored (TreeNode node) - Node restored. */
+    'node.restored'?: (node: TreeNode) => void;
+
+    /** @event node.selected (TreeNode node, bool isLoadEvent) - Node selected. */
+    'node.selected'?: (node: TreeNode, isLoadEvent: boolean) => void;
+
+    /** @event node.statchanged - (TreeNode node), (String property), (Mixed oldValue), (Mixed) newValue) - A node state boolean has changed. */
+    'node.state.changed'?: (node: TreeNode) => void;
+
+    /** @event node.shown (TreeNode node) - Node shown. */
+    'node.shown'?: (node: TreeNode) => void;
+
+    /** @event node.softremoved (TreeNode node, bool isLoadEvent) - Node soft removed. */
+    'node.softremoved'?: (node: TreeNode, isLoadEvent: boolean) => void;
+
+    /** @event node.unchecked (TreeNode node) - Node unchecked. */
+    'node.unchecked'?: (node: TreeNode) => void;
+}
+
+export interface InspireTree {
+
+    emit<E extends keyof TreeEvents>(event: E | E[], ...values: any[]): boolean;
+
+    emitAsync<E extends keyof TreeEvents>(event: E | E[], ...values: any[]): Promise<any[]>;
+
+    addListener<E extends keyof TreeEvents>(event: E, listener: TreeEvents[E]): this;
+
+    on<E extends keyof TreeEvents>(event: E, listener: TreeEvents[E]): this;
+
+    prependListener<E extends keyof TreeEvents>(event: E | E[], listener: TreeEvents[E]): this;
+
+    once<E extends keyof TreeEvents>(event: E, listener: TreeEvents[E]): this;
+
+    prependOnceListener<E extends keyof TreeEvents>(event: E | E[], listener: TreeEvents[E]): this;
+
+    many<E extends keyof TreeEvents>(event: E | E[], timesToListen: number, listener: TreeEvents[E]): this;
+
+    prependMany<E extends keyof TreeEvents>(event: E | E[], timesToListen: number, listener: TreeEvents[E]): this;
+
+    onAny(listener: EventAndListener): this;
+
+    prependAny(listener: EventAndListener): this;
+
+    offAny(listener: Listener): this;
+
+    removeListener<E extends keyof TreeEvents>(event: E | E[], listener: TreeEvents[E]): this;
+
+    off<E extends keyof TreeEvents>(event: E, listener: TreeEvents[E]): this;
+}
+
 export class InspireTree extends EventEmitter2 {
     addNode(node: NodeConfig): TreeNode;
     addNodes(node: Array<NodeConfig>): TreeNodes;
@@ -262,6 +371,8 @@ export class TreeNodes extends Array<TreeNode> {
     tree(): InspireTree;
     visible(full?: boolean): TreeNodes;
 }
+
+export interface TreeNode {}
 
 export class TreeNode {
     addChild(node: NodeConfig): TreeNode;
