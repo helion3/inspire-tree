@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "es6-promise": "^4.1.1",
-    "eventemitter2": "^5.0.1",
+    "eventemitter2": "^6.4.4",
     "lodash": "^4.17.5",
     "uuid": "^3.1.0"
   },
@@ -16,20 +16,20 @@
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "chai": "^4.1.1",
-    "eslint": "^6.3.0",
+    "eslint": "^7.32.0",
     "jquery": "^3.3.0",
     "jsdoc": "^3.5.5",
-    "mocha": "^6.0.2",
-    "rollup": "^1.6.0",
+    "mocha": "^9.1.2",
+    "rollup": "^2.58.0",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^10.0.0",
     "rollup-plugin-gzip": "^2.2.0",
     "rollup-plugin-node-resolve": "^5.0.1",
     "rollup-plugin-uglify": "^6.0.2",
     "rollup-watch": "^4.3.1",
-    "sinon": "^7.2.7",
+    "sinon": "^11.1.2",
     "sinon-chai": "^3.0.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^4.4.3"
   },
   "scripts": {
     "build": "rollup -c",
