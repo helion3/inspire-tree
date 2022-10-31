@@ -30,13 +30,18 @@ interface EventAndListener {
     (event: string | string[], ...values: any[]): void;
 }
 
+export type NodeConfigs = Array<NodeConfig>
+export type NodeConfigsPromise = Promise<NodeConfigs>
+export type NodeConfigsResolver = (node: TreeNode | null, resolve: (nodes: Array<NodeConfig>) => void, reject: (err: Error) => void) => void
+export type NodeConfigsProvider = NodeConfigs | NodeConfigsPromise | NodeConfigsResolver;
+
 /**
  * Represents a tree configuration object, of which only "data" is required.
  */
 export interface Config {
     allowLoadEvents?: Array<string>;
     contextMenu?: boolean;
-    data?(node: TreeNode, resolve: (nodes: Array<NodeConfig>) => any, reject: (err: Error) => any): any|Array<NodeConfig>|Promise<Array<NodeConfig>>;
+    data: NodeConfigsProvider;
     deferredLoading?: boolean;
     editable?: boolean;
     editing?: {
