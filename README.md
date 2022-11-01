@@ -1,7 +1,6 @@
 # Inspire Tree
 
-Inspire Tree is a performance-driven javascript-based UI tree component, built for the modern web. Inspired by
-our need for one - the only existing solution which met our *feature* needs was a nightmare to *develop* for.
+Inspire Tree is a performance-driven javascript-based UI tree component. This core library is "headless" (just an API, no DOM) but we do provide a default DOM rendering library. Take a look at our [DOM rendering library](https://github.com/helion3/inspire-tree-dom). We also have some very basic example implementations of several view libraries/frameworks: [AngularJS](https://github.com/helion3/inspire-tree-angularjs-demo), [Angular2](https://github.com/helion3/inspire-tree-angular2-demo), [React](https://github.com/helion3/inspire-tree-react-demo), and [Inferno](https://github.com/helion3/inspire-tree-inferno-demo).
 
 - [Website & Demos](http://www.inspire-tree.com/)
 - [API Docs](http://www.inspire-tree.com/docs/current/)
@@ -9,10 +8,11 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 ### Features:
 
-- Robust API.
+- Detailed and fluent API.
+- Typescript Support.
 - Events everywhere.
 - Load data directly, via promises, or callbacks.
-- Load child nodes upfront or dynamically (or a mix of both).
+- Load child nodes directly or dynamically (or a mix of both).
 - Tri-state checkboxes (optional).
 - Multiselect (optional).
 - Inline editing (optional).
@@ -22,7 +22,6 @@ our need for one - the only existing solution which met our *feature* needs was 
 - Supports multiple instances on a single page.
 - API methods to simplify moving nodes between instances.
 - Solid coverage by automated tests.
-- Built for IE10+.
 
 ### Installation
 
@@ -31,20 +30,6 @@ our need for one - the only existing solution which met our *feature* needs was 
 
 If you're using InspireTree in a browser environment, and are **not** using a module bundler like
 Webpack, Browserify, rollup, etc, you'll need to ensure [lodash](https://lodash.com/) is available.
-
-### DOM Rendering
-
-This package contains the core API only. Our DOM rendering engine is offered through a separate package because
-some users prefer to implement rendering in their existing framework of choice (like Angular, React, Vue, etc).
-
-Inspire Tree DOM uses a virtual DOM to achieve high-performance rendering.
-
-To install:
-
-- Yarn: `yarn add --dev inspire-tree-dom` or
-- NPM `npm install --save-dev inspire-tree-dom`
-
-*Note:* InspireTreeDOM offers additional configuration options and events. Please be sure to read the [README](https://github.com/helion3/inspire-tree-dom).
 
 ## Usage
 
@@ -62,7 +47,7 @@ Node objects must have at least a `text` property. Additional properties are lis
 
 ## Usage with Inspire Tree DOM
 
-If you're using our DOM rendering, you need to pass in two arguments: the tree instance, and a DOM target:
+If you're using our DOM rendering, you need to pass in two arguments: the tree instance, and a DOM target (css selector):
 
 ```js
 new InspireTreeDOM(tree, {
@@ -74,9 +59,9 @@ For more information regarding InspireTreeDOM, see the [README](https://github.c
 
 ### Data Loading and Initialization Errors
 
-If `data` was provided to the constructor, the InspireTree constructor will load it. If an error occurs, it
+InspireTree will try to load nodes on initialization. If an error occurs, it
 will be caught in a promise that's cached as `tree._loader.promise`. This allows you to track the promise returned,
-which can't be returned from the InspireTree constructor.
+which can't be returned from the InspireTree constructor. This behavior may change in future major releases.
 
 Any calls to `load`-related methods can use the returned promise normally.
 
@@ -259,7 +244,7 @@ If `node` is undefined, the pagination object refers to root level nodes, otherw
 - Angular: [Source](https://github.com/helion3/inspire-tree-angular-demo) - [Demo](http://inspire-tree.com/angular)
 - Angular2: [Source](https://github.com/helion3/inspire-tree-angular2-demo)
 
-While Inspire Tree provides a super-fast virtual DOM engine for element rendering, there are times
+While Inspire Tree provides a fast virtual DOM engine for element rendering, there are times
 when you need your own. Useful for integrating with existing engines like Angular, React, etc.
 
 All you need is this core API package, and to listen to the `changes.applied` event.
