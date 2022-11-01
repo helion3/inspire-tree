@@ -1,3 +1,5 @@
+![Badge](https://img.shields.io/npm/dm/inspire-tree)
+
 # Inspire Tree
 
 Inspire Tree is a performance-driven javascript-based UI tree component. This core library is "headless" (just an API, no DOM) but we do provide a default DOM rendering library. Take a look at our [DOM rendering library](https://github.com/helion3/inspire-tree-dom). We also have some very basic example implementations of several view libraries/frameworks: [AngularJS](https://github.com/helion3/inspire-tree-angularjs-demo), [Angular2](https://github.com/helion3/inspire-tree-angular2-demo), [React](https://github.com/helion3/inspire-tree-react-demo), and [Inferno](https://github.com/helion3/inspire-tree-inferno-demo).
