@@ -1,9 +1,5 @@
 # Inspire Tree
 
-[![Join the chat at https://gitter.im/helion3/inspire-tree](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/helion3/inspire-tree?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![Build Status](https://travis-ci.org/helion3/inspire-tree.svg?branch=master)](https://travis-ci.org/helion3/inspire-tree)
-
 Inspire Tree is a performance-driven javascript-based UI tree component, built for the modern web. Inspired by
 our need for one - the only existing solution which met our *feature* needs was a nightmare to *develop* for.
 
