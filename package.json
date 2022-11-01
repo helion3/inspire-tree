@@ -34,7 +34,7 @@
   "scripts": {
     "build": "rollup -c",
     "docs": "./node_modules/jsdoc/jsdoc.js -c jsdoc.config.js",
-    "test": "./node_modules/mocha/bin/mocha test --recursive",
+    "test": "mocha test --recursive",
     "watch": "rollup -c -w",
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
     "lint": "eslint test src *.js",
