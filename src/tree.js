@@ -6,7 +6,7 @@ import { Promise } from 'es6-promise';
 import { standardizePromise } from './lib/standardize-promise';
 import TreeNode from './treenode';
 import TreeNodes from './treenodes';
-import uuidV4 from 'uuid/v4';
+import { v4 as uuidV4 } from 'uuid';
 
 /**
  * Maps a method to the root TreeNodes collection.
