@@ -5,7 +5,7 @@
   "repository": "https://github.com/helion3/inspire-tree",
   "license": "MIT",
   "dependencies": {
-    "eventemitter2": "^6.4.4",
+    "eventemitter2": "^6.4.9",
     "lodash": "^4.17.5",
     "uuid": "^9.0.0"
   },
