@@ -1,5 +1,14 @@
 # Changes to Inspire Tree
 
+# 7.0.0 Beta.1
+
+Improvements to the typescript definition file:
+
+- Added `TreeNode.hasLoadedChildren()`.
+- Added `TreeNode.isOnlyRenderable()`.
+- Added support for user-defined state properties on itree in `NodeConfig`.
+- Fixed `TreeNode.children` definitions.
+
 # 7.0.0 Beta.0
 
 - Fixed typescript definitions for `data` config property.
