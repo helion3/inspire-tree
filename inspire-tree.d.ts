@@ -415,6 +415,7 @@ export class TreeNode {
     getTextualHierarchy(): Array<string>;
     hasAncestor(): boolean;
     hasChildren(): boolean;
+    hasLoadedChildren(): boolean;
     hasOrWillHaveChildren(): boolean;
     hasParent(): boolean;
     hasVisibleChildren(): boolean;
