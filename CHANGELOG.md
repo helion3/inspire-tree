@@ -1,5 +1,12 @@
 # Changes to Inspire Tree
 
+# 7.0.0 Beta.0
+
+- Fixed typescript definitions for `data` config property.
+- Added typescript entry for `TreeNode.children`.
+- Dropped `Promise` polyfill (Internet Explorer support).
+- Updated dependencies.
+
 # 6.0.1
 
 - Fixes copy not cloning exported object, sharing object references.
