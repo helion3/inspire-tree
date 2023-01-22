@@ -424,6 +424,7 @@ export class TreeNode {
     indexPath(): string;
     isFirstRenderable(): boolean;
     isLastRenderable(): boolean;
+    isOnlyRenderable(): boolean;
     lastDeepestVisibleChild(): TreeNode;
     loadChildren(): Promise<TreeNodes>;
     loading(): boolean;
