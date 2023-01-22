@@ -73,7 +73,7 @@ export interface Config {
 }
 
 export interface NodeConfig {
-    children?: Array<NodeConfig>|true,
+    children?: Array<NodeConfig>|boolean,
     id?: string,
     text: string,
     itree?: {
@@ -99,6 +99,7 @@ export interface NodeConfig {
             rendered?: boolean,
             selectable?: boolean,
             selected?: boolean,
+            [x: string]: boolean | undefined
         }
     }
 }
@@ -317,7 +318,6 @@ export class TreeNodes extends Array<TreeNode> {
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
     checked(): TreeNodes;
-    children: TreeNodes | true;
     clean(): TreeNodes;
     clone(): TreeNodes;
     collapse(): TreeNodes;
