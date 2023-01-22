@@ -22,7 +22,6 @@ export interface SearchMatcher {
 }
 
 // Copied from EventEmitter2 to avoid imports, see below
-type eventNS = string[];
 interface Listener {
     (...values: any[]): void;
 }
@@ -318,6 +317,7 @@ export class TreeNodes extends Array<TreeNode> {
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
     checked(): TreeNodes;
+    children: TreeNodes | true;
     clean(): TreeNodes;
     clone(): TreeNodes;
     collapse(): TreeNodes;
@@ -387,6 +387,7 @@ export class TreeNode {
     blur(): TreeNode;
     check(shallow?: boolean): TreeNode;
     checked(): boolean;
+    children: boolean | TreeNodes;
     clean(): TreeNode;
     clone(excludeKeys?: Array<string>): TreeNode;
     collapse(): TreeNode;
