@@ -29,10 +29,18 @@ interface EventAndListener {
     (event: string | string[], ...values: any[]): void;
 }
 
-export type NodeConfigs = Array<NodeConfig>
-export type NodeConfigsPromise = Promise<NodeConfigs>
+// Valid resolver return types
+export type NodeConfigs = NodeConfig[]
+export type NodeConfigsPromise = Promise<NodeConfigs | undefined>
+
+// Preferred function type
+export type NodeConfigsFunctionResolver = (node: TreeNode | null) => NodeConfigs | NodeConfigsPromise
+
+// Effectively deprecated!
 export type NodeConfigsResolver = (node: TreeNode | null, resolve: (nodes: Array<NodeConfig>) => void, reject: (err: Error) => void) => void
-export type NodeConfigsProvider = NodeConfigs | NodeConfigsPromise | NodeConfigsResolver;
+
+// All possible provider types
+export type NodeConfigsProvider = NodeConfigs | NodeConfigsPromise | NodeConfigsFunctionResolver | NodeConfigsResolver;
 
 /**
  * Represents a tree configuration object, of which only "data" is required.
