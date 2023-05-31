@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.0 Beta.2
+
+- Improved node resolve type definitions.
+
 # 7.0.0 Beta.1
 
 Improvements to the typescript definition file:
