@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, sortBy, transform } from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
 import { EventEmitter2 } from 'eventemitter2';
 import { objectToNode } from './lib/object-to-node';
@@ -40,7 +40,7 @@ class InspireTree extends EventEmitter2 {
         this.preventDeselection = false;
 
         // Assign defaults
-        this.config = _.defaultsDeep({}, opts, {
+        this.config = defaultsDeep({}, opts, {
             allowLoadEvents: [],
             checkbox: {
                 autoCheckChildren: true
@@ -64,7 +64,7 @@ class InspireTree extends EventEmitter2 {
                 matchProcessor: false
             },
             selection: {
-                allow: _.noop,
+                allow: noop,
                 autoDeselect: true,
                 autoSelectChildren: false,
                 disableDirectDeselection: false,
@@ -120,7 +120,7 @@ class InspireTree extends EventEmitter2 {
         }
 
         // Support simple config for search
-        if (_.isFunction(opts.search)) {
+        if (isFunction(opts.search)) {
             this.config.search = {
                 matcher: opts.search,
                 matchProcessor: false
@@ -130,7 +130,7 @@ class InspireTree extends EventEmitter2 {
         // Init the default state for nodes
         this.defaultState = {
             collapsed: true,
-            editable: _.get(this, 'config.editing.edit'),
+            editable: get(this, 'config.editing.edit'),
             editing: false,
             draggable: true,
             'drop-target': true,
@@ -146,15 +146,15 @@ class InspireTree extends EventEmitter2 {
         };
 
         // Cache some configs
-        this.allowsLoadEvents = _.isArray(this.config.allowLoadEvents) && this.config.allowLoadEvents.length > 0;
-        this.isDynamic = _.isFunction(this.config.data);
+        this.allowsLoadEvents = isArray(this.config.allowLoadEvents) && this.config.allowLoadEvents.length > 0;
+        this.isDynamic = isFunction(this.config.data);
 
         // Override emitter so we can better control flow
         const emit = this.emit;
         this.emit = (...args) => {
             if (!this.isEventMuted(args[0])) {
                 // Duck-type for a DOM event
-                if (_.isFunction(_.get(args, '[0].preventDefault'))) {
+                if (isFunction(get(args, '[0].preventDefault'))) {
                     const event = args[0];
                     event.treeDefaultPrevented = false;
                     event.preventTreeDefault = () => {
@@ -198,7 +198,7 @@ class InspireTree extends EventEmitter2 {
         this.batch();
 
         const newNodes = new TreeNodes(this);
-        _.each(nodes, node => newNodes.push(this.addNode(node)));
+        each(nodes, node => newNodes.push(this.addNode(node)));
 
         this.end();
 
@@ -263,15 +263,15 @@ class InspireTree extends EventEmitter2 {
      * @return {array} Array with two TreeNode objects.
      */
     boundingNodes() {
-        const pathMap = _.transform(arguments, (col, node) => {
+        const pathMap = transform(arguments, (col, node) => {
             col[node.indexPath().replace(/\./g, '')] = node;
         }, {});
 
-        const [head, ...tail] = _.sortBy(Object.keys(pathMap));
+        const [head, ...tail] = sortBy(Object.keys(pathMap));
 
         return [
-            _.get(pathMap, head),
-            _.get(pathMap, tail)
+            get(pathMap, head),
+            get(pathMap, tail)
         ];
     }
 
@@ -700,11 +700,11 @@ class InspireTree extends EventEmitter2 {
      * @return {boolean} If event is muted.
      */
     isEventMuted(eventName) {
-        if (_.isBoolean(this.muted())) {
+        if (isBoolean(this.muted())) {
             return this.muted();
         }
 
-        return _.includes(this.muted(), eventName);
+        return includes(this.muted(), eventName);
     }
 
     /**
@@ -779,13 +779,13 @@ class InspireTree extends EventEmitter2 {
         const promise = new Promise((resolve, reject) => {
             const complete = (nodes, totalNodes) => {
                 // A little type-safety for silly situations
-                if (!_.isArrayLike(nodes)) {
+                if (!isArrayLike(nodes)) {
                     return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
                 }
 
                 // Delay event for synchronous loader. Otherwise it fires
                 // before the user has a chance to listen.
-                if (!this.initialized && _.isArrayLike(nodes)) {
+                if (!this.initialized && isArrayLike(nodes)) {
                     setTimeout(() => {
                         this.emit('data.loaded', nodes);
                     });
@@ -807,8 +807,8 @@ class InspireTree extends EventEmitter2 {
 
                 // Set pagination
                 this.model._pagination.total = nodes.length;
-                if (_.parseInt(totalNodes) > nodes.length) {
-                    this.model._pagination.total = _.parseInt(totalNodes);
+                if (parseInt(totalNodes, 10) > nodes.length) {
+                    this.model._pagination.total = parseInt(totalNodes, 10);
                 }
 
                 // Set pagination totals if resolver failed to provide them
@@ -833,7 +833,7 @@ class InspireTree extends EventEmitter2 {
                 };
 
                 // Delay event for synchronous loader
-                if (!this.initialized && _.isArray(nodes)) {
+                if (!this.initialized && isArray(nodes)) {
                     setTimeout(init);
                 }
                 else {
@@ -842,12 +842,12 @@ class InspireTree extends EventEmitter2 {
             };
 
             // Data given already as an array
-            if (_.isArrayLike(loader)) {
+            if (isArrayLike(loader)) {
                 complete(loader);
             }
 
             // Data loader requires a caller/callback
-            else if (_.isFunction(loader)) {
+            else if (isFunction(loader)) {
                 const resp = loader(null, complete, reject, this.pagination());
 
                 // Loader returned its own object
@@ -857,7 +857,7 @@ class InspireTree extends EventEmitter2 {
             }
 
             // Data loader is likely a promise
-            if (_.isObject(loader)) {
+            if (isObject(loader)) {
                 standardizePromise(loader).then(complete).catch(reject);
             }
 
@@ -936,8 +936,8 @@ class InspireTree extends EventEmitter2 {
      * @return {Tree} Tree instance.
      */
     mute(events) {
-        if (_.isString(events) || _.isArray(events)) {
-            this._muted = _.castArray(events);
+        if (isString(events) || isArray(events)) {
+            this._muted = castArray(events);
         }
         else {
             this._muted = true;
@@ -1134,7 +1134,7 @@ class InspireTree extends EventEmitter2 {
         let { matcher, matchProcessor } = this.config.search;
 
         // Don't search if query empty
-        if (!query || (_.isString(query) && _.isEmpty(query))) {
+        if (!query || (isString(query) && isEmpty(query))) {
             return Promise.resolve(this.clearSearch());
         }
 
@@ -1149,16 +1149,16 @@ class InspireTree extends EventEmitter2 {
         this.end();
 
         // Query nodes for any matching the query
-        matcher = _.isFunction(matcher) ? matcher : (matchQuery, resolve) => {
+        matcher = isFunction(matcher) ? matcher : (matchQuery, resolve) => {
             const matches = new TreeNodes(this);
 
             // Convery the query into a usable predicate
-            if (_.isString(matchQuery)) {
+            if (isString(matchQuery)) {
                 matchQuery = new RegExp(matchQuery, 'i');
             }
 
             let predicate;
-            if (_.isRegExp(matchQuery)) {
+            if (isRegExp(matchQuery)) {
                 predicate = node => matchQuery.test(node.text);
             }
             else {
@@ -1179,7 +1179,7 @@ class InspireTree extends EventEmitter2 {
         };
 
         // Process all matching nodes.
-        matchProcessor = _.isFunction(matchProcessor) ? matchProcessor : matches => {
+        matchProcessor = isFunction(matchProcessor) ? matchProcessor : matches => {
             matches.each(node => {
                 node.show().state('matched', true);
 
@@ -1197,7 +1197,7 @@ class InspireTree extends EventEmitter2 {
             matcher(query, matches => {
                 // Convert to a TreeNodes array if we're receiving external nodes
                 if (!InspireTree.isTreeNodes(matches)) {
-                    matches = this.nodes(_.map(matches, 'id'));
+                    matches = this.nodes(map(matches, 'id'));
                 }
 
                 this.batch();
@@ -1446,8 +1446,8 @@ class InspireTree extends EventEmitter2 {
      */
     unmute(events) {
         // Diff array and set to false if we're now empty
-        if (_.isString(events) || _.isArray(events)) {
-            this._muted = _.difference(this._muted, _.castArray(events));
+        if (isString(events) || isArray(events)) {
+            this._muted = difference(this._muted, castArray(events));
             if (!this._muted.length) {
                 this._muted = false;
             }

@@ -6,6 +6,7 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import path from 'path';
 import pkgConfig from './package.json' assert { type: 'json' };
 import { uglify } from 'rollup-plugin-uglify';
+import { optimizeLodashImports } from '@optimize-lodash/rollup-plugin';
 
 // Constants
 const DIST = process.env.DIST || false;
@@ -20,6 +21,7 @@ const banner = `/* Inspire Tree
  */`;
 
 const plugins = [
+    optimizeLodashImports(),
     babel({
         exclude: 'node_modules/**'
     }),
@@ -46,15 +48,12 @@ if (MIN) {
 
 export default {
     input: path.join('src', 'tree.js'),
-    external: ['lodash'],
+    external: [/^lodash/],
     plugins: plugins,
     output: {
         file: path.join(DIST ? 'dist' : 'build', 'inspire-tree' + (MIN ? '.min' : '') + '.js'),
         format: 'umd',
         name: 'InspireTree',
-        banner: banner,
-        globals: {
-            lodash: '_'
-        }
+        banner: banner
     }
 };
