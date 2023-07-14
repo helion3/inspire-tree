@@ -54,6 +54,13 @@ export default {
         file: path.join(DIST ? 'dist' : 'build', 'inspire-tree' + (MIN ? '.min' : '') + '.js'),
         format: 'umd',
         name: 'InspireTree',
-        banner: banner
+        banner: banner,
+        globals: (name) => {
+            const [, fnc] = name.match(/^lodash\/(.*)\.js$/i) || []
+            if (!fnc) {
+                return name
+            }
+            return `_.${fnc}`
+        }
     }
 };
