@@ -1,4 +1,5 @@
 import {
+    map as _map,
     castArray,
     defaultsDeep,
     difference,
@@ -1215,7 +1216,7 @@ class InspireTree extends EventEmitter2 {
             matcher(query, matches => {
                 // Convert to a TreeNodes array if we're receiving external nodes
                 if (!InspireTree.isTreeNodes(matches)) {
-                    matches = this.nodes(map(matches, 'id'));
+                    matches = this.nodes(_map(matches, 'id'));
                 }
 
                 this.batch();
