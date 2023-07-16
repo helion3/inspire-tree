@@ -1,4 +1,22 @@
-import { castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, sortBy, transform } from 'lodash';
+import {
+    castArray,
+    defaultsDeep,
+    difference,
+    each,
+    get,
+    includes,
+    isArray,
+    isArrayLike,
+    isBoolean,
+    isEmpty,
+    isFunction,
+    isObject,
+    isRegExp,
+    isString,
+    noop,
+    sortBy,
+    transform
+} from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
 import { EventEmitter2 } from 'eventemitter2';
 import { objectToNode } from './lib/object-to-node';

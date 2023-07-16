@@ -1,4 +1,20 @@
-import { castArray, defaultsDeep, each, get, invoke, isArray, isArrayLike, isArrayLikeObject, isBoolean, isFunction, isString, remove, sortBy, sortedIndexBy, tail } from 'lodash';
+import {
+    castArray,
+    defaultsDeep,
+    each,
+    get,
+    invoke,
+    isArray,
+    isArrayLike,
+    isArrayLikeObject,
+    isBoolean,
+    isFunction,
+    isString,
+    remove,
+    sortBy,
+    sortedIndexBy,
+    tail
+} from 'lodash';
 import { objectToNode } from './lib/object-to-node';
 import { recurseDown } from './lib/recurse-down';
 import TreeNode from './treenode';

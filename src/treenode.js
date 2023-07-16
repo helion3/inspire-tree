@@ -1,4 +1,22 @@
-import { assign, castArray, cloneDeep, each, findIndex, findLast, get, includes, indexOf, isArray, isArrayLike, isFunction, isObject, isString, pull, slice } from 'lodash';
+import {
+    assign,
+    castArray,
+    cloneDeep,
+    each,
+    find,
+    findIndex,
+    findLast,
+    get,
+    includes,
+    indexOf,
+    isArray,
+    isArrayLike,
+    isFunction,
+    isObject,
+    isString,
+    pull,
+    slice
+} from 'lodash';
 import { baseStateChange } from './lib/base-state-change';
 import { collectionToModel } from './lib/collection-to-model';
 import { objectToNode } from './lib/object-to-node';
