@@ -2,6 +2,15 @@ const chai = require('chai');
 const expect = chai.expect;
 const InspireTree = require('../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
+// Polyfill getRandomValues
+const crypto = require('crypto');
+// eslint-disable-next-line no-undef
+Object.defineProperty(globalThis, 'crypto', {
+  value: {
+    getRandomValues: arr => crypto.randomBytes(arr.length)
+  }
+});
+
 // Do this once since it's global
 const sinonChai = require('sinon-chai');
 chai.should();
