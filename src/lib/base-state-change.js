@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { each } from 'lodash';
 
 /**
  * Reset a node's state to the tree default.
@@ -8,7 +8,7 @@ import * as _ from 'lodash';
  * @returns {TreeNode} Node object.
  */
 function resetState(node) {
-    _.each(node._tree.defaultState, (val, prop) => {
+    each(node._tree.defaultState, (val, prop) => {
         node.state(prop, val);
     });
 

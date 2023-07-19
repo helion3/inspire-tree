@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { assign, each, isArrayLike } from 'lodash';
 import { collectionToModel } from './collection-to-model';
 import TreeNode from '../treenode';
 import { v4 as uuidV4 } from 'uuid';
@@ -57,15 +57,15 @@ export function objectToNode(tree, object, parent) {
     object.itree.parent = parent;
 
     // Wrap
-    object = _.assign(new TreeNode(tree), object);
+    object = assign(new TreeNode(tree), object);
 
-    if (_.isArrayLike(object.children)) {
+    if (isArrayLike(object.children)) {
         object.children = collectionToModel(tree, object.children, object);
     }
 
     // Fire events for pre-set states, if enabled
     if (tree.allowsLoadEvents) {
-        _.each(tree.config.allowLoadEvents, eventName => {
+        each(tree.config.allowLoadEvents, eventName => {
             if (state[eventName]) {
                 tree.emit('node.' + eventName, object, true);
             }

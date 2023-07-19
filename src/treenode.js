@@ -1,4 +1,22 @@
-import * as _ from 'lodash';
+import {
+    assign,
+    castArray,
+    cloneDeep,
+    each,
+    find,
+    findIndex,
+    findLast,
+    get,
+    includes,
+    indexOf,
+    isArray,
+    isArrayLike,
+    isFunction,
+    isObject,
+    isString,
+    pull,
+    slice
+} from 'lodash';
 import { baseStateChange } from './lib/base-state-change';
 import { collectionToModel } from './lib/collection-to-model';
 import { objectToNode } from './lib/object-to-node';
@@ -18,12 +36,12 @@ import TreeNodes from './treenodes';
  */
 function cloneItree(itree, excludeKeys) {
     const clone = {};
-    excludeKeys = _.castArray(excludeKeys);
+    excludeKeys = castArray(excludeKeys);
     excludeKeys.push('ref');
 
-    _.each(itree, (v, k) => {
-        if (!_.includes(excludeKeys, k)) {
-            clone[k] = _.cloneDeep(v);
+    each(itree, (v, k) => {
+        if (!includes(excludeKeys, k)) {
+            clone[k] = cloneDeep(v);
         }
     });
 
@@ -71,14 +89,14 @@ class TreeNode {
         this._tree = tree;
 
         if (source instanceof TreeNode) {
-            excludeKeys = _.castArray(excludeKeys);
+            excludeKeys = castArray(excludeKeys);
             excludeKeys.push('_tree');
 
             // Iterate manually for better perf
-            _.each(source, (value, key) => {
+            each(source, (value, key) => {
                 // Skip properties
-                if (!_.includes(excludeKeys, key)) {
-                    if (_.isObject(value)) {
+                if (!includes(excludeKeys, key)) {
+                    if (isObject(value)) {
                         if (value instanceof TreeNodes) {
                             this[key] = value.clone();
                         }
@@ -86,7 +104,7 @@ class TreeNode {
                             this[key] = cloneItree(value);
                         }
                         else {
-                            this[key] = _.cloneDeep(value);
+                            this[key] = cloneDeep(value);
                         }
                     }
                     else {
@@ -105,7 +123,7 @@ class TreeNode {
      * @return {TreeNode} Node object.
      */
     addChild(child) {
-        if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
+        if (isArray(this.children) || !isArrayLike(this.children)) {
             this.children = new TreeNodes(this._tree);
             this.children._context = this;
         }
@@ -122,13 +140,13 @@ class TreeNode {
     addChildren(children) {
         const nodes = new TreeNodes(this._tree);
 
-        if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
+        if (isArray(this.children) || !isArrayLike(this.children)) {
             this.children = new TreeNodes(this._tree);
             this.children._context = this;
         }
 
         this.children.batch();
-        _.each(children, child => {
+        each(children, child => {
             nodes.push(this.addChild(child));
         });
         this.children.end();
@@ -143,7 +161,7 @@ class TreeNode {
      * @return {boolean} True if tree/node allows dynamic children.
      */
     allowDynamicLoad() {
-        return this._tree.isDynamic && (_.isArrayLike(this.children) || this.children === true);
+        return this._tree.isDynamic && (isArrayLike(this.children) || this.children === true);
     }
 
     /**
@@ -153,7 +171,7 @@ class TreeNode {
      * @return {TreeNode} Node object.
      */
     assign() {
-        _.assign(this, ...arguments);
+        assign(this, ...arguments);
 
         this.markDirty();
         this.context().applyChanges();
@@ -278,7 +296,7 @@ class TreeNode {
      * @return {object} Property "to" for defining destination.
      */
     copy(dest, hierarchy, includeState) {
-        if (!dest || !_.isFunction(dest.addNode)) {
+        if (!dest || !isFunction(dest.addNode)) {
             throw new Error('Destination must be an Inspire Tree instance.');
         }
 
@@ -287,7 +305,7 @@ class TreeNode {
             node = node.copyHierarchy(false, includeState);
         }
 
-        return dest.addNode(_.cloneDeep(node.toObject(false, includeState)));
+        return dest.addNode(cloneDeep(node.toObject(false, includeState)));
     }
 
     /**
@@ -302,7 +320,7 @@ class TreeNode {
         let parents = this.getParents();
 
         // Remove old hierarchy data
-        _.each(parents, node => {
+        each(parents, node => {
             nodes.push(node.toObject(excludeNode, includeState));
         });
 
@@ -324,7 +342,7 @@ class TreeNode {
         const hierarchy = nodes[0];
         const l = nodes.length;
         let pointer = hierarchy;
-        _.each(nodes, (parent, key) => {
+        each(nodes, (parent, key) => {
             const children = [];
 
             if (key + 1 < l) {
@@ -537,7 +555,7 @@ class TreeNode {
      * @return {boolean} True if has loaded children.
      */
     hasChildren() {
-        return (_.isArrayLike(this.children) && this.children.length > 0);
+        return (isArrayLike(this.children) && this.children.length > 0);
     }
 
     /**
@@ -546,7 +564,7 @@ class TreeNode {
      * @return {boolean} True if we've attempted to load children.
      */
     hasLoadedChildren() {
-        return _.isArrayLike(this.children);
+        return isArrayLike(this.children);
     }
 
     /**
@@ -555,7 +573,7 @@ class TreeNode {
      * @return {boolean} True if node has, or will have children.
      */
     hasOrWillHaveChildren() {
-        return _.isArrayLike(this.children) ? Boolean(this.children.length) : this.allowDynamicLoad();
+        return isArrayLike(this.children) ? Boolean(this.children.length) : this.allowDynamicLoad();
     }
 
     /**
@@ -616,7 +634,7 @@ class TreeNode {
         const indices = [];
 
         this.recurseUp(node => {
-            indices.push(_.indexOf(node.context(), node));
+            indices.push(indexOf(node.context(), node));
         });
 
         return indices.reverse().join('.');
@@ -667,7 +685,7 @@ class TreeNode {
         let found;
 
         if (this.hasChildren() && !this.collapsed()) {
-            found = _.findLast(this.children, node => node.visible());
+            found = findLast(this.children, node => node.visible());
 
             const res = found.lastDeepestVisibleChild();
             if (res) {
@@ -703,7 +721,7 @@ class TreeNode {
 
             const complete = (nodes, totalNodes) => {
                 // A little type-safety for silly situations
-                if (!_.isArrayLike(nodes)) {
+                if (!isArrayLike(nodes)) {
                     return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
                 }
 
@@ -711,15 +729,15 @@ class TreeNode {
                 this.state('loading', false);
 
                 const model = collectionToModel(this._tree, nodes, this);
-                if (_.isArrayLike(this.children)) {
+                if (isArrayLike(this.children)) {
                     this.children = this.children.concat(model);
                 }
                 else {
                     this.children = model;
                 }
 
-                if (_.parseInt(totalNodes) > nodes.length) {
-                    this.children._pagination.total = _.parseInt(totalNodes);
+                if (parseInt(totalNodes, 10) > nodes.length) {
+                    this.children._pagination.total = parseInt(totalNodes, 10);
                 }
 
                 // If using checkbox mode, share selection with newly loaded children
@@ -751,7 +769,7 @@ class TreeNode {
             const loader = this._tree.config.data(this, complete, error, pagination);
 
             // Data loader is likely a promise
-            if (_.isObject(loader)) {
+            if (isObject(loader)) {
                 standardizePromise(loader).then(complete).catch(error);
             }
         });
@@ -837,7 +855,7 @@ class TreeNode {
         let next;
 
         if (this.hasChildren()) {
-            next = _.find(this.children, child => child.visible());
+            next = find(this.children, child => child.visible());
         }
 
         return next;
@@ -874,9 +892,9 @@ class TreeNode {
      */
     nextVisibleSiblingNode() {
         const context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
-        const i = _.findIndex(context, { id: this.id });
+        const i = findIndex(context, { id: this.id });
 
-        return _.find(_.slice(context, i + 1), node => node.visible());
+        return find(slice(context, i + 1), node => node.visible());
     }
 
     /**
@@ -885,7 +903,7 @@ class TreeNode {
      * @return {object} Pagination configuration object.
      */
     pagination() {
-        return _.get(this, 'children._pagination');
+        return get(this, 'children._pagination');
     }
 
     /**
@@ -919,9 +937,9 @@ class TreeNode {
      */
     previousVisibleSiblingNode() {
         const context = (this.hasParent() ? this.getParent().children : this._tree.nodes());
-        const i = _.findIndex(context, { id: this.id });
+        const i = findIndex(context, { id: this.id });
 
-        return _.findLast(_.slice(context, 0, i), node => node.visible());
+        return findLast(slice(context, 0, i), node => node.visible());
     }
 
     /**
@@ -1198,14 +1216,14 @@ class TreeNode {
      * @return {boolean|object} Old state object, or old value if property name used.
      */
     state(obj, val) {
-        if (_.isString(obj)) {
+        if (isString(obj)) {
             return baseState(this, obj, val);
         }
 
         this.context().batch();
 
         const oldState = {};
-        _.each(obj, (value, prop) => {
+        each(obj, (value, prop) => {
             oldState[prop] = baseState(this, prop, value);
         });
 
@@ -1226,7 +1244,7 @@ class TreeNode {
 
         this.context().batch();
 
-        _.each(names, name => {
+        each(names, name => {
             results.push(this.state(name, newVal));
         });
 
@@ -1298,10 +1316,10 @@ class TreeNode {
     toObject(excludeChildren = false, includeState = false) {
         const exported = {};
 
-        const keys = _.pull(Object.keys(this), '_tree', 'children', 'itree');
+        const keys = pull(Object.keys(this), '_tree', 'children', 'itree');
 
         // Map keys
-        _.each(keys, keyName => {
+        each(keys, keyName => {
             exported[keyName] = this[keyName];
         });
 
@@ -1317,7 +1335,7 @@ class TreeNode {
         }
 
         // If including children, export them
-        if (!excludeChildren && this.hasChildren() && _.isFunction(this.children.toArray)) {
+        if (!excludeChildren && this.hasChildren() && isFunction(this.children.toArray)) {
             exported.children = this.children.toArray();
         }
 

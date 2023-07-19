@@ -1,4 +1,20 @@
-import * as _ from 'lodash';
+import {
+    castArray,
+    defaultsDeep,
+    each,
+    get,
+    invoke,
+    isArray,
+    isArrayLike,
+    isArrayLikeObject,
+    isBoolean,
+    isFunction,
+    isString,
+    remove,
+    sortBy,
+    sortedIndexBy,
+    tail
+} from 'lodash';
 import { objectToNode } from './lib/object-to-node';
 import { recurseDown } from './lib/recurse-down';
 import TreeNode from './treenode';
@@ -14,13 +30,13 @@ import TreeNode from './treenode';
  * @return {TreeNodes} Array of node objects.
  */
 function baseInvoke(nodes, methods, args, deep) {
-    methods = _.castArray(methods);
+    methods = castArray(methods);
 
     nodes._tree.batch();
 
     nodes[deep ? 'recurseDown' : 'each'](node => {
-        _.each(methods, method => {
-            if (_.isFunction(node[method])) {
+        each(methods, method => {
+            if (isFunction(node[method])) {
                 node[method].apply(node, args);
             }
         });
@@ -40,8 +56,8 @@ function baseInvoke(nodes, methods, args, deep) {
  */
 function getPredicateFunction(predicate) {
     let fn = predicate;
-    if (_.isString(predicate)) {
-        fn = node => (_.isFunction(node[predicate]) ? node[predicate]() : node[predicate]);
+    if (isString(predicate)) {
+        fn = node => (isFunction(node[predicate]) ? node[predicate]() : node[predicate]);
     }
 
     return fn;
@@ -89,7 +105,7 @@ class TreeNodes extends Array {
     constructor(tree, array, opts) {
         super();
 
-        if (_.isFunction(_.get(tree, 'isTree')) && !tree.isTree(tree)) {
+        if (isFunction(get(tree, 'isTree')) && !tree.isTree(tree)) {
             throw new TypeError('Invalid tree instance.');
         }
 
@@ -101,7 +117,7 @@ class TreeNodes extends Array {
         // change has occured. Avoids re-caching when unnecessary.
         this.indicesDirty = false;
 
-        this.config = _.defaultsDeep({}, opts, {
+        this.config = defaultsDeep({}, opts, {
             calculateRenderablePositions: false
         });
 
@@ -111,8 +127,8 @@ class TreeNodes extends Array {
             total: 0
         };
 
-        if (_.isArray(array) || array instanceof TreeNodes) {
-            _.each(array, node => {
+        if (isArray(array) || array instanceof TreeNodes) {
+            each(array, node => {
                 if (node instanceof TreeNode) {
                     this.push(node.clone());
                 }
@@ -136,7 +152,7 @@ class TreeNodes extends Array {
 
         // If tree is sorted, insert in correct position
         if (this._tree.config.sort) {
-            index = _.sortedIndexBy(this, object, this._tree.config.sort);
+            index = sortedIndexBy(this, object, this._tree.config.sort);
         }
 
         return this.insertAt(index, object);
@@ -324,8 +340,8 @@ class TreeNodes extends Array {
             }
         };
 
-        _.each(this, pusher);
-        _.each(nodes, pusher);
+        each(this, pusher);
+        each(nodes, pusher);
 
         // Copy pagination limit
         newNodes._pagination.limit = this._pagination.limit;
@@ -355,7 +371,7 @@ class TreeNodes extends Array {
     copy(dest, hierarchy, includeState) {
         const newNodes = new TreeNodes(this._tree);
 
-        _.each(this, node => {
+        each(this, node => {
             newNodes.push(node.copy(dest, hierarchy, includeState));
         });
 
@@ -404,7 +420,7 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     each(iteratee) {
-        _.each(this, iteratee);
+        each(this, iteratee);
 
         return this;
     }
@@ -516,7 +532,7 @@ class TreeNodes extends Array {
         const flat = this.flatten(predicate);
         const matches = new TreeNodes(this._tree);
 
-        _.each(flat, node => matches.addNode(node.copyHierarchy()));
+        each(flat, node => matches.addNode(node.copyHierarchy()));
 
         return matches;
     }
@@ -531,7 +547,7 @@ class TreeNodes extends Array {
         const fn = getPredicateFunction(predicate);
         const matches = new TreeNodes(this._tree);
 
-        _.each(this, node => {
+        each(this, node => {
             if (fn(node)) {
                 matches.push(node);
             }
@@ -677,21 +693,21 @@ class TreeNodes extends Array {
                 existingNode.restore().show();
 
                 // Merge children
-                if (_.isArrayLike(object.children)) {
+                if (isArrayLike(object.children)) {
                     // Setup existing node's children property if needed
-                    if (!_.isArrayLike(existingNode.children)) {
+                    if (!isArrayLike(existingNode.children)) {
                         existingNode.children = new TreeNodes(this._tree);
                         existingNode.children._context = existingNode;
                     }
 
                     // Copy each child (using addNode, which uses insertAt)
-                    _.each(object.children, child => {
+                    each(object.children, child => {
                         existingNode.children.addNode(child);
                     });
                 }
 
                 // Merge truthy children
-                else if (object.children && _.isBoolean(existingNode.children)) {
+                else if (object.children && isBoolean(existingNode.children)) {
                     existingNode.children = object.children;
                 }
 
@@ -750,8 +766,8 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Array of node objects.
      */
     invokeDeep(methods, args) {
-        if (!_.isArrayLikeObject(args) || arguments.length > 2) {
-            args = _.tail(arguments);
+        if (!isArrayLikeObject(args) || arguments.length > 2) {
+            args = tail(arguments);
         }
 
         return baseInvoke(this, methods, args, true);
@@ -805,7 +821,7 @@ class TreeNodes extends Array {
         this.batch();
 
         // Mark this context as dirty since we'll update text/tree nodes
-        _.invoke(this._context, 'markDirty');
+        invoke(this._context, 'markDirty');
 
         // Increment the pagination
         this._pagination.limit += this._tree.config.pagination.limit;
@@ -903,7 +919,7 @@ class TreeNodes extends Array {
     nodes(refs) {
         let results;
 
-        if (_.isArray(refs)) {
+        if (isArray(refs)) {
             results = new TreeNodes(this._tree);
 
             this.recurseDown(node => {
@@ -913,7 +929,7 @@ class TreeNodes extends Array {
             });
         }
 
-        return _.isArray(refs) ? results : this;
+        return isArray(refs) ? results : this;
     }
 
     /**
@@ -975,8 +991,8 @@ class TreeNodes extends Array {
      * @return {TreeNodes} Resulting nodes.
      */
     remove(node) {
-        _.remove(this, { id: node.id });
-        _.invoke(this._context, 'markDirty');
+        remove(this, { id: node.id });
+        invoke(this._context, 'markDirty');
 
         this.indicesDirty = true;
         this.applyChanges();
@@ -1107,10 +1123,10 @@ class TreeNodes extends Array {
         if (sorter) {
             this.batch();
 
-            const sorted = _.sortBy(this, sorter);
+            const sorted = sortBy(this, sorter);
 
             this.length = 0;
-            _.each(sorted, node => {
+            each(sorted, node => {
                 this.push(node);
             });
 
@@ -1240,7 +1256,7 @@ class TreeNodes extends Array {
     toArray() {
         const array = [];
 
-        _.each(this, node => {
+        each(this, node => {
             array.push(node.toObject());
         });
 

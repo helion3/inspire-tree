@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { each, sortBy } from 'lodash';
 import { objectToNode } from './object-to-node';
 import TreeNodes from '../treenodes';
 
@@ -21,10 +21,10 @@ export function collectionToModel(tree, array, parent) {
 
     // Sort
     if (tree.config.sort) {
-        array = _.sortBy(array, tree.config.sort);
+        array = sortBy(array, tree.config.sort);
     }
 
-    _.each(array, node => {
+    each(array, node => {
         collection.push(objectToNode(tree, node, parent));
     });
 

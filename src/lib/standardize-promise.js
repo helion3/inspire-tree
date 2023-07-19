@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isFunction, isObject } from 'lodash';
 
 /**
  * Resolve promise-like objects consistently.
@@ -9,19 +9,19 @@ import * as _ from 'lodash';
  */
 export function standardizePromise(promise) {
     return new Promise((resolve, reject) => {
-        if (!_.isObject(promise)) {
+        if (!isObject(promise)) {
             return reject(new Error('Invalid Promise'));
         }
 
-        if (_.isFunction(promise.then)) {
+        if (isFunction(promise.then)) {
             promise.then(resolve);
         }
 
         // jQuery promises use "error"
-        if (_.isFunction(promise.error)) {
+        if (isFunction(promise.error)) {
             promise.error(reject);
         }
-        else if (_.isFunction(promise.catch)) {
+        else if (isFunction(promise.catch)) {
             promise.catch(reject);
         }
     });
