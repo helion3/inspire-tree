@@ -140,8 +140,11 @@ export interface TreeEvents {
     /** @event node.added (TreeNode node) - Node added. */
     'node.added'?: (node: TreeNode) => void;
 
-    /** @event node.click (TreeNode node) - Node os clicked. */
+    /** @event node.click (TreeNode node) - Node click. */
     'node.click'?: (node: TreeNode) => void;
+
+    /** @event node.contextmenu (TreeNode node) - Node contextmenu click. */
+    'node.contextmenu'?: (node: TreeNode) => void;
 
     /** @event node.blurred (TreeNode node, bool isLoadEvent) - Node lost focus. */
     'node.blurred'?: (node: TreeNode, isLoadEvent: boolean) => void;
