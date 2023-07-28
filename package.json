@@ -16,6 +16,7 @@
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "chai": "^4.3.6",
+    "cross-env": "^7.0.3",
     "eslint": "^8.26.0",
     "jquery": "^3.3.0",
     "jsdoc": "^3.5.5",
@@ -35,10 +36,11 @@
     "build": "rollup -c",
     "docs": "./node_modules/jsdoc/jsdoc.js -c jsdoc.config.js",
     "test": "mocha test --recursive",
+    "test:dist": "cross-env DIST=1 mocha test --recursive",
     "watch": "rollup -c -w",
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit",
     "lint": "eslint test src *.js",
-    "deploy": "npm run docs && DIST=1 rollup -c && DIST=1 MIN=1 rollup -c"
+    "deploy": "cross-env DIST=1 rollup -c && cross-env DIST=1 MIN=1 rollup -c"
   },
   "main": "dist/inspire-tree.js",
   "types": "./inspire-tree.d.ts",
