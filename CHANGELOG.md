@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.0 Beta.4
+
+- Fixed dist files never being updated in any 7.0.0 builds. I forgot to run `yarn deploy` first...
+
 # 7.0.0 Beta.3
 
 - Improved lodash imports.

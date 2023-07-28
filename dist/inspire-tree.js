@@ -1,22 +1,21 @@
 /* Inspire Tree
- * @version 6.0.1
+ * @version 7.0.0-beta.4
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
  *          see https://github.com/helion3/inspire-tree/blob/master/LICENSE
  */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash')) :
-  typeof define === 'function' && define.amd ? define(['lodash'], factory) :
-  (global = global || self, global.InspireTree = factory(global._));
-}(this, function (_) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash/map.js'), require('lodash/castArray.js'), require('lodash/defaultsDeep.js'), require('lodash/difference.js'), require('lodash/each.js'), require('lodash/get.js'), require('lodash/includes.js'), require('lodash/isArray.js'), require('lodash/isArrayLike.js'), require('lodash/isBoolean.js'), require('lodash/isEmpty.js'), require('lodash/isFunction.js'), require('lodash/isObject.js'), require('lodash/isRegExp.js'), require('lodash/isString.js'), require('lodash/noop.js'), require('lodash/sortBy.js'), require('lodash/transform.js'), require('lodash/assign.js'), require('lodash/cloneDeep.js'), require('lodash/find.js'), require('lodash/findIndex.js'), require('lodash/findLast.js'), require('lodash/indexOf.js'), require('lodash/pull.js'), require('lodash/slice.js'), require('lodash/invoke.js'), require('lodash/isArrayLikeObject.js'), require('lodash/remove.js'), require('lodash/sortedIndexBy.js'), require('lodash/tail.js')) :
+  typeof define === 'function' && define.amd ? define(['lodash/map.js', 'lodash/castArray.js', 'lodash/defaultsDeep.js', 'lodash/difference.js', 'lodash/each.js', 'lodash/get.js', 'lodash/includes.js', 'lodash/isArray.js', 'lodash/isArrayLike.js', 'lodash/isBoolean.js', 'lodash/isEmpty.js', 'lodash/isFunction.js', 'lodash/isObject.js', 'lodash/isRegExp.js', 'lodash/isString.js', 'lodash/noop.js', 'lodash/sortBy.js', 'lodash/transform.js', 'lodash/assign.js', 'lodash/cloneDeep.js', 'lodash/find.js', 'lodash/findIndex.js', 'lodash/findLast.js', 'lodash/indexOf.js', 'lodash/pull.js', 'lodash/slice.js', 'lodash/invoke.js', 'lodash/isArrayLikeObject.js', 'lodash/remove.js', 'lodash/sortedIndexBy.js', 'lodash/tail.js'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.InspireTree = factory(global._.map, global._.castArray, global._.defaultsDeep, global._.difference, global._.each, global._.get, global._.includes, global._.isArray, global._.isArrayLike, global._.isBoolean, global._.isEmpty, global._.isFunction, global._.isObject, global._.isRegExp, global._.isString, global._.noop, global._.sortBy, global._.transform, global._.assign, global._.cloneDeep, global._.find, global._.findIndex, global._.findLast, global._.indexOf, global._.pull, global._.slice, global._.invoke, global._.isArrayLikeObject, global._.remove, global._.sortedIndexBy, global._.tail));
+})(this, (function (_map, castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, sortBy, transform, _assign, cloneDeep, find, findIndex, findLast, indexOf, pull, slice, invoke, isArrayLikeObject, _remove, sortedIndexBy, tail) { 'use strict';
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
   }
-
   function _defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
       var descriptor = props[i];
@@ -26,18 +25,18 @@
       Object.defineProperty(target, descriptor.key, descriptor);
     }
   }
-
   function _createClass(Constructor, protoProps, staticProps) {
     if (protoProps) _defineProperties(Constructor.prototype, protoProps);
     if (staticProps) _defineProperties(Constructor, staticProps);
+    Object.defineProperty(Constructor, "prototype", {
+      writable: false
+    });
     return Constructor;
   }
-
   function _inherits(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function");
     }
-
     subClass.prototype = Object.create(superClass && superClass.prototype, {
       constructor: {
         value: subClass,
@@ -45,85 +44,110 @@
         configurable: true
       }
     });
+    Object.defineProperty(subClass, "prototype", {
+      writable: false
+    });
     if (superClass) _setPrototypeOf(subClass, superClass);
   }
-
   function _getPrototypeOf(o) {
-    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
       return o.__proto__ || Object.getPrototypeOf(o);
     };
     return _getPrototypeOf(o);
   }
-
   function _setPrototypeOf(o, p) {
-    _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
       o.__proto__ = p;
       return o;
     };
-
     return _setPrototypeOf(o, p);
   }
-
+  function _isNativeReflectConstruct() {
+    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+    if (Reflect.construct.sham) return false;
+    if (typeof Proxy === "function") return true;
+    try {
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
-
     return self;
   }
-
   function _possibleConstructorReturn(self, call) {
     if (call && (typeof call === "object" || typeof call === "function")) {
       return call;
+    } else if (call !== void 0) {
+      throw new TypeError("Derived constructors may only return object or undefined");
     }
-
     return _assertThisInitialized(self);
   }
-
+  function _createSuper(Derived) {
+    var hasNativeReflectConstruct = _isNativeReflectConstruct();
+    return function _createSuperInternal() {
+      var Super = _getPrototypeOf(Derived),
+        result;
+      if (hasNativeReflectConstruct) {
+        var NewTarget = _getPrototypeOf(this).constructor;
+        result = Reflect.construct(Super, arguments, NewTarget);
+      } else {
+        result = Super.apply(this, arguments);
+      }
+      return _possibleConstructorReturn(this, result);
+    };
+  }
   function _superPropBase(object, property) {
     while (!Object.prototype.hasOwnProperty.call(object, property)) {
       object = _getPrototypeOf(object);
       if (object === null) break;
     }
-
     return object;
   }
-
-  function _get(target, property, receiver) {
+  function _get() {
     if (typeof Reflect !== "undefined" && Reflect.get) {
-      _get = Reflect.get;
+      _get = Reflect.get.bind();
     } else {
       _get = function _get(target, property, receiver) {
         var base = _superPropBase(target, property);
-
         if (!base) return;
         var desc = Object.getOwnPropertyDescriptor(base, property);
-
         if (desc.get) {
-          return desc.get.call(receiver);
+          return desc.get.call(arguments.length < 3 ? target : receiver);
         }
-
         return desc.value;
       };
     }
-
-    return _get(target, property, receiver || target);
+    return _get.apply(this, arguments);
   }
-
   function _toArray(arr) {
-    return _arrayWithHoles(arr) || _iterableToArray(arr) || _nonIterableRest();
+    return _arrayWithHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableRest();
   }
-
   function _arrayWithHoles(arr) {
     if (Array.isArray(arr)) return arr;
   }
-
   function _iterableToArray(iter) {
-    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
   }
-
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+    return arr2;
+  }
   function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
@@ -133,14 +157,13 @@
    * @param {TreeNode} node Node object.
    * @returns {TreeNode} Node object.
    */
-
   function resetState(node) {
-    _.each(node._tree.defaultState, function (val, prop) {
+    each(node._tree.defaultState, function (val, prop) {
       node.state(prop, val);
     });
-
     return node;
   }
+
   /**
    * Stores repetitive state change logic for most state methods.
    *
@@ -152,1233 +175,41 @@
    * @param {string} deep Optional name of state method to call recursively.
    * @return {TreeNode} Node object.
    */
-
-
   function baseStateChange(prop, value, verb, node, deep) {
     if (node.state(prop) !== value) {
       node.context().batch();
-
       if (node._tree.config.nodes.resetStateOnRestore && verb === 'restored') {
         resetState(node);
-      } // indeterminate may never be true if checked is
+      }
 
-
+      // indeterminate may never be true if checked is
       if (value && prop === 'checked') {
         node.state('indeterminate', false);
       }
-
       node.state(prop, value);
-
       node._tree.emit('node.' + verb, node, false);
-
       if (deep && node.hasChildren()) {
         node.children.recurseDown(function (child) {
           baseStateChange(prop, value, verb, child);
         });
-      } // This node's "renderability" has changed, so we should
+      }
+
+      // This node's "renderability" has changed, so we should
       // trigger a re-cache in the parent context.
-
-
       if (prop === 'hidden' || prop === 'removed') {
         node.context().indicesDirty = true;
         node.context().calculateRenderablePositions();
       }
-
       node.markDirty();
       node.context().end();
     }
-
     return node;
   }
-
-  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-  function commonjsRequire () {
-  	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
-  }
-
-  function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
-  }
-
-  var es6Promise = createCommonjsModule(function (module, exports) {
-  /*!
-   * @overview es6-promise - a tiny implementation of Promises/A+.
-   * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
-   * @license   Licensed under MIT license
-   *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
-   * @version   v4.2.8+1e68dce6
-   */
-
-  (function (global, factory) {
-  	module.exports = factory();
-  }(commonjsGlobal, (function () {
-  function objectOrFunction(x) {
-    var type = typeof x;
-    return x !== null && (type === 'object' || type === 'function');
-  }
-
-  function isFunction(x) {
-    return typeof x === 'function';
-  }
-
-
-
-  var _isArray = void 0;
-  if (Array.isArray) {
-    _isArray = Array.isArray;
-  } else {
-    _isArray = function (x) {
-      return Object.prototype.toString.call(x) === '[object Array]';
-    };
-  }
-
-  var isArray = _isArray;
-
-  var len = 0;
-  var vertxNext = void 0;
-  var customSchedulerFn = void 0;
-
-  var asap = function asap(callback, arg) {
-    queue[len] = callback;
-    queue[len + 1] = arg;
-    len += 2;
-    if (len === 2) {
-      // If len is 2, that means that we need to schedule an async flush.
-      // If additional callbacks are queued before the queue is flushed, they
-      // will be processed by this flush that we are scheduling.
-      if (customSchedulerFn) {
-        customSchedulerFn(flush);
-      } else {
-        scheduleFlush();
-      }
-    }
-  };
-
-  function setScheduler(scheduleFn) {
-    customSchedulerFn = scheduleFn;
-  }
-
-  function setAsap(asapFn) {
-    asap = asapFn;
-  }
-
-  var browserWindow = typeof window !== 'undefined' ? window : undefined;
-  var browserGlobal = browserWindow || {};
-  var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-  var isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
-
-  // test for web worker but not in IE10
-  var isWorker = typeof Uint8ClampedArray !== 'undefined' && typeof importScripts !== 'undefined' && typeof MessageChannel !== 'undefined';
-
-  // node
-  function useNextTick() {
-    // node version 0.10.x displays a deprecation warning when nextTick is used recursively
-    // see https://github.com/cujojs/when/issues/410 for details
-    return function () {
-      return process.nextTick(flush);
-    };
-  }
-
-  // vertx
-  function useVertxTimer() {
-    if (typeof vertxNext !== 'undefined') {
-      return function () {
-        vertxNext(flush);
-      };
-    }
-
-    return useSetTimeout();
-  }
-
-  function useMutationObserver() {
-    var iterations = 0;
-    var observer = new BrowserMutationObserver(flush);
-    var node = document.createTextNode('');
-    observer.observe(node, { characterData: true });
-
-    return function () {
-      node.data = iterations = ++iterations % 2;
-    };
-  }
-
-  // web worker
-  function useMessageChannel() {
-    var channel = new MessageChannel();
-    channel.port1.onmessage = flush;
-    return function () {
-      return channel.port2.postMessage(0);
-    };
-  }
-
-  function useSetTimeout() {
-    // Store setTimeout reference so es6-promise will be unaffected by
-    // other code modifying setTimeout (like sinon.useFakeTimers())
-    var globalSetTimeout = setTimeout;
-    return function () {
-      return globalSetTimeout(flush, 1);
-    };
-  }
-
-  var queue = new Array(1000);
-  function flush() {
-    for (var i = 0; i < len; i += 2) {
-      var callback = queue[i];
-      var arg = queue[i + 1];
-
-      callback(arg);
-
-      queue[i] = undefined;
-      queue[i + 1] = undefined;
-    }
-
-    len = 0;
-  }
-
-  function attemptVertx() {
-    try {
-      var vertx = Function('return this')().require('vertx');
-      vertxNext = vertx.runOnLoop || vertx.runOnContext;
-      return useVertxTimer();
-    } catch (e) {
-      return useSetTimeout();
-    }
-  }
-
-  var scheduleFlush = void 0;
-  // Decide what async method to use to triggering processing of queued callbacks:
-  if (isNode) {
-    scheduleFlush = useNextTick();
-  } else if (BrowserMutationObserver) {
-    scheduleFlush = useMutationObserver();
-  } else if (isWorker) {
-    scheduleFlush = useMessageChannel();
-  } else if (browserWindow === undefined && typeof commonjsRequire === 'function') {
-    scheduleFlush = attemptVertx();
-  } else {
-    scheduleFlush = useSetTimeout();
-  }
-
-  function then(onFulfillment, onRejection) {
-    var parent = this;
-
-    var child = new this.constructor(noop);
-
-    if (child[PROMISE_ID] === undefined) {
-      makePromise(child);
-    }
-
-    var _state = parent._state;
-
-
-    if (_state) {
-      var callback = arguments[_state - 1];
-      asap(function () {
-        return invokeCallback(_state, child, callback, parent._result);
-      });
-    } else {
-      subscribe(parent, child, onFulfillment, onRejection);
-    }
-
-    return child;
-  }
-
-  /**
-    `Promise.resolve` returns a promise that will become resolved with the
-    passed `value`. It is shorthand for the following:
-
-    ```javascript
-    let promise = new Promise(function(resolve, reject){
-      resolve(1);
-    });
-
-    promise.then(function(value){
-      // value === 1
-    });
-    ```
-
-    Instead of writing the above, your code now simply becomes the following:
-
-    ```javascript
-    let promise = Promise.resolve(1);
-
-    promise.then(function(value){
-      // value === 1
-    });
-    ```
-
-    @method resolve
-    @static
-    @param {Any} value value that the returned promise will be resolved with
-    Useful for tooling.
-    @return {Promise} a promise that will become fulfilled with the given
-    `value`
-  */
-  function resolve$1(object) {
-    /*jshint validthis:true */
-    var Constructor = this;
-
-    if (object && typeof object === 'object' && object.constructor === Constructor) {
-      return object;
-    }
-
-    var promise = new Constructor(noop);
-    resolve(promise, object);
-    return promise;
-  }
-
-  var PROMISE_ID = Math.random().toString(36).substring(2);
-
-  function noop() {}
-
-  var PENDING = void 0;
-  var FULFILLED = 1;
-  var REJECTED = 2;
-
-  function selfFulfillment() {
-    return new TypeError("You cannot resolve a promise with itself");
-  }
-
-  function cannotReturnOwn() {
-    return new TypeError('A promises callback cannot return that same promise.');
-  }
-
-  function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
-    try {
-      then$$1.call(value, fulfillmentHandler, rejectionHandler);
-    } catch (e) {
-      return e;
-    }
-  }
-
-  function handleForeignThenable(promise, thenable, then$$1) {
-    asap(function (promise) {
-      var sealed = false;
-      var error = tryThen(then$$1, thenable, function (value) {
-        if (sealed) {
-          return;
-        }
-        sealed = true;
-        if (thenable !== value) {
-          resolve(promise, value);
-        } else {
-          fulfill(promise, value);
-        }
-      }, function (reason) {
-        if (sealed) {
-          return;
-        }
-        sealed = true;
-
-        reject(promise, reason);
-      }, 'Settle: ' + (promise._label || ' unknown promise'));
-
-      if (!sealed && error) {
-        sealed = true;
-        reject(promise, error);
-      }
-    }, promise);
-  }
-
-  function handleOwnThenable(promise, thenable) {
-    if (thenable._state === FULFILLED) {
-      fulfill(promise, thenable._result);
-    } else if (thenable._state === REJECTED) {
-      reject(promise, thenable._result);
-    } else {
-      subscribe(thenable, undefined, function (value) {
-        return resolve(promise, value);
-      }, function (reason) {
-        return reject(promise, reason);
-      });
-    }
-  }
-
-  function handleMaybeThenable(promise, maybeThenable, then$$1) {
-    if (maybeThenable.constructor === promise.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$1) {
-      handleOwnThenable(promise, maybeThenable);
-    } else {
-      if (then$$1 === undefined) {
-        fulfill(promise, maybeThenable);
-      } else if (isFunction(then$$1)) {
-        handleForeignThenable(promise, maybeThenable, then$$1);
-      } else {
-        fulfill(promise, maybeThenable);
-      }
-    }
-  }
-
-  function resolve(promise, value) {
-    if (promise === value) {
-      reject(promise, selfFulfillment());
-    } else if (objectOrFunction(value)) {
-      var then$$1 = void 0;
-      try {
-        then$$1 = value.then;
-      } catch (error) {
-        reject(promise, error);
-        return;
-      }
-      handleMaybeThenable(promise, value, then$$1);
-    } else {
-      fulfill(promise, value);
-    }
-  }
-
-  function publishRejection(promise) {
-    if (promise._onerror) {
-      promise._onerror(promise._result);
-    }
-
-    publish(promise);
-  }
-
-  function fulfill(promise, value) {
-    if (promise._state !== PENDING) {
-      return;
-    }
-
-    promise._result = value;
-    promise._state = FULFILLED;
-
-    if (promise._subscribers.length !== 0) {
-      asap(publish, promise);
-    }
-  }
-
-  function reject(promise, reason) {
-    if (promise._state !== PENDING) {
-      return;
-    }
-    promise._state = REJECTED;
-    promise._result = reason;
-
-    asap(publishRejection, promise);
-  }
-
-  function subscribe(parent, child, onFulfillment, onRejection) {
-    var _subscribers = parent._subscribers;
-    var length = _subscribers.length;
-
-
-    parent._onerror = null;
-
-    _subscribers[length] = child;
-    _subscribers[length + FULFILLED] = onFulfillment;
-    _subscribers[length + REJECTED] = onRejection;
-
-    if (length === 0 && parent._state) {
-      asap(publish, parent);
-    }
-  }
-
-  function publish(promise) {
-    var subscribers = promise._subscribers;
-    var settled = promise._state;
-
-    if (subscribers.length === 0) {
-      return;
-    }
-
-    var child = void 0,
-        callback = void 0,
-        detail = promise._result;
-
-    for (var i = 0; i < subscribers.length; i += 3) {
-      child = subscribers[i];
-      callback = subscribers[i + settled];
-
-      if (child) {
-        invokeCallback(settled, child, callback, detail);
-      } else {
-        callback(detail);
-      }
-    }
-
-    promise._subscribers.length = 0;
-  }
-
-  function invokeCallback(settled, promise, callback, detail) {
-    var hasCallback = isFunction(callback),
-        value = void 0,
-        error = void 0,
-        succeeded = true;
-
-    if (hasCallback) {
-      try {
-        value = callback(detail);
-      } catch (e) {
-        succeeded = false;
-        error = e;
-      }
-
-      if (promise === value) {
-        reject(promise, cannotReturnOwn());
-        return;
-      }
-    } else {
-      value = detail;
-    }
-
-    if (promise._state !== PENDING) ; else if (hasCallback && succeeded) {
-      resolve(promise, value);
-    } else if (succeeded === false) {
-      reject(promise, error);
-    } else if (settled === FULFILLED) {
-      fulfill(promise, value);
-    } else if (settled === REJECTED) {
-      reject(promise, value);
-    }
-  }
-
-  function initializePromise(promise, resolver) {
-    try {
-      resolver(function resolvePromise(value) {
-        resolve(promise, value);
-      }, function rejectPromise(reason) {
-        reject(promise, reason);
-      });
-    } catch (e) {
-      reject(promise, e);
-    }
-  }
-
-  var id = 0;
-  function nextId() {
-    return id++;
-  }
-
-  function makePromise(promise) {
-    promise[PROMISE_ID] = id++;
-    promise._state = undefined;
-    promise._result = undefined;
-    promise._subscribers = [];
-  }
-
-  function validationError() {
-    return new Error('Array Methods must be provided an Array');
-  }
-
-  var Enumerator = function () {
-    function Enumerator(Constructor, input) {
-      this._instanceConstructor = Constructor;
-      this.promise = new Constructor(noop);
-
-      if (!this.promise[PROMISE_ID]) {
-        makePromise(this.promise);
-      }
-
-      if (isArray(input)) {
-        this.length = input.length;
-        this._remaining = input.length;
-
-        this._result = new Array(this.length);
-
-        if (this.length === 0) {
-          fulfill(this.promise, this._result);
-        } else {
-          this.length = this.length || 0;
-          this._enumerate(input);
-          if (this._remaining === 0) {
-            fulfill(this.promise, this._result);
-          }
-        }
-      } else {
-        reject(this.promise, validationError());
-      }
-    }
-
-    Enumerator.prototype._enumerate = function _enumerate(input) {
-      for (var i = 0; this._state === PENDING && i < input.length; i++) {
-        this._eachEntry(input[i], i);
-      }
-    };
-
-    Enumerator.prototype._eachEntry = function _eachEntry(entry, i) {
-      var c = this._instanceConstructor;
-      var resolve$$1 = c.resolve;
-
-
-      if (resolve$$1 === resolve$1) {
-        var _then = void 0;
-        var error = void 0;
-        var didError = false;
-        try {
-          _then = entry.then;
-        } catch (e) {
-          didError = true;
-          error = e;
-        }
-
-        if (_then === then && entry._state !== PENDING) {
-          this._settledAt(entry._state, i, entry._result);
-        } else if (typeof _then !== 'function') {
-          this._remaining--;
-          this._result[i] = entry;
-        } else if (c === Promise$1) {
-          var promise = new c(noop);
-          if (didError) {
-            reject(promise, error);
-          } else {
-            handleMaybeThenable(promise, entry, _then);
-          }
-          this._willSettleAt(promise, i);
-        } else {
-          this._willSettleAt(new c(function (resolve$$1) {
-            return resolve$$1(entry);
-          }), i);
-        }
-      } else {
-        this._willSettleAt(resolve$$1(entry), i);
-      }
-    };
-
-    Enumerator.prototype._settledAt = function _settledAt(state, i, value) {
-      var promise = this.promise;
-
-
-      if (promise._state === PENDING) {
-        this._remaining--;
-
-        if (state === REJECTED) {
-          reject(promise, value);
-        } else {
-          this._result[i] = value;
-        }
-      }
-
-      if (this._remaining === 0) {
-        fulfill(promise, this._result);
-      }
-    };
-
-    Enumerator.prototype._willSettleAt = function _willSettleAt(promise, i) {
-      var enumerator = this;
-
-      subscribe(promise, undefined, function (value) {
-        return enumerator._settledAt(FULFILLED, i, value);
-      }, function (reason) {
-        return enumerator._settledAt(REJECTED, i, reason);
-      });
-    };
-
-    return Enumerator;
-  }();
-
-  /**
-    `Promise.all` accepts an array of promises, and returns a new promise which
-    is fulfilled with an array of fulfillment values for the passed promises, or
-    rejected with the reason of the first passed promise to be rejected. It casts all
-    elements of the passed iterable to promises as it runs this algorithm.
-
-    Example:
-
-    ```javascript
-    let promise1 = resolve(1);
-    let promise2 = resolve(2);
-    let promise3 = resolve(3);
-    let promises = [ promise1, promise2, promise3 ];
-
-    Promise.all(promises).then(function(array){
-      // The array here would be [ 1, 2, 3 ];
-    });
-    ```
-
-    If any of the `promises` given to `all` are rejected, the first promise
-    that is rejected will be given as an argument to the returned promises's
-    rejection handler. For example:
-
-    Example:
-
-    ```javascript
-    let promise1 = resolve(1);
-    let promise2 = reject(new Error("2"));
-    let promise3 = reject(new Error("3"));
-    let promises = [ promise1, promise2, promise3 ];
-
-    Promise.all(promises).then(function(array){
-      // Code here never runs because there are rejected promises!
-    }, function(error) {
-      // error.message === "2"
-    });
-    ```
-
-    @method all
-    @static
-    @param {Array} entries array of promises
-    @param {String} label optional string for labeling the promise.
-    Useful for tooling.
-    @return {Promise} promise that is fulfilled when all `promises` have been
-    fulfilled, or rejected if any of them become rejected.
-    @static
-  */
-  function all(entries) {
-    return new Enumerator(this, entries).promise;
-  }
-
-  /**
-    `Promise.race` returns a new promise which is settled in the same way as the
-    first passed promise to settle.
-
-    Example:
-
-    ```javascript
-    let promise1 = new Promise(function(resolve, reject){
-      setTimeout(function(){
-        resolve('promise 1');
-      }, 200);
-    });
-
-    let promise2 = new Promise(function(resolve, reject){
-      setTimeout(function(){
-        resolve('promise 2');
-      }, 100);
-    });
-
-    Promise.race([promise1, promise2]).then(function(result){
-      // result === 'promise 2' because it was resolved before promise1
-      // was resolved.
-    });
-    ```
-
-    `Promise.race` is deterministic in that only the state of the first
-    settled promise matters. For example, even if other promises given to the
-    `promises` array argument are resolved, but the first settled promise has
-    become rejected before the other promises became fulfilled, the returned
-    promise will become rejected:
-
-    ```javascript
-    let promise1 = new Promise(function(resolve, reject){
-      setTimeout(function(){
-        resolve('promise 1');
-      }, 200);
-    });
-
-    let promise2 = new Promise(function(resolve, reject){
-      setTimeout(function(){
-        reject(new Error('promise 2'));
-      }, 100);
-    });
-
-    Promise.race([promise1, promise2]).then(function(result){
-      // Code here never runs
-    }, function(reason){
-      // reason.message === 'promise 2' because promise 2 became rejected before
-      // promise 1 became fulfilled
-    });
-    ```
-
-    An example real-world use case is implementing timeouts:
-
-    ```javascript
-    Promise.race([ajax('foo.json'), timeout(5000)])
-    ```
-
-    @method race
-    @static
-    @param {Array} promises array of promises to observe
-    Useful for tooling.
-    @return {Promise} a promise which settles in the same way as the first passed
-    promise to settle.
-  */
-  function race(entries) {
-    /*jshint validthis:true */
-    var Constructor = this;
-
-    if (!isArray(entries)) {
-      return new Constructor(function (_, reject) {
-        return reject(new TypeError('You must pass an array to race.'));
-      });
-    } else {
-      return new Constructor(function (resolve, reject) {
-        var length = entries.length;
-        for (var i = 0; i < length; i++) {
-          Constructor.resolve(entries[i]).then(resolve, reject);
-        }
-      });
-    }
-  }
-
-  /**
-    `Promise.reject` returns a promise rejected with the passed `reason`.
-    It is shorthand for the following:
-
-    ```javascript
-    let promise = new Promise(function(resolve, reject){
-      reject(new Error('WHOOPS'));
-    });
-
-    promise.then(function(value){
-      // Code here doesn't run because the promise is rejected!
-    }, function(reason){
-      // reason.message === 'WHOOPS'
-    });
-    ```
-
-    Instead of writing the above, your code now simply becomes the following:
-
-    ```javascript
-    let promise = Promise.reject(new Error('WHOOPS'));
-
-    promise.then(function(value){
-      // Code here doesn't run because the promise is rejected!
-    }, function(reason){
-      // reason.message === 'WHOOPS'
-    });
-    ```
-
-    @method reject
-    @static
-    @param {Any} reason value that the returned promise will be rejected with.
-    Useful for tooling.
-    @return {Promise} a promise rejected with the given `reason`.
-  */
-  function reject$1(reason) {
-    /*jshint validthis:true */
-    var Constructor = this;
-    var promise = new Constructor(noop);
-    reject(promise, reason);
-    return promise;
-  }
-
-  function needsResolver() {
-    throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
-  }
-
-  function needsNew() {
-    throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-  }
-
-  /**
-    Promise objects represent the eventual result of an asynchronous operation. The
-    primary way of interacting with a promise is through its `then` method, which
-    registers callbacks to receive either a promise's eventual value or the reason
-    why the promise cannot be fulfilled.
-
-    Terminology
-    -----------
-
-    - `promise` is an object or function with a `then` method whose behavior conforms to this specification.
-    - `thenable` is an object or function that defines a `then` method.
-    - `value` is any legal JavaScript value (including undefined, a thenable, or a promise).
-    - `exception` is a value that is thrown using the throw statement.
-    - `reason` is a value that indicates why a promise was rejected.
-    - `settled` the final resting state of a promise, fulfilled or rejected.
-
-    A promise can be in one of three states: pending, fulfilled, or rejected.
-
-    Promises that are fulfilled have a fulfillment value and are in the fulfilled
-    state.  Promises that are rejected have a rejection reason and are in the
-    rejected state.  A fulfillment value is never a thenable.
-
-    Promises can also be said to *resolve* a value.  If this value is also a
-    promise, then the original promise's settled state will match the value's
-    settled state.  So a promise that *resolves* a promise that rejects will
-    itself reject, and a promise that *resolves* a promise that fulfills will
-    itself fulfill.
-
-
-    Basic Usage:
-    ------------
-
-    ```js
-    let promise = new Promise(function(resolve, reject) {
-      // on success
-      resolve(value);
-
-      // on failure
-      reject(reason);
-    });
-
-    promise.then(function(value) {
-      // on fulfillment
-    }, function(reason) {
-      // on rejection
-    });
-    ```
-
-    Advanced Usage:
-    ---------------
-
-    Promises shine when abstracting away asynchronous interactions such as
-    `XMLHttpRequest`s.
-
-    ```js
-    function getJSON(url) {
-      return new Promise(function(resolve, reject){
-        let xhr = new XMLHttpRequest();
-
-        xhr.open('GET', url);
-        xhr.onreadystatechange = handler;
-        xhr.responseType = 'json';
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.send();
-
-        function handler() {
-          if (this.readyState === this.DONE) {
-            if (this.status === 200) {
-              resolve(this.response);
-            } else {
-              reject(new Error('getJSON: `' + url + '` failed with status: [' + this.status + ']'));
-            }
-          }
-        };
-      });
-    }
-
-    getJSON('/posts.json').then(function(json) {
-      // on fulfillment
-    }, function(reason) {
-      // on rejection
-    });
-    ```
-
-    Unlike callbacks, promises are great composable primitives.
-
-    ```js
-    Promise.all([
-      getJSON('/posts'),
-      getJSON('/comments')
-    ]).then(function(values){
-      values[0] // => postsJSON
-      values[1] // => commentsJSON
-
-      return values;
-    });
-    ```
-
-    @class Promise
-    @param {Function} resolver
-    Useful for tooling.
-    @constructor
-  */
-
-  var Promise$1 = function () {
-    function Promise(resolver) {
-      this[PROMISE_ID] = nextId();
-      this._result = this._state = undefined;
-      this._subscribers = [];
-
-      if (noop !== resolver) {
-        typeof resolver !== 'function' && needsResolver();
-        this instanceof Promise ? initializePromise(this, resolver) : needsNew();
-      }
-    }
-
-    /**
-    The primary way of interacting with a promise is through its `then` method,
-    which registers callbacks to receive either a promise's eventual value or the
-    reason why the promise cannot be fulfilled.
-     ```js
-    findUser().then(function(user){
-      // user is available
-    }, function(reason){
-      // user is unavailable, and you are given the reason why
-    });
-    ```
-     Chaining
-    --------
-     The return value of `then` is itself a promise.  This second, 'downstream'
-    promise is resolved with the return value of the first promise's fulfillment
-    or rejection handler, or rejected if the handler throws an exception.
-     ```js
-    findUser().then(function (user) {
-      return user.name;
-    }, function (reason) {
-      return 'default name';
-    }).then(function (userName) {
-      // If `findUser` fulfilled, `userName` will be the user's name, otherwise it
-      // will be `'default name'`
-    });
-     findUser().then(function (user) {
-      throw new Error('Found user, but still unhappy');
-    }, function (reason) {
-      throw new Error('`findUser` rejected and we're unhappy');
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // if `findUser` fulfilled, `reason` will be 'Found user, but still unhappy'.
-      // If `findUser` rejected, `reason` will be '`findUser` rejected and we're unhappy'.
-    });
-    ```
-    If the downstream promise does not specify a rejection handler, rejection reasons will be propagated further downstream.
-     ```js
-    findUser().then(function (user) {
-      throw new PedagogicalException('Upstream error');
-    }).then(function (value) {
-      // never reached
-    }).then(function (value) {
-      // never reached
-    }, function (reason) {
-      // The `PedgagocialException` is propagated all the way down to here
-    });
-    ```
-     Assimilation
-    ------------
-     Sometimes the value you want to propagate to a downstream promise can only be
-    retrieved asynchronously. This can be achieved by returning a promise in the
-    fulfillment or rejection handler. The downstream promise will then be pending
-    until the returned promise is settled. This is called *assimilation*.
-     ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // The user's comments are now available
-    });
-    ```
-     If the assimliated promise rejects, then the downstream promise will also reject.
-     ```js
-    findUser().then(function (user) {
-      return findCommentsByAuthor(user);
-    }).then(function (comments) {
-      // If `findCommentsByAuthor` fulfills, we'll have the value here
-    }, function (reason) {
-      // If `findCommentsByAuthor` rejects, we'll have the reason here
-    });
-    ```
-     Simple Example
-    --------------
-     Synchronous Example
-     ```javascript
-    let result;
-     try {
-      result = findResult();
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-     Errback Example
-     ```js
-    findResult(function(result, err){
-      if (err) {
-        // failure
-      } else {
-        // success
-      }
-    });
-    ```
-     Promise Example;
-     ```javascript
-    findResult().then(function(result){
-      // success
-    }, function(reason){
-      // failure
-    });
-    ```
-     Advanced Example
-    --------------
-     Synchronous Example
-     ```javascript
-    let author, books;
-     try {
-      author = findAuthor();
-      books  = findBooksByAuthor(author);
-      // success
-    } catch(reason) {
-      // failure
-    }
-    ```
-     Errback Example
-     ```js
-     function foundBooks(books) {
-     }
-     function failure(reason) {
-     }
-     findAuthor(function(author, err){
-      if (err) {
-        failure(err);
-        // failure
-      } else {
-        try {
-          findBoooksByAuthor(author, function(books, err) {
-            if (err) {
-              failure(err);
-            } else {
-              try {
-                foundBooks(books);
-              } catch(reason) {
-                failure(reason);
-              }
-            }
-          });
-        } catch(error) {
-          failure(err);
-        }
-        // success
-      }
-    });
-    ```
-     Promise Example;
-     ```javascript
-    findAuthor().
-      then(findBooksByAuthor).
-      then(function(books){
-        // found books
-    }).catch(function(reason){
-      // something went wrong
-    });
-    ```
-     @method then
-    @param {Function} onFulfilled
-    @param {Function} onRejected
-    Useful for tooling.
-    @return {Promise}
-    */
-
-    /**
-    `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
-    as the catch block of a try/catch statement.
-    ```js
-    function findAuthor(){
-    throw new Error('couldn't find that author');
-    }
-    // synchronous
-    try {
-    findAuthor();
-    } catch(reason) {
-    // something went wrong
-    }
-    // async with promises
-    findAuthor().catch(function(reason){
-    // something went wrong
-    });
-    ```
-    @method catch
-    @param {Function} onRejection
-    Useful for tooling.
-    @return {Promise}
-    */
-
-
-    Promise.prototype.catch = function _catch(onRejection) {
-      return this.then(null, onRejection);
-    };
-
-    /**
-      `finally` will be invoked regardless of the promise's fate just as native
-      try/catch/finally behaves
-    
-      Synchronous example:
-    
-      ```js
-      findAuthor() {
-        if (Math.random() > 0.5) {
-          throw new Error();
-        }
-        return new Author();
-      }
-    
-      try {
-        return findAuthor(); // succeed or fail
-      } catch(error) {
-        return findOtherAuther();
-      } finally {
-        // always runs
-        // doesn't affect the return value
-      }
-      ```
-    
-      Asynchronous example:
-    
-      ```js
-      findAuthor().catch(function(reason){
-        return findOtherAuther();
-      }).finally(function(){
-        // author was either found, or not
-      });
-      ```
-    
-      @method finally
-      @param {Function} callback
-      @return {Promise}
-    */
-
-
-    Promise.prototype.finally = function _finally(callback) {
-      var promise = this;
-      var constructor = promise.constructor;
-
-      if (isFunction(callback)) {
-        return promise.then(function (value) {
-          return constructor.resolve(callback()).then(function () {
-            return value;
-          });
-        }, function (reason) {
-          return constructor.resolve(callback()).then(function () {
-            throw reason;
-          });
-        });
-      }
-
-      return promise.then(callback, callback);
-    };
-
-    return Promise;
-  }();
-
-  Promise$1.prototype.then = then;
-  Promise$1.all = all;
-  Promise$1.race = race;
-  Promise$1.resolve = resolve$1;
-  Promise$1.reject = reject$1;
-  Promise$1._setScheduler = setScheduler;
-  Promise$1._setAsap = setAsap;
-  Promise$1._asap = asap;
-
-  /*global self*/
-  function polyfill() {
-    var local = void 0;
-
-    if (typeof commonjsGlobal !== 'undefined') {
-      local = commonjsGlobal;
-    } else if (typeof self !== 'undefined') {
-      local = self;
-    } else {
-      try {
-        local = Function('return this')();
-      } catch (e) {
-        throw new Error('polyfill failed because global object is unavailable in this environment');
-      }
-    }
-
-    var P = local.Promise;
-
-    if (P) {
-      var promiseToString = null;
-      try {
-        promiseToString = Object.prototype.toString.call(P.resolve());
-      } catch (e) {
-        // silently ignored
-      }
-
-      if (promiseToString === '[object Promise]' && !P.cast) {
-        return;
-      }
-    }
-
-    local.Promise = Promise$1;
-  }
-
-  // Strange compat..
-  Promise$1.polyfill = polyfill;
-  Promise$1.Promise = Promise$1;
-
-  return Promise$1;
-
-  })));
-
-
-
-
-  });
-  var es6Promise_1 = es6Promise.Promise;
 
   function _extendableBuiltin(cls) {
     function ExtendableBuiltin() {
       cls.apply(this, arguments);
     }
-
     ExtendableBuiltin.prototype = Object.create(cls.prototype, {
       constructor: {
         value: cls,
@@ -1387,15 +218,14 @@
         configurable: true
       }
     });
-
     if (Object.setPrototypeOf) {
       Object.setPrototypeOf(ExtendableBuiltin, cls);
     } else {
       ExtendableBuiltin.__proto__ = cls;
     }
-
     return ExtendableBuiltin;
   }
+
   /**
    * Base function to invoke given method(s) on tree nodes.
    *
@@ -1406,24 +236,20 @@
    * @param {boolean} deep Invoke deeply.
    * @return {TreeNodes} Array of node objects.
    */
-
   function baseInvoke(nodes, methods, args, deep) {
-    methods = _.castArray(methods);
-
+    methods = castArray(methods);
     nodes._tree.batch();
-
     nodes[deep ? 'recurseDown' : 'each'](function (node) {
-      _.each(methods, function (method) {
-        if (_.isFunction(node[method])) {
+      each(methods, function (method) {
+        if (isFunction(node[method])) {
           node[method].apply(node, args);
         }
       });
     });
-
     nodes._tree.end();
-
     return nodes;
   }
+
   /**
    * Creates a predicate function.
    *
@@ -1431,19 +257,16 @@
    * @param {string|function} predicate Property name or custom function.
    * @return {function} Predicate function.
    */
-
-
   function getPredicateFunction(predicate) {
     var fn = predicate;
-
-    if (_.isString(predicate)) {
+    if (isString(predicate)) {
       fn = function fn(node) {
-        return _.isFunction(node[predicate]) ? node[predicate]() : node[predicate];
+        return isFunction(node[predicate]) ? node[predicate]() : node[predicate];
       };
     }
-
     return fn;
   }
+
   /**
    * Base function to filter nodes by state value.
    *
@@ -1452,24 +275,22 @@
    * @param {boolean} full Return a non-flat hierarchy
    * @return {TreeNodes} Array of matching nodes.
    */
-
-
   function baseStatePredicate(state, full) {
     if (full) {
       return this.extract(state);
-    } // Cache a state predicate function
+    }
 
-
+    // Cache a state predicate function
     var fn = getPredicateFunction(state);
     return this.flatten(function (node) {
       // Never include removed nodes unless specifically requested
       if (state !== 'removed' && node.removed()) {
         return false;
       }
-
       return fn(node);
     });
   }
+
   /**
    * An Array-like collection of TreeNodes.
    *
@@ -1482,41 +303,34 @@
    * @param {object} opts Configuration object.
    * @return {TreeNodes} Collection of TreeNode
    */
-
-
-  var TreeNodes =
-  /*#__PURE__*/
-  function (_extendableBuiltin2) {
+  var TreeNodes = /*#__PURE__*/function (_extendableBuiltin2) {
     _inherits(TreeNodes, _extendableBuiltin2);
-
+    var _super = _createSuper(TreeNodes);
     function TreeNodes(tree, array, opts) {
       var _this;
-
       _classCallCheck(this, TreeNodes);
-
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(TreeNodes).call(this));
-
-      if (_.isFunction(_.get(tree, 'isTree')) && !tree.isTree(tree)) {
+      _this = _super.call(this);
+      if (isFunction(get(tree, 'isTree')) && !tree.isTree(tree)) {
         throw new TypeError('Invalid tree instance.');
       }
-
       _this._tree = tree;
       _this.length = 0;
-      _this.batching = 0; // A custom dirty flag to indicate when an index-altering
+      _this.batching = 0;
+
+      // A custom dirty flag to indicate when an index-altering
       // change has occured. Avoids re-caching when unnecessary.
-
       _this.indicesDirty = false;
-      _this.config = _.defaultsDeep({}, opts, {
+      _this.config = defaultsDeep({}, opts, {
         calculateRenderablePositions: false
-      }); // Init pagination
+      });
 
+      // Init pagination
       _this._pagination = {
         limit: tree.config.pagination.limit,
         total: 0
       };
-
-      if (_.isArray(array) || array instanceof TreeNodes) {
-        _.each(array, function (node) {
+      if (isArray(array) || array instanceof TreeNodes) {
+        each(array, function (node) {
           if (node instanceof TreeNode) {
             _this.push(node.clone());
           } else {
@@ -1524,9 +338,9 @@
           }
         });
       }
-
       return _this;
     }
+
     /**
      * Adds a new node. If a sort method is configured,
      * the node will be added in the appropriate order.
@@ -1534,20 +348,19 @@
      * @param {object} object Node
      * @return {TreeNode} Node object.
      */
-
-
     _createClass(TreeNodes, [{
       key: "addNode",
       value: function addNode(object) {
         // Base insertion index
-        var index = this.length; // If tree is sorted, insert in correct position
+        var index = this.length;
 
+        // If tree is sorted, insert in correct position
         if (this._tree.config.sort) {
-          index = _.sortedIndexBy(this, object, this._tree.config.sort);
+          index = sortedIndexBy(this, object, this._tree.config.sort);
         }
-
         return this.insertAt(index, object);
       }
+
       /**
        * Release pending data changes to any listeners.
        *
@@ -1557,66 +370,64 @@
        * @private
        * @return {void}
        */
-
     }, {
       key: "applyChanges",
       value: function applyChanges() {
         if (this.batching === 0) {
           this.calculateRenderablePositions();
-
           this._tree.emit('changes.applied', this.context());
         }
       }
+
       /**
        * Batch multiple changes for listeners (i.e. DOM)
        *
        * @private
        * @return {void}
        */
-
     }, {
       key: "batch",
       value: function batch() {
         if (this.batching < 0) {
           this.batching = 0;
         }
-
         this.batching++;
       }
+
       /**
        * Query for all available nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "available",
       value: function available(full) {
         return baseStatePredicate.call(this, 'available', full);
       }
+
       /**
        * Blur nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "blur",
       value: function blur() {
         return this.invoke('blur');
       }
+
       /**
        * Blur (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "blurDeep",
       value: function blurDeep() {
         return this.invokeDeep('blur');
       }
+
       /**
        * Calculate and cache the first/last renderable nodes.
        *
@@ -1627,68 +438,63 @@
        * @private
        * @return {void}
        */
-
     }, {
       key: "calculateRenderablePositions",
       value: function calculateRenderablePositions() {
         if (!this.indicesDirty || this.batching > 0 || !this.config.calculateRenderablePositions) {
           return;
         }
-
         var first;
         var last;
         this.each(function (node) {
           if (node.renderable()) {
             // Cache first node if none yet
-            first = first || node; // Always update last node on match
+            first = first || node;
 
+            // Always update last node on match
             last = node;
           }
         });
-
         if (this.firstRenderableNode && this.firstRenderableNode !== first) {
           this.firstRenderableNode.markDirty();
         }
-
         if (first && first !== this.firstRenderableNode) {
           first.markDirty();
         }
-
         if (this.lastRenderableNode && this.lastRenderableNode !== last) {
           this.lastRenderableNode.markDirty();
         }
-
         if (last && last !== this.lastRenderableNode) {
           last.markDirty();
         }
-
         this.firstRenderableNode = first;
         this.lastRenderableNode = last;
         this.indicesDirty = false;
       }
+
       /**
        * Query for all checked nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "checked",
       value: function checked(full) {
         return baseStatePredicate.call(this, 'checked', full);
       }
+
       /**
        * Clean nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "clean",
       value: function clean() {
         return this.invoke('clean');
       }
+
       /**
        * Clones (deeply) the array of nodes.
        *
@@ -1696,73 +502,70 @@
        *
        * @return {TreeNodes} Array of cloned nodes.
        */
-
     }, {
       key: "clone",
       value: function clone() {
         return new TreeNodes(this._tree, this);
       }
+
       /**
        * Collapse nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "collapse",
       value: function collapse() {
         return this.invoke('collapse');
       }
+
       /**
        * Query for all collapsed nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "collapsed",
       value: function collapsed(full) {
         return baseStatePredicate.call(this, 'collapsed', full);
       }
+
       /**
        * Collapse (deeply) all children.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "collapseDeep",
       value: function collapseDeep() {
         return this.invokeDeep('collapse');
       }
+
       /**
        * Concat multiple TreeNodes arrays.
        *
        * @param {TreeNodes} nodes Array of nodes.
        * @return {TreeNodes} Resulting node array.
        */
-
     }, {
       key: "concat",
       value: function concat(nodes) {
         var newNodes = new TreeNodes(this._tree);
         newNodes._context = this._context;
-
         var pusher = function pusher(node) {
           if (node instanceof TreeNode) {
             newNodes.push(node);
           }
         };
+        each(this, pusher);
+        each(nodes, pusher);
 
-        _.each(this, pusher);
-
-        _.each(nodes, pusher); // Copy pagination limit
-
-
+        // Copy pagination limit
         newNodes._pagination.limit = this._pagination.limit;
         return newNodes;
       }
+
       /**
        * Get the context of this collection. If a collection
        * of children, context is the parent node. Otherwise
@@ -1770,12 +573,12 @@
        *
        * @return {TreeNode|object} Node object or tree instance.
        */
-
     }, {
       key: "context",
       value: function context() {
         return this._context || this._tree;
       }
+
       /**
        * Copy nodes to another tree instance.
        *
@@ -1784,24 +587,21 @@
        * @param {boolean} includeState Include itree.state object.
        * @return {object} Methods to perform action on copied nodes.
        */
-
     }, {
       key: "copy",
       value: function copy(dest, hierarchy, includeState) {
         var newNodes = new TreeNodes(this._tree);
-
-        _.each(this, function (node) {
+        each(this, function (node) {
           newNodes.push(node.copy(dest, hierarchy, includeState));
         });
-
         return newNodes;
       }
+
       /**
        * Return deepest nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "deepest",
       value: function deepest() {
@@ -1813,128 +613,124 @@
         });
         return matches;
       }
+
       /**
        * Deselect nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "deselect",
       value: function deselect() {
         return this.invoke('deselect');
       }
+
       /**
        * Deselect (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "deselectDeep",
       value: function deselectDeep() {
         return this.invokeDeep('deselect');
       }
+
       /**
        * Iterate each TreeNode.
        *
        * @param {function} iteratee Iteratee invoke for each node.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "each",
-      value: function each(iteratee) {
-        _.each(this, iteratee);
-
+      value: function each$1(iteratee) {
+        each(this, iteratee);
         return this;
       }
+
       /**
        * Query for all editable nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "editable",
       value: function editable(full) {
         return baseStatePredicate.call(this, 'editable', full);
       }
+
       /**
        * Query for all nodes in editing mode.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "editing",
       value: function editing(full) {
         return baseStatePredicate.call(this, 'editing', full);
       }
+
       /**
        * Release the current batch.
        *
        * @private
        * @return {void}
        */
-
     }, {
       key: "end",
       value: function end() {
         this.batching--;
-
         if (this.batching === 0) {
           this.applyChanges();
         }
       }
+
       /**
        * Expand nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "expand",
       value: function expand() {
         return this.invoke('expand');
       }
+
       /**
        * Query for all expanded nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "expanded",
       value: function expanded(full) {
         return baseStatePredicate.call(this, 'expanded', full);
       }
+
       /**
        * Expand (deeply) all nodes.
        *
        * @return {Promise<TreeNodes>} Promise resolved when all children have loaded and expanded.
        */
-
     }, {
       key: "expandDeep",
       value: function expandDeep() {
         var _this2 = this;
-
-        return new es6Promise_1(function (resolve) {
+        return new Promise(function (resolve) {
           var waitCount = 0;
-
           var done = function done() {
             if (--waitCount === 0) {
               resolve(_this2);
             }
           };
-
           _this2.recurseDown(function (node) {
-            waitCount++; // Ignore nodes without children
+            waitCount++;
 
+            // Ignore nodes without children
             if (node.children) {
               node.expand()["catch"](done).then(function () {
                 // Manually trigger expansion on newly loaded children
@@ -1946,17 +742,18 @@
           });
         });
       }
+
       /**
        * Expand parents.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "expandParents",
       value: function expandParents() {
         return this.invoke('expandParents');
       }
+
       /**
        * Clone a hierarchy of all nodes matching a predicate.
        *
@@ -1966,47 +763,42 @@
        * @param {string|function} predicate State flag or custom function.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "extract",
       value: function extract(predicate) {
         var flat = this.flatten(predicate);
         var matches = new TreeNodes(this._tree);
-
-        _.each(flat, function (node) {
+        each(flat, function (node) {
           return matches.addNode(node.copyHierarchy());
         });
-
         return matches;
       }
+
       /**
        * Filter all nodes matching the given predicate.
        *
        * @param {string|function} predicate State flag or custom function.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "filterBy",
       value: function filterBy(predicate) {
         var fn = getPredicateFunction(predicate);
         var matches = new TreeNodes(this._tree);
-
-        _.each(this, function (node) {
+        each(this, function (node) {
           if (fn(node)) {
             matches.push(node);
           }
         });
-
         return matches;
       }
+
       /**
        * Returns the first node matching predicate.
        *
        * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
        * @return {TreeNode} First matching TreeNode, or undefined.
        */
-
     }, {
       key: "find",
       value: function find(predicate) {
@@ -2019,13 +811,13 @@
         });
         return match;
       }
+
       /**
        * Returns the first shallow node matching predicate.
        *
        * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
        * @return {TreeNode} First matching TreeNode, or undefined.
        */
-
     }, {
       key: "first",
       value: function first(predicate) {
@@ -2035,13 +827,13 @@
           }
         }
       }
+
       /**
        * Flatten and get only node(s) matching the expected state or predicate function.
        *
        * @param {string|function} predicate State property or custom function.
        * @return {TreeNodes} Flat array of matching nodes.
        */
-
     }, {
       key: "flatten",
       value: function flatten(predicate) {
@@ -2054,88 +846,89 @@
         });
         return flat;
       }
+
       /**
        * Query for all focused nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "focused",
       value: function focused(full) {
         return baseStatePredicate.call(this, 'focused', full);
       }
+
       /**
        * Iterate each TreeNode.
        *
        * @param {function} iteratee Iteratee invoke for each node.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "forEach",
       value: function forEach(iteratee) {
         return this.each(iteratee);
       }
+
       /**
        * Get a specific node by its index, or undefined if it doesn't exist.
        *
        * @param {int} index Numeric index of requested node.
        * @return {TreeNode} Node object. Undefined if invalid index.
        */
-
     }, {
       key: "get",
       value: function get(index) {
         return this[index];
       }
+
       /**
        * Query for all hidden nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "hidden",
       value: function hidden(full) {
         return baseStatePredicate.call(this, 'hidden', full);
       }
+
       /**
        * Hide nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "hide",
       value: function hide() {
         return this.invoke('hide');
       }
+
       /**
        * Hide (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "hideDeep",
       value: function hideDeep() {
         return this.invokeDeep('hide');
       }
+
       /**
        * Query for all indeterminate nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "indeterminate",
       value: function indeterminate(full) {
         return baseStatePredicate.call(this, 'indeterminate', full);
       }
+
       /**
        * Insert a new node at a given position.
        *
@@ -2143,7 +936,6 @@
        * @param {object} object Raw node object or TreeNode.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "insertAt",
       value: function insertAt(index, object) {
@@ -2151,57 +943,61 @@
         if (object.id) {
           // Is it already in the tree?
           var existingNode = this.node(object.id);
-
           if (existingNode) {
-            existingNode.restore().show(); // Merge children
+            existingNode.restore().show();
 
-            if (_.isArrayLike(object.children)) {
+            // Merge children
+            if (isArrayLike(object.children)) {
               // Setup existing node's children property if needed
-              if (!_.isArrayLike(existingNode.children)) {
+              if (!isArrayLike(existingNode.children)) {
                 existingNode.children = new TreeNodes(this._tree);
                 existingNode.children._context = existingNode;
-              } // Copy each child (using addNode, which uses insertAt)
-
-
-              _.each(object.children, function (child) {
-                existingNode.children.addNode(child);
-              });
-            } // Merge truthy children
-            else if (object.children && _.isBoolean(existingNode.children)) {
-                existingNode.children = object.children;
               }
 
-            existingNode.markDirty();
-            this.applyChanges(); // Node merged, return it.
+              // Copy each child (using addNode, which uses insertAt)
+              each(object.children, function (child) {
+                existingNode.children.addNode(child);
+              });
+            }
 
+            // Merge truthy children
+            else if (object.children && isBoolean(existingNode.children)) {
+              existingNode.children = object.children;
+            }
+            existingNode.markDirty();
+            this.applyChanges();
+
+            // Node merged, return it.
             return existingNode;
           }
-        } // Node is new, insert at given location.
+        }
 
+        // Node is new, insert at given location.
+        var node = this._tree.constructor.isTreeNode(object) ? object : objectToNode(this._tree, object);
 
-        var node = this._tree.constructor.isTreeNode(object) ? object : objectToNode(this._tree, object); // Grab remaining nodes
+        // Grab remaining nodes
+        this.splice(index, 0, node);
 
-        this.splice(index, 0, node); // Refresh parent state and mark dirty
-
+        // Refresh parent state and mark dirty
         if (this._context) {
           node.itree.parent = this._context;
-
           this._context.refreshIndeterminateState().markDirty();
-        } // Event
+        }
 
+        // Event
+        this._tree.emit('node.added', node);
 
-        this._tree.emit('node.added', node); // Always mark this node as dirty
+        // Always mark this node as dirty
+        node.markDirty();
 
-
-        node.markDirty(); // If pushing this node anywhere but the end, other nodes may change.
-
+        // If pushing this node anywhere but the end, other nodes may change.
         if (this.length - 1 !== index) {
           this.invoke('markDirty');
         }
-
         this.applyChanges();
         return node;
       }
+
       /**
        * Invoke method(s) on each node.
        *
@@ -2209,12 +1005,12 @@
        * @param {array|Arguments} args Array of arguments to proxy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "invoke",
       value: function invoke(methods, args) {
         return baseInvoke(this, methods, args);
       }
+
       /**
        * Invoke method(s) deeply.
        *
@@ -2222,23 +1018,21 @@
        * @param {array|Arguments} args Array of arguments to proxy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "invokeDeep",
       value: function invokeDeep(methods, args) {
-        if (!_.isArrayLikeObject(args) || arguments.length > 2) {
-          args = _.tail(arguments);
+        if (!isArrayLikeObject(args) || arguments.length > 2) {
+          args = tail(arguments);
         }
-
         return baseInvoke(this, methods, args, true);
       }
+
       /**
        * Returns the last shallow node matching predicate.
        *
        * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
        * @return {TreeNode} Last matching shallow TreeNode, or undefined.
        */
-
     }, {
       key: "last",
       value: function last(predicate) {
@@ -2248,52 +1042,52 @@
           }
         }
       }
+
       /**
        * Query for all nodes currently loading children.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "loading",
       value: function loading(full) {
         return baseStatePredicate.call(this, 'loading', full);
       }
+
       /**
        * Loads additional nodes for this context.
        *
        * @param {Event} event Click or scroll event if DOM interaction triggered this call.
        * @return {Promise<TreeNodes>} Resolves with request results.
        */
-
     }, {
       key: "loadMore",
       value: function loadMore(event) {
         var _this3 = this;
-
         // Never refire if node is loading
         if (this._loading) {
-          return es6Promise_1.reject(new Error('Pending loadMore call must complete before being invoked again.'));
+          return Promise.reject(new Error('Pending loadMore call must complete before being invoked again.'));
+        }
+        var promise;
+
+        // If no records remain, immediately resolve
+        if (this._pagination.limit === this._pagination.total) {
+          return Promise.resolve();
         }
 
-        var promise; // If no records remain, immediately resolve
-
-        if (this._pagination.limit === this._pagination.total) {
-          return es6Promise_1.resolve();
-        } // Set loading flag, prevents repeat requests
-
-
+        // Set loading flag, prevents repeat requests
         this._loading = true;
-        this.batch(); // Mark this context as dirty since we'll update text/tree nodes
+        this.batch();
 
-        _.invoke(this._context, 'markDirty'); // Increment the pagination
+        // Mark this context as dirty since we'll update text/tree nodes
+        invoke(this._context, 'markDirty');
 
+        // Increment the pagination
+        this._pagination.limit += this._tree.config.pagination.limit;
 
-        this._pagination.limit += this._tree.config.pagination.limit; // Emit an event
-
+        // Emit an event
         this._tree.emit('node.paginated', this._context || this._tree, this.pagination, event);
-
         if (this._tree.config.deferredLoading) {
           if (this._context) {
             promise = this._context.loadChildren();
@@ -2302,37 +1096,35 @@
           }
         } else {
           this._loading = false;
-          promise = es6Promise_1.resolve();
+          promise = Promise.resolve();
         }
+        this.end();
 
-        this.end(); // Clear the loading flag
-
+        // Clear the loading flag
         if (this._tree.config.deferredLoading) {
           promise.then(function () {
             _this3._loading = false;
-
             _this3.applyChanges();
           })["catch"](function () {
             _this3._loading = false;
-
             _this3.applyChanges();
           });
         }
-
         return promise;
       }
+
       /**
        * Query for all nodes matched in the last search.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "matched",
       value: function matched(full) {
         return baseStatePredicate.call(this, 'matched', full);
       }
+
       /**
        * Move node at a given index to a new index.
        *
@@ -2341,25 +1133,22 @@
        * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "move",
       value: function move(index, newIndex) {
         var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this;
         var oldNode = this[index].remove();
         var node = target.insertAt(newIndex, oldNode);
-
         this._tree.emit('node.moved', node, this, index, target, newIndex);
-
         return node;
       }
+
       /**
        * Get a node.
        *
        * @param {string|number} id ID of node.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "node",
       value: function node(id) {
@@ -2372,6 +1161,7 @@
         });
         return match;
       }
+
       /**
        * Get all nodes in a tree, or nodes for an array of IDs.
        *
@@ -2382,13 +1172,11 @@
        * const all = tree.nodes()
        * const some = tree.nodes([1, 2, 3])
        */
-
     }, {
       key: "nodes",
       value: function nodes(refs) {
         var results;
-
-        if (_.isArray(refs)) {
+        if (isArray(refs)) {
           results = new TreeNodes(this._tree);
           this.recurseDown(function (node) {
             if (refs.indexOf(node.id) > -1) {
@@ -2396,51 +1184,49 @@
             }
           });
         }
-
-        return _.isArray(refs) ? results : this;
+        return isArray(refs) ? results : this;
       }
+
       /**
        * Get the pagination.
        *
        * @return {object} Pagination configuration object.
        */
-
     }, {
       key: "pagination",
       value: function pagination() {
         return this._pagination;
       }
+
       /**
        * Removes the last node.
        *
        * @return {TreeNode} Last tree node.
        */
-
     }, {
       key: "pop",
       value: function pop() {
         var result = _get(_getPrototypeOf(TreeNodes.prototype), "pop", this).call(this);
-
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
       }
+
       /**
        * Push a new TreeNode onto the collection.
        *
        * @param {TreeNode} node Node objext.
        * @returns {number} The new length.
        */
-
     }, {
       key: "push",
       value: function push(node) {
         var result = _get(_getPrototypeOf(TreeNodes.prototype), "push", this).call(this, node);
-
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
       }
+
       /**
        * Iterate down all nodes and any children.
        *
@@ -2449,163 +1235,159 @@
        * @param {function} iteratee Iteratee function.
        * @return {TreeNodes} Resulting nodes.
        */
-
     }, {
       key: "recurseDown",
       value: function recurseDown$1(iteratee) {
         recurseDown(this, iteratee);
-
         return this;
       }
+
       /**
        * Remove a node.
        *
        * @param {TreeNode} node Node object.
        * @return {TreeNodes} Resulting nodes.
        */
-
     }, {
       key: "remove",
       value: function remove(node) {
-        _.remove(this, {
+        _remove(this, {
           id: node.id
         });
-
-        _.invoke(this._context, 'markDirty');
-
+        invoke(this._context, 'markDirty');
         this.indicesDirty = true;
         this.applyChanges();
         return this;
       }
+
       /**
        * Query for all soft-removed nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "removed",
       value: function removed(full) {
         return baseStatePredicate.call(this, 'removed', full);
       }
+
       /**
        * Restore nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "restore",
       value: function restore() {
         return this.invoke('restore');
       }
+
       /**
        * Restore (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "restoreDeep",
       value: function restoreDeep() {
         return this.invokeDeep('restore');
       }
+
       /**
        * Select nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "select",
       value: function select() {
         return this.invoke('select');
       }
+
       /**
        * Query for all selectable nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "selectable",
       value: function selectable(full) {
         return baseStatePredicate.call(this, 'selectable', full);
       }
+
       /**
        * Select (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "selectDeep",
       value: function selectDeep() {
         return this.invokeDeep('select');
       }
+
       /**
        * Query for all selected nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "selected",
       value: function selected(full) {
         return baseStatePredicate.call(this, 'selected', full);
       }
+
       /**
        * Removes the first node.
        *
        * @param {TreeNode} node Node object.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "shift",
       value: function shift(node) {
         var result = _get(_getPrototypeOf(TreeNodes.prototype), "shift", this).call(this, node);
-
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
       }
+
       /**
        * Show nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "show",
       value: function show() {
         return this.invoke('show');
       }
+
       /**
        * Show (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "showDeep",
       value: function showDeep() {
         return this.invokeDeep('show');
       }
+
       /**
        * Soft-remove nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "softRemove",
       value: function softRemove() {
         return this.invoke('softRemove');
       }
+
       /**
        * Sorts all TreeNode objects in this collection.
        *
@@ -2614,38 +1396,32 @@
        * @param {string|function} sorter Sort function or property name.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "sortBy",
-      value: function sortBy(sorter) {
+      value: function sortBy$1(sorter) {
         var _this4 = this;
+        sorter = sorter || this._tree.config.sort;
 
-        sorter = sorter || this._tree.config.sort; // Only apply sort if one provided
-
+        // Only apply sort if one provided
         if (sorter) {
           this.batch();
-
-          var sorted = _.sortBy(this, sorter);
-
+          var sorted = sortBy(this, sorter);
           this.length = 0;
-
-          _.each(sorted, function (node) {
+          each(sorted, function (node) {
             _this4.push(node);
           });
-
           this.indicesDirty = true;
           this.end();
         }
-
         return this;
       }
+
       /**
        * Sorts (deeply) all nodes in this collection.
        *
        * @param {function} comparator [description]
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "sortDeep",
       value: function sortDeep(comparator) {
@@ -2657,6 +1433,7 @@
         });
         return this;
       }
+
       /**
        * Changes array contents by removing existing nodes and/or adding new nodes.
        *
@@ -2665,16 +1442,15 @@
        * @param {TreeNode} ...nodes One or more nodes.
        * @return {array} Array of deleted elements.
        */
-
     }, {
       key: "splice",
       value: function splice() {
         var result = _get(_getPrototypeOf(TreeNodes.prototype), "splice", this).apply(this, arguments);
-
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
       }
+
       /**
        * Set nodes' state values.
        *
@@ -2682,12 +1458,12 @@
        * @param {boolean} newVal New value, if setting.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "state",
       value: function state() {
         return this.invoke('state', arguments);
       }
+
       /**
        * Set (deeply) nodes' state values.
        *
@@ -2695,12 +1471,12 @@
        * @param {boolean} newVal New value, if setting.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "stateDeep",
       value: function stateDeep() {
         return this.invokeDeep('state', arguments);
       }
+
       /**
        * Swaps two node positions.
        *
@@ -2708,99 +1484,92 @@
        * @param {TreeNode} node2 Node 2.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "swap",
       value: function swap(node1, node2) {
         this._tree.batch();
-
         var n1Context = node1.context();
-        var n2Context = node2.context(); // Cache. Note: n2Index is only usable once
+        var n2Context = node2.context();
 
+        // Cache. Note: n2Index is only usable once
         var n1Index = n1Context.indexOf(node1);
-        var n2Index = n2Context.indexOf(node2); // If contexts match, we can simply re-assign them
+        var n2Index = n2Context.indexOf(node2);
 
+        // If contexts match, we can simply re-assign them
         if (n1Context === n2Context) {
           this[n1Index] = node2;
-          this[n2Index] = node1; // Emit move events for each node
+          this[n2Index] = node1;
 
+          // Emit move events for each node
           this._tree.emit('node.moved', node1, n1Context, n1Index, n2Context, n2Index);
-
           this._tree.emit('node.moved', node2, n2Context, n2Index, n1Context, n1Index);
         } else {
           // Otherwise, we have to move between contexts
           // Move node 1 to node 2's index
-          n1Context.move(n1Index, n2Context.indexOf(node2), n2Context); // Move node 2 to node 1s original index
+          n1Context.move(n1Index, n2Context.indexOf(node2), n2Context);
 
+          // Move node 2 to node 1s original index
           n2Context.move(n2Context.indexOf(node2), n1Index, n1Context);
         }
-
         this.indicesDirty = true;
-
         this._tree.end();
-
         this._tree.emit('node.swapped', node1, n1Context, n1Index, node2, n2Context, n2Index);
-
         return this;
       }
+
       /**
        * Get the tree instance.
        *
        * @return {InspireTree} Tree instance.
        */
-
     }, {
       key: "tree",
       value: function tree() {
         return this._tree;
       }
+
       /**
        * Get a native node Array.
        *
        * @return {array} Array of node objects.
        */
-
     }, {
       key: "toArray",
       value: function toArray() {
         var array = [];
-
-        _.each(this, function (node) {
+        each(this, function (node) {
           array.push(node.toObject());
         });
-
         return array;
       }
+
       /**
        * Adds a node to beginning of the collection.
        *
        * @param {TreeNode} node Node object.
        * @return {number} New length of collection.
        */
-
     }, {
       key: "unshift",
       value: function unshift(node) {
         var result = _get(_getPrototypeOf(TreeNodes.prototype), "unshift", this).call(this, node);
-
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
       }
+
       /**
        * Query for all visible nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "visible",
       value: function visible(full) {
         return baseStatePredicate.call(this, 'visible', full);
       }
     }]);
-
     return TreeNodes;
   }(_extendableBuiltin(Array));
 
@@ -2814,23 +1583,21 @@
    * @param {function} iteratee Iteratee function
    * @return {boolean} Cease iteration.
    */
-
   function recurseDown(obj, iteratee) {
     var res;
-
     if (obj instanceof TreeNodes) {
-      _.each(obj, function (node) {
+      each(obj, function (node) {
         res = recurseDown(node, iteratee);
         return res;
       });
     } else if (obj instanceof TreeNode) {
-      res = iteratee(obj); // Recurse children
+      res = iteratee(obj);
 
+      // Recurse children
       if (res !== false && obj.hasChildren()) {
         res = recurseDown(obj.children, iteratee);
       }
     }
-
     return res;
   }
 
@@ -2841,21 +1608,19 @@
    * @param {object} promise Promise-like object.
    * @returns {Promise} Promise
    */
-
   function standardizePromise(promise) {
-    return new es6Promise_1(function (resolve, reject) {
-      if (!_.isObject(promise)) {
+    return new Promise(function (resolve, reject) {
+      if (!isObject(promise)) {
         return reject(new Error('Invalid Promise'));
       }
-
-      if (_.isFunction(promise.then)) {
+      if (isFunction(promise.then)) {
         promise.then(resolve);
-      } // jQuery promises use "error"
+      }
 
-
-      if (_.isFunction(promise.error)) {
+      // jQuery promises use "error"
+      if (isFunction(promise.error)) {
         promise.error(reject);
-      } else if (_.isFunction(promise["catch"])) {
+      } else if (isFunction(promise["catch"])) {
         promise["catch"](reject);
       }
     });
@@ -2871,20 +1636,18 @@
    * @param {array} excludeKeys Keys to exclude, if any
    * @return {object} Cloned ITree.
    */
-
   function cloneItree(itree, excludeKeys) {
     var clone = {};
-    excludeKeys = _.castArray(excludeKeys);
+    excludeKeys = castArray(excludeKeys);
     excludeKeys.push('ref');
-
-    _.each(itree, function (v, k) {
-      if (!_.includes(excludeKeys, k)) {
-        clone[k] = _.cloneDeep(v);
+    each(itree, function (v, k) {
+      if (!includes(excludeKeys, k)) {
+        clone[k] = cloneDeep(v);
       }
     });
-
     return clone;
   }
+
   /**
    * Get or set a state value.
    *
@@ -2897,57 +1660,47 @@
    * @param {boolean} val New value, if setting.
    * @return {boolean} Current value on read, old value on set.
    */
-
-
   function baseState(node, property, val) {
     var currentVal = node.itree.state[property];
-
     if (typeof val !== 'undefined' && currentVal !== val) {
       // Update values
       node.itree.state[property] = val;
-
       if (property !== 'rendered') {
         node.markDirty();
-      } // Emit an event
+      }
 
-
+      // Emit an event
       node._tree.emit('node.state.changed', node, property, currentVal, val);
     }
-
     return currentVal;
   }
+
   /**
    * Represents a singe node object within the tree.
    *
    * @param {TreeNode} source TreeNode to copy.
    * @return {TreeNode} Tree node object.
    */
-
-
-  var TreeNode =
-  /*#__PURE__*/
-  function () {
+  var TreeNode = /*#__PURE__*/function () {
     function TreeNode(tree, source, excludeKeys) {
       var _this = this;
-
       _classCallCheck(this, TreeNode);
-
       this._tree = tree;
-
       if (source instanceof TreeNode) {
-        excludeKeys = _.castArray(excludeKeys);
-        excludeKeys.push('_tree'); // Iterate manually for better perf
+        excludeKeys = castArray(excludeKeys);
+        excludeKeys.push('_tree');
 
-        _.each(source, function (value, key) {
+        // Iterate manually for better perf
+        each(source, function (value, key) {
           // Skip properties
-          if (!_.includes(excludeKeys, key)) {
-            if (_.isObject(value)) {
+          if (!includes(excludeKeys, key)) {
+            if (isObject(value)) {
               if (value instanceof TreeNodes) {
                 _this[key] = value.clone();
               } else if (key === 'itree') {
                 _this[key] = cloneItree(value);
               } else {
-                _this[key] = _.cloneDeep(value);
+                _this[key] = cloneDeep(value);
               }
             } else {
               // Copy primitives
@@ -2957,151 +1710,141 @@
         });
       }
     }
+
     /**
      * Add a child to this node.
      *
      * @param {object} child Node object.
      * @return {TreeNode} Node object.
      */
-
-
     _createClass(TreeNode, [{
       key: "addChild",
       value: function addChild(child) {
-        if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
+        if (isArray(this.children) || !isArrayLike(this.children)) {
           this.children = new TreeNodes(this._tree);
           this.children._context = this;
         }
-
         return this.children.addNode(child);
       }
+
       /**
        * Add multiple children to this node.
        *
        * @param {object} children Array of nodes.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "addChildren",
       value: function addChildren(children) {
         var _this2 = this;
-
         var nodes = new TreeNodes(this._tree);
-
-        if (_.isArray(this.children) || !_.isArrayLike(this.children)) {
+        if (isArray(this.children) || !isArrayLike(this.children)) {
           this.children = new TreeNodes(this._tree);
           this.children._context = this;
         }
-
         this.children.batch();
-
-        _.each(children, function (child) {
+        each(children, function (child) {
           nodes.push(_this2.addChild(child));
         });
-
         this.children.end();
         return nodes;
       }
+
       /**
        * Ensure this node allows dynamic children.
        *
        * @private
        * @return {boolean} True if tree/node allows dynamic children.
        */
-
     }, {
       key: "allowDynamicLoad",
       value: function allowDynamicLoad() {
-        return this._tree.isDynamic && (_.isArrayLike(this.children) || this.children === true);
+        return this._tree.isDynamic && (isArrayLike(this.children) || this.children === true);
       }
+
       /**
        * Assign source object(s) to this node.
        *
        * @param {object} source Source object(s)
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "assign",
       value: function assign() {
-        _.assign.apply(_, [this].concat(Array.prototype.slice.call(arguments)));
-
+        _assign.apply(void 0, [this].concat(Array.prototype.slice.call(arguments)));
         this.markDirty();
         this.context().applyChanges();
         return this;
       }
+
       /**
        * Check if node available.
        *
        * @return {boolean} True if available.
        */
-
     }, {
       key: "available",
       value: function available() {
         return !this.hidden() && !this.removed();
       }
+
       /**
        * Blur focus from this node.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "blur",
       value: function blur() {
         this.state('editing', false);
         return baseStateChange('focused', false, 'blurred', this);
       }
+
       /**
        * Mark node as checked.
        *
        * @param {boolean} shallow Skip auto-checking children.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "check",
       value: function check(shallow) {
-        this._tree.batch(); // Will we automatically apply state changes to our children
+        this._tree.batch();
 
-
+        // Will we automatically apply state changes to our children
         var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
-        baseStateChange('checked', true, 'checked', this, deep); // Refresh parent
+        baseStateChange('checked', true, 'checked', this, deep);
 
+        // Refresh parent
         if (this.hasParent()) {
           this.getParent().refreshIndeterminateState();
         }
-
         this._tree.end();
-
         return this;
       }
+
       /**
        * Get whether this node is checked.
        *
        * @return {boolean} True if node checked.
        */
-
     }, {
       key: "checked",
       value: function checked() {
         return this.state('checked');
       }
+
       /**
        * Hide parents without any visible children.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "clean",
       value: function clean() {
         this.recurseUp(function (node) {
           if (node.hasParent()) {
             var parent = node.getParent();
-
             if (!parent.hasVisibleChildren()) {
               parent.hide();
             }
@@ -3109,51 +1852,52 @@
         });
         return this;
       }
+
       /**
        * Clone this node.
        *
        * @param {array} excludeKeys Keys to exclude from the clone.
        * @return {TreeNode} New node object.
        */
-
     }, {
       key: "clone",
       value: function clone(excludeKeys) {
         return new TreeNode(this._tree, this, excludeKeys);
       }
+
       /**
        * Collapse this node.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "collapse",
       value: function collapse() {
         return baseStateChange('collapsed', true, 'collapsed', this);
       }
+
       /**
        * Get whether this node is collapsed.
        *
        * @return {boolean} True if node collapsed.
        */
-
     }, {
       key: "collapsed",
       value: function collapsed() {
         return this.state('collapsed');
       }
+
       /**
        * Get the containing context. If no parent present, the root context is returned.
        *
        * @return {TreeNodes} Node array object.
        */
-
     }, {
       key: "context",
       value: function context() {
         return this.hasParent() ? this.getParent().children : this._tree.model;
       }
+
       /**
        * Copy node to another tree instance.
        *
@@ -3162,22 +1906,19 @@
        * @param {boolean} includeState Include itree.state object.
        * @return {object} Property "to" for defining destination.
        */
-
     }, {
       key: "copy",
       value: function copy(dest, hierarchy, includeState) {
-        if (!dest || !_.isFunction(dest.addNode)) {
+        if (!dest || !isFunction(dest.addNode)) {
           throw new Error('Destination must be an Inspire Tree instance.');
         }
-
         var node = this;
-
         if (hierarchy) {
           node = node.copyHierarchy(false, includeState);
         }
-
-        return dest.addNode(_.cloneDeep(node.toObject(false, includeState)));
+        return dest.addNode(cloneDeep(node.toObject(false, includeState)));
       }
+
       /**
        * Copy all parents of a node.
        *
@@ -3185,48 +1926,43 @@
        * @param {boolean} includeState Include itree.state object.
        * @return {TreeNode} Root node object with hierarchy.
        */
-
     }, {
       key: "copyHierarchy",
       value: function copyHierarchy(excludeNode, includeState) {
         var nodes = [];
-        var parents = this.getParents(); // Remove old hierarchy data
+        var parents = this.getParents();
 
-        _.each(parents, function (node) {
+        // Remove old hierarchy data
+        each(parents, function (node) {
           nodes.push(node.toObject(excludeNode, includeState));
         });
-
         parents = nodes.reverse();
-
         if (!excludeNode) {
-          var clone = this.toObject(true, includeState); // Filter out hidden children
+          var clone = this.toObject(true, includeState);
 
+          // Filter out hidden children
           if (this.hasChildren()) {
             clone.children = this.children.filterBy(function (n) {
               return !n.state('hidden');
             }).toArray();
             clone.children._context = clone;
           }
-
           nodes.push(clone);
         }
-
         var hierarchy = nodes[0];
         var l = nodes.length;
         var pointer = hierarchy;
-
-        _.each(nodes, function (parent, key) {
+        each(nodes, function (parent, key) {
           var children = [];
-
           if (key + 1 < l) {
             children.push(nodes[key + 1]);
             pointer.children = children;
             pointer = pointer.children[0];
           }
         });
-
         return objectToNode(this._tree, hierarchy);
       }
+
       /**
        * Deselect this node.
        *
@@ -3236,68 +1972,61 @@
        * @param {boolean} shallow Skip auto-deselecting children.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "deselect",
       value: function deselect(shallow) {
         if (this.selected() && (!this._tree.config.selection.require || this._tree.selected().length > 1)) {
-          this.context().batch(); // Will we apply this state change to our children?
+          this.context().batch();
 
+          // Will we apply this state change to our children?
           var deep = !shallow && this._tree.config.selection.autoSelectChildren;
           baseStateChange('selected', false, 'deselected', this, deep);
           this.context().end();
         }
-
         return this;
       }
+
       /**
        * Get whether node editable. Required editing.edit to be enable via config.
        *
        * @return {boolean} True if node editable.
        */
-
     }, {
       key: "editable",
       value: function editable() {
         return this._tree.config.editable && this._tree.config.editing.edit && this.state('editable');
       }
+
       /**
        * Get whether node is currently in edit mode.
        *
        * @return {boolean} True if node in edit mode.
        */
-
     }, {
       key: "editing",
       value: function editing() {
         return this.state('editing');
       }
+
       /**
        * Expand this node.
        *
        * @return {Promise<TreeNode>} Promise resolved on successful load and expand of children.
        */
-
     }, {
       key: "expand",
       value: function expand() {
         var _this3 = this;
-
-        return new es6Promise_1(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           var allow = _this3.hasChildren() || _this3._tree.isDynamic && _this3.children === true;
-
           if (allow && (_this3.collapsed() || _this3.hidden())) {
             _this3.state('collapsed', false);
-
             _this3.state('hidden', false);
-
             _this3._tree.emit('node.expanded', _this3);
-
             if (_this3._tree.isDynamic && _this3.children === true) {
               _this3.loadChildren().then(resolve)["catch"](reject);
             } else {
               _this3.context().applyChanges();
-
               resolve(_this3);
             }
           } else {
@@ -3306,23 +2035,23 @@
           }
         });
       }
+
       /**
        * Get whether node expanded.
        *
        * @return {boolean} True if expanded.
        */
-
     }, {
       key: "expanded",
       value: function expanded() {
         return !this.collapsed();
       }
+
       /**
        * Expand parent nodes.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "expandParents",
       value: function expandParents() {
@@ -3331,96 +2060,90 @@
             node.expand();
           });
         }
-
         return this;
       }
+
       /**
        * Focus a node without changing its selection.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "focus",
       value: function focus() {
         if (!this.focused()) {
           // Batch selection changes
           this._tree.batch();
-
           this._tree.blurDeep();
+          this.state('focused', true);
 
-          this.state('focused', true); // Emit this event
+          // Emit this event
+          this._tree.emit('node.focused', this);
 
-          this._tree.emit('node.focused', this); // Mark hierarchy dirty and apply
-
-
+          // Mark hierarchy dirty and apply
           this.markDirty();
-
           this._tree.end();
         }
-
         return this;
       }
+
       /**
        * Get whether this node is focused.
        *
        * @return {boolean} True if node focused.
        */
-
     }, {
       key: "focused",
       value: function focused() {
         return this.state('focused');
       }
+
       /**
        * Get children for this node. If no children exist, an empty TreeNodes
        * collection is returned for safe chaining.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "getChildren",
       value: function getChildren() {
         return this.hasChildren() ? this.children : new TreeNodes(this._tree);
       }
+
       /**
        * Get the immediate parent, if any.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "getParent",
       value: function getParent() {
         return this.itree.parent;
       }
+
       /**
        * Get parent nodes. Excludes any siblings.
        *
        * @return {TreeNodes} Node objects.
        */
-
     }, {
       key: "getParents",
       value: function getParents() {
         var parents = new TreeNodes(this._tree);
-
         if (this.hasParent()) {
           this.getParent().recurseUp(function (node) {
             parents.push(node);
           });
         }
-
         return parents;
       }
+
       /**
        * Get a textual hierarchy for a given node. An array
        * of text from this node's root ancestor to the given node.
        *
        * @return {array} Array of node texts.
        */
-
     }, {
       key: "getTextualHierarchy",
       value: function getTextualHierarchy() {
@@ -3430,13 +2153,13 @@
         });
         return paths;
       }
+
       /**
        * Get whether the given node is an ancestor of this node.
        *
        * @param {TreeNode} node Node object.
        * @return {boolean} True if node is an ancestor or the given node
        */
-
     }, {
       key: "hasAncestor",
       value: function hasAncestor(node) {
@@ -3446,178 +2169,174 @@
         });
         return hasAncestor;
       }
+
       /**
        * Get whether node has any children.
        *
        * @return {boolean} True if has loaded children.
        */
-
     }, {
       key: "hasChildren",
       value: function hasChildren() {
-        return _.isArrayLike(this.children) && this.children.length > 0;
+        return isArrayLike(this.children) && this.children.length > 0;
       }
+
       /**
        * Get whether children have been loaded. Will always be true for non-dynamic nodes.
        *
        * @return {boolean} True if we've attempted to load children.
        */
-
     }, {
       key: "hasLoadedChildren",
       value: function hasLoadedChildren() {
-        return _.isArrayLike(this.children);
+        return isArrayLike(this.children);
       }
+
       /**
        * Get whether node has any children, or allows dynamic loading.
        *
        * @return {boolean} True if node has, or will have children.
        */
-
     }, {
       key: "hasOrWillHaveChildren",
       value: function hasOrWillHaveChildren() {
-        return _.isArrayLike(this.children) ? Boolean(this.children.length) : this.allowDynamicLoad();
+        return isArrayLike(this.children) ? Boolean(this.children.length) : this.allowDynamicLoad();
       }
+
       /**
        * Get whether node has a parent.
        *
        * @return {boolean} True if has a parent.
        */
-
     }, {
       key: "hasParent",
       value: function hasParent() {
         return Boolean(this.itree.parent);
       }
+
       /**
        * Get whether node has any visible children.
        *
        * @return {boolean} True if children are visible.
        */
-
     }, {
       key: "hasVisibleChildren",
       value: function hasVisibleChildren() {
         var hasVisibleChildren = false;
-
         if (this.hasChildren()) {
           hasVisibleChildren = this.children.filterBy('available').length > 0;
         }
-
         return hasVisibleChildren;
       }
+
       /**
        * Hide this node.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "hide",
       value: function hide() {
-        var node = baseStateChange('hidden', true, 'hidden', this); // Update children
+        var node = baseStateChange('hidden', true, 'hidden', this);
 
+        // Update children
         if (node.hasChildren()) {
           node.children.hide();
         }
-
         return node;
       }
+
       /**
        * Get whether this node is hidden.
        *
        * @return {boolean} True if node hidden.
        */
-
     }, {
       key: "hidden",
       value: function hidden() {
         return this.state('hidden');
       }
+
       /**
        * Get a "path" of indices, values which map this node's location within all parent contexts.
        *
        * @return {string} Index path
        */
-
     }, {
       key: "indexPath",
       value: function indexPath() {
         var indices = [];
         this.recurseUp(function (node) {
-          indices.push(_.indexOf(node.context(), node));
+          indices.push(indexOf(node.context(), node));
         });
         return indices.reverse().join('.');
       }
+
       /**
        * Get whether this node is indeterminate.
        *
        * @return {boolean} True if node indeterminate.
        */
-
     }, {
       key: "indeterminate",
       value: function indeterminate() {
         return this.state('indeterminate');
       }
+
       /**
        * Get whether this node is the first renderable in its context.
        *
        * @return {boolean} True if node is first renderable
        */
-
     }, {
       key: "isFirstRenderable",
       value: function isFirstRenderable() {
         return this === this.context().firstRenderableNode;
       }
+
       /**
        * Get whether this node is the last renderable in its context.
        *
        * @return {boolean} True if node is last renderable
        */
-
     }, {
       key: "isLastRenderable",
       value: function isLastRenderable() {
         return this === this.context().lastRenderableNode;
       }
+
       /**
        * Get whether this node is the only renderable in its context.
        *
        * @return {boolean} True if node is only renderable
        */
-
     }, {
       key: "isOnlyRenderable",
       value: function isOnlyRenderable() {
         return this.isFirstRenderable() && this.isLastRenderable();
       }
+
       /**
        * Find the last + deepest visible child of the previous sibling.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "lastDeepestVisibleChild",
       value: function lastDeepestVisibleChild() {
         var found;
-
         if (this.hasChildren() && !this.collapsed()) {
-          found = _.findLast(this.children, function (node) {
+          found = findLast(this.children, function (node) {
             return node.visible();
           });
           var res = found.lastDeepestVisibleChild();
-
           if (res) {
             found = res;
           }
         }
-
         return found;
       }
+
       /**
        * Initiate a dynamic load of children for a given node.
        *
@@ -3631,141 +2350,116 @@
        *
        * @return {Promise<TreeNodes>} Promise resolving children nodes.
        */
-
     }, {
       key: "loadChildren",
       value: function loadChildren() {
         var _this4 = this;
-
-        return new es6Promise_1(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           if (!_this4.allowDynamicLoad()) {
             return reject(new Error('Node does not have or support dynamic children.'));
           }
-
           _this4.state('loading', true);
-
           _this4.markDirty();
-
           _this4.context().applyChanges();
-
           var complete = function complete(nodes, totalNodes) {
             // A little type-safety for silly situations
-            if (!_.isArrayLike(nodes)) {
+            if (!isArrayLike(nodes)) {
               return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
             }
-
             _this4.context().batch();
-
             _this4.state('loading', false);
-
             var model = collectionToModel(_this4._tree, nodes, _this4);
-
-            if (_.isArrayLike(_this4.children)) {
+            if (isArrayLike(_this4.children)) {
               _this4.children = _this4.children.concat(model);
             } else {
               _this4.children = model;
             }
+            if (parseInt(totalNodes, 10) > nodes.length) {
+              _this4.children._pagination.total = parseInt(totalNodes, 10);
+            }
 
-            if (_.parseInt(totalNodes) > nodes.length) {
-              _this4.children._pagination.total = _.parseInt(totalNodes);
-            } // If using checkbox mode, share selection with newly loaded children
-
-
+            // If using checkbox mode, share selection with newly loaded children
             if (_this4._tree.config.selection.mode === 'checkbox' && _this4.selected()) {
               _this4.children.select();
             }
-
             _this4.markDirty();
-
             _this4.context().end();
-
             resolve(_this4.children);
-
             _this4._tree.emit('children.loaded', _this4);
           };
-
           var error = function error(err) {
             _this4.state('loading', false);
-
             _this4.children = new TreeNodes(_this4._tree);
             _this4.children._context = _this4;
-
             _this4.markDirty();
-
             _this4.context().applyChanges();
-
             reject(err);
-
             _this4._tree.emit('tree.loaderror', err);
           };
-
           var pagination = _this4._tree.constructor.isTreeNodes(_this4.children) ? _this4.children.pagination() : null;
+          var loader = _this4._tree.config.data(_this4, complete, error, pagination);
 
-          var loader = _this4._tree.config.data(_this4, complete, error, pagination); // Data loader is likely a promise
-
-
-          if (_.isObject(loader)) {
+          // Data loader is likely a promise
+          if (isObject(loader)) {
             standardizePromise(loader).then(complete)["catch"](error);
           }
         });
       }
+
       /**
        * Get whether this node is loading child data.
        *
        * @return {boolean} True if node's children are loading.
        */
-
     }, {
       key: "loading",
       value: function loading() {
         return this.state('loading');
       }
+
       /**
        * Load additional children.
        *
        * @param {Event} event Click or scroll event if DOM interaction triggered this call.
        * @return {Promise<TreeNodes>} Resolves with request results.
        */
-
     }, {
       key: "loadMore",
       value: function loadMore() {
         if (!this.children || this.children === true) {
-          return es6Promise_1.reject(new Error('Children have not yet been loaded.'));
+          return Promise.reject(new Error('Children have not yet been loaded.'));
         }
-
         return this.children.loadMore();
       }
+
       /**
        * Mark node as dirty. For some systems this assists with rendering tracking.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "markDirty",
       value: function markDirty() {
         if (!this.itree.dirty) {
           this.itree.dirty = true;
-
           if (this.hasParent()) {
             this.getParent().markDirty();
           }
         }
-
         return this;
       }
+
       /**
        * Get whether this node was matched during the last search.
        *
        * @return {boolean} True if node matched.
        */
-
     }, {
       key: "matched",
       value: function matched() {
         return this.state('matched');
       }
+
       /**
        * Find the next visible sibling of our ancestor. Continues
        * seeking up the tree until a valid node is found or we
@@ -3773,171 +2467,161 @@
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "nextVisibleAncestralSiblingNode",
       value: function nextVisibleAncestralSiblingNode() {
         var next;
-
         if (this.hasParent()) {
           var parent = this.getParent();
           next = parent.nextVisibleSiblingNode();
-
           if (!next) {
             next = parent.nextVisibleAncestralSiblingNode();
           }
         }
-
         return next;
       }
+
       /**
        * Find next visible child node.
        *
        * @return {TreeNode} Node object, if any.
        */
-
     }, {
       key: "nextVisibleChildNode",
       value: function nextVisibleChildNode() {
         var next;
-
         if (this.hasChildren()) {
-          next = _.find(this.children, function (child) {
+          next = find(this.children, function (child) {
             return child.visible();
           });
         }
-
         return next;
       }
+
       /**
        * Get the next visible node.
        *
        * @return {TreeNode} Node object if any.
        */
-
     }, {
       key: "nextVisibleNode",
       value: function nextVisibleNode() {
-        var next; // 1. Any visible children
+        var next;
 
-        next = this.nextVisibleChildNode(); // 2. Any Siblings
+        // 1. Any visible children
+        next = this.nextVisibleChildNode();
 
+        // 2. Any Siblings
         if (!next) {
           next = this.nextVisibleSiblingNode();
-        } // 3. Find sibling of ancestor(s)
+        }
 
-
+        // 3. Find sibling of ancestor(s)
         if (!next) {
           next = this.nextVisibleAncestralSiblingNode();
         }
-
         return next;
       }
+
       /**
        * Find the next visible sibling node.
        *
        * @return {TreeNode} Node object, if any.
        */
-
     }, {
       key: "nextVisibleSiblingNode",
       value: function nextVisibleSiblingNode() {
         var context = this.hasParent() ? this.getParent().children : this._tree.nodes();
-
-        var i = _.findIndex(context, {
+        var i = findIndex(context, {
           id: this.id
         });
-
-        return _.find(_.slice(context, i + 1), function (node) {
+        return find(slice(context, i + 1), function (node) {
           return node.visible();
         });
       }
+
       /**
        * Get pagination object for this tree node.
        *
        * @return {object} Pagination configuration object.
        */
-
     }, {
       key: "pagination",
       value: function pagination() {
-        return _.get(this, 'children._pagination');
+        return get(this, 'children._pagination');
       }
+
       /**
        * Find the previous visible node.
        *
        * @return {TreeNode} Node object, if any.
        */
-
     }, {
       key: "previousVisibleNode",
       value: function previousVisibleNode() {
-        var prev; // 1. Any Siblings
+        var prev;
 
-        prev = this.previousVisibleSiblingNode(); // 2. If that sibling has children though, go there
+        // 1. Any Siblings
+        prev = this.previousVisibleSiblingNode();
 
+        // 2. If that sibling has children though, go there
         if (prev && prev.hasChildren() && !prev.collapsed()) {
           prev = prev.lastDeepestVisibleChild();
-        } // 3. Parent
+        }
 
-
+        // 3. Parent
         if (!prev && this.hasParent()) {
           prev = this.getParent();
         }
-
         return prev;
       }
+
       /**
        * Find the previous visible sibling node.
        *
        * @return {TreeNode} Node object, if any.
        */
-
     }, {
       key: "previousVisibleSiblingNode",
       value: function previousVisibleSiblingNode() {
         var context = this.hasParent() ? this.getParent().children : this._tree.nodes();
-
-        var i = _.findIndex(context, {
+        var i = findIndex(context, {
           id: this.id
         });
-
-        return _.findLast(_.slice(context, 0, i), function (node) {
+        return findLast(slice(context, 0, i), function (node) {
           return node.visible();
         });
       }
+
       /**
        * Iterate down node and any children.
        *
        * @param {function} iteratee Iteratee function.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "recurseDown",
       value: function recurseDown$1(iteratee) {
         recurseDown(this, iteratee);
-
         return this;
       }
+
       /**
        * Iterate up a node and its parents.
        *
        * @param {function} iteratee Iteratee function.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "recurseUp",
       value: function recurseUp(iteratee) {
         var result = iteratee(this);
-
         if (result !== false && this.hasParent()) {
           this.getParent().recurseUp(iteratee);
         }
-
         return this;
       }
+
       /**
        * Update the indeterminate state of this node by scanning states of children.
        *
@@ -3946,13 +2630,11 @@
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "refreshIndeterminateState",
       value: function refreshIndeterminateState() {
         var oldValue = this.indeterminate();
         this.state('indeterminate', false);
-
         if (this.hasChildren()) {
           var childrenCount = this.children.length;
           var indeterminate = 0;
@@ -3961,101 +2643,99 @@
             if (n.checked()) {
               checked++;
             }
-
             if (n.indeterminate()) {
               indeterminate++;
             }
-          }); // Set selected if all children are
+          });
 
+          // Set selected if all children are
           if (checked === childrenCount) {
             baseStateChange('checked', true, 'checked', this);
           } else {
             baseStateChange('checked', false, 'unchecked', this);
-          } // Set indeterminate if any children are, or some children are selected
+          }
 
-
+          // Set indeterminate if any children are, or some children are selected
           if (!this.checked()) {
             this.state('indeterminate', indeterminate > 0 || childrenCount > 0 && checked > 0 && checked < childrenCount);
           }
         }
-
         if (this.hasParent()) {
           this.getParent().refreshIndeterminateState();
         }
-
         if (oldValue !== this.state('indeterminate')) {
           this.markDirty();
         }
-
         return this;
       }
+
       /**
        * Remove all current children and re-execute a loadChildren call.
        *
        * @return {Promise<TreeNodes>} Promise resolved on load.
        */
-
     }, {
       key: "reload",
       value: function reload() {
         var _this5 = this;
-
-        return new es6Promise_1(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           if (!_this5.allowDynamicLoad()) {
             return reject(new Error('Node or tree does not support dynamic children.'));
-          } // Reset children
+          }
 
+          // Reset children
+          _this5.children = true;
 
-          _this5.children = true; // Collapse
+          // Collapse
+          _this5.collapse();
 
-          _this5.collapse(); // Load and the proxy the promise
-
-
+          // Load and the proxy the promise
           _this5.loadChildren().then(resolve)["catch"](reject);
         });
       }
+
       /**
        * Remove a node from the tree.
        *
        * @param {boolean} includeState Include itree.state object.
        * @return {object} Removed tree node object.
        */
-
     }, {
       key: "remove",
       value: function remove() {
         var includeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
         // Cache parent before we remove the node
-        var parent = this.getParent(); // Remove self
+        var parent = this.getParent();
 
-        this.context().remove(this); // Refresh parent states
+        // Remove self
+        this.context().remove(this);
 
+        // Refresh parent states
         if (parent) {
           parent.refreshIndeterminateState();
           parent.markDirty();
         }
-
         var pagination = parent ? parent.pagination() : this._tree.pagination();
-        pagination.total--; // Export/event
+        pagination.total--;
 
+        // Export/event
         var exported = this.toObject(false, includeState);
-
         this._tree.emit('node.removed', exported, parent);
-
         this.context().applyChanges();
         return exported;
       }
+
       /**
        * Get whether this node is soft-removed.
        *
        * @return {boolean} True if node soft-removed.
        */
-
     }, {
       key: "removed",
       value: function removed() {
         return this.state('removed');
       }
+
       /**
        * Get whether this node can be "rendered" when the context is.
        * Hidden and removed nodes may still be included in the DOM,
@@ -4063,12 +2743,12 @@
        *
        * @return {boolean} If not hidden or removed
        */
-
     }, {
       key: "renderable",
       value: function renderable() {
         return !this.hidden() && !this.removed();
       }
+
       /**
        * Get whether this node has been rendered.
        *
@@ -4077,83 +2757,79 @@
        *
        * @return {boolean} True if node rendered.
        */
-
     }, {
       key: "rendered",
       value: function rendered() {
         return this.state('rendered');
       }
+
       /**
        * Restore state if soft-removed.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "restore",
       value: function restore() {
         return baseStateChange('removed', false, 'restored', this);
       }
+
       /**
        * Select this node.
        *
        * @param {boolean} shallow Skip auto-selecting children.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "select",
       value: function select(shallow) {
         if (!this.selected() && this.selectable()) {
           // Batch selection changes
           this._tree.batch();
-
           if (this._tree.canAutoDeselect()) {
             var oldVal = this._tree.config.selection.require;
             this._tree.config.selection.require = false;
-
             this._tree.deselectDeep();
-
             this._tree.config.selection.require = oldVal;
-          } // Will we apply this state change to our children?
+          }
 
-
+          // Will we apply this state change to our children?
           var deep = !shallow && this._tree.config.selection.autoSelectChildren;
-          baseStateChange('selected', true, 'selected', this, deep); // Cache as the last selected node
+          baseStateChange('selected', true, 'selected', this, deep);
 
-          this._tree._lastSelectedNode = this; // Mark hierarchy dirty and apply
+          // Cache as the last selected node
+          this._tree._lastSelectedNode = this;
 
+          // Mark hierarchy dirty and apply
           this.markDirty();
-
           this._tree.end();
         }
-
         return this;
       }
+
       /**
        * Get whether node selectable.
        *
        * @return {boolean} True if node selectable.
        */
-
     }, {
       key: "selectable",
       value: function selectable() {
         var allow = this._tree.config.selection.allow(this);
-
         return typeof allow === 'boolean' ? allow : this.state('selectable');
       }
+
       /**
        * Get whether this node is selected.
        *
        * @return {boolean} True if node selected.
        */
-
     }, {
       key: "selected",
       value: function selected() {
         return this.state('selected');
       }
+
       /**
        * Set a root property on this node.
        *
@@ -4161,7 +2837,6 @@
        * @param {*} value New value.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "set",
       value: function set(property, value) {
@@ -4170,17 +2845,18 @@
         this.context().applyChanges();
         return this;
       }
+
       /**
        * Show this node.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "show",
       value: function show() {
         return baseStateChange('hidden', false, 'shown', this);
       }
+
       /**
        * Mark this node as "removed" without actually removing it.
        *
@@ -4188,12 +2864,12 @@
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "softRemove",
       value: function softRemove() {
         return baseStateChange('removed', true, 'softremoved', this, 'softRemove');
       }
+
       /**
        * Get or set a state value.
        *
@@ -4204,26 +2880,22 @@
        * @param {boolean} val New value, if setting.
        * @return {boolean|object} Old state object, or old value if property name used.
        */
-
     }, {
       key: "state",
       value: function state(obj, val) {
         var _this6 = this;
-
-        if (_.isString(obj)) {
+        if (isString(obj)) {
           return baseState(this, obj, val);
         }
-
         this.context().batch();
         var oldState = {};
-
-        _.each(obj, function (value, prop) {
+        each(obj, function (value, prop) {
           oldState[prop] = baseState(_this6, prop, value);
         });
-
         this.context().end();
         return oldState;
       }
+
       /**
        * Get or set multiple state values to a single value.
        *
@@ -4231,63 +2903,59 @@
        * @param {boolean} newVal New value, if setting.
        * @return {Array} Array of state booleans
        */
-
     }, {
       key: "states",
       value: function states(names, newVal) {
         var _this7 = this;
-
         var results = [];
         this.context().batch();
-
-        _.each(names, function (name) {
+        each(names, function (name) {
           results.push(_this7.state(name, newVal));
         });
-
         this.context().end();
         return results;
       }
+
       /**
        * Swap position with the given node.
        *
        * @param {TreeNode} node Node.
        * @return {TreeNode} Node objects.
        */
-
     }, {
       key: "swap",
       value: function swap(node) {
         this.context().swap(this, node);
         return this;
       }
+
       /**
        * Toggle checked state.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "toggleCheck",
       value: function toggleCheck() {
         return this.checked() ? this.uncheck() : this.check();
       }
+
       /**
        * Toggle collapsed state.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "toggleCollapse",
       value: function toggleCollapse() {
         return this.collapsed() ? this.expand() : this.collapse();
       }
+
       /**
        * Toggle editing state.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "toggleEditing",
       value: function toggleEditing() {
@@ -4296,17 +2964,18 @@
         this.context().applyChanges();
         return this;
       }
+
       /**
        * Toggle selected state.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "toggleSelect",
       value: function toggleSelect() {
         return this.selected() ? this.deselect() : this.select();
       }
+
       /**
        * Export this node as a native Object.
        *
@@ -4314,101 +2983,95 @@
        * @param {boolean} includeState Include itree.state object.
        * @return {object} Node object.
        */
-
     }, {
       key: "toObject",
       value: function toObject() {
         var _this8 = this;
-
         var excludeChildren = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
         var includeState = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
         var exported = {};
+        var keys = pull(Object.keys(this), '_tree', 'children', 'itree');
 
-        var keys = _.pull(Object.keys(this), '_tree', 'children', 'itree'); // Map keys
-
-
-        _.each(keys, function (keyName) {
+        // Map keys
+        each(keys, function (keyName) {
           exported[keyName] = _this8[keyName];
-        }); // Copy over whitelisted itree data
+        });
+
+        // Copy over whitelisted itree data
         // Excludes internal-use junk like parent, dirty, ref
-
-
         var itree = exported.itree = {};
         itree.a = this.itree.a;
         itree.icon = this.itree.icon;
         itree.li = this.itree.li;
-
         if (includeState) {
           itree.state = this.itree.state;
-        } // If including children, export them
-
-
-        if (!excludeChildren && this.hasChildren() && _.isFunction(this.children.toArray)) {
-          exported.children = this.children.toArray();
         }
 
+        // If including children, export them
+        if (!excludeChildren && this.hasChildren() && isFunction(this.children.toArray)) {
+          exported.children = this.children.toArray();
+        }
         return exported;
       }
+
       /**
        * Get the text content of this tree node.
        *
        * @return {string} Text content.
        */
-
     }, {
       key: "toString",
       value: function toString() {
         return this.text;
       }
+
       /**
        * Get the tree this node ultimately belongs to.
        *
        * @return {InspireTree} Tree instance.
        */
-
     }, {
       key: "tree",
       value: function tree() {
         return this.context().tree();
       }
+
       /**
        * Uncheck this node.
        *
        * @param {boolean} shallow Skip auto-unchecking children.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "uncheck",
       value: function uncheck(shallow) {
-        this._tree.batch(); // Will we apply this state change to our children?
+        this._tree.batch();
 
-
+        // Will we apply this state change to our children?
         var deep = !shallow && this._tree.config.checkbox.autoCheckChildren;
-        baseStateChange('checked', false, 'unchecked', this, deep); // Reset indeterminate state
+        baseStateChange('checked', false, 'unchecked', this, deep);
 
-        this.state('indeterminate', false); // Refresh our parent
+        // Reset indeterminate state
+        this.state('indeterminate', false);
 
+        // Refresh our parent
         if (this.hasParent()) {
           this.getParent().refreshIndeterminateState();
         }
-
         this._tree.end();
-
         return this;
       }
+
       /**
        * Get whether node is visible to a user. Returns false
        * if it's hidden, or if any ancestor is hidden or collapsed.
        *
        * @return {boolean} Whether visible.
        */
-
     }, {
       key: "visible",
       value: function visible() {
         var isVisible = true;
-
         if (this.hidden() || this.removed() || this._tree.usesNativeDOM && !this.rendered()) {
           isVisible = false;
         } else if (this.hasParent()) {
@@ -4420,102 +3083,76 @@
         } else {
           isVisible = true;
         }
-
         return isVisible;
       }
     }]);
-
     return TreeNode;
   }();
 
-  var rngBrowser = createCommonjsModule(function (module) {
-  // Unique ID creation requires a high quality random # generator.  In the
-  // browser this is a little complicated due to unknown quality of Math.random()
-  // and inconsistent support for the `crypto` API.  We do the best we can via
-  // feature-detection
+  // Unique ID creation requires a high quality random # generator. In the browser we therefore
+  // require the crypto API and do not support built-in fallback to lower quality random number
+  // generators (like Math.random()).
+  let getRandomValues;
+  const rnds8 = new Uint8Array(16);
+  function rng() {
+    // lazy load so that environments that need to polyfill have a chance to do so
+    if (!getRandomValues) {
+      // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation.
+      getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
 
-  // getRandomValues needs to be invoked in a context where "this" is a Crypto
-  // implementation. Also, find the complete implementation of crypto on IE11.
-  var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto)) ||
-                        (typeof(msCrypto) != 'undefined' && typeof window.msCrypto.getRandomValues == 'function' && msCrypto.getRandomValues.bind(msCrypto));
-
-  if (getRandomValues) {
-    // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
-    var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
-
-    module.exports = function whatwgRNG() {
-      getRandomValues(rnds8);
-      return rnds8;
-    };
-  } else {
-    // Math.random()-based (RNG)
-    //
-    // If all else fails, use Math.random().  It's fast, but is of unspecified
-    // quality.
-    var rnds = new Array(16);
-
-    module.exports = function mathRNG() {
-      for (var i = 0, r; i < 16; i++) {
-        if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-        rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+      if (!getRandomValues) {
+        throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
       }
+    }
 
-      return rnds;
-    };
+    return getRandomValues(rnds8);
   }
-  });
 
   /**
    * Convert array of 16 byte values to UUID string format of the form:
    * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
    */
-  var byteToHex = [];
-  for (var i = 0; i < 256; ++i) {
-    byteToHex[i] = (i + 0x100).toString(16).substr(1);
+
+  const byteToHex = [];
+
+  for (let i = 0; i < 256; ++i) {
+    byteToHex.push((i + 0x100).toString(16).slice(1));
   }
 
-  function bytesToUuid(buf, offset) {
-    var i = offset || 0;
-    var bth = byteToHex;
-    // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
-    return ([bth[buf[i++]], bth[buf[i++]], 
-  	bth[buf[i++]], bth[buf[i++]], '-',
-  	bth[buf[i++]], bth[buf[i++]], '-',
-  	bth[buf[i++]], bth[buf[i++]], '-',
-  	bth[buf[i++]], bth[buf[i++]], '-',
-  	bth[buf[i++]], bth[buf[i++]],
-  	bth[buf[i++]], bth[buf[i++]],
-  	bth[buf[i++]], bth[buf[i++]]]).join('');
+  function unsafeStringify(arr, offset = 0) {
+    // Note: Be careful editing this code!  It's been tuned for performance
+    // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+    return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
   }
 
-  var bytesToUuid_1 = bytesToUuid;
+  const randomUUID = typeof crypto !== 'undefined' && crypto.randomUUID && crypto.randomUUID.bind(crypto);
+  var native = {
+    randomUUID
+  };
 
   function v4(options, buf, offset) {
-    var i = buf && offset || 0;
-
-    if (typeof(options) == 'string') {
-      buf = options === 'binary' ? new Array(16) : null;
-      options = null;
+    if (native.randomUUID && !buf && !options) {
+      return native.randomUUID();
     }
+
     options = options || {};
+    const rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
 
-    var rnds = options.random || (options.rng || rngBrowser)();
+    rnds[6] = rnds[6] & 0x0f | 0x40;
+    rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
 
-    // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-    rnds[6] = (rnds[6] & 0x0f) | 0x40;
-    rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-    // Copy bytes to buffer, if provided
     if (buf) {
-      for (var ii = 0; ii < 16; ++ii) {
-        buf[i + ii] = rnds[ii];
+      offset = offset || 0;
+
+      for (let i = 0; i < 16; ++i) {
+        buf[offset + i] = rnds[i];
       }
+
+      return buf;
     }
 
-    return buf || bytesToUuid_1(rnds);
+    return unsafeStringify(rnds);
   }
-
-  var v4_1 = v4;
 
   /**
    * Parse a raw object into a TreeNode used within a tree.
@@ -4529,16 +3166,14 @@
    * @param {object} parent Pointer to parent object.
    * @return {object} Final object
    */
-
   function objectToNode(tree, object, parent) {
     // Create or type-ensure ID
-    object.id = object.id || v4_1();
-
+    object.id = object.id || v4();
     if (typeof object.id !== 'string' && typeof object.id !== 'number') {
       object.id = object.id.toString();
-    } // High-performance default assignments
+    }
 
-
+    // High-performance default assignments
     var itree = object.itree = object.itree || {};
     itree.icon = itree.icon || false;
     itree.dirty = false;
@@ -4546,13 +3181,15 @@
     li.attributes = li.attributes || {};
     var a = itree.a = itree.a || {};
     a.attributes = a.attributes || {};
-    var state = itree.state = itree.state || {}; // Enabled by default
+    var state = itree.state = itree.state || {};
 
+    // Enabled by default
     state.collapsed = typeof state.collapsed === 'boolean' ? state.collapsed : tree.defaultState.collapsed;
     state.selectable = typeof state.selectable === 'boolean' ? state.selectable : tree.defaultState.selectable;
     state.draggable = typeof state.draggable === 'boolean' ? state.draggable : tree.defaultState.draggable;
-    state['drop-target'] = typeof state['drop-target'] === 'boolean' ? state['drop-target'] : tree.defaultState['drop-target']; // Disabled by default
+    state['drop-target'] = typeof state['drop-target'] === 'boolean' ? state['drop-target'] : tree.defaultState['drop-target'];
 
+    // Disabled by default
     state.checked = typeof state.checked === 'boolean' ? state.checked : false;
     state.editable = typeof state.editable === 'boolean' ? state.editable : tree.defaultState.editable;
     state.editing = typeof state.editing === 'boolean' ? state.editing : tree.defaultState.editing;
@@ -4562,25 +3199,25 @@
     state.loading = state.loading || tree.defaultState.loading;
     state.removed = state.removed || tree.defaultState.removed;
     state.rendered = state.rendered || tree.defaultState.rendered;
-    state.selected = state.selected || tree.defaultState.selected; // Save parent, if any.
+    state.selected = state.selected || tree.defaultState.selected;
 
-    object.itree.parent = parent; // Wrap
+    // Save parent, if any.
+    object.itree.parent = parent;
 
-    object = _.assign(new TreeNode(tree), object);
-
-    if (_.isArrayLike(object.children)) {
+    // Wrap
+    object = _assign(new TreeNode(tree), object);
+    if (isArrayLike(object.children)) {
       object.children = collectionToModel(tree, object.children, object);
-    } // Fire events for pre-set states, if enabled
+    }
 
-
+    // Fire events for pre-set states, if enabled
     if (tree.allowsLoadEvents) {
-      _.each(tree.config.allowLoadEvents, function (eventName) {
+      each(tree.config.allowLoadEvents, function (eventName) {
         if (state[eventName]) {
           tree.emit('node.' + eventName, object, true);
         }
       });
     }
-
     return object;
   }
 
@@ -4594,33 +3231,45 @@
    * @param {object} parent Pointer to parent object
    * @return {array|object} Object model.
    */
-
   function collectionToModel(tree, array, parent) {
     var collection = new TreeNodes(tree, null, {
       calculateRenderablePositions: true
     });
-    collection.batch(); // Sort
+    collection.batch();
 
+    // Sort
     if (tree.config.sort) {
-      array = _.sortBy(array, tree.config.sort);
+      array = sortBy(array, tree.config.sort);
     }
-
-    _.each(array, function (node) {
+    each(array, function (node) {
       collection.push(objectToNode(tree, node, parent));
     });
-
     collection._context = parent;
     collection.end();
     return collection;
   }
 
+  function createCommonjsModule(fn, module) {
+  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+  }
+
   var eventemitter2 = createCommonjsModule(function (module, exports) {
   !function(undefined$1) {
-
+    var hasOwnProperty= Object.hasOwnProperty;
     var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
       return Object.prototype.toString.call(obj) === "[object Array]";
     };
     var defaultMaxListeners = 10;
+    var nextTickSupported= typeof process=='object' && typeof process.nextTick=='function';
+    var symbolsSupported= typeof Symbol==='function';
+    var reflectSupported= typeof Reflect === 'object';
+    var setImmediateSupported= typeof setImmediate === 'function';
+    var _setImmediate= setImmediateSupported ? setImmediate : setTimeout;
+    var ownKeys= symbolsSupported? (reflectSupported && typeof Reflect.ownKeys==='function'? Reflect.ownKeys : function(obj){
+      var arr= Object.getOwnPropertyNames(obj);
+      arr.push.apply(arr, Object.getOwnPropertySymbols(obj));
+      return arr;
+    }) : Object.keys;
 
     function init() {
       this._events = {};
@@ -4634,18 +3283,20 @@
         this._conf = conf;
 
         conf.delimiter && (this.delimiter = conf.delimiter);
-        this._maxListeners = conf.maxListeners !== undefined$1 ? conf.maxListeners : defaultMaxListeners;
+
+        if(conf.maxListeners!==undefined$1){
+            this._maxListeners= conf.maxListeners;
+        }
 
         conf.wildcard && (this.wildcard = conf.wildcard);
         conf.newListener && (this._newListener = conf.newListener);
         conf.removeListener && (this._removeListener = conf.removeListener);
         conf.verboseMemoryLeak && (this.verboseMemoryLeak = conf.verboseMemoryLeak);
+        conf.ignoreErrors && (this.ignoreErrors = conf.ignoreErrors);
 
         if (this.wildcard) {
           this.listenerTree = {};
         }
-      } else {
-        this._maxListeners = defaultMaxListeners;
       }
     }
 
@@ -4673,166 +3324,593 @@
       }
     }
 
-    function EventEmitter(conf) {
-      this._events = {};
-      this._newListener = false;
-      this._removeListener = false;
-      this.verboseMemoryLeak = false;
-      configure.call(this, conf);
-    }
-    EventEmitter.EventEmitter2 = EventEmitter; // backwards compatibility for exporting EventEmitter property
+    var toArray = function (a, b, c) {
+      var n = arguments.length;
+      switch (n) {
+        case 0:
+          return [];
+        case 1:
+          return [a];
+        case 2:
+          return [a, b];
+        case 3:
+          return [a, b, c];
+        default:
+          var arr = new Array(n);
+          while (n--) {
+            arr[n] = arguments[n];
+          }
+          return arr;
+      }
+    };
 
-    //
+    function toObject(keys, values) {
+      var obj = {};
+      var key;
+      var len = keys.length;
+      var valuesCount = values ? values.length : 0;
+      for (var i = 0; i < len; i++) {
+        key = keys[i];
+        obj[key] = i < valuesCount ? values[i] : undefined$1;
+      }
+      return obj;
+    }
+
+    function TargetObserver(emitter, target, options) {
+      this._emitter = emitter;
+      this._target = target;
+      this._listeners = {};
+      this._listenersCount = 0;
+
+      var on, off;
+
+      if (options.on || options.off) {
+        on = options.on;
+        off = options.off;
+      }
+
+      if (target.addEventListener) {
+        on = target.addEventListener;
+        off = target.removeEventListener;
+      } else if (target.addListener) {
+        on = target.addListener;
+        off = target.removeListener;
+      } else if (target.on) {
+        on = target.on;
+        off = target.off;
+      }
+
+      if (!on && !off) {
+        throw Error('target does not implement any known event API');
+      }
+
+      if (typeof on !== 'function') {
+        throw TypeError('on method must be a function');
+      }
+
+      if (typeof off !== 'function') {
+        throw TypeError('off method must be a function');
+      }
+
+      this._on = on;
+      this._off = off;
+
+      var _observers= emitter._observers;
+      if(_observers){
+        _observers.push(this);
+      }else {
+        emitter._observers= [this];
+      }
+    }
+
+    Object.assign(TargetObserver.prototype, {
+      subscribe: function(event, localEvent, reducer){
+        var observer= this;
+        var target= this._target;
+        var emitter= this._emitter;
+        var listeners= this._listeners;
+        var handler= function(){
+          var args= toArray.apply(null, arguments);
+          var eventObj= {
+            data: args,
+            name: localEvent,
+            original: event
+          };
+          if(reducer){
+            var result= reducer.call(target, eventObj);
+            if(result!==false){
+              emitter.emit.apply(emitter, [eventObj.name].concat(args));
+            }
+            return;
+          }
+          emitter.emit.apply(emitter, [localEvent].concat(args));
+        };
+
+
+        if(listeners[event]){
+          throw Error('Event \'' + event + '\' is already listening');
+        }
+
+        this._listenersCount++;
+
+        if(emitter._newListener && emitter._removeListener && !observer._onNewListener){
+
+          this._onNewListener = function (_event) {
+            if (_event === localEvent && listeners[event] === null) {
+              listeners[event] = handler;
+              observer._on.call(target, event, handler);
+            }
+          };
+
+          emitter.on('newListener', this._onNewListener);
+
+          this._onRemoveListener= function(_event){
+            if(_event === localEvent && !emitter.hasListeners(_event) && listeners[event]){
+              listeners[event]= null;
+              observer._off.call(target, event, handler);
+            }
+          };
+
+          listeners[event]= null;
+
+          emitter.on('removeListener', this._onRemoveListener);
+        }else {
+          listeners[event]= handler;
+          observer._on.call(target, event, handler);
+        }
+      },
+
+      unsubscribe: function(event){
+        var observer= this;
+        var listeners= this._listeners;
+        var emitter= this._emitter;
+        var handler;
+        var events;
+        var off= this._off;
+        var target= this._target;
+        var i;
+
+        if(event && typeof event!=='string'){
+          throw TypeError('event must be a string');
+        }
+
+        function clearRefs(){
+          if(observer._onNewListener){
+            emitter.off('newListener', observer._onNewListener);
+            emitter.off('removeListener', observer._onRemoveListener);
+            observer._onNewListener= null;
+            observer._onRemoveListener= null;
+          }
+          var index= findTargetIndex.call(emitter, observer);
+          emitter._observers.splice(index, 1);
+        }
+
+        if(event){
+          handler= listeners[event];
+          if(!handler) return;
+          off.call(target, event, handler);
+          delete listeners[event];
+          if(!--this._listenersCount){
+            clearRefs();
+          }
+        }else {
+          events= ownKeys(listeners);
+          i= events.length;
+          while(i-->0){
+            event= events[i];
+            off.call(target, event, listeners[event]);
+          }
+          this._listeners= {};
+          this._listenersCount= 0;
+          clearRefs();
+        }
+      }
+    });
+
+    function resolveOptions(options, schema, reducers, allowUnknown) {
+      var computedOptions = Object.assign({}, schema);
+
+      if (!options) return computedOptions;
+
+      if (typeof options !== 'object') {
+        throw TypeError('options must be an object')
+      }
+
+      var keys = Object.keys(options);
+      var length = keys.length;
+      var option, value;
+      var reducer;
+
+      function reject(reason) {
+        throw Error('Invalid "' + option + '" option value' + (reason ? '. Reason: ' + reason : ''))
+      }
+
+      for (var i = 0; i < length; i++) {
+        option = keys[i];
+        if (!allowUnknown && !hasOwnProperty.call(schema, option)) {
+          throw Error('Unknown "' + option + '" option');
+        }
+        value = options[option];
+        if (value !== undefined$1) {
+          reducer = reducers[option];
+          computedOptions[option] = reducer ? reducer(value, reject) : value;
+        }
+      }
+      return computedOptions;
+    }
+
+    function constructorReducer(value, reject) {
+      if (typeof value !== 'function' || !value.hasOwnProperty('prototype')) {
+        reject('value must be a constructor');
+      }
+      return value;
+    }
+
+    function makeTypeReducer(types) {
+      var message= 'value must be type of ' + types.join('|');
+      var len= types.length;
+      var firstType= types[0];
+      var secondType= types[1];
+
+      if (len === 1) {
+        return function (v, reject) {
+          if (typeof v === firstType) {
+            return v;
+          }
+          reject(message);
+        }
+      }
+
+      if (len === 2) {
+        return function (v, reject) {
+          var kind= typeof v;
+          if (kind === firstType || kind === secondType) return v;
+          reject(message);
+        }
+      }
+
+      return function (v, reject) {
+        var kind = typeof v;
+        var i = len;
+        while (i-- > 0) {
+          if (kind === types[i]) return v;
+        }
+        reject(message);
+      }
+    }
+
+    var functionReducer= makeTypeReducer(['function']);
+
+    var objectFunctionReducer= makeTypeReducer(['object', 'function']);
+
+    function makeCancelablePromise(Promise, executor, options) {
+      var isCancelable;
+      var callbacks;
+      var timer= 0;
+      var subscriptionClosed;
+
+      var promise = new Promise(function (resolve, reject, onCancel) {
+        options= resolveOptions(options, {
+          timeout: 0,
+          overload: false
+        }, {
+          timeout: function(value, reject){
+            value*= 1;
+            if (typeof value !== 'number' || value < 0 || !Number.isFinite(value)) {
+              reject('timeout must be a positive number');
+            }
+            return value;
+          }
+        });
+
+        isCancelable = !options.overload && typeof Promise.prototype.cancel === 'function' && typeof onCancel === 'function';
+
+        function cleanup() {
+          if (callbacks) {
+            callbacks = null;
+          }
+          if (timer) {
+            clearTimeout(timer);
+            timer = 0;
+          }
+        }
+
+        var _resolve= function(value){
+          cleanup();
+          resolve(value);
+        };
+
+        var _reject= function(err){
+          cleanup();
+          reject(err);
+        };
+
+        if (isCancelable) {
+          executor(_resolve, _reject, onCancel);
+        } else {
+          callbacks = [function(reason){
+            _reject(reason || Error('canceled'));
+          }];
+          executor(_resolve, _reject, function (cb) {
+            if (subscriptionClosed) {
+              throw Error('Unable to subscribe on cancel event asynchronously')
+            }
+            if (typeof cb !== 'function') {
+              throw TypeError('onCancel callback must be a function');
+            }
+            callbacks.push(cb);
+          });
+          subscriptionClosed= true;
+        }
+
+        if (options.timeout > 0) {
+          timer= setTimeout(function(){
+            var reason= Error('timeout');
+            reason.code = 'ETIMEDOUT';
+            timer= 0;
+            promise.cancel(reason);
+            reject(reason);
+          }, options.timeout);
+        }
+      });
+
+      if (!isCancelable) {
+        promise.cancel = function (reason) {
+          if (!callbacks) {
+            return;
+          }
+          var length = callbacks.length;
+          for (var i = 1; i < length; i++) {
+            callbacks[i](reason);
+          }
+          // internal callback to reject the promise
+          callbacks[0](reason);
+          callbacks = null;
+        };
+      }
+
+      return promise;
+    }
+
+    function findTargetIndex(observer) {
+      var observers = this._observers;
+      if(!observers){
+        return -1;
+      }
+      var len = observers.length;
+      for (var i = 0; i < len; i++) {
+        if (observers[i]._target === observer) return i;
+      }
+      return -1;
+    }
+
     // Attention, function return type now is array, always !
     // It has zero elements if no any matches found and one or more
     // elements (leafs) if there are matches
     //
-    function searchListenerTree(handlers, type, tree, i) {
+    function searchListenerTree(handlers, type, tree, i, typeLength) {
       if (!tree) {
-        return [];
+        return null;
       }
-      var listeners=[], leaf, len, branch, xTree, xxTree, isolatedBranch, endReached,
-          typeLength = type.length, currentType = type[i], nextType = type[i+1];
-      if (i === typeLength && tree._listeners) {
+
+      if (i === 0) {
+        var kind = typeof type;
+        if (kind === 'string') {
+          var ns, n, l = 0, j = 0, delimiter = this.delimiter, dl = delimiter.length;
+          if ((n = type.indexOf(delimiter)) !== -1) {
+            ns = new Array(5);
+            do {
+              ns[l++] = type.slice(j, n);
+              j = n + dl;
+            } while ((n = type.indexOf(delimiter, j)) !== -1);
+
+            ns[l++] = type.slice(j);
+            type = ns;
+            typeLength = l;
+          } else {
+            type = [type];
+            typeLength = 1;
+          }
+        } else if (kind === 'object') {
+          typeLength = type.length;
+        } else {
+          type = [type];
+          typeLength = 1;
+        }
+      }
+
+      var listeners= null, branch, xTree, xxTree, isolatedBranch, endReached, currentType = type[i],
+          nextType = type[i + 1], branches, _listeners;
+
+      if (i === typeLength) {
         //
         // If at the end of the event(s) list and the tree has listeners
         // invoke those listeners.
         //
-        if (typeof tree._listeners === 'function') {
-          handlers && handlers.push(tree._listeners);
-          return [tree];
-        } else {
-          for (leaf = 0, len = tree._listeners.length; leaf < len; leaf++) {
-            handlers && handlers.push(tree._listeners[leaf]);
+
+        if(tree._listeners) {
+          if (typeof tree._listeners === 'function') {
+            handlers && handlers.push(tree._listeners);
+            listeners = [tree];
+          } else {
+            handlers && handlers.push.apply(handlers, tree._listeners);
+            listeners = [tree];
           }
-          return [tree];
         }
-      }
+      } else {
 
-      if ((currentType === '*' || currentType === '**') || tree[currentType]) {
-        //
-        // If the event emitted is '*' at this part
-        // or there is a concrete match at this patch
-        //
         if (currentType === '*') {
-          for (branch in tree) {
-            if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+1));
-            }
-          }
-          return listeners;
-        } else if(currentType === '**') {
-          endReached = (i+1 === typeLength || (i+2 === typeLength && nextType === '*'));
-          if(endReached && tree._listeners) {
-            // The next element has a _listeners, add it to the handlers.
-            listeners = listeners.concat(searchListenerTree(handlers, type, tree, typeLength));
-          }
-
-          for (branch in tree) {
-            if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-              if(branch === '*' || branch === '**') {
-                if(tree[branch]._listeners && !endReached) {
-                  listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], typeLength));
+          //
+          // If the event emitted is '*' at this part
+          // or there is a concrete match at this patch
+          //
+          branches = ownKeys(tree);
+          n = branches.length;
+          while (n-- > 0) {
+            branch = branches[n];
+            if (branch !== '_listeners') {
+              _listeners = searchListenerTree(handlers, type, tree[branch], i + 1, typeLength);
+              if (_listeners) {
+                if (listeners) {
+                  listeners.push.apply(listeners, _listeners);
+                } else {
+                  listeners = _listeners;
                 }
-                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
-              } else if(branch === nextType) {
-                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+2));
-              } else {
-                // No match on this one, shift into the tree but not in the type array.
-                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
               }
             }
           }
           return listeners;
-        }
+        } else if (currentType === '**') {
+          endReached = (i + 1 === typeLength || (i + 2 === typeLength && nextType === '*'));
+          if (endReached && tree._listeners) {
+            // The next element has a _listeners, add it to the handlers.
+            listeners = searchListenerTree(handlers, type, tree, typeLength, typeLength);
+          }
 
-        listeners = listeners.concat(searchListenerTree(handlers, type, tree[currentType], i+1));
+          branches = ownKeys(tree);
+          n = branches.length;
+          while (n-- > 0) {
+            branch = branches[n];
+            if (branch !== '_listeners') {
+              if (branch === '*' || branch === '**') {
+                if (tree[branch]._listeners && !endReached) {
+                  _listeners = searchListenerTree(handlers, type, tree[branch], typeLength, typeLength);
+                  if (_listeners) {
+                    if (listeners) {
+                      listeners.push.apply(listeners, _listeners);
+                    } else {
+                      listeners = _listeners;
+                    }
+                  }
+                }
+                _listeners = searchListenerTree(handlers, type, tree[branch], i, typeLength);
+              } else if (branch === nextType) {
+                _listeners = searchListenerTree(handlers, type, tree[branch], i + 2, typeLength);
+              } else {
+                // No match on this one, shift into the tree but not in the type array.
+                _listeners = searchListenerTree(handlers, type, tree[branch], i, typeLength);
+              }
+              if (_listeners) {
+                if (listeners) {
+                  listeners.push.apply(listeners, _listeners);
+                } else {
+                  listeners = _listeners;
+                }
+              }
+            }
+          }
+          return listeners;
+        } else if (tree[currentType]) {
+          listeners = searchListenerTree(handlers, type, tree[currentType], i + 1, typeLength);
+        }
       }
 
-      xTree = tree['*'];
+        xTree = tree['*'];
       if (xTree) {
         //
         // If the listener tree will allow any match for this part,
         // then recursively explore all branches of the tree
         //
-        searchListenerTree(handlers, type, xTree, i+1);
+        searchListenerTree(handlers, type, xTree, i + 1, typeLength);
       }
 
       xxTree = tree['**'];
-      if(xxTree) {
-        if(i < typeLength) {
-          if(xxTree._listeners) {
+      if (xxTree) {
+        if (i < typeLength) {
+          if (xxTree._listeners) {
             // If we have a listener on a '**', it will catch all, so add its handler.
-            searchListenerTree(handlers, type, xxTree, typeLength);
+            searchListenerTree(handlers, type, xxTree, typeLength, typeLength);
           }
 
           // Build arrays of matching next branches and others.
-          for(branch in xxTree) {
-            if(branch !== '_listeners' && xxTree.hasOwnProperty(branch)) {
-              if(branch === nextType) {
+          branches= ownKeys(xxTree);
+          n= branches.length;
+          while(n-->0){
+            branch= branches[n];
+            if (branch !== '_listeners') {
+              if (branch === nextType) {
                 // We know the next element will match, so jump twice.
-                searchListenerTree(handlers, type, xxTree[branch], i+2);
-              } else if(branch === currentType) {
+                searchListenerTree(handlers, type, xxTree[branch], i + 2, typeLength);
+              } else if (branch === currentType) {
                 // Current node matches, move into the tree.
-                searchListenerTree(handlers, type, xxTree[branch], i+1);
+                searchListenerTree(handlers, type, xxTree[branch], i + 1, typeLength);
               } else {
                 isolatedBranch = {};
                 isolatedBranch[branch] = xxTree[branch];
-                searchListenerTree(handlers, type, { '**': isolatedBranch }, i+1);
+                searchListenerTree(handlers, type, {'**': isolatedBranch}, i + 1, typeLength);
               }
             }
           }
-        } else if(xxTree._listeners) {
+        } else if (xxTree._listeners) {
           // We have reached the end and still on a '**'
-          searchListenerTree(handlers, type, xxTree, typeLength);
-        } else if(xxTree['*'] && xxTree['*']._listeners) {
-          searchListenerTree(handlers, type, xxTree['*'], typeLength);
+          searchListenerTree(handlers, type, xxTree, typeLength, typeLength);
+        } else if (xxTree['*'] && xxTree['*']._listeners) {
+          searchListenerTree(handlers, type, xxTree['*'], typeLength, typeLength);
         }
       }
 
       return listeners;
     }
 
-    function growListenerTree(type, listener) {
+    function growListenerTree(type, listener, prepend) {
+      var len = 0, j = 0, i, delimiter = this.delimiter, dl= delimiter.length, ns;
 
-      type = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+      if(typeof type==='string') {
+        if ((i = type.indexOf(delimiter)) !== -1) {
+          ns = new Array(5);
+          do {
+            ns[len++] = type.slice(j, i);
+            j = i + dl;
+          } while ((i = type.indexOf(delimiter, j)) !== -1);
+
+          ns[len++] = type.slice(j);
+        }else {
+          ns= [type];
+          len= 1;
+        }
+      }else {
+        ns= type;
+        len= type.length;
+      }
 
       //
       // Looks for two consecutive '**', if so, don't add the event at all.
       //
-      for(var i = 0, len = type.length; i+1 < len; i++) {
-        if(type[i] === '**' && type[i+1] === '**') {
-          return;
+      if (len > 1) {
+        for (i = 0; i + 1 < len; i++) {
+          if (ns[i] === '**' && ns[i + 1] === '**') {
+            return;
+          }
         }
       }
 
-      var tree = this.listenerTree;
-      var name = type.shift();
 
-      while (name !== undefined$1) {
 
-        if (!tree[name]) {
-          tree[name] = {};
-        }
+      var tree = this.listenerTree, name;
 
-        tree = tree[name];
+      for (i = 0; i < len; i++) {
+        name = ns[i];
 
-        if (type.length === 0) {
+        tree = tree[name] || (tree[name] = {});
 
+        if (i === len - 1) {
           if (!tree._listeners) {
             tree._listeners = listener;
-          }
-          else {
+          } else {
             if (typeof tree._listeners === 'function') {
               tree._listeners = [tree._listeners];
             }
 
-            tree._listeners.push(listener);
+            if (prepend) {
+              tree._listeners.unshift(listener);
+            } else {
+              tree._listeners.push(listener);
+            }
 
             if (
-              !tree._listeners.warned &&
-              this._maxListeners > 0 &&
-              tree._listeners.length > this._maxListeners
+                !tree._listeners.warned &&
+                this._maxListeners > 0 &&
+                tree._listeners.length > this._maxListeners
             ) {
               tree._listeners.warned = true;
               logPossibleMemoryLeak.call(this, tree._listeners.length, name);
@@ -4840,10 +3918,210 @@
           }
           return true;
         }
-        name = type.shift();
       }
+
       return true;
     }
+
+    function collectTreeEvents(tree, events, root, asArray){
+       var branches= ownKeys(tree);
+       var i= branches.length;
+       var branch, branchName, path;
+       var hasListeners= tree['_listeners'];
+       var isArrayPath;
+
+       while(i-->0){
+           branchName= branches[i];
+
+           branch= tree[branchName];
+
+           if(branchName==='_listeners'){
+               path= root;
+           }else {
+               path = root ? root.concat(branchName) : [branchName];
+           }
+
+           isArrayPath= asArray || typeof branchName==='symbol';
+
+           hasListeners && events.push(isArrayPath? path : path.join(this.delimiter));
+
+           if(typeof branch==='object'){
+               collectTreeEvents.call(this, branch, events, path, isArrayPath);
+           }
+       }
+
+       return events;
+    }
+
+    function recursivelyGarbageCollect(root) {
+      var keys = ownKeys(root);
+      var i= keys.length;
+      var obj, key, flag;
+      while(i-->0){
+        key = keys[i];
+        obj = root[key];
+
+        if(obj){
+            flag= true;
+            if(key !== '_listeners' && !recursivelyGarbageCollect(obj)){
+               delete root[key];
+            }
+        }
+      }
+
+      return flag;
+    }
+
+    function Listener(emitter, event, listener){
+      this.emitter= emitter;
+      this.event= event;
+      this.listener= listener;
+    }
+
+    Listener.prototype.off= function(){
+      this.emitter.off(this.event, this.listener);
+      return this;
+    };
+
+    function setupListener(event, listener, options){
+        if (options === true) {
+          promisify = true;
+        } else if (options === false) {
+          async = true;
+        } else {
+          if (!options || typeof options !== 'object') {
+            throw TypeError('options should be an object or true');
+          }
+          var async = options.async;
+          var promisify = options.promisify;
+          var nextTick = options.nextTick;
+          var objectify = options.objectify;
+        }
+
+        if (async || nextTick || promisify) {
+          var _listener = listener;
+          var _origin = listener._origin || listener;
+
+          if (nextTick && !nextTickSupported) {
+            throw Error('process.nextTick is not supported');
+          }
+
+          if (promisify === undefined$1) {
+            promisify = listener.constructor.name === 'AsyncFunction';
+          }
+
+          listener = function () {
+            var args = arguments;
+            var context = this;
+            var event = this.event;
+
+            return promisify ? (nextTick ? Promise.resolve() : new Promise(function (resolve) {
+              _setImmediate(resolve);
+            }).then(function () {
+              context.event = event;
+              return _listener.apply(context, args)
+            })) : (nextTick ? process.nextTick : _setImmediate)(function () {
+              context.event = event;
+              _listener.apply(context, args);
+            });
+          };
+
+          listener._async = true;
+          listener._origin = _origin;
+        }
+
+      return [listener, objectify? new Listener(this, event, listener): this];
+    }
+
+    function EventEmitter(conf) {
+      this._events = {};
+      this._newListener = false;
+      this._removeListener = false;
+      this.verboseMemoryLeak = false;
+      configure.call(this, conf);
+    }
+
+    EventEmitter.EventEmitter2 = EventEmitter; // backwards compatibility for exporting EventEmitter property
+
+    EventEmitter.prototype.listenTo= function(target, events, options){
+      if(typeof target!=='object'){
+        throw TypeError('target musts be an object');
+      }
+
+      var emitter= this;
+
+      options = resolveOptions(options, {
+        on: undefined$1,
+        off: undefined$1,
+        reducers: undefined$1
+      }, {
+        on: functionReducer,
+        off: functionReducer,
+        reducers: objectFunctionReducer
+      });
+
+      function listen(events){
+        if(typeof events!=='object'){
+          throw TypeError('events must be an object');
+        }
+
+        var reducers= options.reducers;
+        var index= findTargetIndex.call(emitter, target);
+        var observer;
+
+        if(index===-1){
+          observer= new TargetObserver(emitter, target, options);
+        }else {
+          observer= emitter._observers[index];
+        }
+
+        var keys= ownKeys(events);
+        var len= keys.length;
+        var event;
+        var isSingleReducer= typeof reducers==='function';
+
+        for(var i=0; i<len; i++){
+          event= keys[i];
+          observer.subscribe(
+              event,
+              events[event] || event,
+              isSingleReducer ? reducers : reducers && reducers[event]
+          );
+        }
+      }
+
+      isArray(events)?
+          listen(toObject(events)) :
+          (typeof events==='string'? listen(toObject(events.split(/\s+/))): listen(events));
+
+      return this;
+    };
+
+    EventEmitter.prototype.stopListeningTo = function (target, event) {
+      var observers = this._observers;
+
+      if(!observers){
+        return false;
+      }
+
+      var i = observers.length;
+      var observer;
+      var matched= false;
+
+      if(target && typeof target!=='object'){
+        throw TypeError('target should be an object');
+      }
+
+      while (i-- > 0) {
+        observer = observers[i];
+        if (!target || observer._target === target) {
+          observer.unsubscribe(event);
+          matched= true;
+        }
+      }
+
+      return matched;
+    };
 
     // By default EventEmitters will print a warning if more than
     // 10 listeners are added to it. This is a useful default which
@@ -4862,31 +4140,33 @@
       }
     };
 
+    EventEmitter.prototype.getMaxListeners = function() {
+      return this._maxListeners;
+    };
+
     EventEmitter.prototype.event = '';
 
-
-    EventEmitter.prototype.once = function(event, fn) {
-      return this._once(event, fn, false);
+    EventEmitter.prototype.once = function(event, fn, options) {
+      return this._once(event, fn, false, options);
     };
 
-    EventEmitter.prototype.prependOnceListener = function(event, fn) {
-      return this._once(event, fn, true);
+    EventEmitter.prototype.prependOnceListener = function(event, fn, options) {
+      return this._once(event, fn, true, options);
     };
 
-    EventEmitter.prototype._once = function(event, fn, prepend) {
-      this._many(event, 1, fn, prepend);
-      return this;
+    EventEmitter.prototype._once = function(event, fn, prepend, options) {
+      return this._many(event, 1, fn, prepend, options);
     };
 
-    EventEmitter.prototype.many = function(event, ttl, fn) {
-      return this._many(event, ttl, fn, false);
+    EventEmitter.prototype.many = function(event, ttl, fn, options) {
+      return this._many(event, ttl, fn, false, options);
     };
 
-    EventEmitter.prototype.prependMany = function(event, ttl, fn) {
-      return this._many(event, ttl, fn, true);
+    EventEmitter.prototype.prependMany = function(event, ttl, fn, options) {
+      return this._many(event, ttl, fn, true, options);
     };
 
-    EventEmitter.prototype._many = function(event, ttl, fn, prepend) {
+    EventEmitter.prototype._many = function(event, ttl, fn, prepend, options) {
       var self = this;
 
       if (typeof fn !== 'function') {
@@ -4902,16 +4182,18 @@
 
       listener._origin = fn;
 
-      this._on(event, listener, prepend);
-
-      return self;
+      return this._on(event, listener, prepend, options);
     };
 
     EventEmitter.prototype.emit = function() {
+      if (!this._events && !this._all) {
+        return false;
+      }
 
       this._events || init.call(this);
 
-      var type = arguments[0];
+      var type = arguments[0], ns, wildcard= this.wildcard;
+      var args,l,i,j, containsSymbol;
 
       if (type === 'newListener' && !this._newListener) {
         if (!this._events.newListener) {
@@ -4919,16 +4201,31 @@
         }
       }
 
+      if (wildcard) {
+        ns= type;
+        if(type!=='newListener' && type!=='removeListener'){
+          if (typeof type === 'object') {
+            l = type.length;
+            if (symbolsSupported) {
+              for (i = 0; i < l; i++) {
+                if (typeof type[i] === 'symbol') {
+                  containsSymbol = true;
+                  break;
+                }
+              }
+            }
+            if (!containsSymbol) {
+              type = type.join(this.delimiter);
+            }
+          }
+        }
+      }
+
       var al = arguments.length;
-      var args,l,i,j;
       var handler;
 
       if (this._all && this._all.length) {
         handler = this._all.slice();
-        if (al > 3) {
-          args = new Array(al);
-          for (j = 0; j < al; j++) args[j] = arguments[j];
-        }
 
         for (i = 0, l = handler.length; i < l; i++) {
           this.event = type;
@@ -4943,15 +4240,14 @@
             handler[i].call(this, type, arguments[1], arguments[2]);
             break;
           default:
-            handler[i].apply(this, args);
+            handler[i].apply(this, arguments);
           }
         }
       }
 
-      if (this.wildcard) {
+      if (wildcard) {
         handler = [];
-        var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-        searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
+        searchListenerTree.call(this, handler, ns, this.listenerTree, 0, l);
       } else {
         handler = this._events[type];
         if (typeof handler === 'function') {
@@ -5001,39 +4297,57 @@
           }
         }
         return true;
-      } else if (!this._all && type === 'error') {
+      } else if (!this.ignoreErrors && !this._all && type === 'error') {
         if (arguments[1] instanceof Error) {
           throw arguments[1]; // Unhandled 'error' event
         } else {
           throw new Error("Uncaught, unspecified 'error' event.");
         }
-        return false;
       }
 
       return !!this._all;
     };
 
     EventEmitter.prototype.emitAsync = function() {
+      if (!this._events && !this._all) {
+        return false;
+      }
 
       this._events || init.call(this);
 
-      var type = arguments[0];
+      var type = arguments[0], wildcard= this.wildcard, ns, containsSymbol;
+      var args,l,i,j;
 
       if (type === 'newListener' && !this._newListener) {
           if (!this._events.newListener) { return Promise.resolve([false]); }
       }
 
+      if (wildcard) {
+        ns= type;
+        if(type!=='newListener' && type!=='removeListener'){
+          if (typeof type === 'object') {
+            l = type.length;
+            if (symbolsSupported) {
+              for (i = 0; i < l; i++) {
+                if (typeof type[i] === 'symbol') {
+                  containsSymbol = true;
+                  break;
+                }
+              }
+            }
+            if (!containsSymbol) {
+              type = type.join(this.delimiter);
+            }
+          }
+        }
+      }
+
       var promises= [];
 
       var al = arguments.length;
-      var args,l,i,j;
       var handler;
 
       if (this._all) {
-        if (al > 3) {
-          args = new Array(al);
-          for (j = 1; j < al; j++) args[j] = arguments[j];
-        }
         for (i = 0, l = this._all.length; i < l; i++) {
           this.event = type;
           switch (al) {
@@ -5047,14 +4361,13 @@
             promises.push(this._all[i].call(this, type, arguments[1], arguments[2]));
             break;
           default:
-            promises.push(this._all[i].apply(this, args));
+            promises.push(this._all[i].apply(this, arguments));
           }
         }
       }
 
-      if (this.wildcard) {
+      if (wildcard) {
         handler = [];
-        var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
         searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
       } else {
         handler = this._events[type];
@@ -5099,7 +4412,7 @@
             promises.push(handler[i].apply(this, args));
           }
         }
-      } else if (!this._all && type === 'error') {
+      } else if (!this.ignoreErrors && !this._all && type === 'error') {
         if (arguments[1] instanceof Error) {
           return Promise.reject(arguments[1]); // Unhandled 'error' event
         } else {
@@ -5110,12 +4423,12 @@
       return Promise.all(promises);
     };
 
-    EventEmitter.prototype.on = function(type, listener) {
-      return this._on(type, listener, false);
+    EventEmitter.prototype.on = function(type, listener, options) {
+      return this._on(type, listener, false, options);
     };
 
-    EventEmitter.prototype.prependListener = function(type, listener) {
-      return this._on(type, listener, true);
+    EventEmitter.prototype.prependListener = function(type, listener, options) {
+      return this._on(type, listener, true, options);
     };
 
     EventEmitter.prototype.onAny = function(fn) {
@@ -5140,14 +4453,14 @@
       // Add the function to the event listener collection.
       if(prepend){
         this._all.unshift(fn);
-      }else{
+      }else {
         this._all.push(fn);
       }
 
       return this;
     };
 
-    EventEmitter.prototype._on = function(type, listener, prepend) {
+    EventEmitter.prototype._on = function(type, listener, prepend, options) {
       if (typeof type === 'function') {
         this._onAny(type, listener);
         return this;
@@ -5158,21 +4471,29 @@
       }
       this._events || init.call(this);
 
+      var returnValue= this, temp;
+
+      if (options !== undefined$1) {
+        temp = setupListener.call(this, type, listener, options);
+        listener = temp[0];
+        returnValue = temp[1];
+      }
+
       // To avoid recursion in the case that type == "newListeners"! Before
       // adding it to the listeners, first emit "newListeners".
-      if (this._newListener)
-         this.emit('newListener', type, listener);
+      if (this._newListener) {
+        this.emit('newListener', type, listener);
+      }
 
       if (this.wildcard) {
-        growListenerTree.call(this, type, listener);
-        return this;
+        growListenerTree.call(this, type, listener, prepend);
+        return returnValue;
       }
 
       if (!this._events[type]) {
         // Optimize the case of one listener. Don't need the extra array object.
         this._events[type] = listener;
-      }
-      else {
+      } else {
         if (typeof this._events[type] === 'function') {
           // Change to array.
           this._events[type] = [this._events[type]];
@@ -5181,7 +4502,7 @@
         // If we've already got an array, just add
         if(prepend){
           this._events[type].unshift(listener);
-        }else{
+        }else {
           this._events[type].push(listener);
         }
 
@@ -5196,7 +4517,7 @@
         }
       }
 
-      return this;
+      return returnValue;
     };
 
     EventEmitter.prototype.off = function(type, listener) {
@@ -5209,8 +4530,8 @@
       if(this.wildcard) {
         var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
         leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-      }
-      else {
+        if(!leafs) return this;
+      } else {
         // does not use listeners(), so no side effect of creating _events[type]
         if (!this._events[type]) return this;
         handlers = this._events[type];
@@ -5271,25 +4592,7 @@
         }
       }
 
-      function recursivelyGarbageCollect(root) {
-        if (root === undefined$1) {
-          return;
-        }
-        var keys = Object.keys(root);
-        for (var i in keys) {
-          var key = keys[i];
-          var obj = root[key];
-          if ((obj instanceof Function) || (typeof obj !== "object") || (obj === null))
-            continue;
-          if (Object.keys(obj).length > 0) {
-            recursivelyGarbageCollect(root[key]);
-          }
-          if (Object.keys(obj).length === 0) {
-            delete root[key];
-          }
-        }
-      }
-      recursivelyGarbageCollect(this.listenerTree);
+      this.listenerTree && recursivelyGarbageCollect(this.listenerTree);
 
       return this;
     };
@@ -5319,50 +4622,97 @@
 
     EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
 
-    EventEmitter.prototype.removeAllListeners = function(type) {
+    EventEmitter.prototype.removeAllListeners = function (type) {
       if (type === undefined$1) {
         !this._events || init.call(this);
         return this;
       }
 
       if (this.wildcard) {
-        var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-        var leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-
-        for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
-          var leaf = leafs[iLeaf];
+        var leafs = searchListenerTree.call(this, null, type, this.listenerTree, 0), leaf, i;
+        if (!leafs) return this;
+        for (i = 0; i < leafs.length; i++) {
+          leaf = leafs[i];
           leaf._listeners = null;
         }
-      }
-      else if (this._events) {
+        this.listenerTree && recursivelyGarbageCollect(this.listenerTree);
+      } else if (this._events) {
         this._events[type] = null;
       }
       return this;
     };
 
-    EventEmitter.prototype.listeners = function(type) {
-      if (this.wildcard) {
-        var handlers = [];
-        var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-        searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
-        return handlers;
-      }
+    EventEmitter.prototype.listeners = function (type) {
+      var _events = this._events;
+      var keys, listeners, allListeners;
+      var i;
+      var listenerTree;
 
-      this._events || init.call(this);
+      if (type === undefined$1) {
+        if (this.wildcard) {
+          throw Error('event name required for wildcard emitter');
+        }
 
-      if (!this._events[type]) this._events[type] = [];
-      if (!isArray(this._events[type])) {
-        this._events[type] = [this._events[type]];
+        if (!_events) {
+          return [];
+        }
+
+        keys = ownKeys(_events);
+        i = keys.length;
+        allListeners = [];
+        while (i-- > 0) {
+          listeners = _events[keys[i]];
+          if (typeof listeners === 'function') {
+            allListeners.push(listeners);
+          } else {
+            allListeners.push.apply(allListeners, listeners);
+          }
+        }
+        return allListeners;
+      } else {
+        if (this.wildcard) {
+          listenerTree= this.listenerTree;
+          if(!listenerTree) return [];
+          var handlers = [];
+          var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+          searchListenerTree.call(this, handlers, ns, listenerTree, 0);
+          return handlers;
+        }
+
+        if (!_events) {
+          return [];
+        }
+
+        listeners = _events[type];
+
+        if (!listeners) {
+          return [];
+        }
+        return typeof listeners === 'function' ? [listeners] : listeners;
       }
-      return this._events[type];
     };
 
-    EventEmitter.prototype.eventNames = function(){
-      return Object.keys(this._events);
+    EventEmitter.prototype.eventNames = function(nsAsArray){
+      var _events= this._events;
+      return this.wildcard? collectTreeEvents.call(this, this.listenerTree, [], null, nsAsArray) : (_events? ownKeys(_events) : []);
     };
 
     EventEmitter.prototype.listenerCount = function(type) {
       return this.listeners(type).length;
+    };
+
+    EventEmitter.prototype.hasListeners = function (type) {
+      if (this.wildcard) {
+        var handlers = [];
+        var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
+        searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
+        return handlers.length > 0;
+      }
+
+      var _events = this._events;
+      var _all = this._all;
+
+      return !!(_all && _all.length || _events && (type === undefined$1 ? ownKeys(_events).length : _events[type]));
     };
 
     EventEmitter.prototype.listenersAny = function() {
@@ -5375,6 +4725,141 @@
       }
 
     };
+
+    EventEmitter.prototype.waitFor = function (event, options) {
+      var self = this;
+      var type = typeof options;
+      if (type === 'number') {
+        options = {timeout: options};
+      } else if (type === 'function') {
+        options = {filter: options};
+      }
+
+      options= resolveOptions(options, {
+        timeout: 0,
+        filter: undefined$1,
+        handleError: false,
+        Promise: Promise,
+        overload: false
+      }, {
+        filter: functionReducer,
+        Promise: constructorReducer
+      });
+
+      return makeCancelablePromise(options.Promise, function (resolve, reject, onCancel) {
+        function listener() {
+          var filter= options.filter;
+          if (filter && !filter.apply(self, arguments)) {
+            return;
+          }
+          self.off(event, listener);
+          if (options.handleError) {
+            var err = arguments[0];
+            err ? reject(err) : resolve(toArray.apply(null, arguments).slice(1));
+          } else {
+            resolve(toArray.apply(null, arguments));
+          }
+        }
+
+        onCancel(function(){
+          self.off(event, listener);
+        });
+
+        self._on(event, listener, false);
+      }, {
+        timeout: options.timeout,
+        overload: options.overload
+      })
+    };
+
+    function once(emitter, name, options) {
+      options= resolveOptions(options, {
+        Promise: Promise,
+        timeout: 0,
+        overload: false
+      }, {
+        Promise: constructorReducer
+      });
+
+      var _Promise= options.Promise;
+
+      return makeCancelablePromise(_Promise, function(resolve, reject, onCancel){
+        var handler;
+        if (typeof emitter.addEventListener === 'function') {
+          handler=  function () {
+            resolve(toArray.apply(null, arguments));
+          };
+
+          onCancel(function(){
+            emitter.removeEventListener(name, handler);
+          });
+
+          emitter.addEventListener(
+              name,
+              handler,
+              {once: true}
+          );
+          return;
+        }
+
+        var eventListener = function(){
+          errorListener && emitter.removeListener('error', errorListener);
+          resolve(toArray.apply(null, arguments));
+        };
+
+        var errorListener;
+
+        if (name !== 'error') {
+          errorListener = function (err){
+            emitter.removeListener(name, eventListener);
+            reject(err);
+          };
+
+          emitter.once('error', errorListener);
+        }
+
+        onCancel(function(){
+          errorListener && emitter.removeListener('error', errorListener);
+          emitter.removeListener(name, eventListener);
+        });
+
+        emitter.once(name, eventListener);
+      }, {
+        timeout: options.timeout,
+        overload: options.overload
+      });
+    }
+
+    var prototype= EventEmitter.prototype;
+
+    Object.defineProperties(EventEmitter, {
+      defaultMaxListeners: {
+        get: function () {
+          return prototype._maxListeners;
+        },
+        set: function (n) {
+          if (typeof n !== 'number' || n < 0 || Number.isNaN(n)) {
+            throw TypeError('n must be a non-negative number')
+          }
+          prototype._maxListeners = n;
+        },
+        enumerable: true
+      },
+      once: {
+        value: once,
+        writable: true,
+        configurable: true
+      }
+    });
+
+    Object.defineProperties(prototype, {
+        _maxListeners: {
+            value: defaultMaxListeners,
+            writable: true,
+            configurable: true
+        },
+        _observers: {value: null, writable: true, configurable: true}
+    });
 
     if (typeof undefined$1 === 'function' && undefined$1.amd) {
        // AMD. Register as an anonymous module.
@@ -5398,39 +4883,35 @@
    * @param {arguments} args Proxied arguments.
    * @return {mixed} Proxied return value.
    */
-
-  function _map(tree, method, args) {
+  function _map2(tree, method, args) {
     return tree.model[method].apply(tree.model, args);
   }
+
   /**
    * Represents a singe tree instance.
    *
    * @return {InspireTree} Tree instance.
    */
-
-
-  var InspireTree =
-  /*#__PURE__*/
-  function (_EventEmitter) {
+  var InspireTree = /*#__PURE__*/function (_EventEmitter) {
     _inherits(InspireTree, _EventEmitter);
-
+    var _super = _createSuper(InspireTree);
     function InspireTree(opts) {
       var _this;
-
       _classCallCheck(this, InspireTree);
+      _this = _super.call(this);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(InspireTree).call(this)); // Init properties
-
+      // Init properties
       _this._lastSelectedNode;
       _this._muted = false;
       _this.allowsLoadEvents = false;
-      _this.id = v4_1();
+      _this.id = v4();
       _this.initialized = false;
       _this.isDynamic = false;
       _this.opts = opts;
-      _this.preventDeselection = false; // Assign defaults
+      _this.preventDeselection = false;
 
-      _this.config = _.defaultsDeep({}, opts, {
+      // Assign defaults
+      _this.config = defaultsDeep({}, opts, {
         allowLoadEvents: [],
         checkbox: {
           autoCheckChildren: true
@@ -5454,7 +4935,7 @@
           matchProcessor: false
         },
         selection: {
-          allow: _.noop,
+          allow: noop,
           autoDeselect: true,
           autoSelectChildren: false,
           disableDirectDeselection: false,
@@ -5464,61 +4945,60 @@
         },
         showCheckboxes: false,
         sort: false
-      }); // If checkbox mode, we must force auto-selecting children
+      });
 
+      // If checkbox mode, we must force auto-selecting children
       if (_this.config.selection.mode === 'checkbox') {
-        _this.config.selection.autoSelectChildren = true; // In checkbox mode, checked=selected
+        _this.config.selection.autoSelectChildren = true;
 
+        // In checkbox mode, checked=selected
         _this.on('node.checked', function (node) {
           if (!node.selected()) {
             node.select(true);
           }
         });
-
         _this.on('node.selected', function (node) {
           if (!node.checked()) {
             node.check(true);
           }
         });
-
         _this.on('node.unchecked', function (node) {
           if (node.selected()) {
             node.deselect(true);
           }
         });
-
         _this.on('node.deselected', function (node) {
           if (node.checked()) {
             node.uncheck(true);
           }
         });
-      } // If auto-selecting children, we must force multiselect
+      }
 
-
+      // If auto-selecting children, we must force multiselect
       if (_this.config.selection.autoSelectChildren) {
         _this.config.selection.multiple = true;
         _this.config.selection.autoDeselect = false;
-      } // Treat editable as full edit mode
+      }
 
-
+      // Treat editable as full edit mode
       if (opts.editable && !opts.editing) {
         _this.config.editing.add = true;
         _this.config.editing.edit = true;
         _this.config.editing.remove = true;
-      } // Support simple config for search
+      }
 
-
-      if (_.isFunction(opts.search)) {
+      // Support simple config for search
+      if (isFunction(opts.search)) {
         _this.config.search = {
           matcher: opts.search,
           matchProcessor: false
         };
-      } // Init the default state for nodes
+      }
 
-
+      // Init the default state for nodes
       _this.defaultState = {
         collapsed: true,
-        editable: _.get(_assertThisInitialized(_this), 'config.editing.edit'),
+        editable: get(_assertThisInitialized(_this), 'config.editing.edit'),
         editing: false,
         draggable: true,
         'drop-target': true,
@@ -5531,43 +5011,42 @@
         rendered: false,
         selectable: true,
         selected: false
-      }; // Cache some configs
+      };
 
-      _this.allowsLoadEvents = _.isArray(_this.config.allowLoadEvents) && _this.config.allowLoadEvents.length > 0;
-      _this.isDynamic = _.isFunction(_this.config.data); // Override emitter so we can better control flow
+      // Cache some configs
+      _this.allowsLoadEvents = isArray(_this.config.allowLoadEvents) && _this.config.allowLoadEvents.length > 0;
+      _this.isDynamic = isFunction(_this.config.data);
 
+      // Override emitter so we can better control flow
       var emit = _this.emit;
-
       _this.emit = function () {
         for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
           args[_key] = arguments[_key];
         }
-
         if (!_this.isEventMuted(args[0])) {
           // Duck-type for a DOM event
-          if (_.isFunction(_.get(args, '[0].preventDefault'))) {
+          if (isFunction(get(args, '[0].preventDefault'))) {
             var event = args[0];
             event.treeDefaultPrevented = false;
-
             event.preventTreeDefault = function () {
               event.treeDefaultPrevented = true;
             };
           }
-
           emit.apply(_assertThisInitialized(_this), args);
         }
-      }; // Init the model
+      };
 
+      // Init the model
+      _this.model = new TreeNodes(_assertThisInitialized(_this));
 
-      _this.model = new TreeNodes(_assertThisInitialized(_this)); // Load initial user data
-
+      // Load initial user data
       if (_this.config.data) {
         _this.load(_this.config.data);
       }
-
       _this.initialized = true;
       return _this;
     }
+
     /**
      * Adds a new node. If a sort method is configured,
      * the node will be added in the appropriate order.
@@ -5575,35 +5054,31 @@
      * @param {object} node Node
      * @return {TreeNode} Node object.
      */
-
-
     _createClass(InspireTree, [{
       key: "addNode",
       value: function addNode() {
-        return _map(this, 'addNode', arguments);
+        return _map2(this, 'addNode', arguments);
       }
+
       /**
        * Add nodes.
        *
        * @param {array} nodes Array of node objects.
        * @return {TreeNodes} Added node objects.
        */
-
     }, {
       key: "addNodes",
       value: function addNodes(nodes) {
         var _this2 = this;
-
         this.batch();
         var newNodes = new TreeNodes(this);
-
-        _.each(nodes, function (node) {
+        each(nodes, function (node) {
           return newNodes.push(_this2.addNode(node));
         });
-
         this.end();
         return newNodes;
       }
+
       /**
        * Release pending data changes to any listeners.
        *
@@ -5613,120 +5088,117 @@
        * @private
        * @return {void}
        */
-
     }, {
       key: "applyChanges",
       value: function applyChanges() {
         return this.model.applyChanges();
       }
+
       /**
        * Query for all available nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "available",
       value: function available() {
-        return _map(this, 'available', arguments);
+        return _map2(this, 'available', arguments);
       }
+
       /**
        * Batch multiple changes for listeners (i.e. DOM)
        *
        * @private
        * @return {void}
        */
-
     }, {
       key: "batch",
       value: function batch() {
         return this.model.batch();
       }
+
       /**
        * Blur children in this collection.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "blur",
       value: function blur() {
-        return _map(this, 'blur', arguments);
+        return _map2(this, 'blur', arguments);
       }
+
       /**
        * Blur (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "blurDeep",
       value: function blurDeep() {
-        return _map(this, 'blurDeep', arguments);
+        return _map2(this, 'blurDeep', arguments);
       }
+
       /**
        * Compares any number of TreeNode objects and returns
        * the minimum and maximum (starting/ending) nodes.
        *
        * @return {array} Array with two TreeNode objects.
        */
-
     }, {
       key: "boundingNodes",
       value: function boundingNodes() {
-        var pathMap = _.transform(arguments, function (col, node) {
+        var pathMap = transform(arguments, function (col, node) {
           col[node.indexPath().replace(/\./g, '')] = node;
         }, {});
-
-        var _$sortBy = _.sortBy(Object.keys(pathMap)),
-            _$sortBy2 = _toArray(_$sortBy),
-            head = _$sortBy2[0],
-            tail = _$sortBy2.slice(1);
-
-        return [_.get(pathMap, head), _.get(pathMap, tail)];
+        var _sortBy = sortBy(Object.keys(pathMap)),
+          _sortBy2 = _toArray(_sortBy),
+          head = _sortBy2[0],
+          tail = _sortBy2.slice(1);
+        return [get(pathMap, head), get(pathMap, tail)];
       }
+
       /**
        * Check if the tree will auto-deselect currently selected nodes
        * when a new selection is made.
        *
        * @return {boolean} If tree will auto-deselect nodes.
        */
-
     }, {
       key: "canAutoDeselect",
       value: function canAutoDeselect() {
         return this.config.selection.autoDeselect && !this.preventDeselection;
       }
+
       /**
        * Query for all checked nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "checked",
       value: function checked() {
-        return _map(this, 'checked', arguments);
+        return _map2(this, 'checked', arguments);
       }
+
       /**
        * Clean nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "clean",
       value: function clean() {
-        return _map(this, 'clean', arguments);
+        return _map2(this, 'clean', arguments);
       }
+
       /**
        * Clear nodes matched by previous search, restore all nodes and collapse parents.
        *
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "clearSearch",
       value: function clearSearch() {
@@ -5738,6 +5210,7 @@
         this.end();
         return this;
       }
+
       /**
        * Clones (deeply) the array of nodes.
        *
@@ -5745,58 +5218,58 @@
        *
        * @return {TreeNodes} Array of cloned nodes.
        */
-
     }, {
       key: "clone",
       value: function clone() {
-        return _map(this, 'clone', arguments);
+        return _map2(this, 'clone', arguments);
       }
+
       /**
        * Collapse nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "collapse",
       value: function collapse() {
-        return _map(this, 'collapse', arguments);
+        return _map2(this, 'collapse', arguments);
       }
+
       /**
        * Query for all collapsed nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "collapsed",
       value: function collapsed() {
-        return _map(this, 'collapsed', arguments);
+        return _map2(this, 'collapsed', arguments);
       }
+
       /**
        * Collapse (deeply) all children.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "collapseDeep",
       value: function collapseDeep() {
-        return _map(this, 'collapseDeep', arguments);
+        return _map2(this, 'collapseDeep', arguments);
       }
+
       /**
        * Concat multiple TreeNodes arrays.
        *
        * @param {TreeNodes} nodes Array of nodes.
        * @return {TreeNodes} Resulting node array.
        */
-
     }, {
       key: "concat",
       value: function concat() {
-        return _map(this, 'concat', arguments);
+        return _map2(this, 'concat', arguments);
       }
+
       /**
        * Copy nodes to another tree instance.
        *
@@ -5805,177 +5278,176 @@
        * @param {boolean} includeState Include itree.state object.
        * @return {object} Methods to perform action on copied nodes.
        */
-
     }, {
       key: "copy",
       value: function copy() {
-        return _map(this, 'copy', arguments);
+        return _map2(this, 'copy', arguments);
       }
+
       /**
        * Creates a TreeNode without adding it. If the obj is already a TreeNode it's returned without modification.
        *
        * @param {object} obj Source node object.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "createNode",
       value: function createNode(obj) {
         return InspireTree.isTreeNode(obj) ? obj : objectToNode(this, obj);
       }
+
       /**
        * Return deepest nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "deepest",
       value: function deepest() {
-        return _map(this, 'deepest', arguments);
+        return _map2(this, 'deepest', arguments);
       }
+
       /**
        * Deselect nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "deselect",
       value: function deselect() {
-        return _map(this, 'deselect', arguments);
+        return _map2(this, 'deselect', arguments);
       }
+
       /**
        * Deselect (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "deselectDeep",
       value: function deselectDeep() {
-        return _map(this, 'deselectDeep', arguments);
+        return _map2(this, 'deselectDeep', arguments);
       }
+
       /**
        * Disable auto-deselection of currently selected nodes.
        *
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "disableDeselection",
       value: function disableDeselection() {
         if (this.config.selection.multiple) {
           this.preventDeselection = true;
         }
-
         return this;
       }
+
       /**
        * Iterate each TreeNode.
        *
        * @param {function} iteratee Iteratee invoke for each node.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "each",
       value: function each() {
-        return _map(this, 'each', arguments);
+        return _map2(this, 'each', arguments);
       }
+
       /**
        * Query for all editable nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "editable",
       value: function editable() {
-        return _map(this, 'editable', arguments);
+        return _map2(this, 'editable', arguments);
       }
+
       /**
        * Query for all nodes in editing mode.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "editing",
       value: function editing() {
-        return _map(this, 'editing', arguments);
+        return _map2(this, 'editing', arguments);
       }
+
       /**
        * Enable auto-deselection of currently selected nodes.
        *
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "enableDeselection",
       value: function enableDeselection() {
         this.preventDeselection = false;
         return this;
       }
+
       /**
        * Release the current batch.
        *
        * @private
        * @return {void}
        */
-
     }, {
       key: "end",
       value: function end() {
         return this.model.end();
       }
+
       /**
        * Check if every node passes the given test.
        *
        * @param {function} tester Test each node in this collection,
        * @return {boolean} True if every node passes the test.
        */
-
     }, {
       key: "every",
       value: function every() {
-        return _map(this, 'every', arguments);
+        return _map2(this, 'every', arguments);
       }
+
       /**
        * Expand children.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "expand",
       value: function expand() {
-        return _map(this, 'expand', arguments);
+        return _map2(this, 'expand', arguments);
       }
+
       /**
        * Expand (deeply) all nodes.
        *
        * @return {Promise<TreeNodes>} Promise resolved when all children have loaded and expanded.
        */
-
     }, {
       key: "expandDeep",
       value: function expandDeep() {
-        return _map(this, 'expandDeep', arguments);
+        return _map2(this, 'expandDeep', arguments);
       }
+
       /**
        * Query for all expanded nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "expanded",
       value: function expanded() {
-        return _map(this, 'expanded', arguments);
+        return _map2(this, 'expanded', arguments);
       }
+
       /**
        * Clone a hierarchy of all nodes matching a predicate.
        *
@@ -5985,166 +5457,166 @@
        * @param {string|function} predicate State flag or custom function.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "extract",
       value: function extract() {
-        return _map(this, 'extract', arguments);
+        return _map2(this, 'extract', arguments);
       }
+
       /**
        * Filter all nodes matching the given predicate.
        *
        * @param {function} predicate Test function.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "filter",
       value: function filter() {
-        return _map(this, 'filter', arguments);
+        return _map2(this, 'filter', arguments);
       }
+
       /**
        * Filter all nodes matching the given predicate.
        *
        * @param {string|function} predicate State flag or custom function.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "filterBy",
       value: function filterBy() {
-        return _map(this, 'filterBy', arguments);
+        return _map2(this, 'filterBy', arguments);
       }
+
       /**
        * Returns the first node matching predicate.
        *
        * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
        * @return {TreeNode} First matching TreeNode, or undefined.
        */
-
     }, {
       key: "find",
       value: function find() {
-        return _map(this, 'find', arguments);
+        return _map2(this, 'find', arguments);
       }
+
       /**
        * Returns the first shallow node matching predicate.
        *
        * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
        * @return {TreeNode} First matching TreeNode, or undefined.
        */
-
     }, {
       key: "first",
       value: function first() {
-        return _map(this, 'first', arguments);
+        return _map2(this, 'first', arguments);
       }
+
       /**
        * Flatten and get only node(s) matching the expected state or predicate function.
        *
        * @param {string|function} predicate State property or custom function.
        * @return {TreeNodes} Flat array of matching nodes.
        */
-
     }, {
       key: "flatten",
       value: function flatten() {
-        return _map(this, 'flatten', arguments);
+        return _map2(this, 'flatten', arguments);
       }
+
       /**
        * Query for all focused nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "focused",
       value: function focused() {
-        return _map(this, 'focused', arguments);
+        return _map2(this, 'focused', arguments);
       }
+
       /**
        * Iterate each TreeNode.
        *
        * @param {function} iteratee Iteratee invoke for each node.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "forEach",
       value: function forEach() {
-        return _map(this, 'each', arguments);
+        return _map2(this, 'each', arguments);
       }
+
       /**
        * Get a specific node by its index, or undefined if it doesn't exist.
        *
        * @param {int} index Numeric index of requested node.
        * @return {TreeNode} Node object. Undefined if invalid index.
        */
-
     }, {
       key: "get",
       value: function get() {
-        return _map(this, 'get', arguments);
+        return _map2(this, 'get', arguments);
       }
+
       /**
        * Query for all hidden nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "hidden",
       value: function hidden() {
-        return _map(this, 'hidden', arguments);
+        return _map2(this, 'hidden', arguments);
       }
+
       /**
        * Hide nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "hide",
       value: function hide() {
-        return _map(this, 'hide', arguments);
+        return _map2(this, 'hide', arguments);
       }
+
       /**
        * Hide (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "hideDeep",
       value: function hideDeep() {
-        return _map(this, 'hideDeep', arguments);
+        return _map2(this, 'hideDeep', arguments);
       }
+
       /**
        * Query for all indeterminate nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "indeterminate",
       value: function indeterminate() {
-        return _map(this, 'indeterminate', arguments);
+        return _map2(this, 'indeterminate', arguments);
       }
+
       /**
        * Get the index of the given node.
        *
        * @param {TreeNode} node Root tree node.
        * @return {int} Index of the node.
        */
-
     }, {
       key: "indexOf",
       value: function indexOf() {
-        return _map(this, 'indexOf', arguments);
+        return _map2(this, 'indexOf', arguments);
       }
+
       /**
        * Insert a new node at the given position.
        *
@@ -6152,106 +5624,105 @@
        * @param {object} object Raw node object or TreeNode.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "insertAt",
       value: function insertAt() {
-        return _map(this, 'insertAt', arguments);
+        return _map2(this, 'insertAt', arguments);
       }
+
       /**
        * Invoke method(s) on each node.
        *
        * @param {string|array} methods Method name(s).
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "invoke",
       value: function invoke() {
-        return _map(this, 'invoke', arguments);
+        return _map2(this, 'invoke', arguments);
       }
+
       /**
        * Invoke method(s) deeply.
        *
        * @param {string|array} methods Method name(s).
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "invokeDeep",
       value: function invokeDeep() {
-        return _map(this, 'invokeDeep', arguments);
+        return _map2(this, 'invokeDeep', arguments);
       }
+
       /**
        * Check if an event is currently muted.
        *
        * @param {string} eventName Event name.
        * @return {boolean} If event is muted.
        */
-
     }, {
       key: "isEventMuted",
       value: function isEventMuted(eventName) {
-        if (_.isBoolean(this.muted())) {
+        if (isBoolean(this.muted())) {
           return this.muted();
         }
-
-        return _.includes(this.muted(), eventName);
+        return includes(this.muted(), eventName);
       }
+
       /**
        * Check if an object is a Tree.
        *
        * @param {object} object Object
        * @return {boolean} If object is a Tree.
        */
-
     }, {
       key: "isTree",
       value: function isTree(object) {
         return object instanceof InspireTree;
       }
+
       /**
        * Check if an object is a TreeNode.
        *
        * @param {object} obj Object
        * @return {boolean} If object is a TreeNode.
        */
-
     }, {
       key: "join",
-
+      value:
       /**
        * Join nodes into a resulting string.
        *
        * @param {string} separator Separator, defaults to a comma
        * @return {string} Strings from root node objects.
        */
-      value: function join() {
-        return _map(this, 'join', arguments);
+      function join() {
+        return _map2(this, 'join', arguments);
       }
+
       /**
        * Returns the last shallow node matching predicate.
        *
        * @param {function} predicate Predicate function, accepts a single node and returns a boolean.
        * @return {TreeNode} Last matching shallow TreeNode, or undefined.
        */
-
     }, {
       key: "last",
       value: function last() {
-        return _map(this, 'last', arguments);
+        return _map2(this, 'last', arguments);
       }
+
       /**
        * Get the most recently selected node, if any.
        *
        * @return {TreeNode} Last selected node, or undefined.
        */
-
     }, {
       key: "lastSelectedNode",
       value: function lastSelectedNode() {
         return this._lastSelectedNode;
       }
+
       /**
        * Load data. Accepts an array, function, or promise.
        *
@@ -6261,46 +5732,44 @@
        *
        * tree.load($.getJSON('nodes.json'));
        */
-
     }, {
       key: "load",
       value: function load(loader) {
         var _this3 = this;
-
-        var promise = new es6Promise_1(function (resolve, reject) {
+        var promise = new Promise(function (resolve, reject) {
           var complete = function complete(nodes, totalNodes) {
             // A little type-safety for silly situations
-            if (!_.isArrayLike(nodes)) {
+            if (!isArrayLike(nodes)) {
               return reject(new TypeError('Loader requires an array-like `nodes` parameter.'));
-            } // Delay event for synchronous loader. Otherwise it fires
+            }
+
+            // Delay event for synchronous loader. Otherwise it fires
             // before the user has a chance to listen.
-
-
-            if (!_this3.initialized && _.isArrayLike(nodes)) {
+            if (!_this3.initialized && isArrayLike(nodes)) {
               setTimeout(function () {
                 _this3.emit('data.loaded', nodes);
               });
             } else {
               _this3.emit('data.loaded', nodes);
-            } // Parse newly-loaded nodes
+            }
 
+            // Parse newly-loaded nodes
+            var newModel = collectionToModel(_this3, nodes);
 
-            var newModel = collectionToModel(_this3, nodes); // Concat only if loading is deferred
-
+            // Concat only if loading is deferred
             if (_this3.config.deferredLoading) {
               _this3.model = _this3.model.concat(newModel);
             } else {
               _this3.model = newModel;
-            } // Set pagination
+            }
 
-
+            // Set pagination
             _this3.model._pagination.total = nodes.length;
+            if (parseInt(totalNodes, 10) > nodes.length) {
+              _this3.model._pagination.total = parseInt(totalNodes, 10);
+            }
 
-            if (_.parseInt(totalNodes) > nodes.length) {
-              _this3.model._pagination.total = _.parseInt(totalNodes);
-            } // Set pagination totals if resolver failed to provide them
-
-
+            // Set pagination totals if resolver failed to provide them
             if (!totalNodes) {
               _this3.model.recurseDown(function (node) {
                 if (node.hasChildren()) {
@@ -6308,104 +5777,106 @@
                 }
               });
             }
-
             if (_this3.config.selection.require && !_this3.selected().length) {
               _this3.selectFirstAvailableNode();
             }
-
             var init = function init() {
               _this3.emit('model.loaded', _this3.model);
-
               resolve(_this3.model);
-
               _this3.model.applyChanges();
-            }; // Delay event for synchronous loader
+            };
 
-
-            if (!_this3.initialized && _.isArray(nodes)) {
+            // Delay event for synchronous loader
+            if (!_this3.initialized && isArray(nodes)) {
               setTimeout(init);
             } else {
               init();
             }
-          }; // Data given already as an array
+          };
 
-
-          if (_.isArrayLike(loader)) {
+          // Data given already as an array
+          if (isArrayLike(loader)) {
             complete(loader);
-          } // Data loader requires a caller/callback
-          else if (_.isFunction(loader)) {
-              var resp = loader(null, complete, reject, _this3.pagination()); // Loader returned its own object
+          }
 
-              if (resp) {
-                loader = resp;
-              }
-            } // Data loader is likely a promise
+          // Data loader requires a caller/callback
+          else if (isFunction(loader)) {
+            var resp = loader(null, complete, reject, _this3.pagination());
 
+            // Loader returned its own object
+            if (resp) {
+              loader = resp;
+            }
+          }
 
-          if (_.isObject(loader)) {
+          // Data loader is likely a promise
+          if (isObject(loader)) {
             standardizePromise(loader).then(complete)["catch"](reject);
           } else {
             reject(new Error('Invalid data loader.'));
           }
-        }); // Copy to event listeners
+        });
 
+        // Copy to event listeners
         promise["catch"](function (err) {
           _this3.emit('data.loaderror', err);
-        }); // Cache to allow access after tree instantiation
+        });
 
+        // Cache to allow access after tree instantiation
         this._loader = {
           promise: promise
         };
         return promise;
       }
+
       /**
        * Query for all nodes currently loading children.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "loading",
       value: function loading() {
-        return _map(this, 'loading', arguments);
+        return _map2(this, 'loading', arguments);
       }
+
       /**
        * Load additional nodes for the root context.
        *
        * @param {Event} event Click or scroll event if DOM interaction triggered this call.
        * @return {Promise<TreeNodes>} Resolves with request results.
        */
-
     }, {
       key: "loadMore",
       value: function loadMore() {
-        return _map(this, 'loadMore', arguments);
+        return _map2(this, 'loadMore', arguments);
       }
+
       /**
        * Create a new collection after passing every node through iteratee.
        *
        * @param {function} iteratee Node iteratee.
        * @return {TreeNodes} New array of node objects.
        */
-
     }, {
       key: "map",
       value: function map() {
-        return _map(this, 'map', arguments);
+        return _map2(this, 'map', arguments);
       }
+
       /**
        * Query for all nodes matched in the last search.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "matched",
       value: function matched() {
-        return _map(this, 'matched', arguments);
+        return _map2(this, 'matched', arguments);
       }
+
       /**
        * Move node at a given index to a new index.
        *
@@ -6414,53 +5885,52 @@
        * @param {TreeNodes} target Target TreeNodes array. Defaults to this.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "move",
       value: function move() {
-        return _map(this, 'move', arguments);
+        return _map2(this, 'move', arguments);
       }
+
       /**
        * Pause events.
        *
        * @param {array} events Event names to mute.
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "mute",
       value: function mute(events) {
-        if (_.isString(events) || _.isArray(events)) {
-          this._muted = _.castArray(events);
+        if (isString(events) || isArray(events)) {
+          this._muted = castArray(events);
         } else {
           this._muted = true;
         }
-
         return this;
       }
+
       /**
        * Get current mute settings.
        *
        * @return {boolean|array} Muted events. If all, true.
        */
-
     }, {
       key: "muted",
       value: function muted() {
         return this._muted;
       }
+
       /**
        * Get a node.
        *
        * @param {string|number} id ID of node.
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "node",
       value: function node() {
-        return _map(this, 'node', arguments);
+        return _map2(this, 'node', arguments);
       }
+
       /**
        * Get all nodes in a tree, or nodes for an array of IDs.
        *
@@ -6471,46 +5941,46 @@
        * const all = tree.nodes()
        * const some = tree.nodes([1, 2, 3])
        */
-
     }, {
       key: "nodes",
       value: function nodes() {
-        return _map(this, 'nodes', arguments);
+        return _map2(this, 'nodes', arguments);
       }
+
       /**
        * Get the root TreeNodes pagination.
        *
        * @return {object} Pagination configuration object.
        */
-
     }, {
       key: "pagination",
       value: function pagination() {
-        return _map(this, 'pagination', arguments);
+        return _map2(this, 'pagination', arguments);
       }
+
       /**
        * Pop node in the final index position.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "pop",
       value: function pop() {
-        return _map(this, 'pop', arguments);
+        return _map2(this, 'pop', arguments);
       }
+
       /**
        * Add a TreeNode to the end of the root collection.
        *
        * @param {TreeNode} node Node object.
        * @return {int} The new length
        */
-
     }, {
       key: "push",
       value: function push() {
-        return _map(this, 'push', arguments);
+        return _map2(this, 'push', arguments);
       }
+
       /**
        * Iterate down all nodes and any children.
        *
@@ -6520,84 +5990,84 @@
        * @param {function} iteratee Iteratee function
        * @return {TreeNodes} Resulting nodes.
        */
-
     }, {
       key: "recurseDown",
       value: function recurseDown() {
-        return _map(this, 'recurseDown', arguments);
+        return _map2(this, 'recurseDown', arguments);
       }
+
       /**
        * Reduce nodes.
        *
        * @param {function} iteratee Iteratee function
        * @return {any} Resulting data.
        */
-
     }, {
       key: "reduce",
       value: function reduce() {
-        return _map(this, 'reduce', arguments);
+        return _map2(this, 'reduce', arguments);
       }
+
       /**
        * Right-reduce root nodes.
        *
        * @param {function} iteratee Iteratee function
        * @return {any} Resulting data.
        */
-
     }, {
       key: "reduceRight",
       value: function reduceRight() {
-        return _map(this, 'reduceRight', arguments);
+        return _map2(this, 'reduceRight', arguments);
       }
+
       /**
        * Reload/re-execute the original data loader.
        *
        * @return {Promise<TreeNodes>} Load method promise.
        */
-
     }, {
       key: "reload",
       value: function reload() {
         this.reset();
         return this.load(this.opts.data || this.config.data);
       }
+
       /**
        * Remove a node.
        *
        * @param {TreeNode} node Node object.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "remove",
       value: function remove() {
-        return _map(this, 'remove', arguments);
+        return _map2(this, 'remove', arguments);
       }
+
       /**
        * Remove all nodes.
        *
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "removeAll",
       value: function removeAll() {
         this.reset().applyChanges();
         return this;
       }
+
       /**
        * Query for all soft-removed nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "removed",
       value: function removed() {
-        return _map(this, 'removed', arguments);
+        return _map2(this, 'removed', arguments);
       }
+
       /**
        * Resets the root model and associated information like pagination.
        *
@@ -6607,92 +6077,91 @@
        * @private
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "reset",
       value: function reset() {
         this.model = new TreeNodes(this);
         return this;
       }
+
       /**
        * Restore nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "restore",
       value: function restore() {
-        return _map(this, 'restore', arguments);
+        return _map2(this, 'restore', arguments);
       }
+
       /**
        * Restore (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "restoreDeep",
       value: function restoreDeep() {
-        return _map(this, 'restoreDeep', arguments);
+        return _map2(this, 'restoreDeep', arguments);
       }
+
       /**
        * Reverse node order.
        *
        * @return {TreeNodes} Reversed array of node objects.
        */
-
     }, {
       key: "reverse",
       value: function reverse() {
-        return _map(this, 'reverse', arguments);
+        return _map2(this, 'reverse', arguments);
       }
+
       /**
        * Search nodes, showing only those that match and the necessary hierarchy.
        *
        * @param {*} query Search string, RegExp, or function.
        * @return {Promise<TreeNodes>} Promise resolved with an array of matching node objects.
        */
-
     }, {
       key: "search",
       value: function search(query) {
         var _this4 = this;
-
         var _this$config$search = this.config.search,
-            matcher = _this$config$search.matcher,
-            matchProcessor = _this$config$search.matchProcessor; // Don't search if query empty
+          matcher = _this$config$search.matcher,
+          matchProcessor = _this$config$search.matchProcessor;
 
-        if (!query || _.isString(query) && _.isEmpty(query)) {
-          return es6Promise_1.resolve(this.clearSearch());
+        // Don't search if query empty
+        if (!query || isString(query) && isEmpty(query)) {
+          return Promise.resolve(this.clearSearch());
         }
+        this.batch();
 
-        this.batch(); // Reset states
-
+        // Reset states
         this.recurseDown(function (node) {
           node.state('hidden', true);
           node.state('matched', false);
         });
-        this.end(); // Query nodes for any matching the query
+        this.end();
 
-        matcher = _.isFunction(matcher) ? matcher : function (matchQuery, resolve) {
-          var matches = new TreeNodes(_this4); // Convery the query into a usable predicate
+        // Query nodes for any matching the query
+        matcher = isFunction(matcher) ? matcher : function (matchQuery, resolve) {
+          var matches = new TreeNodes(_this4);
 
-          if (_.isString(matchQuery)) {
+          // Convery the query into a usable predicate
+          if (isString(matchQuery)) {
             matchQuery = new RegExp(matchQuery, 'i');
           }
-
           var predicate;
-
-          if (_.isRegExp(matchQuery)) {
+          if (isRegExp(matchQuery)) {
             predicate = function predicate(node) {
               return matchQuery.test(node.text);
             };
           } else {
             predicate = matchQuery;
-          } // Recurse down and find all matches
+          }
 
-
+          // Recurse down and find all matches
           _this4.model.recurseDown(function (node) {
             if (!node.removed()) {
               if (predicate(node)) {
@@ -6701,62 +6170,59 @@
               }
             }
           });
-
           resolve(matches);
-        }; // Process all matching nodes.
+        };
 
-        matchProcessor = _.isFunction(matchProcessor) ? matchProcessor : function (matches) {
+        // Process all matching nodes.
+        matchProcessor = isFunction(matchProcessor) ? matchProcessor : function (matches) {
           matches.each(function (node) {
             node.show().state('matched', true);
             node.expandParents().collapse();
-
             if (node.hasChildren()) {
               node.children.showDeep();
             }
           });
-        }; // Wrap the search matcher with a promise since it could require async requests
+        };
 
-        return new es6Promise_1(function (resolve, reject) {
+        // Wrap the search matcher with a promise since it could require async requests
+        return new Promise(function (resolve, reject) {
           // Execute the matcher and pipe results to the processor
           matcher(query, function (matches) {
             // Convert to a TreeNodes array if we're receiving external nodes
             if (!InspireTree.isTreeNodes(matches)) {
-              matches = _this4.nodes(_.map(matches, 'id'));
+              matches = _this4.nodes(_map(matches, 'id'));
             }
-
             _this4.batch();
-
             matchProcessor(matches);
-
             _this4.end();
-
             resolve(matches);
           }, reject);
         });
       }
+
       /**
        * Select nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "select",
       value: function select() {
-        return _map(this, 'select', arguments);
+        return _map2(this, 'select', arguments);
       }
+
       /**
        * Query for all selectable nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "selectable",
       value: function selectable() {
-        return _map(this, 'selectable', arguments);
+        return _map2(this, 'selectable', arguments);
       }
+
       /**
        * Select all nodes between a start and end node.
        * Starting node must have a higher index path so we can work down to endNode.
@@ -6765,94 +6231,90 @@
        * @param {TreeNode} endNode Ending node
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "selectBetween",
       value: function selectBetween(startNode, endNode) {
         this.batch();
         var node = startNode.nextVisibleNode();
-
         while (node.id !== endNode.id) {
           node.select();
           node = node.nextVisibleNode();
         }
-
         this.end();
         return this;
       }
+
       /**
        * Select (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "selectDeep",
       value: function selectDeep() {
-        return _map(this, 'selectDeep', arguments);
+        return _map2(this, 'selectDeep', arguments);
       }
+
       /**
        * Query for all selected nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "selected",
       value: function selected() {
-        return _map(this, 'selected', arguments);
+        return _map2(this, 'selected', arguments);
       }
+
       /**
        * Select the first available node.
        *
        * @return {TreeNode} Selected node object.
        */
-
     }, {
       key: "selectFirstAvailableNode",
       value: function selectFirstAvailableNode() {
         var node = this.model.filterBy('available').get(0);
-
         if (node) {
           node.select();
         }
-
         return node;
       }
+
       /**
        * Shift node in the first index position.
        *
        * @return {TreeNode} Node object.
        */
-
     }, {
       key: "shift",
       value: function shift() {
-        return _map(this, 'shift', arguments);
+        return _map2(this, 'shift', arguments);
       }
+
       /**
        * Show nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "show",
       value: function show() {
-        return _map(this, 'show', arguments);
+        return _map2(this, 'show', arguments);
       }
+
       /**
        * Show (deeply) all nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "showDeep",
       value: function showDeep() {
-        return _map(this, 'showDeep', arguments);
+        return _map2(this, 'showDeep', arguments);
       }
+
       /**
        * Get a shallow copy of a portion of nodes.
        *
@@ -6860,47 +6322,47 @@
        * @param {int} end End index.
        * @return {Array} Array of selected subset.
        */
-
     }, {
       key: "slice",
       value: function slice() {
-        return _map(this, 'slice', arguments);
+        return _map2(this, 'slice', arguments);
       }
+
       /**
        * Soft-remove nodes.
        *
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "softRemove",
       value: function softRemove() {
-        return _map(this, 'softRemove', arguments);
+        return _map2(this, 'softRemove', arguments);
       }
+
       /**
        * Check if at least one node passes the given test.
        *
        * @param {function} tester Test each node in this collection,
        * @return {boolean} True if at least one node passes the test.
        */
-
     }, {
       key: "some",
       value: function some() {
-        return _map(this, 'some', arguments);
+        return _map2(this, 'some', arguments);
       }
+
       /**
        * Sort nodes using a function.
        *
        * @param {function} compareFn Comparison function.
        * @return {TreeNodes} Root array of node objects.
        */
-
     }, {
       key: "sort",
       value: function sort() {
-        return _map(this, 'sort', arguments);
+        return _map2(this, 'sort', arguments);
       }
+
       /**
        * Sort nodes using a function or key name.
        *
@@ -6909,24 +6371,24 @@
        * @param {string|function} sorter Sort function or property name.
        * @return {TreeNodes} Array of node obejcts.
        */
-
     }, {
       key: "sortBy",
       value: function sortBy() {
-        return _map(this, 'sortBy', arguments);
+        return _map2(this, 'sortBy', arguments);
       }
+
       /**
        * Deeply sort nodes.
        *
        * @param {function} compareFn Comparison function.
        * @return {TreeNodes} Root array of node objects.
        */
-
     }, {
       key: "sortDeep",
       value: function sortDeep() {
-        return _map(this, 'sortDeep', arguments);
+        return _map2(this, 'sortDeep', arguments);
       }
+
       /**
        * Remove and/or add new TreeNodes into the root collection.
        *
@@ -6935,12 +6397,12 @@
        * @param {TreeNode} node Node(s) to insert.
        * @return {Array} Array of selected subset.
        */
-
     }, {
       key: "splice",
       value: function splice() {
-        return _map(this, 'slice', arguments);
+        return _map2(this, 'slice', arguments);
       }
+
       /**
        * Set nodes' state values.
        *
@@ -6948,12 +6410,12 @@
        * @param {boolean} newVal New value, if setting.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "state",
       value: function state() {
-        return _map(this, 'state', arguments);
+        return _map2(this, 'state', arguments);
       }
+
       /**
        * Set (deeply) nodes' state values.
        *
@@ -6961,12 +6423,12 @@
        * @param {boolean} newVal New value, if setting.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "stateDeep",
       value: function stateDeep() {
-        return _map(this, 'stateDeep', arguments);
+        return _map2(this, 'stateDeep', arguments);
       }
+
       /**
        * Swap two node positions.
        *
@@ -6974,99 +6436,95 @@
        * @param {TreeNode} node2 Node 2.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "swap",
       value: function swap() {
-        return _map(this, 'swap', arguments);
+        return _map2(this, 'swap', arguments);
       }
+
       /**
        * Get a native node Array.
        *
        * @return {array} Array of node objects.
        */
-
     }, {
       key: "toArray",
       value: function toArray() {
-        return _map(this, 'toArray', arguments);
+        return _map2(this, 'toArray', arguments);
       }
+
       /**
        * Get a string representation of node objects.
        *
        * @return {string} Strings from root node objects.
        */
-
     }, {
       key: "toString",
       value: function toString() {
-        return _map(this, 'toString', arguments);
+        return _map2(this, 'toString', arguments);
       }
+
       /**
        * Resume events.
        *
        * @param {array} events Events to unmute.
        * @return {Tree} Tree instance.
        */
-
     }, {
       key: "unmute",
       value: function unmute(events) {
         // Diff array and set to false if we're now empty
-        if (_.isString(events) || _.isArray(events)) {
-          this._muted = _.difference(this._muted, _.castArray(events));
-
+        if (isString(events) || isArray(events)) {
+          this._muted = difference(this._muted, castArray(events));
           if (!this._muted.length) {
             this._muted = false;
           }
         } else {
           this._muted = false;
         }
-
         return this;
       }
+
       /**
        * Add a TreeNode in the first index position.
        *
        * @return {number} The new length
        */
-
     }, {
       key: "unshift",
       value: function unshift() {
-        return _map(this, 'unshift', arguments);
+        return _map2(this, 'unshift', arguments);
       }
+
       /**
        * Query for all visible nodes.
        *
        * @param {boolean} full Retain full hiearchy.
        * @return {TreeNodes} Array of node objects.
        */
-
     }, {
       key: "visible",
       value: function visible() {
-        return _map(this, 'visible', arguments);
+        return _map2(this, 'visible', arguments);
       }
     }], [{
       key: "isTreeNode",
       value: function isTreeNode(obj) {
         return obj instanceof TreeNode;
       }
+
       /**
        * Check if an object is a TreeNodes array.
        *
        * @param {object} obj Object
        * @return {boolean} If object is a TreeNodes array.
        */
-
     }, {
       key: "isTreeNodes",
       value: function isTreeNodes(obj) {
         return obj instanceof TreeNodes;
       }
     }]);
-
     return InspireTree;
   }(eventemitter2_1);
 
