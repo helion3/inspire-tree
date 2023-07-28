@@ -1,5 +1,10 @@
 # Changes to Inspire Tree
 
+# 7.0.0 Beta.3
+
+- Improved lodash imports.
+- Added `node.contextmenu` event to type definitions.
+
 # 7.0.0 Beta.2
 
 - Improved node resolve type definitions.
