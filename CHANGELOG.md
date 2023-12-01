@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.0 Beta.8
+
+- Fixed miscellaneous types.
+
 # 7.0.0 Beta.7
 
 - Fixed miscellaneous types.
