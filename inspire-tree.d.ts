@@ -237,7 +237,7 @@ export class InspireTree extends EventEmitter2 {
     available(): TreeNodes;
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
-    boundingNodes(nodes: [TreeNode, TreeNode]): [TreeNode, TreeNode];
+    boundingNodes(first: TreeNode, second: TreeNode): [TreeNode, TreeNode];
     canAutoDeselect(): boolean;
     checked(): TreeNodes;
     clean(): TreeNodes;
