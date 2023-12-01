@@ -238,7 +238,7 @@ export class InspireTree extends EventEmitter2 {
     available(): TreeNodes;
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
-    boundingNodes(): Array<TreeNode>;
+    boundingNodes(): [TreeNode, TreeNode];
     canAutoDeselect(): boolean;
     checked(): TreeNodes;
     clean(): TreeNodes;
@@ -286,7 +286,7 @@ export class InspireTree extends EventEmitter2 {
     static isTreeNode(value: any): value is TreeNode;
     static isTreeNodes(value: any): value is TreeNodes;
     last(predicate: (node: TreeNode) => boolean): TreeNode;
-    lastSelectedNode(): TreeNode;
+    lastSelectedNode(): TreeNode | undefined;
     load(loader: Promise<TreeNodes>): Promise<TreeNodes>;
     loading(full?: boolean): TreeNodes;
     matched(full?: boolean): TreeNodes;
