@@ -77,7 +77,6 @@ export interface Config {
         require?: boolean;
     };
     sort?: string;
-    multiselect?: boolean;
 }
 
 export interface NodeConfig {
@@ -238,7 +237,7 @@ export class InspireTree extends EventEmitter2 {
     available(): TreeNodes;
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
-    boundingNodes(): [TreeNode, TreeNode];
+    boundingNodes(nodes: [TreeNode, TreeNode]): [TreeNode, TreeNode];
     canAutoDeselect(): boolean;
     checked(): TreeNodes;
     clean(): TreeNodes;
