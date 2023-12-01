@@ -283,8 +283,8 @@ export class InspireTree extends EventEmitter2 {
     invoke(methods: string|Array<string>): TreeNodes;
     invokeDeep(methods: string|Array<string>): TreeNodes;
     isEventMuted(eventName: string): boolean;
-    static isTreeNode(object: any): boolean;
-    static isTreeNodes(object: any): boolean;
+    static isTreeNode(value: any): value is TreeNode;
+    static isTreeNodes(value: any): value is TreeNodes;
     last(predicate: (node: TreeNode) => boolean): TreeNode;
     lastSelectedNode(): TreeNode;
     load(loader: Promise<TreeNodes>): Promise<TreeNodes>;
@@ -421,7 +421,7 @@ export class TreeNode {
     focus(): TreeNode;
     focused(): boolean;
     getChildren(): TreeNodes;
-    getParent(): TreeNode;
+    getParent(): TreeNode | undefined;
     getParents(): TreeNodes;
     getTextualHierarchy(): Array<string>;
     hasAncestor(): boolean;
