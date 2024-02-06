@@ -444,10 +444,10 @@ export class TreeNode {
     matched(): TreeNodes;
     nextVisibleAncestralSiblingNode(): TreeNode;
     nextVisibleChildNode(): TreeNode;
-    nextVisibleNode(): TreeNode;
+    nextVisibleNode(): TreeNode | undefined;
     nextVisibleSiblingNode(): TreeNode;
     pagination(): Pagination;
-    previousVisibleNode(): TreeNode;
+    previousVisibleNode(): TreeNode | undefined;
     previousVisibleSiblingNode(): TreeNode;
     recurseDown(iteratee: NodeIteratee): TreeNode;
     recurseUp(iteratee: NodeIteratee): TreeNode;
