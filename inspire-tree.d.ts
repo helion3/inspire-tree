@@ -432,6 +432,7 @@ export class TreeNode {
     hidden(): boolean;
     hide(): TreeNode;
     indeterminate(): boolean;
+    indexList(): Array<number>;
     indexPath(): string;
     isFirstRenderable(): boolean;
     isLastRenderable(): boolean;

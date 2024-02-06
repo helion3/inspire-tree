@@ -626,18 +626,27 @@ class TreeNode {
     }
 
     /**
-     * Get a "path" of indices, values which map this node's location within all parent contexts.
+     * Get an array of indices, values which map this node's location within all parent contexts.
      *
      * @return {string} Index path
      */
-    indexPath() {
+    indexList() {
         const indices = [];
 
         this.recurseUp(node => {
             indices.push(indexOf(node.context(), node));
         });
 
-        return indices.reverse().join('.');
+        return indices.reverse();
+    }
+
+    /**
+     * Get a "path" of indices, values which map this node's location within all parent contexts.
+     *
+     * @return {string} Index path
+     */
+    indexPath() {
+        return this.indexList().join('.');
     }
 
     /**
