@@ -1,5 +1,11 @@
 # Changes to Inspire Tree
 
+# 7.0.0 Beta.9
+
+- Added TreeNode#indexList for an array of context array indices.
+- Reworked Tree#boundingNodes to fix issues with sorting.
+- Fixed miscellaneous types.
+
 # 7.0.0 Beta.8
 
 - Fixed miscellaneous types.

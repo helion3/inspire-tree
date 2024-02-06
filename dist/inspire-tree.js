@@ -1,15 +1,15 @@
 /* Inspire Tree
- * @version 7.0.0-beta.4
+ * @version 7.0.0-beta.9
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
  *          see https://github.com/helion3/inspire-tree/blob/master/LICENSE
  */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash/map.js'), require('lodash/castArray.js'), require('lodash/defaultsDeep.js'), require('lodash/difference.js'), require('lodash/each.js'), require('lodash/get.js'), require('lodash/includes.js'), require('lodash/isArray.js'), require('lodash/isArrayLike.js'), require('lodash/isBoolean.js'), require('lodash/isEmpty.js'), require('lodash/isFunction.js'), require('lodash/isObject.js'), require('lodash/isRegExp.js'), require('lodash/isString.js'), require('lodash/noop.js'), require('lodash/sortBy.js'), require('lodash/transform.js'), require('lodash/assign.js'), require('lodash/cloneDeep.js'), require('lodash/find.js'), require('lodash/findIndex.js'), require('lodash/findLast.js'), require('lodash/indexOf.js'), require('lodash/pull.js'), require('lodash/slice.js'), require('lodash/invoke.js'), require('lodash/isArrayLikeObject.js'), require('lodash/remove.js'), require('lodash/sortedIndexBy.js'), require('lodash/tail.js')) :
-  typeof define === 'function' && define.amd ? define(['lodash/map.js', 'lodash/castArray.js', 'lodash/defaultsDeep.js', 'lodash/difference.js', 'lodash/each.js', 'lodash/get.js', 'lodash/includes.js', 'lodash/isArray.js', 'lodash/isArrayLike.js', 'lodash/isBoolean.js', 'lodash/isEmpty.js', 'lodash/isFunction.js', 'lodash/isObject.js', 'lodash/isRegExp.js', 'lodash/isString.js', 'lodash/noop.js', 'lodash/sortBy.js', 'lodash/transform.js', 'lodash/assign.js', 'lodash/cloneDeep.js', 'lodash/find.js', 'lodash/findIndex.js', 'lodash/findLast.js', 'lodash/indexOf.js', 'lodash/pull.js', 'lodash/slice.js', 'lodash/invoke.js', 'lodash/isArrayLikeObject.js', 'lodash/remove.js', 'lodash/sortedIndexBy.js', 'lodash/tail.js'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.InspireTree = factory(global._.map, global._.castArray, global._.defaultsDeep, global._.difference, global._.each, global._.get, global._.includes, global._.isArray, global._.isArrayLike, global._.isBoolean, global._.isEmpty, global._.isFunction, global._.isObject, global._.isRegExp, global._.isString, global._.noop, global._.sortBy, global._.transform, global._.assign, global._.cloneDeep, global._.find, global._.findIndex, global._.findLast, global._.indexOf, global._.pull, global._.slice, global._.invoke, global._.isArrayLikeObject, global._.remove, global._.sortedIndexBy, global._.tail));
-})(this, (function (_map, castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, sortBy, transform, _assign, cloneDeep, find, findIndex, findLast, indexOf, pull, slice, invoke, isArrayLikeObject, _remove, sortedIndexBy, tail) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash/map.js'), require('lodash/castArray.js'), require('lodash/defaultsDeep.js'), require('lodash/difference.js'), require('lodash/each.js'), require('lodash/get.js'), require('lodash/includes.js'), require('lodash/isArray.js'), require('lodash/isArrayLike.js'), require('lodash/isBoolean.js'), require('lodash/isEmpty.js'), require('lodash/isFunction.js'), require('lodash/isObject.js'), require('lodash/isRegExp.js'), require('lodash/isString.js'), require('lodash/noop.js'), require('lodash/sortBy.js'), require('lodash/tail.js'), require('lodash/transform.js'), require('lodash/assign.js'), require('lodash/cloneDeep.js'), require('lodash/find.js'), require('lodash/findIndex.js'), require('lodash/findLast.js'), require('lodash/indexOf.js'), require('lodash/pull.js'), require('lodash/slice.js'), require('lodash/invoke.js'), require('lodash/isArrayLikeObject.js'), require('lodash/remove.js'), require('lodash/sortedIndexBy.js')) :
+  typeof define === 'function' && define.amd ? define(['lodash/map.js', 'lodash/castArray.js', 'lodash/defaultsDeep.js', 'lodash/difference.js', 'lodash/each.js', 'lodash/get.js', 'lodash/includes.js', 'lodash/isArray.js', 'lodash/isArrayLike.js', 'lodash/isBoolean.js', 'lodash/isEmpty.js', 'lodash/isFunction.js', 'lodash/isObject.js', 'lodash/isRegExp.js', 'lodash/isString.js', 'lodash/noop.js', 'lodash/sortBy.js', 'lodash/tail.js', 'lodash/transform.js', 'lodash/assign.js', 'lodash/cloneDeep.js', 'lodash/find.js', 'lodash/findIndex.js', 'lodash/findLast.js', 'lodash/indexOf.js', 'lodash/pull.js', 'lodash/slice.js', 'lodash/invoke.js', 'lodash/isArrayLikeObject.js', 'lodash/remove.js', 'lodash/sortedIndexBy.js'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.InspireTree = factory(global._.map, global._.castArray, global._.defaultsDeep, global._.difference, global._.each, global._.get, global._.includes, global._.isArray, global._.isArrayLike, global._.isBoolean, global._.isEmpty, global._.isFunction, global._.isObject, global._.isRegExp, global._.isString, global._.noop, global._.sortBy, global._.tail, global._.transform, global._.assign, global._.cloneDeep, global._.find, global._.findIndex, global._.findLast, global._.indexOf, global._.pull, global._.slice, global._.invoke, global._.isArrayLikeObject, global._.remove, global._.sortedIndexBy));
+})(this, (function (_map, castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, _sortBy, tail, transform_js, _assign, cloneDeep, find, findIndex, findLast, indexOf, pull, slice, invoke, isArrayLikeObject, _remove, sortedIndexBy) { 'use strict';
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -123,31 +123,6 @@
       };
     }
     return _get.apply(this, arguments);
-  }
-  function _toArray(arr) {
-    return _arrayWithHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableRest();
-  }
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr)) return arr;
-  }
-  function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-  }
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o) return;
-    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor) n = o.constructor.name;
-    if (n === "Map" || n === "Set") return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-  }
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length) len = arr.length;
-    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-    return arr2;
-  }
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
   /**
@@ -1398,14 +1373,14 @@
        */
     }, {
       key: "sortBy",
-      value: function sortBy$1(sorter) {
+      value: function sortBy(sorter) {
         var _this4 = this;
         sorter = sorter || this._tree.config.sort;
 
         // Only apply sort if one provided
         if (sorter) {
           this.batch();
-          var sorted = sortBy(this, sorter);
+          var sorted = _sortBy(this, sorter);
           this.length = 0;
           each(sorted, function (node) {
             _this4.push(node);
@@ -2258,6 +2233,21 @@
       }
 
       /**
+       * Get an array of indices, values which map this node's location within all parent contexts.
+       *
+       * @return {string} Index path
+       */
+    }, {
+      key: "indexList",
+      value: function indexList() {
+        var indices = [];
+        this.recurseUp(function (node) {
+          indices.push(indexOf(node.context(), node));
+        });
+        return indices.reverse();
+      }
+
+      /**
        * Get a "path" of indices, values which map this node's location within all parent contexts.
        *
        * @return {string} Index path
@@ -2265,11 +2255,7 @@
     }, {
       key: "indexPath",
       value: function indexPath() {
-        var indices = [];
-        this.recurseUp(function (node) {
-          indices.push(indexOf(node.context(), node));
-        });
-        return indices.reverse().join('.');
+        return this.indexList().join('.');
       }
 
       /**
@@ -3239,7 +3225,7 @@
 
     // Sort
     if (tree.config.sort) {
-      array = sortBy(array, tree.config.sort);
+      array = _sortBy(array, tree.config.sort);
     }
     each(array, function (node) {
       collection.push(objectToNode(tree, node, parent));
@@ -5148,15 +5134,20 @@
        */
     }, {
       key: "boundingNodes",
-      value: function boundingNodes() {
-        var pathMap = transform(arguments, function (col, node) {
-          col[node.indexPath().replace(/\./g, '')] = node;
-        }, {});
-        var _sortBy = sortBy(Object.keys(pathMap)),
-          _sortBy2 = _toArray(_sortBy),
-          head = _sortBy2[0],
-          tail = _sortBy2.slice(1);
-        return [get(pathMap, head), get(pathMap, tail)];
+      value: function boundingNodes(firstNode, secondNode) {
+        // Sorts nodes by comparing each index in their index lists
+        var sort = function sort(arr1, arr2) {
+          if (arr1[0] === arr2[0]) {
+            if (arr1.length > 1 && arr2.length > 1) {
+              return sort(tail(arr1), tail(arr2));
+            } else {
+              return 0;
+            }
+          } else {
+            return arr1[0] > arr2[0] ? 1 : -1;
+          }
+        };
+        return sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode];
       }
 
       /**
