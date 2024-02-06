@@ -16,6 +16,7 @@ import {
     isString,
     noop,
     sortBy,
+    tail,
     transform
 } from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
@@ -281,17 +282,21 @@ class InspireTree extends EventEmitter2 {
      *
      * @return {array} Array with two TreeNode objects.
      */
-    boundingNodes() {
-        const pathMap = transform(arguments, (col, node) => {
-            col[node.indexPath().replace(/\./g, '')] = node;
-        }, {});
+    boundingNodes(firstNode, secondNode) {
+        // Sorts nodes by comparing each index in their index lists
+        const sort = (arr1, arr2) => {
+            if (arr1[0] === arr2[0]) {
+                if (arr1.length > 1 && arr2.length > 1) {
+                    return sort(tail(arr1), tail(arr2))
+                } else {
+                    return 0
+                }
+            } else {
+                return arr1[0] > arr2[0] ? 1 : -1
+            }
+        }
 
-        const [head, ...tail] = sortBy(Object.keys(pathMap));
-
-        return [
-            get(pathMap, head),
-            get(pathMap, tail)
-        ];
+        return sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode]
     }
 
     /**
