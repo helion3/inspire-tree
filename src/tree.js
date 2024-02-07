@@ -1406,7 +1406,7 @@ class InspireTree extends EventEmitter2 {
      * @return {Array} Array of selected subset.
      */
     splice() {
-        return map(this, 'slice', arguments);
+        return map(this, 'splice', arguments);
     }
 
     /**
