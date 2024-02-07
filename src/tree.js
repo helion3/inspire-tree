@@ -15,9 +15,7 @@ import {
     isRegExp,
     isString,
     noop,
-    sortBy,
-    tail,
-    transform
+    tail
 } from 'lodash';
 import { collectionToModel } from './lib/collection-to-model';
 import { EventEmitter2 } from 'eventemitter2';
