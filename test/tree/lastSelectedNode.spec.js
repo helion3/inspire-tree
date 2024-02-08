@@ -13,7 +13,11 @@ describe('Tree.lastSelectedNode', function() {
             }, {
                 text: 'B',
                 id: 2
-            }]
+            }],
+            selection: {
+                autoDeselect: false,
+                multiple: true
+            }
         });
     });
 
@@ -35,5 +39,17 @@ describe('Tree.lastSelectedNode', function() {
         tree.node(2).select();
 
         expect(tree.lastSelectedNode().id).to.equal(2);
+    });
+
+    it('returns last selected node even when another node is deselected', function() {
+        tree.node(1).deselect();
+
+        expect(tree.lastSelectedNode().id).to.equal(2);
+    });
+
+    it('returns null if last selected node is deselected', function() {
+        tree.node(2).deselect();
+
+        expect(tree.lastSelectedNode()).to.be.null;
     });
 });

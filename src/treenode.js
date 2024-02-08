@@ -374,6 +374,10 @@ class TreeNode {
 
             baseStateChange('selected', false, 'deselected', this, deep);
 
+            if (this._tree._lastSelectedNode === this) {
+                this._tree._lastSelectedNode = null;
+            }
+
             this.context().end();
         }
 
