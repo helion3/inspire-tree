@@ -1,5 +1,17 @@
 # Changes to Inspire Tree
 
+# 7.0.0
+
+- Clears `lastSelectedNode` if that node is deselected.
+- Fixed `tree.splice` not mapping nodes `splice` correctly.
+- Updated dependencies.
+
+**Breaking Changes**
+
+v7 drops `Promise` polyfills, so older browser without native Promise support are no longer supported.
+
+v7 will be the LTS version pre-v8. It will effectively be maintenance work only.
+
 # 7.0.0 Beta.9
 
 - Added TreeNode#indexList for an array of context array indices.

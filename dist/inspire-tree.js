@@ -1,16 +1,41 @@
 /* Inspire Tree
- * @version 7.0.0-beta.9
+ * @version 7.0.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
  *          see https://github.com/helion3/inspire-tree/blob/master/LICENSE
  */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash/map.js'), require('lodash/castArray.js'), require('lodash/defaultsDeep.js'), require('lodash/difference.js'), require('lodash/each.js'), require('lodash/get.js'), require('lodash/includes.js'), require('lodash/isArray.js'), require('lodash/isArrayLike.js'), require('lodash/isBoolean.js'), require('lodash/isEmpty.js'), require('lodash/isFunction.js'), require('lodash/isObject.js'), require('lodash/isRegExp.js'), require('lodash/isString.js'), require('lodash/noop.js'), require('lodash/sortBy.js'), require('lodash/tail.js'), require('lodash/transform.js'), require('lodash/assign.js'), require('lodash/cloneDeep.js'), require('lodash/find.js'), require('lodash/findIndex.js'), require('lodash/findLast.js'), require('lodash/indexOf.js'), require('lodash/pull.js'), require('lodash/slice.js'), require('lodash/invoke.js'), require('lodash/isArrayLikeObject.js'), require('lodash/remove.js'), require('lodash/sortedIndexBy.js')) :
-  typeof define === 'function' && define.amd ? define(['lodash/map.js', 'lodash/castArray.js', 'lodash/defaultsDeep.js', 'lodash/difference.js', 'lodash/each.js', 'lodash/get.js', 'lodash/includes.js', 'lodash/isArray.js', 'lodash/isArrayLike.js', 'lodash/isBoolean.js', 'lodash/isEmpty.js', 'lodash/isFunction.js', 'lodash/isObject.js', 'lodash/isRegExp.js', 'lodash/isString.js', 'lodash/noop.js', 'lodash/sortBy.js', 'lodash/tail.js', 'lodash/transform.js', 'lodash/assign.js', 'lodash/cloneDeep.js', 'lodash/find.js', 'lodash/findIndex.js', 'lodash/findLast.js', 'lodash/indexOf.js', 'lodash/pull.js', 'lodash/slice.js', 'lodash/invoke.js', 'lodash/isArrayLikeObject.js', 'lodash/remove.js', 'lodash/sortedIndexBy.js'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.InspireTree = factory(global._.map, global._.castArray, global._.defaultsDeep, global._.difference, global._.each, global._.get, global._.includes, global._.isArray, global._.isArrayLike, global._.isBoolean, global._.isEmpty, global._.isFunction, global._.isObject, global._.isRegExp, global._.isString, global._.noop, global._.sortBy, global._.tail, global._.transform, global._.assign, global._.cloneDeep, global._.find, global._.findIndex, global._.findLast, global._.indexOf, global._.pull, global._.slice, global._.invoke, global._.isArrayLikeObject, global._.remove, global._.sortedIndexBy));
-})(this, (function (_map, castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, _sortBy, tail, transform_js, _assign, cloneDeep, find, findIndex, findLast, indexOf, pull, slice, invoke, isArrayLikeObject, _remove, sortedIndexBy) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('lodash/map.js'), require('lodash/castArray.js'), require('lodash/defaultsDeep.js'), require('lodash/difference.js'), require('lodash/each.js'), require('lodash/get.js'), require('lodash/includes.js'), require('lodash/isArray.js'), require('lodash/isArrayLike.js'), require('lodash/isBoolean.js'), require('lodash/isEmpty.js'), require('lodash/isFunction.js'), require('lodash/isObject.js'), require('lodash/isRegExp.js'), require('lodash/isString.js'), require('lodash/noop.js'), require('lodash/tail.js'), require('lodash/sortBy.js'), require('lodash/assign.js'), require('lodash/cloneDeep.js'), require('lodash/find.js'), require('lodash/findIndex.js'), require('lodash/findLast.js'), require('lodash/indexOf.js'), require('lodash/pull.js'), require('lodash/slice.js'), require('lodash/invoke.js'), require('lodash/isArrayLikeObject.js'), require('lodash/remove.js'), require('lodash/sortedIndexBy.js')) :
+  typeof define === 'function' && define.amd ? define(['lodash/map.js', 'lodash/castArray.js', 'lodash/defaultsDeep.js', 'lodash/difference.js', 'lodash/each.js', 'lodash/get.js', 'lodash/includes.js', 'lodash/isArray.js', 'lodash/isArrayLike.js', 'lodash/isBoolean.js', 'lodash/isEmpty.js', 'lodash/isFunction.js', 'lodash/isObject.js', 'lodash/isRegExp.js', 'lodash/isString.js', 'lodash/noop.js', 'lodash/tail.js', 'lodash/sortBy.js', 'lodash/assign.js', 'lodash/cloneDeep.js', 'lodash/find.js', 'lodash/findIndex.js', 'lodash/findLast.js', 'lodash/indexOf.js', 'lodash/pull.js', 'lodash/slice.js', 'lodash/invoke.js', 'lodash/isArrayLikeObject.js', 'lodash/remove.js', 'lodash/sortedIndexBy.js'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.InspireTree = factory(global._.map, global._.castArray, global._.defaultsDeep, global._.difference, global._.each, global._.get, global._.includes, global._.isArray, global._.isArrayLike, global._.isBoolean, global._.isEmpty, global._.isFunction, global._.isObject, global._.isRegExp, global._.isString, global._.noop, global._.tail, global._.sortBy, global._.assign, global._.cloneDeep, global._.find, global._.findIndex, global._.findLast, global._.indexOf, global._.pull, global._.slice, global._.invoke, global._.isArrayLikeObject, global._.remove, global._.sortedIndexBy));
+})(this, (function (_map, castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, tail, _sortBy, _assign, cloneDeep, find, findIndex, findLast, indexOf, pull, slice, invoke, isArrayLikeObject, _remove, sortedIndexBy) { 'use strict';
 
+  function _callSuper(t, o, e) {
+    return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e));
+  }
+  function _isNativeReflectConstruct() {
+    try {
+      var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    } catch (t) {}
+    return (_isNativeReflectConstruct = function () {
+      return !!t;
+    })();
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : String(i);
+  }
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
@@ -22,7 +47,7 @@
       descriptor.enumerable = descriptor.enumerable || false;
       descriptor.configurable = true;
       if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
+      Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
     }
   }
   function _createClass(Constructor, protoProps, staticProps) {
@@ -62,17 +87,6 @@
     };
     return _setPrototypeOf(o, p);
   }
-  function _isNativeReflectConstruct() {
-    if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-    if (Reflect.construct.sham) return false;
-    if (typeof Proxy === "function") return true;
-    try {
-      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -86,20 +100,6 @@
       throw new TypeError("Derived constructors may only return object or undefined");
     }
     return _assertThisInitialized(self);
-  }
-  function _createSuper(Derived) {
-    var hasNativeReflectConstruct = _isNativeReflectConstruct();
-    return function _createSuperInternal() {
-      var Super = _getPrototypeOf(Derived),
-        result;
-      if (hasNativeReflectConstruct) {
-        var NewTarget = _getPrototypeOf(this).constructor;
-        result = Reflect.construct(Super, arguments, NewTarget);
-      } else {
-        result = Super.apply(this, arguments);
-      }
-      return _possibleConstructorReturn(this, result);
-    };
   }
   function _superPropBase(object, property) {
     while (!Object.prototype.hasOwnProperty.call(object, property)) {
@@ -280,11 +280,10 @@
    */
   var TreeNodes = /*#__PURE__*/function (_extendableBuiltin2) {
     _inherits(TreeNodes, _extendableBuiltin2);
-    var _super = _createSuper(TreeNodes);
     function TreeNodes(tree, array, opts) {
       var _this;
       _classCallCheck(this, TreeNodes);
-      _this = _super.call(this);
+      _this = _callSuper(this, TreeNodes);
       if (isFunction(get(tree, 'isTree')) && !tree.isTree(tree)) {
         throw new TypeError('Invalid tree instance.');
       }
@@ -1956,6 +1955,9 @@
           // Will we apply this state change to our children?
           var deep = !shallow && this._tree.config.selection.autoSelectChildren;
           baseStateChange('selected', false, 'deselected', this, deep);
+          if (this._tree._lastSelectedNode === this) {
+            this._tree._lastSelectedNode = null;
+          }
           this.context().end();
         }
         return this;
@@ -3108,7 +3110,7 @@
   function unsafeStringify(arr, offset = 0) {
     // Note: Be careful editing this code!  It's been tuned for performance
     // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-    return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+    return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
   }
 
   const randomUUID = typeof crypto !== 'undefined' && crypto.randomUUID && crypto.randomUUID.bind(crypto);
@@ -4880,11 +4882,10 @@
    */
   var InspireTree = /*#__PURE__*/function (_EventEmitter) {
     _inherits(InspireTree, _EventEmitter);
-    var _super = _createSuper(InspireTree);
     function InspireTree(opts) {
       var _this;
       _classCallCheck(this, InspireTree);
-      _this = _super.call(this);
+      _this = _callSuper(this, InspireTree);
 
       // Init properties
       _this._lastSelectedNode;
@@ -6391,7 +6392,7 @@
     }, {
       key: "splice",
       value: function splice() {
-        return _map2(this, 'slice', arguments);
+        return _map2(this, 'splice', arguments);
       }
 
       /**
