@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.1
+
+- Adds `cancelEditOnBlur` config.
+
 # 7.0.0
 
 - Clears `lastSelectedNode` if that node is deselected.

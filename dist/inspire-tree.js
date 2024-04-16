@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.0
+ * @version 7.0.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -1770,7 +1770,9 @@
     }, {
       key: "blur",
       value: function blur() {
-        this.state('editing', false);
+        if (this._tree.config.cancelEditOnBlur) {
+          this.state('editing', false);
+        }
         return baseStateChange('focused', false, 'blurred', this);
       }
 
@@ -4900,6 +4902,7 @@
       // Assign defaults
       _this.config = defaultsDeep({}, opts, {
         allowLoadEvents: [],
+        cancelEditOnBlur: true,
         checkbox: {
           autoCheckChildren: true
         },
