@@ -194,7 +194,9 @@ class TreeNode {
      * @return {TreeNode} Node object.
      */
     blur() {
-        this.state('editing', false);
+        if (this._tree.config.cancelEditOnBlur) {
+            this.state('editing', false);
+        }
 
         return baseStateChange('focused', false, 'blurred', this);
     }

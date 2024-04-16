@@ -47,6 +47,7 @@ export type NodeConfigsProvider = NodeConfigs | NodeConfigsPromise | NodeConfigs
  */
 export interface Config {
     allowLoadEvents?: Array<string>;
+    cancelEditOnBlur?: boolean;
     contextMenu?: boolean;
     data: NodeConfigsProvider;
     deferredLoading?: boolean;

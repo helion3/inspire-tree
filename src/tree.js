@@ -60,6 +60,7 @@ class InspireTree extends EventEmitter2 {
         // Assign defaults
         this.config = defaultsDeep({}, opts, {
             allowLoadEvents: [],
+            cancelEditOnBlur: true,
             checkbox: {
                 autoCheckChildren: true
             },
