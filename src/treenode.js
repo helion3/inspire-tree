@@ -1372,7 +1372,7 @@ class TreeNode {
      * @return {InspireTree} Tree instance.
      */
     tree() {
-        return this.context().tree();
+        return this._tree;
     }
 
     /**
