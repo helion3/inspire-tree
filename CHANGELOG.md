@@ -1,8 +1,12 @@
 # Changes to Inspire Tree
 
+# 7.0.2
+
+- Fixed inconsistent `TreeNode.tree` return.
+
 # 7.0.1
 
-- Adds `cancelEditOnBlur` config.
+- Added `cancelEditOnBlur` config.
 
 # 7.0.0
 

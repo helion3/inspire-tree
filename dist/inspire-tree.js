@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.1
+ * @version 7.0.2
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -3023,7 +3023,7 @@
     }, {
       key: "tree",
       value: function tree() {
-        return this.context().tree();
+        return this._tree;
       }
 
       /**
