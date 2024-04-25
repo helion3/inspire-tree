@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.5
+
+- Fixed careless mistake placing `unshiftChild` method on the wrong interface.
+
 # 7.0.4
 
 - Added missed type definition for `unshiftChild`.
