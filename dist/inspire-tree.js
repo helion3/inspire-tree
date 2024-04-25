@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.2
+ * @version 7.0.3
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -3050,6 +3050,22 @@
         }
         this._tree.end();
         return this;
+      }
+
+      /**
+       * Unshift a child to this node.
+       *
+       * @param {object} child Node object.
+       * @return {TreeNode} Node object.
+       */
+    }, {
+      key: "unshiftChild",
+      value: function unshiftChild(child) {
+        if (isArray(this.children) || !isArrayLike(this.children)) {
+          this.children = new TreeNodes(this._tree);
+          this.children._context = this;
+        }
+        return this.children.insertAt(0, child);
       }
 
       /**

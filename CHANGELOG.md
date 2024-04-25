@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.3
+
+- Added `TreeNode.unshiftChild(child)`.
+
 # 7.0.2
 
 - Fixed inconsistent `TreeNode.tree` return.
