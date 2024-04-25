@@ -475,7 +475,7 @@ export class TreeNode {
     toString(): string;
     tree(): InspireTree;
     uncheck(shallow?: boolean): TreeNode;
-    unshiftNode(node: NodeConfig): TreeNode;
+    unshiftChild(node: NodeConfig): TreeNode;
     visible(): boolean;
 }
 
