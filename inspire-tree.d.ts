@@ -385,6 +385,7 @@ export class TreeNodes extends Array<TreeNode> {
     swap(node1: TreeNode, node2: TreeNode): TreeNodes;
     toArray(): Array<any>;
     tree(): InspireTree;
+    unshiftNode(node: NodeConfig): TreeNode;
     visible(full?: boolean): TreeNodes;
 }
 
