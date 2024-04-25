@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.4
+
+- Added missed type definition for `unshiftChild`.
+
 # 7.0.3
 
 - Added `TreeNode.unshiftChild(child)`.
