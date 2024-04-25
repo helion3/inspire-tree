@@ -1403,6 +1403,21 @@ class TreeNode {
     }
 
     /**
+     * Unshift a child to this node.
+     *
+     * @param {object} child Node object.
+     * @return {TreeNode} Node object.
+     */
+    unshiftChild(child) {
+        if (isArray(this.children) || !isArrayLike(this.children)) {
+            this.children = new TreeNodes(this._tree);
+            this.children._context = this;
+        }
+
+        return this.children.insertAt(0, child);
+    }
+
+    /**
      * Get whether node is visible to a user. Returns false
      * if it's hidden, or if any ancestor is hidden or collapsed.
      *
