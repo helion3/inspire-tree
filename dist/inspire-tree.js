@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.7
+ * @version 7.0.8
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -6286,9 +6286,9 @@
     }, {
       key: "selectFirstAvailableNode",
       value: function selectFirstAvailableNode() {
-        var result = this.model.filterBy(function (node) {
+        var result = this.model.find(function (node) {
           return node.available() && node.selectable();
-        }).get(0);
+        });
         if (result) {
           result.select();
         }

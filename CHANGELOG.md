@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.8
+
+- Fixed `selectFirstAvailableNode` to look deeply.
+
 # 7.0.7
 
 - Fixed `selectFirstAvailableNode` trying to select unselectable nodes.
