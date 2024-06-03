@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.7
+
+- Fixed `selectFirstAvailableNode` trying to select unselectable nodes.
+
 # 7.0.6
 
 - Fixed typo in method type.
