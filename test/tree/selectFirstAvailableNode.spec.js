@@ -50,4 +50,26 @@ describe('Tree.selectFirstAvailableNode', function() {
 
         expect(tree.node(2).selected()).to.be.true;
     });
+
+    it('selects the first deep selectable node', function() {
+        const tree = new InspireTree({
+            data: [{
+                text: 'A',
+                id: 1,
+                children: [{
+                    text: 'B',
+                    id: 2
+                }],
+                itree: {
+                    state: {
+                        selectable: false
+                    }
+                }
+            }]
+        });
+
+        tree.selectFirstAvailableNode();
+
+        expect(tree.node(2).selected()).to.be.true;
+    });
 });

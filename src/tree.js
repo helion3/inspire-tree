@@ -1301,7 +1301,7 @@ class InspireTree extends EventEmitter2 {
      * @return {TreeNode} Selected node object.
      */
     selectFirstAvailableNode() {
-        const result = this.model.filterBy(node => node.available() && node.selectable()).get(0);
+        const result = this.model.find(node => node.available() && node.selectable());
         if (result) {
             result.select();
         }
