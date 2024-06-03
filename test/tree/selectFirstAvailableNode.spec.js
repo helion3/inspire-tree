@@ -2,11 +2,19 @@ const expect = require('chai').expect;
 const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '/inspire-tree');
 
 describe('Tree.selectFirstAvailableNode', function() {
-    let tree;
+    it('exists', function() {
+        const tree = new InspireTree({
+            data: [{
+                text: 'A',
+                id: 1
+            }]
+        });
 
-    before(function() {
-        // Create tree
-        tree = new InspireTree({
+        expect(tree.selectFirstAvailableNode).to.be.a('function');
+    });
+
+    it('selects the first visible node', function() {
+        const tree = new InspireTree({
             data: [{
                 text: 'A',
                 id: 1
@@ -15,14 +23,29 @@ describe('Tree.selectFirstAvailableNode', function() {
                 id: 2
             }]
         });
-    });
 
-    it('exists', function() {
-        expect(tree.selectFirstAvailableNode).to.be.a('function');
-    });
-
-    it('selects the first visible node', function() {
         tree.node(1).hide();
+        tree.selectFirstAvailableNode();
+
+        expect(tree.node(2).selected()).to.be.true;
+    });
+
+    it('selects the first selectable node', function() {
+        const tree = new InspireTree({
+            data: [{
+                text: 'A',
+                id: 1,
+                itree: {
+                    state: {
+                        selectable: false
+                    }
+                }
+            }, {
+                text: 'B',
+                id: 2
+            }]
+        });
+
         tree.selectFirstAvailableNode();
 
         expect(tree.node(2).selected()).to.be.true;
