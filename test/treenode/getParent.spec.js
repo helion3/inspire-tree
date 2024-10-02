@@ -29,4 +29,8 @@ describe('TreeNode.prototype.getParent', function() {
     it('returns parent for child node', function() {
         expect(tree.node(2).getParent().id).to.equal(1);
     });
+
+    it('does not show private parent property in Object.keys', function() {
+        expect(Object.keys(tree.node(1).itree).includes('parent')).to.equal(false);
+    });
 });

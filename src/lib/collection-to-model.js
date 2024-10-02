@@ -28,7 +28,12 @@ export function collectionToModel(tree, array, parent) {
         collection.push(objectToNode(tree, node, parent));
     });
 
-    collection._context = parent;
+    // Save parent, if any. This is unenumerable to prevent it showing in object.keys
+    // and leading to recursive errors, like in third party deepEqual functions.
+    Object.defineProperty(collection, '_context', {
+        value: parent,
+        writable: true
+    });
 
     collection.end();
 

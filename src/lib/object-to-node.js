@@ -53,8 +53,12 @@ export function objectToNode(tree, object, parent) {
     state.rendered = state.rendered || tree.defaultState.rendered;
     state.selected = state.selected || tree.defaultState.selected;
 
-    // Save parent, if any.
-    object.itree.parent = parent;
+    // Save parent, if any. This is unenumerable to prevent it showing in object.keys
+    // and leading to recursive errors, like in third party deepEqual functions.
+    Object.defineProperty(object.itree, 'parent', {
+        value: parent,
+        writable: true
+    });
 
     // Wrap
     object = assign(new TreeNode(tree), object);

@@ -29,4 +29,8 @@ describe('TreeNode.prototype.context', function() {
         expect(tree.node(1).context()).to.have.length(2);
         expect(tree.node(11).context()).to.have.length(1);
     });
+
+    it('does not show private _context property in Object.keys', function() {
+        expect(Object.keys(tree.node(1)).includes('_context')).to.equal(false);
+    });
 });
