@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.8
+ * @version 7.0.9
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -3207,8 +3207,12 @@
     state.rendered = state.rendered || tree.defaultState.rendered;
     state.selected = state.selected || tree.defaultState.selected;
 
-    // Save parent, if any.
-    object.itree.parent = parent;
+    // Save parent, if any. This is unenumerable to prevent it showing in object.keys
+    // and leading to recursive errors, like in third party deepEqual functions.
+    Object.defineProperty(object.itree, 'parent', {
+      value: parent,
+      writable: true
+    });
 
     // Wrap
     object = _assign(new TreeNode(tree), object);
@@ -3250,7 +3254,13 @@
     each(array, function (node) {
       collection.push(objectToNode(tree, node, parent));
     });
-    collection._context = parent;
+
+    // Save parent, if any. This is unenumerable to prevent it showing in object.keys
+    // and leading to recursive errors, like in third party deepEqual functions.
+    Object.defineProperty(collection, '_context', {
+      value: parent,
+      writable: true
+    });
     collection.end();
     return collection;
   }

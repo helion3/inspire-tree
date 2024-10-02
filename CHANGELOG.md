@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.9
+
+- Made `TreeNode#context` and `itree#parent` fields unenumerable to prevent recursion errors from libraries that deeply iterate object properties.
+
 # 7.0.8
 
 - Fixed `selectFirstAvailableNode` to look deeply.
