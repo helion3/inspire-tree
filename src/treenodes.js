@@ -109,7 +109,11 @@ class TreeNodes extends Array {
             throw new TypeError('Invalid tree instance.');
         }
 
-        this._tree = tree;
+        Object.defineProperty(this, '_tree', {
+            value: tree,
+            writable: true
+        });
+
         this.length = 0;
         this.batching = 0;
 

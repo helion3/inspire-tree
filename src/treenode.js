@@ -86,7 +86,10 @@ function baseState(node, property, val) {
  */
 class TreeNode {
     constructor(tree, source, excludeKeys) {
-        this._tree = tree;
+        Object.defineProperty(this, '_tree', {
+            value: tree,
+            writable: true
+        });
 
         if (source instanceof TreeNode) {
             excludeKeys = castArray(excludeKeys);
