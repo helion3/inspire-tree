@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.10
+
+- Additional fixes for recursive keys, and fixed recursion test oversight.
+
 # 7.0.9
 
 - Made `TreeNode#context` and `itree#parent` fields unenumerable to prevent recursion errors from libraries that deeply iterate object properties.

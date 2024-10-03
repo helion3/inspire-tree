@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.9
+ * @version 7.0.10
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -287,7 +287,10 @@
       if (isFunction(get(tree, 'isTree')) && !tree.isTree(tree)) {
         throw new TypeError('Invalid tree instance.');
       }
-      _this._tree = tree;
+      Object.defineProperty(_assertThisInitialized(_this), '_tree', {
+        value: tree,
+        writable: true
+      });
       _this.length = 0;
       _this.batching = 0;
 
@@ -1659,7 +1662,10 @@
     function TreeNode(tree, source, excludeKeys) {
       var _this = this;
       _classCallCheck(this, TreeNode);
-      this._tree = tree;
+      Object.defineProperty(this, '_tree', {
+        value: tree,
+        writable: true
+      });
       if (source instanceof TreeNode) {
         excludeKeys = castArray(excludeKeys);
         excludeKeys.push('_tree');
