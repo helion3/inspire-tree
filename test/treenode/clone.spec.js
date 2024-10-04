@@ -21,13 +21,14 @@ describe('TreeNode.prototype.clone', function() {
         expect(tree.node(1).clone).to.be.a('function');
     });
 
-    it('returns a complete clone', function() {
+    it('returns a clone', function() {
         const original = tree.node(1);
         const clone = original.clone();
 
         expect(InspireTree.isTreeNode(clone)).to.be.true;
         expect(clone.id).to.equal(original.id);
         expect(clone.hasChildren()).to.be.true;
+        expect(clone.itree.parent).to.eql(original.itree.parent);
     });
 
     it('changes to clone do not impact original', function() {

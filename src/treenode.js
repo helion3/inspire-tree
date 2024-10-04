@@ -45,6 +45,11 @@ function cloneItree(itree, excludeKeys) {
         }
     });
 
+    Object.defineProperty(clone, 'parent', {
+        value: itree.parent,
+        writable: true
+    });
+
     return clone;
 }
 
@@ -90,6 +95,8 @@ class TreeNode {
             value: tree,
             writable: true
         });
+
+        // console.log('new TreeNode#tree', this._tree)
 
         if (source instanceof TreeNode) {
             excludeKeys = castArray(excludeKeys);

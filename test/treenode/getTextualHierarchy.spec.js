@@ -38,4 +38,22 @@ describe('TreeNode.prototype.getTextualHierarchy', function() {
         expect(parents[1]).to.equal('AA');
         expect(parents[2]).to.equal('AAA');
     });
+
+    it('returns both parent texts for child node after cloning node', function() {
+        const parents = tree.node(3).clone().getTextualHierarchy();
+
+        expect(parents).to.have.length(3);
+        expect(parents[0]).to.equal('A');
+        expect(parents[1]).to.equal('AA');
+        expect(parents[2]).to.equal('AAA');
+    });
+
+    it('returns both parent texts for child node after cloning nodes', function() {
+        const parents = tree.nodes().clone().node(3).getTextualHierarchy();
+
+        expect(parents).to.have.length(3);
+        expect(parents[0]).to.equal('A');
+        expect(parents[1]).to.equal('AA');
+        expect(parents[2]).to.equal('AAA');
+    });
 });
