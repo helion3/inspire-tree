@@ -98,8 +98,6 @@ class TreeNode {
             writable: true
         });
 
-        // console.log('new TreeNode#tree', this._tree)
-
         if (source instanceof TreeNode) {
             excludeKeys = castArray(excludeKeys);
             excludeKeys.push('_tree');
