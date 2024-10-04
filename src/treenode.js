@@ -45,10 +45,12 @@ function cloneItree(itree, excludeKeys) {
         }
     });
 
-    Object.defineProperty(clone, 'parent', {
-        value: itree.parent,
-        writable: true
-    });
+    if (!excludeKeys.includes('parent')) {
+        Object.defineProperty(clone, 'parent', {
+            value: itree.parent,
+            writable: true
+        });
+    }
 
     return clone;
 }
