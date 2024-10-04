@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.10
+ * @version 7.0.11
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -1622,6 +1622,10 @@
         clone[k] = cloneDeep(v);
       }
     });
+    Object.defineProperty(clone, 'parent', {
+      value: itree.parent,
+      writable: true
+    });
     return clone;
   }
 
@@ -1666,6 +1670,9 @@
         value: tree,
         writable: true
       });
+
+      // console.log('new TreeNode#tree', this._tree)
+
       if (source instanceof TreeNode) {
         excludeKeys = castArray(excludeKeys);
         excludeKeys.push('_tree');

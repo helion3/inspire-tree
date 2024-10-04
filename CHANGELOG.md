@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.11
+
+- Fixed `itree.parent` being lost on tree node clone.
+
 # 7.0.10
 
 - Additional fixes for recursive keys, and fixed recursion test oversight.
