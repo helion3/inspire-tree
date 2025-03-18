@@ -1,5 +1,11 @@
 # Changes to Inspire Tree
 
+# 7.0.12
+
+- Added `tree.cacheSelectedNodes()` and `tree.previouslySelectedNodes()` to return nodes selected before the most recent.
+- Fixed defineProperty use on clone when parent key is excluded.
+- Removed a console.log.
+
 # 7.0.11
 
 - Fixed `itree.parent` being lost on tree node clone.
