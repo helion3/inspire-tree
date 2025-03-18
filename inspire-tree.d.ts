@@ -239,6 +239,7 @@ export class InspireTree extends EventEmitter2 {
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
     boundingNodes(first: TreeNode, second: TreeNode): [TreeNode, TreeNode];
+    cacheSelectedNodes(): void;
     canAutoDeselect(): boolean;
     checked(): TreeNodes;
     clean(): TreeNodes;
@@ -296,6 +297,7 @@ export class InspireTree extends EventEmitter2 {
     node(id: string|number): TreeNode;
     nodes(ids?: Array<string>|Array<number>): TreeNodes;
     pagination(): Pagination;
+    previouslySelectedNodes(): TreeNodes;
     recurseDown(iteratee: NodeIteratee): TreeNodes;
     reload(): Promise<TreeNodes>;
     removeAll(): InspireTree;

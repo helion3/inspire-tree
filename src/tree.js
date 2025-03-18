@@ -188,6 +188,9 @@ class InspireTree extends EventEmitter2 {
         // Init the model
         this.model = new TreeNodes(this);
 
+        // Init nodes values
+        this._previouslySelectedNodes = new TreeNodes(this);
+
         // Load initial user data
         if (this.config.data) {
             this.load(this.config.data);
@@ -296,6 +299,15 @@ class InspireTree extends EventEmitter2 {
         }
 
         return sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode]
+    }
+
+    /**
+     * Cache the currently selected nodes.
+     *
+     * @return {void}
+     */
+    cacheSelectedNodes() {
+        this._previouslySelectedNodes = this.selected();
     }
 
     /**
@@ -1018,6 +1030,15 @@ class InspireTree extends EventEmitter2 {
      */
     pop() {
         return map(this, 'pop', arguments);
+    }
+
+    /**
+     * Get the previously selected nodes, if any.
+     *
+     * @return {TreeNodes} Previously selected nodes, or undefined.
+     */
+    previouslySelectedNodes() {
+        return this._previouslySelectedNodes;
     }
 
     /**

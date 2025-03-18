@@ -1152,6 +1152,8 @@ class TreeNode {
             // Batch selection changes
             this._tree.batch();
 
+            this._tree.cacheSelectedNodes();
+
             if (this._tree.canAutoDeselect()) {
                 const oldVal = this._tree.config.selection.require;
                 this._tree.config.selection.require = false;
