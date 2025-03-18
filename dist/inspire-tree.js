@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.11
+ * @version 7.0.12
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -1622,10 +1622,12 @@
         clone[k] = cloneDeep(v);
       }
     });
-    Object.defineProperty(clone, 'parent', {
-      value: itree.parent,
-      writable: true
-    });
+    if (!excludeKeys.includes('parent')) {
+      Object.defineProperty(clone, 'parent', {
+        value: itree.parent,
+        writable: true
+      });
+    }
     return clone;
   }
 
@@ -1670,9 +1672,6 @@
         value: tree,
         writable: true
       });
-
-      // console.log('new TreeNode#tree', this._tree)
-
       if (source instanceof TreeNode) {
         excludeKeys = castArray(excludeKeys);
         excludeKeys.push('_tree');
@@ -2789,6 +2788,7 @@
         if (!this.selected() && this.selectable()) {
           // Batch selection changes
           this._tree.batch();
+          this._tree.cacheSelectedNodes();
           if (this._tree.canAutoDeselect()) {
             var oldVal = this._tree.config.selection.require;
             this._tree.config.selection.require = false;
@@ -5068,6 +5068,9 @@
       // Init the model
       _this.model = new TreeNodes(_assertThisInitialized(_this));
 
+      // Init nodes values
+      _this._previouslySelectedNodes = new TreeNodes(_assertThisInitialized(_this));
+
       // Load initial user data
       if (_this.config.data) {
         _this.load(_this.config.data);
@@ -5191,6 +5194,17 @@
           }
         };
         return sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode];
+      }
+
+      /**
+       * Cache the currently selected nodes.
+       *
+       * @return {void}
+       */
+    }, {
+      key: "cacheSelectedNodes",
+      value: function cacheSelectedNodes() {
+        this._previouslySelectedNodes = this.selected();
       }
 
       /**
@@ -6001,6 +6015,17 @@
       key: "pop",
       value: function pop() {
         return _map2(this, 'pop', arguments);
+      }
+
+      /**
+       * Get the previously selected nodes, if any.
+       *
+       * @return {TreeNodes} Previously selected nodes, or undefined.
+       */
+    }, {
+      key: "previouslySelectedNodes",
+      value: function previouslySelectedNodes() {
+        return this._previouslySelectedNodes;
       }
 
       /**

@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.13
+
+- Fixed distribution build.
+
 # 7.0.12
 
 - Added `tree.cacheSelectedNodes()` and `tree.previouslySelectedNodes()` to return nodes selected before the most recent.
