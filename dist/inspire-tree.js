@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.12
+ * @version 7.0.14
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -2717,6 +2717,9 @@
           parent.refreshIndeterminateState();
           parent.markDirty();
         }
+        if (this.selected()) {
+          this.tree().autoSelectNode();
+        }
         var pagination = parent ? parent.pagination() : this._tree.pagination();
         pagination.total--;
 
@@ -5127,6 +5130,20 @@
       }
 
       /**
+       * Auto-selects first available node if selection is required yet no nodes are selected.
+       *
+       * @return {TreeNode|null} Newly selected TreeNode or null if no node selected
+       */
+    }, {
+      key: "autoSelectNode",
+      value: function autoSelectNode() {
+        if (this.config.selection.require && !this.selected().length) {
+          return this.selectFirstAvailableNode();
+        }
+        return null;
+      }
+
+      /**
        * Query for all available nodes.
        *
        * @param {boolean} full Retain full hiearchy.
@@ -5825,9 +5842,7 @@
                 }
               });
             }
-            if (_this3.config.selection.require && !_this3.selected().length) {
-              _this3.selectFirstAvailableNode();
-            }
+            _this3.autoSelectNode();
             var init = function init() {
               _this3.emit('model.loaded', _this3.model);
               resolve(_this3.model);

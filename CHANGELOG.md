@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.14
+
+- Fixed selecting a node when selection is required and the only selected node is removed.
+
 # 7.0.13
 
 - Fixed distribution build.
