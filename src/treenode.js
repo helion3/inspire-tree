@@ -1088,6 +1088,10 @@ class TreeNode {
             parent.markDirty();
         }
 
+        if (this.selected()) {
+            this.tree().autoSelectNode();
+        }
+
         const pagination = parent ? parent.pagination() : this._tree.pagination();
         pagination.total--;
 

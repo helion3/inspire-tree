@@ -36,4 +36,28 @@ describe('TreeNode.prototype.remove', function() {
         expect(exported.itree.state).to.be.an('object');
         expect(exported.itree.state.selected).to.be.true;
     });
+
+    it('selects a new node after removing a node', function() {
+        const tree1 = new InspireTree({
+            selection: {
+                require: true
+            },
+            data: [{
+                text: 'A',
+                id: 1
+            }, {
+                text: 'B',
+                id: 2
+            }]
+        });
+
+        expect(tree1.selected()).to.have.length(1);
+        expect(tree1.selected().at(0).id).to.equal(1);
+
+        tree1.node(1).remove();
+
+        expect(tree1.nodes()).to.have.length(1);
+        expect(tree1.selected()).to.have.length(1);
+        expect(tree1.selected().at(0).id).to.equal(2);
+    });
 });

@@ -241,6 +241,19 @@ class InspireTree extends EventEmitter2 {
     }
 
     /**
+     * Auto-selects first available node if selection is required yet no nodes are selected.
+     *
+     * @return {TreeNode|null} Newly selected TreeNode or null if no node selected
+     */
+    autoSelectNode() {
+        if (this.config.selection.require && !this.selected().length) {
+            return this.selectFirstAvailableNode();
+        }
+
+        return null;
+    }
+
+    /**
      * Query for all available nodes.
      *
      * @param {boolean} full Retain full hiearchy.
@@ -855,9 +868,7 @@ class InspireTree extends EventEmitter2 {
                     });
                 }
 
-                if (this.config.selection.require && !this.selected().length) {
-                    this.selectFirstAvailableNode();
-                }
+                this.autoSelectNode();
 
                 const init = () => {
                     this.emit('model.loaded', this.model);

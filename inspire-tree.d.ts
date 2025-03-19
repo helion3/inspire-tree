@@ -235,6 +235,7 @@ export interface InspireTree {
 export class InspireTree extends EventEmitter2 {
     addNode(node: NodeConfig): TreeNode;
     addNodes(node: Array<NodeConfig>): TreeNodes;
+    autoSelectNode(): TreeNode | null;
     available(): TreeNodes;
     blur(): TreeNodes;
     blurDeep(): TreeNodes;
