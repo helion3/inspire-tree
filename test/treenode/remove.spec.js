@@ -60,4 +60,28 @@ describe('TreeNode.prototype.remove', function() {
         expect(tree1.selected()).to.have.length(1);
         expect(tree1.selected().at(0).id).to.equal(2);
     });
+
+    it('does not select a new node after removing a node when selection disabled, but required', function() {
+        const tree1 = new InspireTree({
+            selection: {
+                autoSelectOnNodeRemoval: false,
+                require: true
+            },
+            data: [{
+                text: 'A',
+                id: 1
+            }, {
+                text: 'B',
+                id: 2
+            }]
+        });
+
+        expect(tree1.selected()).to.have.length(1);
+        expect(tree1.selected().at(0).id).to.equal(1);
+
+        tree1.node(1).remove();
+
+        expect(tree1.nodes()).to.have.length(1);
+        expect(tree1.selected()).to.have.length(0);
+    });
 });

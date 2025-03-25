@@ -1088,7 +1088,7 @@ class TreeNode {
             parent.markDirty();
         }
 
-        if (this.selected()) {
+        if (this.tree().config.selection.autoSelectOnNodeRemoval && this.selected()) {
             this.tree().autoSelectNode();
         }
 

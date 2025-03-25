@@ -86,6 +86,7 @@ class InspireTree extends EventEmitter2 {
                 allow: noop,
                 autoDeselect: true,
                 autoSelectChildren: false,
+                autoSelectOnNodeRemoval: true,
                 disableDirectDeselection: false,
                 mode: 'default',
                 multiple: false,

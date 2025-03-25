@@ -72,6 +72,7 @@ export interface Config {
         allow?: NodeIteratee;
         autoDeselect?: boolean;
         autoSelectChildren?: boolean;
+        autoSelectOnNodeRemoval?: boolean;
         disableDirectDeselection?: boolean;
         mode?: string;
         multiple?: boolean;
