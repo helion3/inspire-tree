@@ -2717,7 +2717,7 @@
           parent.refreshIndeterminateState();
           parent.markDirty();
         }
-        if (this.selected()) {
+        if (this.tree().config.selection.autoSelectOnNodeRemoval && this.selected()) {
           this.tree().autoSelectNode();
         }
         var pagination = parent ? parent.pagination() : this._tree.pagination();
@@ -4970,6 +4970,7 @@
           allow: noop,
           autoDeselect: true,
           autoSelectChildren: false,
+          autoSelectOnNodeRemoval: true,
           disableDirectDeselection: false,
           mode: 'default',
           multiple: false,

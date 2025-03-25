@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.15
+
+- Added `selection.autoSelectOnNodeRemoval` configuration option.
+
 # 7.0.14
 
 - Fixed selecting a node when selection is required and the only selected node is removed.
