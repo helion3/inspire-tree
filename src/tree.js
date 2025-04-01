@@ -366,6 +366,10 @@ class InspireTree extends EventEmitter2 {
             node.show().collapse().state('matched', false);
         });
 
+        if (this.config.selection.require) {
+            this.previouslySelectedNodes().select();
+        }
+
         this.end();
 
         return this;
@@ -1259,6 +1263,13 @@ class InspireTree extends EventEmitter2 {
                 this.batch();
 
                 matchProcessor(matches);
+
+                if (this.config.selection.require) {
+                    const result = matches.find(node => node.available() && node.selectable());
+                    if (result) {
+                        result.select();
+                    }
+                }
 
                 this.end();
 

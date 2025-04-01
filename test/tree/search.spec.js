@@ -175,4 +175,72 @@ describe('Tree.search', function() {
         expect(tree.node(1).checked()).to.be.true;
         expect(tree.node(2).checked()).to.be.false;
     });
+
+    it('selects the first matching node when selection required', function(done) {
+        tree = new InspireTree({
+            selection: {
+                require: true
+            },
+            data: [{
+                text: 'bear',
+                id: 1
+            }, {
+                text: 'fox',
+                id: 2
+            }, {
+                text: 'lemur',
+                id: 3,
+                children: [{
+                    text: 'bob',
+                    id: 3
+                }, {
+                    text: 'sue'
+                }]
+            }]
+        });
+
+        tree.search('fox').then(function() {
+            expect(tree.node(2).selected()).to.be.true;
+
+            done();
+        }).catch(done);
+    });
+
+    it('restores original selection on search clear when selection required', function(done) {
+        tree = new InspireTree({
+            selection: {
+                require: true
+            },
+            data: [{
+                text: 'bear',
+                id: 1
+            }, {
+                text: 'fox',
+                id: 2
+            }, {
+                text: 'lemur',
+                id: 3,
+                children: [{
+                    text: 'bob',
+                    id: 3
+                }, {
+                    text: 'sue'
+                }]
+            }]
+        });
+
+        expect(tree.node(1).selected()).to.be.true;
+
+        tree.search('fox').then(function() {
+            expect(tree.node(1).selected()).to.be.false;
+            expect(tree.node(2).selected()).to.be.true;
+
+            tree.clearSearch();
+
+            expect(tree.node(1).selected()).to.be.true;
+            expect(tree.node(2).selected()).to.be.false;
+
+            done();
+        }).catch(done);
+    });
 });
