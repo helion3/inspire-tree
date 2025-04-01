@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.0.16
+
+- Added auto selection on search/clearSearch when selection required.
+
 # 7.0.15
 
 - Added `selection.autoSelectOnNodeRemoval` configuration option.

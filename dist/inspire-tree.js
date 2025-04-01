@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.14
+ * @version 7.0.16
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -5273,6 +5273,9 @@
           // Reset search effects (show node, collapse, reset matched)
           node.show().collapse().state('matched', false);
         });
+        if (this.config.selection.require) {
+          this.previouslySelectedNodes().select();
+        }
         this.end();
         return this;
       }
@@ -6269,6 +6272,14 @@
             }
             _this4.batch();
             matchProcessor(matches);
+            if (_this4.config.selection.require) {
+              var result = matches.find(function (node) {
+                return node.available() && node.selectable();
+              });
+              if (result) {
+                result.select();
+              }
+            }
             _this4.end();
             resolve(matches);
           }, reject);
