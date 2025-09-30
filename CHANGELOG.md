@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.1
+
+- Moved search/clearSearch selection logic to new config options.
+
 # 7.0.16
 
 - Added auto selection on search/clearSearch when selection required.

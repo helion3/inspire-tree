@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.0.16
+ * @version 7.1
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -11,8 +11,52 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.InspireTree = factory(global._.map, global._.castArray, global._.defaultsDeep, global._.difference, global._.each, global._.get, global._.includes, global._.isArray, global._.isArrayLike, global._.isBoolean, global._.isEmpty, global._.isFunction, global._.isObject, global._.isRegExp, global._.isString, global._.noop, global._.tail, global._.sortBy, global._.assign, global._.cloneDeep, global._.find, global._.findIndex, global._.findLast, global._.indexOf, global._.pull, global._.slice, global._.invoke, global._.isArrayLikeObject, global._.remove, global._.sortedIndexBy));
 })(this, (function (_map, castArray, defaultsDeep, difference, each, get, includes, isArray, isArrayLike, isBoolean, isEmpty, isFunction, isObject, isRegExp, isString, noop, tail, _sortBy, _assign, cloneDeep, find, findIndex, findLast, indexOf, pull, slice, invoke, isArrayLikeObject, _remove, sortedIndexBy) { 'use strict';
 
+  function _assertThisInitialized(e) {
+    if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    return e;
+  }
   function _callSuper(t, o, e) {
     return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e));
+  }
+  function _classCallCheck(a, n) {
+    if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
+  }
+  function _defineProperties(e, r) {
+    for (var t = 0; t < r.length; t++) {
+      var o = r[t];
+      o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o);
+    }
+  }
+  function _createClass(e, r, t) {
+    return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
+      writable: !1
+    }), e;
+  }
+  function _get() {
+    return _get = "undefined" != typeof Reflect && Reflect.get ? Reflect.get.bind() : function (e, t, r) {
+      var p = _superPropBase(e, t);
+      if (p) {
+        var n = Object.getOwnPropertyDescriptor(p, t);
+        return n.get ? n.get.call(arguments.length < 3 ? e : r) : n.value;
+      }
+    }, _get.apply(null, arguments);
+  }
+  function _getPrototypeOf(t) {
+    return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) {
+      return t.__proto__ || Object.getPrototypeOf(t);
+    }, _getPrototypeOf(t);
+  }
+  function _inherits(t, e) {
+    if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function");
+    t.prototype = Object.create(e && e.prototype, {
+      constructor: {
+        value: t,
+        writable: !0,
+        configurable: !0
+      }
+    }), Object.defineProperty(t, "prototype", {
+      writable: !1
+    }), e && _setPrototypeOf(t, e);
   }
   function _isNativeReflectConstruct() {
     try {
@@ -21,6 +65,26 @@
     return (_isNativeReflectConstruct = function () {
       return !!t;
     })();
+  }
+  function _possibleConstructorReturn(t, e) {
+    if (e && ("object" == typeof e || "function" == typeof e)) return e;
+    if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined");
+    return _assertThisInitialized(t);
+  }
+  function _setPrototypeOf(t, e) {
+    return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
+      return t.__proto__ = e, t;
+    }, _setPrototypeOf(t, e);
+  }
+  function _superPropBase(t, o) {
+    for (; !{}.hasOwnProperty.call(t, o) && null !== (t = _getPrototypeOf(t)););
+    return t;
+  }
+  function _superPropGet(t, o, e, r) {
+    var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), o, e);
+    return 2 & r && "function" == typeof p ? function (t) {
+      return p.apply(e, t);
+    } : p;
   }
   function _toPrimitive(t, r) {
     if ("object" != typeof t || !t) return t;
@@ -34,95 +98,7 @@
   }
   function _toPropertyKey(t) {
     var i = _toPrimitive(t, "string");
-    return "symbol" == typeof i ? i : String(i);
-  }
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
-    }
-  }
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    Object.defineProperty(Constructor, "prototype", {
-      writable: false
-    });
-    return Constructor;
-  }
-  function _inherits(subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        writable: true,
-        configurable: true
-      }
-    });
-    Object.defineProperty(subClass, "prototype", {
-      writable: false
-    });
-    if (superClass) _setPrototypeOf(subClass, superClass);
-  }
-  function _getPrototypeOf(o) {
-    _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-      return o.__proto__ || Object.getPrototypeOf(o);
-    };
-    return _getPrototypeOf(o);
-  }
-  function _setPrototypeOf(o, p) {
-    _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-      o.__proto__ = p;
-      return o;
-    };
-    return _setPrototypeOf(o, p);
-  }
-  function _assertThisInitialized(self) {
-    if (self === void 0) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-    return self;
-  }
-  function _possibleConstructorReturn(self, call) {
-    if (call && (typeof call === "object" || typeof call === "function")) {
-      return call;
-    } else if (call !== void 0) {
-      throw new TypeError("Derived constructors may only return object or undefined");
-    }
-    return _assertThisInitialized(self);
-  }
-  function _superPropBase(object, property) {
-    while (!Object.prototype.hasOwnProperty.call(object, property)) {
-      object = _getPrototypeOf(object);
-      if (object === null) break;
-    }
-    return object;
-  }
-  function _get() {
-    if (typeof Reflect !== "undefined" && Reflect.get) {
-      _get = Reflect.get.bind();
-    } else {
-      _get = function _get(target, property, receiver) {
-        var base = _superPropBase(target, property);
-        if (!base) return;
-        var desc = Object.getOwnPropertyDescriptor(base, property);
-        if (desc.get) {
-          return desc.get.call(arguments.length < 3 ? target : receiver);
-        }
-        return desc.value;
-      };
-    }
-    return _get.apply(this, arguments);
+    return "symbol" == typeof i ? i : i + "";
   }
 
   /**
@@ -279,7 +255,6 @@
    * @return {TreeNodes} Collection of TreeNode
    */
   var TreeNodes = /*#__PURE__*/function (_extendableBuiltin2) {
-    _inherits(TreeNodes, _extendableBuiltin2);
     function TreeNodes(tree, array, opts) {
       var _this;
       _classCallCheck(this, TreeNodes);
@@ -287,7 +262,7 @@
       if (isFunction(get(tree, 'isTree')) && !tree.isTree(tree)) {
         throw new TypeError('Invalid tree instance.');
       }
-      Object.defineProperty(_assertThisInitialized(_this), '_tree', {
+      Object.defineProperty(_this, '_tree', {
         value: tree,
         writable: true
       });
@@ -325,7 +300,8 @@
      * @param {object} object Node
      * @return {TreeNode} Node object.
      */
-    _createClass(TreeNodes, [{
+    _inherits(TreeNodes, _extendableBuiltin2);
+    return _createClass(TreeNodes, [{
       key: "addNode",
       value: function addNode(object) {
         // Base insertion index
@@ -1183,7 +1159,7 @@
     }, {
       key: "pop",
       value: function pop() {
-        var result = _get(_getPrototypeOf(TreeNodes.prototype), "pop", this).call(this);
+        var result = _superPropGet(TreeNodes, "pop", this, 3)([]);
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
@@ -1198,7 +1174,7 @@
     }, {
       key: "push",
       value: function push(node) {
-        var result = _get(_getPrototypeOf(TreeNodes.prototype), "push", this).call(this, node);
+        var result = _superPropGet(TreeNodes, "push", this, 3)([node]);
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
@@ -1326,7 +1302,7 @@
     }, {
       key: "shift",
       value: function shift(node) {
-        var result = _get(_getPrototypeOf(TreeNodes.prototype), "shift", this).call(this, node);
+        var result = _superPropGet(TreeNodes, "shift", this, 3)([node]);
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
@@ -1422,7 +1398,7 @@
     }, {
       key: "splice",
       value: function splice() {
-        var result = _get(_getPrototypeOf(TreeNodes.prototype), "splice", this).apply(this, arguments);
+        var result = _superPropGet(TreeNodes, "splice", this, 1).apply(this, arguments);
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
@@ -1529,7 +1505,7 @@
     }, {
       key: "unshift",
       value: function unshift(node) {
-        var result = _get(_getPrototypeOf(TreeNodes.prototype), "unshift", this).call(this, node);
+        var result = _superPropGet(TreeNodes, "unshift", this, 3)([node]);
         this.indicesDirty = true;
         this.calculateRenderablePositions();
         return result;
@@ -1547,7 +1523,6 @@
         return baseStatePredicate.call(this, 'visible', full);
       }
     }]);
-    return TreeNodes;
   }(_extendableBuiltin(Array));
 
   /**
@@ -1703,7 +1678,7 @@
      * @param {object} child Node object.
      * @return {TreeNode} Node object.
      */
-    _createClass(TreeNode, [{
+    return _createClass(TreeNode, [{
       key: "addChild",
       value: function addChild(child) {
         if (isArray(this.children) || !isArrayLike(this.children)) {
@@ -3108,7 +3083,6 @@
         return isVisible;
       }
     }]);
-    return TreeNode;
   }();
 
   // Unique ID creation requires a high quality random # generator. In the browser we therefore
@@ -4925,7 +4899,6 @@
    * @return {InspireTree} Tree instance.
    */
   var InspireTree = /*#__PURE__*/function (_EventEmitter) {
-    _inherits(InspireTree, _EventEmitter);
     function InspireTree(opts) {
       var _this;
       _classCallCheck(this, InspireTree);
@@ -4974,7 +4947,9 @@
           disableDirectDeselection: false,
           mode: 'default',
           multiple: false,
-          require: false
+          require: false,
+          reselectOnSearchClear: false,
+          selectOnSearch: false
         },
         showCheckboxes: false,
         sort: false
@@ -5031,7 +5006,7 @@
       // Init the default state for nodes
       _this.defaultState = {
         collapsed: true,
-        editable: get(_assertThisInitialized(_this), 'config.editing.edit'),
+        editable: get(_this, 'config.editing.edit'),
         editing: false,
         draggable: true,
         'drop-target': true,
@@ -5065,15 +5040,15 @@
               event.treeDefaultPrevented = true;
             };
           }
-          emit.apply(_assertThisInitialized(_this), args);
+          emit.apply(_this, args);
         }
       };
 
       // Init the model
-      _this.model = new TreeNodes(_assertThisInitialized(_this));
+      _this.model = new TreeNodes(_this);
 
       // Init nodes values
-      _this._previouslySelectedNodes = new TreeNodes(_assertThisInitialized(_this));
+      _this._previouslySelectedNodes = new TreeNodes(_this);
 
       // Load initial user data
       if (_this.config.data) {
@@ -5090,7 +5065,8 @@
      * @param {object} node Node
      * @return {TreeNode} Node object.
      */
-    _createClass(InspireTree, [{
+    _inherits(InspireTree, _EventEmitter);
+    return _createClass(InspireTree, [{
       key: "addNode",
       value: function addNode() {
         return _map2(this, 'addNode', arguments);
@@ -5200,10 +5176,10 @@
       key: "boundingNodes",
       value: function boundingNodes(firstNode, secondNode) {
         // Sorts nodes by comparing each index in their index lists
-        var sort = function sort(arr1, arr2) {
+        var _sort = function sort(arr1, arr2) {
           if (arr1[0] === arr2[0]) {
             if (arr1.length > 1 && arr2.length > 1) {
-              return sort(tail(arr1), tail(arr2));
+              return _sort(tail(arr1), tail(arr2));
             } else {
               return 0;
             }
@@ -5211,7 +5187,7 @@
             return arr1[0] > arr2[0] ? 1 : -1;
           }
         };
-        return sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode];
+        return _sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode];
       }
 
       /**
@@ -5273,7 +5249,7 @@
           // Reset search effects (show node, collapse, reset matched)
           node.show().collapse().state('matched', false);
         });
-        if (this.config.selection.require) {
+        if (this.config.selection.reselectOnSearchClear) {
           this.previouslySelectedNodes().select();
         }
         this.end();
@@ -6272,7 +6248,7 @@
             }
             _this4.batch();
             matchProcessor(matches);
-            if (_this4.config.selection.require) {
+            if (_this4.config.selection.selectOnSearch) {
               var result = matches.find(function (node) {
                 return node.available() && node.selectable();
               });
@@ -6613,7 +6589,6 @@
         return obj instanceof TreeNodes;
       }
     }]);
-    return InspireTree;
   }(eventemitter2_1);
 
   return InspireTree;
