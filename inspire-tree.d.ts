@@ -77,6 +77,8 @@ export interface Config {
         mode?: string;
         multiple?: boolean;
         require?: boolean;
+        reselectOnSearchClear?: boolean;
+        selectOnSearch?: boolean;
     };
     sort?: string;
 }

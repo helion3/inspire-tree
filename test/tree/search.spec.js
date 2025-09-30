@@ -176,10 +176,10 @@ describe('Tree.search', function() {
         expect(tree.node(2).checked()).to.be.false;
     });
 
-    it('selects the first matching node when selection required', function(done) {
+    it('selects the first matching node when selectOnSearch = true', function(done) {
         tree = new InspireTree({
             selection: {
-                require: true
+                selectOnSearch: true
             },
             data: [{
                 text: 'bear',
@@ -206,10 +206,12 @@ describe('Tree.search', function() {
         }).catch(done);
     });
 
-    it('restores original selection on search clear when selection required', function(done) {
+    it('restores original selection on search clear when reselectOnSearchClear = true', function(done) {
         tree = new InspireTree({
             selection: {
-                require: true
+                require: true,
+                reselectOnSearchClear: true,
+                selectOnSearch: true
             },
             data: [{
                 text: 'bear',

@@ -90,7 +90,9 @@ class InspireTree extends EventEmitter2 {
                 disableDirectDeselection: false,
                 mode: 'default',
                 multiple: false,
-                require: false
+                require: false,
+                reselectOnSearchClear: false,
+                selectOnSearch: false
             },
             showCheckboxes: false,
             sort: false
@@ -303,16 +305,16 @@ class InspireTree extends EventEmitter2 {
         const sort = (arr1, arr2) => {
             if (arr1[0] === arr2[0]) {
                 if (arr1.length > 1 && arr2.length > 1) {
-                    return sort(tail(arr1), tail(arr2))
+                    return sort(tail(arr1), tail(arr2));
                 } else {
-                    return 0
+                    return 0;
                 }
             } else {
-                return arr1[0] > arr2[0] ? 1 : -1
+                return arr1[0] > arr2[0] ? 1 : -1;
             }
-        }
+        };
 
-        return sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode]
+        return sort(firstNode.indexList(), secondNode.indexList()) === 1 ? [secondNode, firstNode] : [firstNode, secondNode];
     }
 
     /**
@@ -366,7 +368,7 @@ class InspireTree extends EventEmitter2 {
             node.show().collapse().state('matched', false);
         });
 
-        if (this.config.selection.require) {
+        if (this.config.selection.reselectOnSearchClear) {
             this.previouslySelectedNodes().select();
         }
 
@@ -1264,7 +1266,7 @@ class InspireTree extends EventEmitter2 {
 
                 matchProcessor(matches);
 
-                if (this.config.selection.require) {
+                if (this.config.selection.selectOnSearch) {
                     const result = matches.find(node => node.available() && node.selectable());
                     if (result) {
                         result.select();
