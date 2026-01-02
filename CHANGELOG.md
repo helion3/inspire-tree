@@ -1,5 +1,10 @@
 # Changes to Inspire Tree
 
+# 7.2
+
+- Added `TreeNode#hasLoadedOrWillLoadChildren` as an alternative to `hasOrWillHaveChildren` that doesn't include children.length check.
+- Fixed `TreeNode#expand` checking for children.length, preventing expanding empty arrays aka "no results".
+
 # 7.1
 
 - Moved search/clearSearch selection logic to new config options.
