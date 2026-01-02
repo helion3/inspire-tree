@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.1.0
+ * @version 7.2.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -1984,7 +1984,7 @@
       value: function expand() {
         var _this3 = this;
         return new Promise(function (resolve, reject) {
-          var allow = _this3.hasChildren() || _this3._tree.isDynamic && _this3.children === true;
+          var allow = _this3.hasLoadedOrWillLoadChildren();
           if (allow && (_this3.collapsed() || _this3.hidden())) {
             _this3.state('collapsed', false);
             _this3.state('hidden', false);
@@ -2156,6 +2156,17 @@
       key: "hasLoadedChildren",
       value: function hasLoadedChildren() {
         return isArrayLike(this.children);
+      }
+
+      /**
+       * Get whether node has loaded any children (even empty arrays), or allows dynamic loading.
+       *
+       * @return {boolean} True if node has loaded, or will load children.
+       */
+    }, {
+      key: "hasLoadedOrWillLoadChildren",
+      value: function hasLoadedOrWillLoadChildren() {
+        return this.hasLoadedChildren() || this.allowDynamicLoad();
       }
 
       /**
