@@ -433,6 +433,7 @@ export class TreeNode {
     hasAncestor(): boolean;
     hasChildren(): boolean;
     hasLoadedChildren(): boolean;
+    hasLoadedOrWillLoadChildren(): boolean;
     hasOrWillHaveChildren(): boolean;
     hasParent(): boolean;
     hasVisibleChildren(): boolean;

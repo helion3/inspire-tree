@@ -421,7 +421,7 @@ class TreeNode {
      */
     expand() {
         return new Promise((resolve, reject) => {
-            const allow = (this.hasChildren() || (this._tree.isDynamic && this.children === true));
+            const allow = this.hasLoadedOrWillLoadChildren();
 
             if (allow && (this.collapsed() || this.hidden())) {
                 this.state('collapsed', false);
@@ -581,6 +581,15 @@ class TreeNode {
      */
     hasLoadedChildren() {
         return isArrayLike(this.children);
+    }
+
+    /**
+     * Get whether node has loaded any children (even empty arrays), or allows dynamic loading.
+     *
+     * @return {boolean} True if node has loaded, or will load children.
+     */
+    hasLoadedOrWillLoadChildren() {
+        return this.hasLoadedChildren() || this.allowDynamicLoad();
     }
 
     /**
