@@ -4,7 +4,7 @@ const InspireTree = require('../../' + (process.env.DIST ? 'dist' : 'build') + '
 describe('TreeNode.prototype.isOnlyRenderable', function() {
     let tree;
 
-    before(function() {
+    beforeEach(function() {
         // Create tree
         tree = new InspireTree({
             data: [{
@@ -32,6 +32,43 @@ describe('TreeNode.prototype.isOnlyRenderable', function() {
 
     it('returns true when surrounded by hidde nodes', function() {
         tree.nodes([1, 3]).hide();
+
+        expect(tree.node(2).isOnlyRenderable()).to.be.true;
+    });
+
+    it('works after search', function() {
+        tree.search('B');
+
+        expect(tree.node(2).isOnlyRenderable()).to.be.true;
+    });
+
+    it('works after search matching children', function() {
+        tree = new InspireTree({
+            data: [{
+                text: 'First Node',
+                id: 1,
+                children: [{
+                    id: 11,
+                    text: 'Child A1'
+                }]
+            }, {
+                text: 'Second Node',
+                id: 2,
+                children: [{
+                    id: 21,
+                    text: 'Child B1'
+                }, {
+                    id: 22,
+                    text: 'Child B2'
+                }]
+            }]
+        });
+
+        tree.search('Child B');
+
+        expect(tree.node(1).isOnlyRenderable()).to.be.false;
+        expect(tree.node(21).isOnlyRenderable()).to.be.false;
+        expect(tree.node(22).isOnlyRenderable()).to.be.false;
 
         expect(tree.node(2).isOnlyRenderable()).to.be.true;
     });
