@@ -8,14 +8,13 @@ Inspire Tree is a performance-driven UI tree component. This core library is "he
 - [API Docs](http://www.inspire-tree.com/docs/current/)
 - [Changelog](https://github.com/helion3/inspire-tree/blob/master/CHANGELOG.md)
 
+## Status
 
-## 8.0 Overhaul & Modernization
+InspireTree was written a decade ago to solve problems we had with every other tree library at the time.
 
-Progress is currently underway to completely overhaul this repository for typescript support, monorepo design, better deployments, better tests, etc.
+However, the web dev ecosystem has changed significantly and this library needs to catch up. Unfortunately I'm unsure how and when I'll find the time to do that.
 
-I have no plans to overhaul the API, only to modernize the code and improve it. 
-
-I don't have a timeline.
+It's still being maintained to fix issues as we use it in multiple commercial applications.
 
 ### Features:
 

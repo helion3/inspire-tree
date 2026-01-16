@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.2.0
+ * @version 7.3.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -388,13 +388,14 @@
        * nodes may still be present and CSS :first/:last selectors
        * would fail.
        *
-       * @private
+       * @param {boolean} force Force recalculation.
        * @return {void}
+       * @private
        */
     }, {
       key: "calculateRenderablePositions",
-      value: function calculateRenderablePositions() {
-        if (!this.indicesDirty || this.batching > 0 || !this.config.calculateRenderablePositions) {
+      value: function calculateRenderablePositions(force) {
+        if (!force && (!this.indicesDirty || this.batching > 0 || !this.config.calculateRenderablePositions)) {
           return;
         }
         var first;
@@ -423,6 +424,11 @@
         this.firstRenderableNode = first;
         this.lastRenderableNode = last;
         this.indicesDirty = false;
+
+        // If we have a parent, force it to recalculate as well
+        if (this._context && this._context.context() instanceof TreeNodes) {
+          this._context.context().calculateRenderablePositions(true);
+        }
       }
 
       /**

@@ -1,5 +1,9 @@
 # Changes to Inspire Tree
 
+# 7.3
+
+- Fixed bug where search results in child arrays didn't recalculate "renderable nodes" in parent contexts.
+
 # 7.2
 
 - Added `TreeNode#hasLoadedOrWillLoadChildren` as an alternative to `hasOrWillHaveChildren` that doesn't include children.length check.
