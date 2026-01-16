@@ -92,4 +92,40 @@ describe('TreeNode.prototype.isFirstRenderable', function() {
         expect(tree.node(2).isFirstRenderable()).to.be.true;
         expect(tree.node(21).isFirstRenderable()).to.be.true;
     });
+
+    it('works after search matching grandchildren', function() {
+        tree = new InspireTree({
+            data: [{
+                text: 'First Node',
+                id: 1,
+                children: [{
+                    id: 11,
+                    text: 'Child A1'
+                }]
+            }, {
+                text: 'Second Node',
+                id: 2,
+                children: [{
+                    id: 21,
+                    text: 'Child B1',
+                    children: [{
+                        id: 211,
+                        text: 'Grandchild B1A'
+                    }, {
+                        id: 212,
+                        text: 'Grandchild B1B'
+                    }]
+                }]
+            }]
+        });
+
+        tree.search('Grandchild');
+
+        expect(tree.node(1).isFirstRenderable()).to.be.false;
+        expect(tree.node(212).isFirstRenderable()).to.be.false;
+
+        expect(tree.node(2).isFirstRenderable()).to.be.true;
+        expect(tree.node(21).isFirstRenderable()).to.be.true;
+        expect(tree.node(211).isFirstRenderable()).to.be.true;
+    });
 });
