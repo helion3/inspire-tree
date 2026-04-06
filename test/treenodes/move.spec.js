@@ -57,4 +57,15 @@ describe('TreeNodes.prototype.move', function() {
         expect(node.children).to.have.length(1);
         expect(node.children[0].id).to.equal(2);
     });
+
+    it('clears itree.parent when inserting a node at the root level', function() {
+        // Node 2 is currently a child of node 1 (from previous test)
+        const node2 = tree.node(2);
+        expect(node2.hasParent()).to.be.true;
+
+        // Insert node 2 at root level via insertAt
+        tree.nodes().insertAt(tree.nodes().length, node2);
+
+        expect(node2.hasParent()).to.be.false;
+    });
 });

@@ -721,6 +721,14 @@ class TreeNodes extends Array {
                     existingNode.children = object.children;
                 }
 
+                // Update parent reference
+                if (this._context) {
+                    existingNode.itree.parent = this._context;
+                }
+                else {
+                    existingNode.itree.parent = null;
+                }
+
                 existingNode.markDirty();
                 this.applyChanges();
 
