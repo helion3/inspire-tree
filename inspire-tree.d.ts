@@ -369,7 +369,7 @@ export class TreeNodes extends Array<TreeNode> {
     invokeDeep(methods: string|Array<string>): TreeNodes;
     loading(full?: boolean): TreeNodes;
     matched(full?: boolean): TreeNodes;
-    move(index: number, newIndex: number, target: TreeNodes): TreeNode;
+    move(index: number, newIndex: number, target?: TreeNodes): TreeNode;
     node(id: string|number): TreeNode;
     nodes(ids?: Array<string>|Array<number>): TreeNodes;
     pagination(): Pagination;
