@@ -4,7 +4,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import gzip from 'rollup-plugin-gzip';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import path from 'path';
-import pkgConfig from './package.json' assert { type: 'json' };
+import pkgConfig from './package.json' with { type: 'json' };
 import { uglify } from 'rollup-plugin-uglify';
 import { optimizeLodashImports } from '@optimize-lodash/rollup-plugin';
 
