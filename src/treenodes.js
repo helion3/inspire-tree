@@ -773,6 +773,7 @@ class TreeNodes extends Array {
             this.invoke('markDirty');
         }
 
+        this.indicesDirty = true;
         this.applyChanges();
 
         return node;

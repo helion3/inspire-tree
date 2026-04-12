@@ -46,6 +46,22 @@ describe('TreeNodes.prototype.insertAt', function() {
         expect(tree.node(1).hasChildren()).to.be.true;
     });
 
+    it('calculates renderable positions for inserted nodes', function() {
+        tree.addNode({
+            text: 'A',
+            id: 1,
+            children: [{
+                text: 'AA',
+                id: 'aa'
+            }]
+        });
+
+        tree.node(1).children.insertAt(1, { text: 'AB', id: 'ab' });
+
+        expect(tree.node('aa').isFirstRenderable()).to.be.true;
+        expect(tree.node('ab').isLastRenderable()).to.be.true;
+    });
+
     it('inserts a new node at a given index', function() {
         tree.addNodes([{
             text: 'A',

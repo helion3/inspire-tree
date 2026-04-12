@@ -44,6 +44,25 @@ describe('TreeNode.prototype.addChild', function() {
         expect(child.hasParent()).to.be.true;
     });
 
+    it('calculates renderable positions for dynamically added children', function() {
+        const tree2 = new InspireTree({
+            data: [{
+                text: 'X',
+                id: 'x'
+            }]
+        });
+
+        const leaf = tree2.node('x');
+        expect(leaf.hasChildren()).to.be.false;
+
+        leaf.addChild({ text: 'Y' });
+
+        const child = leaf.children[0];
+        expect(child.isFirstRenderable()).to.be.true;
+        expect(child.isLastRenderable()).to.be.true;
+        expect(child.isOnlyRenderable()).to.be.true;
+    });
+
     it('applies sort correctly to new children', function() {
         const node = tree.node(1);
 

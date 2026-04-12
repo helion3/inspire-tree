@@ -134,7 +134,7 @@ class TreeNode {
      */
     addChild(child) {
         if (isArray(this.children) || !isArrayLike(this.children)) {
-            this.children = new TreeNodes(this._tree);
+            this.children = new TreeNodes(this._tree, null, { calculateRenderablePositions: true });
             this.children._context = this;
         }
 
@@ -151,7 +151,7 @@ class TreeNode {
         const nodes = new TreeNodes(this._tree);
 
         if (isArray(this.children) || !isArrayLike(this.children)) {
-            this.children = new TreeNodes(this._tree);
+            this.children = new TreeNodes(this._tree, null, { calculateRenderablePositions: true });
             this.children._context = this;
         }
 
