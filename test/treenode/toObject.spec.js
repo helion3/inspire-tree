@@ -47,6 +47,18 @@ describe('TreeNode.prototype.toObject', function() {
         expect(exported.itree.state.selected).to.be.true;
     });
 
+    it('retains state data for children', function() {
+        const node = tree.node(1);
+        const child = node.children[0];
+        child.select();
+
+        const exported = node.toObject(false, true);
+
+        expect(exported.children).to.be.an('array');
+        expect(exported.children[0].itree.state).to.be.an('object');
+        expect(exported.children[0].itree.state.selected).to.be.true;
+    });
+
     it('returns children as a native array', function() {
         expect(Array.isArray(tree.node(1).toObject().children)).to.be.true;
     });

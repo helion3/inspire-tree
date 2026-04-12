@@ -1284,11 +1284,11 @@ class TreeNodes extends Array {
      *
      * @return {array} Array of node objects.
      */
-    toArray() {
+    toArray(includeState = false) {
         const array = [];
 
         each(this, node => {
-            array.push(node.toObject());
+            array.push(node.toObject(false, includeState));
         });
 
         return array;
