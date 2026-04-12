@@ -721,6 +721,19 @@ class TreeNodes extends Array {
                     existingNode.children = object.children;
                 }
 
+                // If the node was found as a descendant (not a direct element),
+                // physically move it into this collection at the requested index
+                if (Array.prototype.indexOf.call(this, existingNode) === -1) {
+                    // Remove from old parent's collection
+                    const oldContext = existingNode.hasParent() ? existingNode.getParent().children : this._tree.model;
+                    remove(oldContext, { id: existingNode.id });
+                    oldContext.indicesDirty = true;
+                    oldContext.applyChanges();
+
+                    // Insert into this collection at the requested index
+                    this.splice(index, 0, existingNode);
+                }
+
                 // Update parent reference
                 if (this._context) {
                     existingNode.itree.parent = this._context;
