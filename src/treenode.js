@@ -1371,7 +1371,7 @@ class TreeNode {
         itree.li = this.itree.li;
 
         if (includeState) {
-            itree.state = this.itree.state;
+            itree.state = Object.assign({}, this.itree.state);
         }
 
         // If including children, export them

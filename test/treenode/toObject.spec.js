@@ -59,6 +59,19 @@ describe('TreeNode.prototype.toObject', function() {
         expect(exported.children[0].itree.state.selected).to.be.true;
     });
 
+    it('copies state by value not by reference', function() {
+        const node = tree.node(1);
+        const exported = node.toObject(false, true);
+
+        expect(exported.itree.state).to.not.equal(node.itree.state);
+        expect(exported.itree.state.removed).to.be.false;
+
+        node.softRemove();
+
+        expect(node.itree.state.removed).to.be.true;
+        expect(exported.itree.state.removed).to.be.false;
+    });
+
     it('returns children as a native array', function() {
         expect(Array.isArray(tree.node(1).toObject().children)).to.be.true;
     });
