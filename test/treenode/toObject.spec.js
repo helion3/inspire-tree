@@ -75,4 +75,35 @@ describe('TreeNode.prototype.toObject', function() {
     it('returns children as a native array', function() {
         expect(Array.isArray(tree.node(1).toObject().children)).to.be.true;
     });
+
+    describe('dynamic children placeholder', function() {
+        let dynamicTree;
+
+        before(function() {
+            dynamicTree = new InspireTree({
+                data: function(node, resolve) {
+                    if (node === null) {
+                        resolve([{
+                            text: 'Styled',
+                            id: 'styled',
+                            children: true
+                        }]);
+                    }
+                    else {
+                        resolve([{ text: 'Dynamic Child' }]);
+                    }
+                }
+            });
+        });
+
+        it('preserves children: true placeholder', function() {
+            const exported = dynamicTree.node('styled').toObject();
+            expect(exported.children).to.equal(true);
+        });
+
+        it('respects excludeChildren=true for the placeholder', function() {
+            const exported = dynamicTree.node('styled').toObject(true);
+            expect(exported.children).to.be.undefined;
+        });
+    });
 });
