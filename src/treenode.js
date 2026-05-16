@@ -1376,7 +1376,7 @@ class TreeNode {
 
         // If including children, export them
         if (!excludeChildren) {
-            if (this.hasChildren() && isFunction(this.children.toArray)) {
+            if (this.hasLoadedChildren() && isFunction(this.children.toArray)) {
                 exported.children = this.children.toArray(includeState);
             }
             else if (this.children === true) {

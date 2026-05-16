@@ -76,6 +76,41 @@ describe('TreeNode.prototype.toObject', function() {
         expect(Array.isArray(tree.node(1).toObject().children)).to.be.true;
     });
 
+    describe('empty-but-loaded children', function() {
+        let emptyTree;
+
+        beforeEach(function() {
+            emptyTree = new InspireTree({
+                data: [{
+                    text: 'Empty',
+                    id: 'empty',
+                    children: []
+                }]
+            });
+        });
+
+        it('exports children as an empty array', function() {
+            const exported = emptyTree.node('empty').toObject(false, true);
+            expect(exported.children).to.be.an('array');
+            expect(exported.children).to.have.lengthOf(0);
+        });
+
+        it('round-trips the empty-folder semantic via addNode', function() {
+            const exported = emptyTree.node('empty').toObject(false, true);
+
+            const roundTripTree = new InspireTree({ data: [] });
+            const added = roundTripTree.addNode(exported);
+
+            expect(added.hasLoadedChildren()).to.be.true;
+            expect(added.hasChildren()).to.be.false;
+        });
+
+        it('respects excludeChildren=true for empty children', function() {
+            const exported = emptyTree.node('empty').toObject(true);
+            expect(exported.children).to.be.undefined;
+        });
+    });
+
     describe('dynamic children placeholder', function() {
         let dynamicTree;
 
