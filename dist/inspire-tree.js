@@ -1,5 +1,5 @@
 /* Inspire Tree
- * @version 7.3.0
+ * @version 7.4.0
  * https://github.com/helion3/inspire-tree
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -923,6 +923,28 @@
             else if (object.children && isBoolean(existingNode.children)) {
               existingNode.children = object.children;
             }
+
+            // If the node was found as a descendant (not a direct element),
+            // physically move it into this collection at the requested index
+            if (Array.prototype.indexOf.call(this, existingNode) === -1) {
+              // Remove from old parent's collection
+              var oldContext = existingNode.hasParent() ? existingNode.getParent().children : this._tree.model;
+              _remove(oldContext, {
+                id: existingNode.id
+              });
+              oldContext.indicesDirty = true;
+              oldContext.applyChanges();
+
+              // Insert into this collection at the requested index
+              this.splice(index, 0, existingNode);
+            }
+
+            // Update parent reference
+            if (this._context) {
+              existingNode.itree.parent = this._context;
+            } else {
+              existingNode.itree.parent = null;
+            }
             existingNode.markDirty();
             this.applyChanges();
 
@@ -953,6 +975,7 @@
         if (this.length - 1 !== index) {
           this.invoke('markDirty');
         }
+        this.indicesDirty = true;
         this.applyChanges();
         return node;
       }
@@ -1495,9 +1518,10 @@
     }, {
       key: "toArray",
       value: function toArray() {
+        var includeState = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
         var array = [];
         each(this, function (node) {
-          array.push(node.toObject());
+          array.push(node.toObject(false, includeState));
         });
         return array;
       }
@@ -1688,7 +1712,9 @@
       key: "addChild",
       value: function addChild(child) {
         if (isArray(this.children) || !isArrayLike(this.children)) {
-          this.children = new TreeNodes(this._tree);
+          this.children = new TreeNodes(this._tree, null, {
+            calculateRenderablePositions: true
+          });
           this.children._context = this;
         }
         return this.children.addNode(child);
@@ -1706,7 +1732,9 @@
         var _this2 = this;
         var nodes = new TreeNodes(this._tree);
         if (isArray(this.children) || !isArrayLike(this.children)) {
-          this.children = new TreeNodes(this._tree);
+          this.children = new TreeNodes(this._tree, null, {
+            calculateRenderablePositions: true
+          });
           this.children._context = this;
         }
         this.children.batch();
@@ -3002,12 +3030,16 @@
         itree.icon = this.itree.icon;
         itree.li = this.itree.li;
         if (includeState) {
-          itree.state = this.itree.state;
+          itree.state = Object.assign({}, this.itree.state);
         }
 
         // If including children, export them
-        if (!excludeChildren && this.hasChildren() && isFunction(this.children.toArray)) {
-          exported.children = this.children.toArray();
+        if (!excludeChildren) {
+          if (this.hasLoadedChildren() && isFunction(this.children.toArray)) {
+            exported.children = this.children.toArray(includeState);
+          } else if (this.children === true) {
+            exported.children = true;
+          }
         }
         return exported;
       }

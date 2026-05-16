@@ -1,5 +1,15 @@
 # Changes to Inspire Tree
 
+# 7.4
+
+- Fixed toObject excluding empty children arrays.
+- Fixed toObject losing children: true.
+- Fixed toObject copying state by reference.
+- Fixed toObject not passing includeState to children.
+- Fixed renderable position calculation for several scenarios.
+- Fixed optional move target argument type.
+- Fixed move not resetting parent when in root
+
 # 7.3
 
 - Fixed bug where search results in child arrays didn't recalculate "renderable nodes" in parent contexts.
