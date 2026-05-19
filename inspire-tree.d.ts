@@ -450,6 +450,7 @@ export class TreeNode {
     loading(): boolean;
     markDirty(): TreeNode;
     matched(): TreeNodes;
+    move(node: TreeNode, index?: number): TreeNode;
     nextVisibleAncestralSiblingNode(): TreeNode;
     nextVisibleChildNode(): TreeNode;
     nextVisibleNode(): TreeNode | undefined;

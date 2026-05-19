@@ -859,6 +859,40 @@ class TreeNode {
     }
 
     /**
+     * Move a node into this node's children.
+     *
+     * Appends by default, or inserts at the given index (clamped to
+     * [0, this.children.length]). Preserves itree.state and emits
+     * `node.moved`. If this node's children have not yet been loaded
+     * into a TreeNodes collection, the collection is initialized.
+     *
+     * @param {TreeNode} node Node to move.
+     * @param {number} [index] Target index. Defaults to end of children.
+     * @return {TreeNode} The moved node, now attached under this node.
+     */
+    move(node, index) {
+        if (node === this) {
+            throw new Error('Cannot move a node into itself.');
+        }
+
+        const source = node.context();
+        const fromIndex = source.indexOf(node);
+        if (fromIndex < 0) {
+            throw new Error('Node is not attached to a context and cannot be moved.');
+        }
+
+        if (isArray(this.children) || !isArrayLike(this.children)) {
+            this.children = new TreeNodes(this._tree, null, { calculateRenderablePositions: true });
+            this.children._context = this;
+        }
+
+        let targetIndex = (typeof index === 'undefined' || index === null) ? this.children.length : index;
+        targetIndex = Math.max(0, Math.min(targetIndex, this.children.length));
+
+        return source.move(fromIndex, targetIndex, this.children);
+    }
+
+    /**
      * Find the next visible sibling of our ancestor. Continues
      * seeking up the tree until a valid node is found or we
      * reach the root node.
