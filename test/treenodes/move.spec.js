@@ -69,6 +69,130 @@ describe('TreeNodes.prototype.move', function() {
         expect(node2.hasParent()).to.be.false;
     });
 
+    it('preserves selected state when reordering siblings', function() {
+        const localTree = new InspireTree({
+            data: [
+                { text: 'A', id: 1 },
+                { text: 'B', id: 2 },
+                { text: 'C', id: 3 }
+            ]
+        });
+
+        localTree.node(2).select();
+        expect(localTree.node(2).selected()).to.be.true;
+
+        localTree.nodes().move(1, 0);
+
+        expect(localTree.nodes()[0].id).to.equal(2);
+        expect(localTree.node(2).selected()).to.be.true;
+    });
+
+    it('preserves expanded state when moving a folder', function() {
+        const localTree = new InspireTree({
+            data: [{
+                text: 'A',
+                id: 1,
+                children: [{ text: 'A1', id: 11 }]
+            }, {
+                text: 'B',
+                id: 2
+            }]
+        });
+
+        localTree.node(1).expand();
+        expect(localTree.node(1).expanded()).to.be.true;
+
+        localTree.nodes().move(0, 1);
+
+        expect(localTree.nodes()[1].id).to.equal(1);
+        expect(localTree.node(1).expanded()).to.be.true;
+    });
+
+    it('preserves descendant state when moving a parent', function() {
+        const localTree = new InspireTree({
+            data: [{
+                text: 'A',
+                id: 1,
+                children: [{
+                    text: 'A1',
+                    id: 11,
+                    children: [{ text: 'A1a', id: 111 }]
+                }, {
+                    text: 'A2',
+                    id: 12
+                }]
+            }, {
+                text: 'B',
+                id: 2
+            }]
+        });
+
+        localTree.node(11).expand();
+        localTree.node(12).select();
+        localTree.node(111).check();
+
+        expect(localTree.node(11).expanded()).to.be.true;
+        expect(localTree.node(12).selected()).to.be.true;
+        expect(localTree.node(111).checked()).to.be.true;
+
+        localTree.nodes().move(0, 1);
+
+        expect(localTree.nodes()[1].id).to.equal(1);
+        expect(localTree.node(11).expanded()).to.be.true;
+        expect(localTree.node(12).selected()).to.be.true;
+        expect(localTree.node(111).checked()).to.be.true;
+    });
+
+    it('preserves multiple state fields on the moved node', function() {
+        const localTree = new InspireTree({
+            data: [
+                { text: 'A', id: 1 },
+                { text: 'B', id: 2 }
+            ]
+        });
+
+        const node = localTree.node(1);
+        node.select();
+        node.check();
+        node.focus();
+
+        expect(node.selected()).to.be.true;
+        expect(node.checked()).to.be.true;
+        expect(node.focused()).to.be.true;
+
+        localTree.nodes().move(0, 1);
+
+        const moved = localTree.node(1);
+        expect(localTree.nodes()[1].id).to.equal(1);
+        expect(moved.selected()).to.be.true;
+        expect(moved.checked()).to.be.true;
+        expect(moved.focused()).to.be.true;
+    });
+
+    it('preserves state when moving across collections', function() {
+        const localTree = new InspireTree({
+            data: [{
+                text: 'A',
+                id: 1,
+                children: []
+            }, {
+                text: 'B',
+                id: 2,
+                children: [{ text: 'B1', id: 21 }]
+            }]
+        });
+
+        localTree.node(21).select();
+        expect(localTree.node(21).selected()).to.be.true;
+
+        const target = localTree.node(1).children;
+        localTree.node(2).children.move(0, 0, target);
+
+        expect(localTree.node(1).children).to.have.length(1);
+        expect(localTree.node(1).children[0].id).to.equal(21);
+        expect(localTree.node(21).selected()).to.be.true;
+    });
+
     it('recalculates renderable positions when insertAt moves a node to a new context', function() {
         tree = new InspireTree({
             data: [{

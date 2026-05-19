@@ -910,7 +910,7 @@ class TreeNodes extends Array {
      * @return {TreeNode} Node object.
      */
     move(index, newIndex, target = this) {
-        const oldNode = this[index].remove();
+        const oldNode = this[index].remove(true);
         const node = target.insertAt(newIndex, oldNode);
 
         this._tree.emit('node.moved', node, this, index, target, newIndex);
