@@ -1,5 +1,10 @@
 # Changes to Inspire Tree
 
+# 7.5
+
+- Added `TreeNode#move`.
+- Fixed `TreeNodes#move` not including node state.
+
 # 7.4
 
 - Fixed toObject excluding empty children arrays.
